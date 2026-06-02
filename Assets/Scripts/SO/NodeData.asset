@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72fa3b51e12047743a73556294ad9c92, type: 3}
+  m_Name: NodeData
+  m_EditorClassIdentifier: 
+  spriteUnit: {fileID: 21300000, guid: cf2a36341c0213346a42dcaff1910760, type: 3}
+  spriteDestination: {fileID: 21300000, guid: 426d472ae84b7a24a9b0e7b0df510ea7, type: 3}
+  spriteObstacle: {fileID: 21300000, guid: c3750a39d7d2ff34ba6ebcbd675a6099, type: 3}
+  spriteTrace: {fileID: 21300000, guid: 29aba4bfa556d514393f0a384f6db2b9, type: 3}
+  spriteRoom: {fileID: 21300000, guid: b5f2f06e33693d542bf4fcc852e7cbe2, type: 3}
+  spriteSearched: {fileID: 21300000, guid: 9f989f6fc95446b49af10998b8fd4004, type: 3}
+  spriteEntrance: {fileID: 21300000, guid: 17b9df25a30502544ae12c521cb60ecb, type: 3}
+  spriteEntranceUsed: {fileID: 21300000, guid: 13514ea1a55aebd44b5244c7316965ee, type: 3}
