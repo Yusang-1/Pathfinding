@@ -145,7 +145,7 @@ public class PathManager : MonoBehaviour
     {
         nodeList.ResetTrace();
         hPAClusterList.ResetClusterList();
-        clusterShower.DeactiveClusters();
+        clusterShower.ResetClusters();
         lineDrawer.ResetLineDrawer();
     }
     private void ResetAll()

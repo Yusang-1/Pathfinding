@@ -45,17 +45,11 @@ public class ClusterShower : MonoBehaviour
         clusters[index].SetActive(true);
     }
     
-    public void DeactiveClusters()
+    public void ResetClusters()
     {
         foreach(var item in clusters)
         {
             item.Value.SetActive(false);
         }
-    }
-    
-    public void ResetClusters()
-    {
-        DeactiveClusters();
-        clusters.Clear();
     }
 }
