@@ -24,7 +24,7 @@ public class PathManager : MonoBehaviour
     [Header("Values")]
     [SerializeField] private int nodeSize;
     [SerializeField] private int clusterSize;
-    [SerializeField] private int width;
+    [SerializeField] private int mapSize;
     
     private bool isMapGenerated = false;
     private List<HPAPathfinder.ResultNode> currentAbstractResults;
@@ -38,16 +38,16 @@ public class PathManager : MonoBehaviour
     private void Start()
     {
         nodeData.Initialize();
-        nodeList = new NodeList(width, nodeSize, nodeData);
-        hPAClusterList = new(width, clusterSize, nodeList);
-        clusterShower.Initialize(clusterSize);
+        nodeList = new NodeList(nodeSize, nodeData);
+        hPAClusterList = new(nodeList);
+        
         lineDrawer.Initialize();
         uiManager.Initialize(nodeList, GenerateMap, FindAllPath, ResetAll);
         unit.Initialize(lineDrawer);
         
         pathfinder = new AStarPathfinder(nodeList, hPAClusterList);
         thetaStar = new ThetaStar(nodeList, hPAClusterList);
-        hPAPathfinder = new HPAPathfinder(clusterSize, hPAClusterList, nodeList, pathfinder);
+        
         searchWithTheClusterResult = new SearchWithTheClusterResult();
 
         mapGenerator = new MapGenerator(nodePrefab);
@@ -55,9 +55,14 @@ public class PathManager : MonoBehaviour
         nodeList.NodeInfo.OnPathfindAvailable += uiManager.ActiveFindUI;
     }
 
-    private void GenerateMap()
+    private void GenerateMap(int mapSize, int clusterSize)
     {
-        mapGenerator.GenerateMap(width, nodeList);
+        this.mapSize = mapSize;
+        this.clusterSize = clusterSize;
+        clusterShower.Initialize(clusterSize, nodeSize);
+        hPAPathfinder = new HPAPathfinder(clusterSize, hPAClusterList, nodeList, pathfinder);
+        nodeList.CreateNodeArray(mapSize);
+        mapGenerator.GenerateMap(mapSize, nodeList);
         isMapGenerated = true;
     }
 
@@ -78,8 +83,7 @@ public class PathManager : MonoBehaviour
     {
         if (!isMapGenerated) return;
 
-        hPAClusterList.Initialize(pathfinder);
-        clusterShower.ShowCluster(hPAClusterList);
+        hPAClusterList.Initialize(pathfinder, mapSize, clusterSize);        
         nodeList.SetNodeArea();
     }
 

@@ -3,15 +3,19 @@ using UnityEngine;
 
 public class UIGenerateMap : MonoBehaviour
 {
-    private Action generateMap;
-    public void Initialize(Action generateMap)
+    private Action<int, int> generateMap;
+    
+    [SerializeField] private UIGenerateMapInput input;
+    
+    public void Initialize(Action<int, int> generateMap)
     {
         this.generateMap = generateMap;
     }
     
     public void OnGenerateMap()
     {
-        generateMap?.Invoke();
+        input.GetInput(out int mapSize, out int clusterSize);
+        generateMap?.Invoke(mapSize, clusterSize);
         gameObject.SetActive(false);
     }
 }

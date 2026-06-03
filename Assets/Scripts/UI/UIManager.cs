@@ -8,7 +8,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private UIFindAllPath uiFindAllPath;
     [SerializeField] private UIPathShower uiPathShower;
     
-    public void Initialize(NodeList nodeList, Action generateMap, Action findAllPath, Action reseAll)
+    public void Initialize(NodeList nodeList, Action<int, int> generateMap, Action findAllPath, Action reseAll)
     {
         nodeTypeSelector.Initialize(nodeList);
         uiGenerateMap.Initialize(generateMap);

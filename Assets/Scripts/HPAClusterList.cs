@@ -3,28 +3,29 @@ using System.Collections.Generic;
 
 public class HPAClusterList
 {
-    private readonly HPAClusterOptimized[,] clusterList;
+    private HPAClusterOptimized[,] clusterList;
     private readonly NodeList nodeList;
 
-    private readonly int clusterSize;
-    private readonly int clusterCount;
+    private int clusterSize;
+    private int clusterCount;
     public int ClusterSize => clusterSize;
 
-    public HPAClusterList(int nodeWidth, int clusterSize, NodeList nodeList)
+    public HPAClusterList(NodeList nodeList)
     {
-        this.clusterSize = clusterSize;
-        this.nodeList = nodeList;
+        this.nodeList = nodeList;        
 
-        clusterCount = nodeWidth / clusterSize;
-        clusterList = new HPAClusterOptimized[clusterCount, clusterCount];
-
-        cachedNeighborList = new List<Vector2Int>(4); // 상하좌우 최대 4개의 이웃
-        cachedEdgeIndexes = new List<Vector2Int>(clusterSize);
-        tempEdgeIndexes = new List<Vector2Int>(clusterSize);
+        cachedNeighborList = new List<Vector2Int>(4); // 상하좌우 최대 4개의 이웃        
     }
 
-    public void Initialize(AStarPathfinder pathfinder)
+    public void Initialize(AStarPathfinder pathfinder, int mapSize, int clusterSize)
     {
+        this.clusterSize = clusterSize;
+        clusterCount = mapSize / clusterSize;
+        clusterList = new HPAClusterOptimized[clusterCount, clusterCount];
+        
+        cachedEdgeIndexes = new List<Vector2Int>(clusterSize);
+        tempEdgeIndexes = new List<Vector2Int>(clusterSize);
+        
         // cluster 생성
         for (int i = 0; i < clusterList.GetLength(0); i++)
         {
@@ -66,8 +67,8 @@ public class HPAClusterList
         return cachedNeighborList;
     }
 
-    private readonly List<Vector2Int> cachedEdgeIndexes;
-    private readonly List<Vector2Int> tempEdgeIndexes;
+    private List<Vector2Int> cachedEdgeIndexes;
+    private List<Vector2Int> tempEdgeIndexes;
     private const int entranceConstraint = 4; // 4보다 작은 너비의 입구는 중앙에 하나의 입구를 가짐, 4이상의 입구는 시작점과 끝점에 하나씩 가짐
     public List<Vector2Int> SetEntrance(Vector2Int cluster, Vector2Int direction)
     {

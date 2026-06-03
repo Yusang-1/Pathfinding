@@ -9,7 +9,7 @@ public class NodeList
 
     private readonly NodeData nodeData;
     private readonly NodeInfo nodeInfo;
-    private readonly Node[,] nodes;
+    private Node[,] nodes;
 
     private Vector2Int startPos;
     private Vector2Int goalPos;
@@ -20,9 +20,8 @@ public class NodeList
     public Vector2Int GoalPos => goalPos;
 
     private readonly int nodeSize = 1;
-    public NodeList(int count, int nodeSize, NodeData data)
-    {
-        nodes = new Node[count, count];
+    public NodeList(int nodeSize, NodeData data)
+    {        
         this.nodeSize = nodeSize;
         nodeData = data;
         nodeInfo = new NodeInfo(this, nodeData);
@@ -43,6 +42,11 @@ public class NodeList
         int x = (int)(position.x / nodeSize);
         int y = (int)(position.y / nodeSize);
         return new Vector2Int(x, y);
+    }
+    
+    public void CreateNodeArray(int mapSize)
+    {
+        nodes = new Node[mapSize, mapSize];
     }
 
     public void SetNode(int x, int y, Node node)

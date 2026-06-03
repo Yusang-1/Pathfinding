@@ -5,20 +5,20 @@ public class ClusterShower : MonoBehaviour
 {
     [SerializeField] private GameObject clusterPrefab;
     private readonly Dictionary<Vector2Int, GameObject> clusters = new();
-    private int clusterSize;
     
-    public void Initialize(int clusterSize)
+    public void Initialize(int clusterSize, int nodeSize)
     {
-        this.clusterSize = clusterSize;
+        CreateClusterImage(clusterSize, nodeSize);
     }
     
-    public void ShowCluster(HPAClusterList clusterList)
+    public void CreateClusterImage(int clusterSize, int nodeSize)
     {
         for (int i = 0; i < clusterSize; i++)
         {
             for (int j = 0; j < clusterSize; j++)
             {
-                GameObject go = Instantiate(clusterPrefab, new Vector2(2 + i * clusterSize, 2 + j * clusterSize), Quaternion.identity);
+                GameObject go = Instantiate(clusterPrefab, new Vector2((float)clusterSize/2 - (float)nodeSize/2 + i * clusterSize, (float)clusterSize/2 - (float)nodeSize/2  + j * clusterSize), Quaternion.identity);
+                go.transform.localScale = new Vector3(clusterSize, clusterSize, 1);
                 go.SetActive(false);
                 clusters.Add(new Vector2Int(i, j), go);
             }
