@@ -25,7 +25,7 @@ public class PathManager : MonoBehaviour
     [SerializeField] private int nodeSize;
     [SerializeField] private int clusterSize;
     [SerializeField] private int mapSize;
-    
+
     private bool isMapGenerated = false;
     private List<HPAPathfinder.ResultNode> currentAbstractResults;
 
@@ -40,14 +40,14 @@ public class PathManager : MonoBehaviour
         nodeData.Initialize();
         nodeList = new NodeList(nodeSize, nodeData);
         hPAClusterList = new(nodeList);
-        
+
         lineDrawer.Initialize();
         uiManager.Initialize(nodeList, GenerateMap, FindAllPath, ResetAll);
         unit.Initialize(lineDrawer);
-        
+
         pathfinder = new AStarPathfinder(nodeList, hPAClusterList);
         thetaStar = new ThetaStar(nodeList, hPAClusterList);
-        
+
         searchWithTheClusterResult = new SearchWithTheClusterResult();
 
         mapGenerator = new MapGenerator(nodePrefab);
@@ -55,10 +55,27 @@ public class PathManager : MonoBehaviour
         nodeList.NodeInfo.OnPathfindAvailable += uiManager.ActiveFindUI;
     }
 
-    private void GenerateMap(int mapSize, int clusterSize)
+    private const int defaultMapSize = 20;
+    private const int maxClusterSize = 10;
+    private void GenerateMap(int sizeOfMap, int sizeOfCluster)
     {
-        this.mapSize = mapSize;
-        this.clusterSize = clusterSize;
+        if (sizeOfMap == 0)
+        {
+            mapSize = defaultMapSize;
+        }
+        else
+            mapSize = sizeOfMap;
+
+        if (sizeOfCluster == 0)
+        {
+            clusterSize = sizeOfMap / 4;
+            clusterSize = Mathf.Clamp(clusterSize, 0, maxClusterSize);
+        }
+        else
+        {
+            clusterSize = sizeOfCluster;
+        }
+
         clusterShower.Initialize(clusterSize, nodeSize);
         hPAPathfinder = new HPAPathfinder(clusterSize, hPAClusterList, nodeList, pathfinder);
         nodeList.CreateNodeArray(mapSize);
@@ -75,7 +92,7 @@ public class PathManager : MonoBehaviour
         hpaStarResult = FindHPAStarPath();
 
         hpaStarSmoothResult = FindHPAStarPathSmoothing();
-        
+
         nodeList.NodeInfo.IsDuringNodeSetting = false;
     }
 
@@ -83,7 +100,7 @@ public class PathManager : MonoBehaviour
     {
         if (!isMapGenerated) return;
 
-        hPAClusterList.Initialize(pathfinder, mapSize, clusterSize);        
+        hPAClusterList.Initialize(pathfinder, mapSize, clusterSize);
         nodeList.SetNodeArea();
     }
 
@@ -154,7 +171,7 @@ public class PathManager : MonoBehaviour
         hPAClusterList.ResetClusterList();
         clusterShower.ResetClusters();
         lineDrawer.ResetLineDrawer();
-        
+
         nodeList.NodeInfo.IsDuringNodeSetting = true;
     }
 
@@ -181,7 +198,7 @@ public class PathManager : MonoBehaviour
     {
         ResetPath();
         resultShower.DrawHPAStar(nodeList, hpaStarSmoothResult);
-        
+
         unit.MoveWithResult(currentAbstractResults, hPAPathfinder, thetaStar, hPAClusterList, nodeList, searchWithTheClusterResult);
     }
 }
