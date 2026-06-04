@@ -6,6 +6,8 @@ public class AStarPathfinder
     private readonly NodeList nodeList;
     private readonly HPAClusterList hPAClusterList;
     
+    private int numberOfNodesSearched;
+    
     public AStarPathfinder(NodeList nodeList, HPAClusterList hPAClusterList)
     {
         this.nodeList = nodeList;
@@ -31,6 +33,7 @@ public class AStarPathfinder
 
         Vector2Int startIndex = nodeList.GetNodeIndex(startPosition);
         Vector2Int goalIndex = nodeList.GetNodeIndex(destinationPosition);
+        numberOfNodesSearched = 0;
         
         if(!nodeList.IsNodeAccessable(startIndex, goalIndex))
         {
@@ -51,6 +54,7 @@ public class AStarPathfinder
 
             if (current == goalIndex)
             {
+                Debug.Log($"A*의 탐색한 노드 수 : {numberOfNodesSearched}");
                 return CaculateResult(nodeDict, current, startIndex);
             }
 
@@ -62,7 +66,8 @@ public class AStarPathfinder
                 Vector2Int neighbor = neighborList[i];
 
                 if (closeList.Contains(neighbor)) continue;
-
+                
+                numberOfNodesSearched++;
                 float moveCost = GetMoveCost(current, neighbor);
                 float newG = nodeDict[current].g + moveCost;
 

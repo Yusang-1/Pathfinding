@@ -14,6 +14,7 @@ public class HPAPathfinder
     // 메모리 풀: List 재사용으로 GC 감소
     private readonly Stack<List<Vector2Int>> listPool = new();
     private const int PoolSize = 10;
+    private int numberOfNodesSearched;
 
     public HPAPathfinder(int clusterSize, HPAClusterList clusterList, NodeList nodeList, AStarPathfinder lowLvPathfinder)
     {
@@ -171,6 +172,7 @@ public class HPAPathfinder
             AbstractNode current = openSet.Dequeue();
             if (current.ClusterIndex == goalCluster && clusterList.GetCluster(current.ClusterIndex).IsNodeConnected(current.EntrancePos, goalNode))
             {
+                Debug.Log($"HPA*의 탐색한 노드 수 : {numberOfNodesSearched}");
                 return ReconstructAbstractPath(cameFrom, current, startVirtual);
             }
             if (closedSet.Contains(current)) continue;
@@ -179,7 +181,8 @@ public class HPAPathfinder
             foreach (var (neighbor, cost) in GetAbstractNeighbors(current, startCluster))
             {
                 if (closedSet.Contains(neighbor)) continue;
-
+                numberOfNodesSearched++;
+                
                 float tentativeG = gCost[current] + cost;
 
                 if (!gCost.ContainsKey(neighbor) || tentativeG < gCost[neighbor])

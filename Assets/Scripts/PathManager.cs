@@ -10,7 +10,7 @@ public class PathManager : MonoBehaviour
     private ThetaStar thetaStar;
     private MapGenerator mapGenerator;
     private SearchWithTheClusterResult searchWithTheClusterResult;
-    private readonly PathfindingResultShower resultShower = new();
+    private readonly PathfindingResultShower resultShower = new();        
 
     [SerializeField] private UIManager uiManager;
 
