@@ -93,12 +93,6 @@ public class HPAPathfinder
         clusterList.GetCluster(goalCluster).RemoveTempNodeInGraph();
 
         return clusterPath;
-
-        // if (clusterPath != null && clusterPath.Count > 0)
-        // {
-        //     return BuildFullPath(startNode, goalNode, clusterPath);
-        // }
-        // else return null;
     }
 
     /// <summary> cluster 경로 -> 전체 좌표 경로 변환 </summary>

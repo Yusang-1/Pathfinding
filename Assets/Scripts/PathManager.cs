@@ -68,7 +68,7 @@ public class PathManager : MonoBehaviour
 
         if (sizeOfCluster == 0)
         {
-            clusterSize = sizeOfMap / 4;
+            clusterSize = mapSize / 4;
             clusterSize = Mathf.Clamp(clusterSize, 0, maxClusterSize);
         }
         else

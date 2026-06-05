@@ -12,8 +12,18 @@ public class SearchWithTheClusterResult
         {
             clusterList.SetClusterActive(data.ClusterIndex, true);
 
-            Vector3 entrancePosition = nodeList.GridToWorld(data.enteranceNode);
-            Vector3 goalPosition = nodeList.GridToWorld(data.exitNode);
+            Vector3 entrancePosition, goalPosition;
+            if (data.hasEntranceAndExit == false)
+            {
+                entrancePosition = nodeList.GridToWorld(data.exitNode);
+                goalPosition = nodeList.GridToWorld(data.exitNode);
+            }
+            else
+            {
+                entrancePosition = nodeList.GridToWorld(data.enteranceNode);
+                goalPosition = nodeList.GridToWorld(data.exitNode);
+            }
+            
             List<Vector3> pathInCluster = pathfinder.FindPath(entrancePosition, goalPosition);
             resultPath.AddRange(pathInCluster);
 
@@ -43,7 +53,7 @@ public class SearchWithTheClusterResult
             }
 
             List<Vector3> pathInCluster = pathfinder.FindPath(entrancePosition, goalPosition);
-            if(pathInCluster == null) continue;
+            if (pathInCluster == null) continue;
             resultPath.AddRange(pathInCluster);
 
             clusterList.SetClusterActive(data.ClusterIndex, false);
@@ -68,10 +78,10 @@ public class SearchWithTheClusterResult
             goalPosition = nodeList.GridToWorld(data.exitNode);
         }
 
-        List<Vector3> pathInCluster = pathfinder.FindPath(entrancePosition, goalPosition);        
+        List<Vector3> pathInCluster = pathfinder.FindPath(entrancePosition, goalPosition);
 
         clusterList.SetClusterActive(data.ClusterIndex, false);
-        
+
         return pathInCluster;
     }
 }
