@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class AStarPathfinder
+public class AStarPathfinder : AbstractPathfinder
 {
     private readonly NodeList nodeList;
     private readonly HPAClusterList hPAClusterList;
@@ -15,17 +15,7 @@ public class AStarPathfinder
         directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
     }
 
-    private struct PathNode
-    {
-        public float g;
-        public float h;
-        public float f => g + h;
-        public Vector2Int index;
-        public Vector2Int parentIndex;
-        public bool isParentSet;
-    }
-
-    public List<Vector3> FindPath(Vector3 startPosition, Vector3 destinationPosition)
+    public override List<Vector3> FindPath(Vector3 startPosition, Vector3 destinationPosition)
     {
         PriorityQueue<Vector2Int, float> openList = new();
         HashSet<Vector2Int> closeList = new();
@@ -214,7 +204,7 @@ public class AStarPathfinder
     }
 
     private readonly Vector2Int[] directions;
-    private List<Vector2Int> GetNeighborNode(Vector2Int current)
+    protected override List<Vector2Int> GetNeighborNode(Vector2Int current)
     {
         List<Vector2Int> neighbors = new();
 
@@ -278,7 +268,7 @@ public class AStarPathfinder
         return neighbors;
     }
 
-    private List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
+    protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
     {
         var path = new List<Vector2Int>();
 
@@ -304,7 +294,7 @@ public class AStarPathfinder
         return worldPath;
     }
 
-    private float CaculateHeuristic(Vector2Int from, Vector2Int to)
+    protected override float CaculateHeuristic(Vector2Int from, Vector2Int to)
     {
         int dx = Mathf.Abs(to.x - from.x);
         int dy = Mathf.Abs(to.y - from.y);

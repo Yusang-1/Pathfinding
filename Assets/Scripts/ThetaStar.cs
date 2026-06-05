@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class ThetaStar
+public class ThetaStar : AbstractPathfinder
 {
     private readonly NodeList nodeList;
     private readonly HPAClusterList clusterList;
@@ -11,17 +11,7 @@ public class ThetaStar
         this.clusterList = clusterList;
     }
 
-    private struct PathNode
-    {
-        public float g;
-        public float h;
-        public float f => g + h;
-        public Vector2Int index;
-        public Vector2Int parentIndex;
-        public bool isParentSet;
-    }
-
-    public List<Vector3> FindPath(Vector3 from, Vector3 to)
+    public override List<Vector3> FindPath(Vector3 from, Vector3 to)
     {
         PriorityQueue<Vector2Int, float> openList = new();
         HashSet<Vector2Int> closedList = new();
@@ -82,7 +72,7 @@ public class ThetaStar
         return null;
     }
 
-    private List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int start)
+    protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int start)
     {
         List<Vector2Int> path = new();
 
@@ -203,7 +193,7 @@ public class ThetaStar
         }
     }
     
-    private float CaculateHeuristic(Vector2Int from, Vector2Int to)
+    protected override float CaculateHeuristic(Vector2Int from, Vector2Int to)
     {
         int dx = Mathf.Abs(to.x - from.x);
         int dy = Mathf.Abs(to.y - from.y);
@@ -219,7 +209,7 @@ public class ThetaStar
         return Mathf.Sqrt(dx * dx + dy * dy);
     }
 
-    private List<Vector2Int> GetNeighborNode(Vector2Int current) // 같은 cluster에 있는 이웃만
+    protected override List<Vector2Int> GetNeighborNode(Vector2Int current) // 같은 cluster에 있는 이웃만
     {
         List<Vector2Int> neighbors = new();
 

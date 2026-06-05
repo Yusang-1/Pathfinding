@@ -12,7 +12,7 @@ public class PathManager : MonoBehaviour
     private HPAClusterList hPAClusterList;
     private AStarPathfinder pathfinder;
     private HPAPathfinder hPAPathfinder;
-    private ThetaStar thetaStar;
+    private ThetaStar thetaStarPathfinder;
     private MapGenerator mapGenerator;
     private SearchWithTheClusterResult searchWithTheClusterResult;
     private readonly PathfindingResultShower resultShower = new();        
@@ -51,7 +51,7 @@ public class PathManager : MonoBehaviour
         unit.Initialize(lineDrawer);
 
         pathfinder = new AStarPathfinder(nodeList, hPAClusterList);
-        thetaStar = new ThetaStar(nodeList, hPAClusterList);
+        thetaStarPathfinder = new ThetaStar(nodeList, hPAClusterList);
 
         searchWithTheClusterResult = new SearchWithTheClusterResult();
 
@@ -170,7 +170,7 @@ public class PathManager : MonoBehaviour
         currentAbstractResults = clusterResult;
         // clusterShower.ShowActivatedClusters(clusterResult);
 
-        smoothPath = searchWithTheClusterResult.FindPathTheta(clusterResult, thetaStar, nodeList, hPAClusterList);
+        smoothPath = searchWithTheClusterResult.FindPathTheta(clusterResult, thetaStarPathfinder, nodeList, hPAClusterList);
         // lineDrawer.DrawLine(smoothPath);
 
         // nodeList.NodeInfo.ShowHPAStarPath();
@@ -220,6 +220,6 @@ public class PathManager : MonoBehaviour
         ResetPath();
         resultShower.DrawHPAStar(nodeList, hpaStarSmoothResult);
 
-        unit.MoveWithResult(currentAbstractResults, hPAPathfinder, thetaStar, hPAClusterList, nodeList, searchWithTheClusterResult);
+        unit.MoveWithResult(currentAbstractResults, hPAPathfinder, thetaStarPathfinder, hPAClusterList, nodeList, searchWithTheClusterResult);
     }
 }

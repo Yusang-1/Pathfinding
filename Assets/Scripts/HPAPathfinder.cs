@@ -93,52 +93,7 @@ public class HPAPathfinder
         clusterList.GetCluster(goalCluster).RemoveTempNodeInGraph();
 
         return clusterPath;
-    }
-
-    /// <summary> cluster 경로 -> 전체 좌표 경로 변환 </summary>
-    private List<Vector3> BuildFullPath(Vector2Int startNode, Vector2Int goalNode, List<Vector2Int> clusterPath)
-    {
-        List<Vector3> fullPath = new() { nodeList.GridToWorld(startNode) };
-
-        for (int i = 0; i < clusterPath.Count - 1; i++)
-        {
-            Vector2Int from = clusterPath[i];
-            Vector2Int to = clusterPath[i + 1];
-
-            // 캐시 확인
-            if (pathCache.TryGetValue((from, to), out var cachedPath))
-            {
-                // 마지막 노드 제외 (중복 방지)
-                for (int j = 0; j < cachedPath.Count - 1; j++)
-                {
-                    fullPath.Add(cachedPath[j]);
-                }
-            }
-            else
-            {
-                // 저수준 경로 계산 및 캐싱
-                List<Vector3> segmentPath = new();
-                segmentPath = lowLvPathfinder.FindPath(
-                    nodeList.GridToWorld(from),
-                    nodeList.GridToWorld(to)
-                );
-
-                if (segmentPath != null && segmentPath.Count > 0)
-                {
-                    pathCache[(from, to)] = segmentPath;
-                    for (int j = 0; j < segmentPath.Count - 1; j++)
-                    {
-                        fullPath.Add(segmentPath[j]);
-                    }
-                }
-            }
-        }
-
-        // 목표점 추가
-        fullPath.Add(nodeList.GridToWorld(goalNode));
-
-        return fullPath;
-    }
+    }    
 
     /// <summary> 고수준 클러스터 경로 탐색 </summary>    
     private List<ResultNode> FindAbstractClusterPath(Vector2Int startCluster, Vector2Int goalCluster, Vector2Int startNode, Vector2Int goalNode)
@@ -158,7 +113,7 @@ public class HPAPathfinder
             EntrancePos = startNode
         };
         gCost.Add(startVirtual, 0);
-        fCost.Add(startVirtual, Heuristic(startNode, goalNode));
+        fCost.Add(startVirtual, CaculateHeuristic(startNode, goalNode));
         openSet.Enqueue(startVirtual, fCost[startVirtual]);
 
         while (openSet.Count > 0)
@@ -183,7 +138,7 @@ public class HPAPathfinder
                 {
                     cameFrom[neighbor] = current;
                     gCost[neighbor] = tentativeG;
-                    fCost[neighbor] = tentativeG + Heuristic(neighbor.EntrancePos, goalNode);
+                    fCost[neighbor] = tentativeG + CaculateHeuristic(neighbor.EntrancePos, goalNode);
 
                     openSet.Enqueue(neighbor, fCost[neighbor]);
                 }
@@ -323,7 +278,7 @@ public class HPAPathfinder
         return null;
     }
 
-    private float Heuristic(Vector2Int from, Vector2Int to) => (Mathf.Abs(from.x - to.x) + Mathf.Abs(from.y - to.y)) * clusterSize;
+    private float CaculateHeuristic(Vector2Int from, Vector2Int to) => (Mathf.Abs(from.x - to.x) + Mathf.Abs(from.y - to.y)) * clusterSize;
 
     private List<Vector2Int> GetList() => listPool.Count > 0 ? listPool.Pop() : new List<Vector2Int>();
 
