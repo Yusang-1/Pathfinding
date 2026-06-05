@@ -6,7 +6,7 @@ public class HPAPathfinder
     private readonly int clusterSize;
     private readonly HPAClusterList clusterList;
     private readonly NodeList nodeList;
-    
+
     private readonly List<ResultNode> results = new();
 
     // 메모리 풀: List 재사용으로 GC 감소
@@ -33,7 +33,7 @@ public class HPAPathfinder
         results.Clear();
         Vector2Int startNode = nodeList.GetNodeIndex(from);
         Vector2Int goalNode = nodeList.GetNodeIndex(to);
-        
+
         pathResult = new();
         if (!IsWalkable(startNode) || !IsWalkable(goalNode) || !nodeList.IsNodeAccessable(startNode, goalNode))
         {
@@ -90,9 +90,9 @@ public class HPAPathfinder
         // start cluster, goal cluster에 추가된 노드 제거
         clusterList.GetCluster(startCluster).RemoveTempNodeInGraph();
         clusterList.GetCluster(goalCluster).RemoveTempNodeInGraph();
-                
+
         return clusterPath;
-    }    
+    }
 
     /// <summary> 고수준 클러스터 경로 탐색 </summary>    
     private List<ResultNode> FindAbstractClusterPath(Vector2Int startCluster, Vector2Int goalCluster, Vector2Int startNode, Vector2Int goalNode, out PathResult pathResult)
@@ -102,7 +102,7 @@ public class HPAPathfinder
         Dictionary<AbstractNode, float> gCost = new();
         Dictionary<AbstractNode, float> fCost = new();
         HashSet<AbstractNode> closedSet = new();
-        
+
         pathResult = new();
         List<Vector2Int> startEntrances = GetAllEntrances(startCluster);
         if (startEntrances == null || startEntrances.Count == 0) return null;
@@ -134,7 +134,7 @@ public class HPAPathfinder
             foreach (var (neighbor, cost) in GetAbstractNeighbors(current, startCluster))
             {
                 if (closedSet.Contains(neighbor)) continue;
-                
+
                 pathResult.SearchedCount++;
                 float tentativeG = gCost[current] + cost;
 
@@ -207,6 +207,15 @@ public class HPAPathfinder
             }
 
             current = cameFrom[current];
+        }
+        if (results.Count == 1) // 도착지 노드만 세팅된 경우 출발지 노드를 별도로 세팅
+        {
+            results.Add(new ResultNode
+            {
+                ClusterIndex = current.ClusterIndex,
+                exitNode = current.EntrancePos,
+                hasEntranceAndExit = true
+            });
         }
 
         results.Reverse();
