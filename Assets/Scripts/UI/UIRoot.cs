@@ -22,6 +22,7 @@ public class UIRoot : MonoBehaviour
         uiFindAllPath.OnFindAllPathEvent += () => OnFindAllPathRequested?.Invoke();
         
         uiPathShower.OnResetAll += () => OnResetAllRequested?.Invoke();
+        uiPathShower.OnResetAll += () => ActiveResultController(false);
         
         nodeTypeSelector.OnGridToWorld += (grid) => (Vector2)OnGridToWorldRequested?.Invoke(grid);
         nodeTypeSelector.OnSetNodeType += (index, type) => OnSetNodeTypeRequested?.Invoke(index, type);

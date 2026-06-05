@@ -135,7 +135,6 @@ public class PathManager : MonoBehaviour
 
         pathfinder.FindPath(from, to);
 
-        // nodeList.NodeInfo.ShowAStarPath();
         var result = nodeList.NodeInfo.GetNodeInfo();
         nodeList.NodeInfo.ClearDict();
         return result;
