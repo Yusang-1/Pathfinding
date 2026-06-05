@@ -11,16 +11,17 @@ public class ThetaStar : AbstractPathfinder
         this.clusterList = clusterList;
     }
 
-    public override List<Vector3> FindPath(Vector3 from, Vector3 to)
+    public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult)
     {
         PriorityQueue<Vector2Int, float> openList = new();
-        HashSet<Vector2Int> closedList = new();
+        HashSet<Vector2Int> closeList = new();
         Dictionary<Vector2Int, PathNode> nodeDict = new();
 
         Vector2Int startNodeIndex = nodeList.GetNodeIndex(from);
         Vector2Int goalNodeIndex = nodeList.GetNodeIndex(to);
-
-        PathNode startNode = new PathNode
+        
+        pathResult = new PathResult();
+        var startNode = new PathNode
         {
             index = startNodeIndex
         };
@@ -30,10 +31,15 @@ public class ThetaStar : AbstractPathfinder
         while (openList.Count > 0)
         {
             Vector2Int currentIndex = openList.Dequeue();
-            closedList.Add(currentIndex);
+            closeList.Add(currentIndex);
 
             if (currentIndex == goalNodeIndex)
             {
+                pathResult.PathLength = nodeDict[currentIndex].g;
+                pathResult.MemoryUsed += openList.Capacity;
+                pathResult.MemoryUsed += closeList.Count;
+                pathResult.MemoryUsed += nodeDict.Count;
+                
                 return CaculateResult(nodeDict, currentIndex, startNodeIndex);
             }
 
@@ -42,7 +48,9 @@ public class ThetaStar : AbstractPathfinder
             {
                 Vector2Int neighborIndex = neighborIndexes[i];
 
-                if (closedList.Contains(neighborIndex)) continue;
+                if (closeList.Contains(neighborIndex)) continue;
+                
+                pathResult.SearchedCount++;
                 
                 float moveCost = 1;
                 float newG = nodeDict[currentIndex].g + moveCost;

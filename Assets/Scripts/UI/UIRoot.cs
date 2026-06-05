@@ -48,4 +48,17 @@ public class UIRoot : MonoBehaviour
     {
         nodeTypeSelector.ActiveSelector(index, value);
     }
+    
+    public void SetAResult(PathResult result)
+    {
+        uIResultController.SetAResult(result);
+    }
+    public void SetHPAResult(PathResult result)
+    {
+        uIResultController.SetHPAResult(result);
+    }
+    public void SetHPASmoothResult(PathResult result)
+    {
+        uIResultController.SetHPASmoothResult(result);
+    }
 }

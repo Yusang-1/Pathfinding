@@ -1,16 +1,16 @@
 using UnityEngine;
+using TMPro;
 
 public class UIResultShower : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private TextMeshProUGUI searchedCount;
+    [SerializeField] private TextMeshProUGUI pathLength;
+    [SerializeField] private TextMeshProUGUI memoryUsed;
+    
+    public void SetResult(PathResult result)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        searchedCount.text = result.SearchedCount.ToString();
+        pathLength.text = result.PathLength.ToString();
+        memoryUsed.text = result.MemoryUsed.ToString();
     }
 }

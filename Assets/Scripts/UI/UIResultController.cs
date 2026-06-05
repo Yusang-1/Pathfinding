@@ -2,16 +2,29 @@ using UnityEngine;
 
 public class UIResultController : MonoBehaviour
 {
-    [SerializeField] private UIResultShower AStarResultShower;
-    [SerializeField] private UIResultShower HPAStarResultShower;
-    [SerializeField] private UIResultShower HPAStarSmoothingResultShower;
+    [SerializeField] private UIResultShower aStarResultShower;
+    [SerializeField] private UIResultShower hPAStarResultShower;
+    [SerializeField] private UIResultShower hPAStarSmoothingResultShower;
     
     public void ShowResult()
     {
-        bool value = AStarResultShower.gameObject.activeSelf;
+        bool value = aStarResultShower.gameObject.activeSelf;
         
-        AStarResultShower.gameObject.SetActive(!value);
-        HPAStarResultShower.gameObject.SetActive(!value);
-        HPAStarSmoothingResultShower.gameObject.SetActive(!value);
+        aStarResultShower.gameObject.SetActive(!value);
+        hPAStarResultShower.gameObject.SetActive(!value);
+        hPAStarSmoothingResultShower.gameObject.SetActive(!value);
+    }
+    
+    public void SetAResult(PathResult result)
+    {
+        aStarResultShower.SetResult(result);
+    }
+    public void SetHPAResult(PathResult result)
+    {
+        hPAStarResultShower.SetResult(result);
+    }
+    public void SetHPASmoothResult(PathResult result)
+    {
+        hPAStarSmoothingResultShower.SetResult(result);
     }
 }

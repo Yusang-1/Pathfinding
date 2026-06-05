@@ -714,7 +714,7 @@ GameObject:
   - component: {fileID: 111368780}
   - component: {fileID: 111368779}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_MemoryUsageValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2170,7 +2170,7 @@ GameObject:
   - component: {fileID: 412187584}
   - component: {fileID: 412187583}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_MemoryUsageValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3655,7 +3655,7 @@ GameObject:
   - component: {fileID: 741514464}
   - component: {fileID: 741514463}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_PathLengthValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4919,7 +4919,7 @@ GameObject:
   - component: {fileID: 1146860343}
   - component: {fileID: 1146860342}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_MemoryUsageValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6153,9 +6153,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d9d4e820c0f09e48a5d71b551ed4c7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AStarResultShower: {fileID: 1449715452}
-  HPAStarResultShower: {fileID: 1493705198}
-  HPAStarSmoothingResultShower: {fileID: 1451826382}
+  aStarResultShower: {fileID: 1449715452}
+  hPAStarResultShower: {fileID: 1493705198}
+  hPAStarSmoothingResultShower: {fileID: 1451826382}
 --- !u!1 &1407991400
 GameObject:
   m_ObjectHideFlags: 0
@@ -6168,7 +6168,7 @@ GameObject:
   - component: {fileID: 1407991403}
   - component: {fileID: 1407991402}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_SearchedNodeValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6361,6 +6361,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ca2346ed3237a4469699cf342185b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  searchedCount: {fileID: 1570068957}
+  pathLength: {fileID: 1946608673}
+  memoryUsed: {fileID: 412187583}
 --- !u!114 &1449715453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6453,6 +6456,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ca2346ed3237a4469699cf342185b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  searchedCount: {fileID: 1407991402}
+  pathLength: {fileID: 2055973624}
+  memoryUsed: {fileID: 1146860342}
 --- !u!114 &1451826383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6952,6 +6958,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ca2346ed3237a4469699cf342185b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  searchedCount: {fileID: 1634219080}
+  pathLength: {fileID: 741514463}
+  memoryUsed: {fileID: 111368779}
 --- !u!114 &1493705199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7367,7 +7376,7 @@ GameObject:
   - component: {fileID: 1570068958}
   - component: {fileID: 1570068957}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_SearchedNodeValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7637,7 +7646,7 @@ GameObject:
   - component: {fileID: 1634219081}
   - component: {fileID: 1634219080}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_SearchedNodeValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9224,7 +9233,7 @@ GameObject:
   - component: {fileID: 1946608674}
   - component: {fileID: 1946608673}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_PathLengthValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9635,7 +9644,7 @@ GameObject:
   - component: {fileID: 2055973625}
   - component: {fileID: 2055973624}
   m_Layer: 5
-  m_Name: Text_Value
+  m_Name: Text_PathLengthValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

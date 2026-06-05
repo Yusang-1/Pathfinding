@@ -6,22 +6,18 @@ public class HPAPathfinder
     private readonly int clusterSize;
     private readonly HPAClusterList clusterList;
     private readonly NodeList nodeList;
-    private readonly AStarPathfinder lowLvPathfinder;
-
-    private readonly Dictionary<(Vector2Int, Vector2Int), List<Vector3>> pathCache = new();
+    
     private readonly List<ResultNode> results = new();
 
     // 메모리 풀: List 재사용으로 GC 감소
     private readonly Stack<List<Vector2Int>> listPool = new();
     private const int PoolSize = 10;
-    private int numberOfNodesSearched;
 
     public HPAPathfinder(int clusterSize, HPAClusterList clusterList, NodeList nodeList, AStarPathfinder lowLvPathfinder)
     {
         this.clusterSize = clusterSize;
         this.clusterList = clusterList;
         this.nodeList = nodeList;
-        this.lowLvPathfinder = lowLvPathfinder;
 
         // 메모리 풀 초기화
         for (int i = 0; i < PoolSize; i++)
@@ -32,12 +28,13 @@ public class HPAPathfinder
 
 
     /// <summary> high level cluster 경로를 반환 </summary>
-    public List<ResultNode> FindClusterPath(Vector3 from, Vector3 to)
+    public List<ResultNode> FindClusterPath(Vector3 from, Vector3 to, out PathResult pathResult)
     {
         results.Clear();
         Vector2Int startNode = nodeList.GetNodeIndex(from);
         Vector2Int goalNode = nodeList.GetNodeIndex(to);
-
+        
+        pathResult = new();
         if (!IsWalkable(startNode) || !IsWalkable(goalNode) || !nodeList.IsNodeAccessable(startNode, goalNode))
         {
             Debug.Log("접근 불가능한 노드입니다.");
@@ -69,13 +66,15 @@ public class HPAPathfinder
             else
             {
                 // 고수준 클러스터 경로 탐색
-                clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode);
+                clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, out PathResult result);
+                pathResult.AddResult(result);
             }
         }
         else
         {
             // 고수준 클러스터 경로 탐색
-            clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode);
+            clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, out PathResult result);
+            pathResult.AddResult(result);
         }
 
         var temp = clusterPath[0];
@@ -91,19 +90,20 @@ public class HPAPathfinder
         // start cluster, goal cluster에 추가된 노드 제거
         clusterList.GetCluster(startCluster).RemoveTempNodeInGraph();
         clusterList.GetCluster(goalCluster).RemoveTempNodeInGraph();
-
+                
         return clusterPath;
     }    
 
     /// <summary> 고수준 클러스터 경로 탐색 </summary>    
-    private List<ResultNode> FindAbstractClusterPath(Vector2Int startCluster, Vector2Int goalCluster, Vector2Int startNode, Vector2Int goalNode)
+    private List<ResultNode> FindAbstractClusterPath(Vector2Int startCluster, Vector2Int goalCluster, Vector2Int startNode, Vector2Int goalNode, out PathResult pathResult)
     {
         PriorityQueue<AbstractNode, float> openSet = new();
         Dictionary<AbstractNode, AbstractNode> cameFrom = new();
         Dictionary<AbstractNode, float> gCost = new();
         Dictionary<AbstractNode, float> fCost = new();
         HashSet<AbstractNode> closedSet = new();
-
+        
+        pathResult = new();
         List<Vector2Int> startEntrances = GetAllEntrances(startCluster);
         if (startEntrances == null || startEntrances.Count == 0) return null;
 
@@ -121,7 +121,11 @@ public class HPAPathfinder
             AbstractNode current = openSet.Dequeue();
             if (current.ClusterIndex == goalCluster && clusterList.GetCluster(current.ClusterIndex).IsNodeConnected(current.EntrancePos, goalNode))
             {
-                Debug.Log($"HPA*의 탐색한 노드 수 : {numberOfNodesSearched}");
+                pathResult.MemoryUsed += openSet.Capacity;
+                pathResult.MemoryUsed += cameFrom.Count;
+                pathResult.MemoryUsed += gCost.Count;
+                pathResult.MemoryUsed += fCost.Count;
+                pathResult.MemoryUsed += closedSet.Count;
                 return ReconstructAbstractPath(cameFrom, current, startVirtual);
             }
             if (closedSet.Contains(current)) continue;
@@ -130,8 +134,8 @@ public class HPAPathfinder
             foreach (var (neighbor, cost) in GetAbstractNeighbors(current, startCluster))
             {
                 if (closedSet.Contains(neighbor)) continue;
-                numberOfNodesSearched++;
                 
+                pathResult.SearchedCount++;
                 float tentativeG = gCost[current] + cost;
 
                 if (!gCost.ContainsKey(neighbor) || tentativeG < gCost[neighbor])

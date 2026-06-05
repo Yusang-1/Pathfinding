@@ -11,6 +11,7 @@ public class PriorityQueue<TElement, TPriority> where TPriority : struct, ICompa
     private readonly Dictionary<TElement, int> indexMap = new();
 
     public int Count => tail - head;
+    public int Capacity => heap.Length;
 
     public PriorityQueue()
     {
