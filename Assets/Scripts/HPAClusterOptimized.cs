@@ -37,8 +37,10 @@ public class HPAClusterOptimized
             {
                 for (int j = 0; j < entrances.Count; j++)
                 {
-                    graph.AddNode(entrances[j], directions[i], nodeList);
-                    cachedEntrances.Add(entrances[j]);
+                    if (graph.TryAddNode(entrances[j], directions[i], nodeList))
+                    {
+                        cachedEntrances.Add(entrances[j]);
+                    }
                 }
             }
         }
@@ -64,14 +66,17 @@ public class HPAClusterOptimized
     private readonly List<Vector2Int> tempNodes = new();
     public void AddNodeToGraph(Vector2Int newNode, NodeList nodeList)
     {
-        tempNodes.Add(newNode);
-        graph.AddNode(newNode, Vector2Int.zero, nodeList);
-        foreach (var entrance in cachedEntrances)
+        bool value = graph.TryAddNode(newNode, Vector2Int.zero, nodeList);
+        if (value)
         {
-            float distance = pathfinder.FindPathInClusterForPathCache(entrance, newNode, clusterList);
-            if (distance > 0)
+            tempNodes.Add(newNode);
+            foreach (var entrance in cachedEntrances)
             {
-                graph.AddBidirectionalEdge(entrance, newNode, distance);
+                float distance = pathfinder.FindPathInClusterForPathCache(entrance, newNode, clusterList);
+                if (distance > 0)
+                {
+                    graph.AddBidirectionalEdge(entrance, newNode, distance);
+                }
             }
         }
     }

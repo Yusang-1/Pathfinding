@@ -24,17 +24,20 @@ public class HPAGraph
     }
 
     /// <summary> 노드(entrance) 추가 </summary>
-    public void AddNode(Vector2Int entrance, Vector2Int direction, NodeList nodeList)
+    public bool TryAddNode(Vector2Int entrance, Vector2Int direction, NodeList nodeList)
     {
         if (!nodes.ContainsKey(entrance))
         {
             nodes[entrance] = new GraphNode(entrance, direction);
             nodeList.SetNodeTypeInPathFinding(entrance, NodeType.entrance);
+            return true;
         }
-        else if(!nodes[entrance].Direction.Contains(direction))
+        else if(direction != Vector2Int.zero && !nodes[entrance].Direction.Contains(direction))
         {
             nodes[entrance].Direction.Add(direction);
+            return true;
         }
+        return false;
     }
 
     public void AddEdge(Vector2Int from, Vector2Int to, float weight)
