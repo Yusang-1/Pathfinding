@@ -189,21 +189,5 @@ public class NodeInfo
             nodeInfoDict[NodeType.searched]?.Clear();
     }
 
-    public Dictionary<NodeType, List<Vector2Int>> DeepCopy()
-    {
-        var copy = new Dictionary<NodeType, List<Vector2Int>>();
-        foreach (var key in nodeInfoDict.Keys)
-        {
-            copy.Add(key, new List<Vector2Int>());
-        }
-        foreach (var key in nodeInfoDict.Keys)
-        {
-            foreach (var value in nodeInfoDict[key])
-            {
-                copy[key].Add(value);
-            }
-        }
-
-        return copy;
-    }
+    public Dictionary<NodeType, List<Vector2Int>> GetNodeInfo() => nodeInfoDict.GetDeepCopy<NodeType, List<Vector2Int>>();
 }

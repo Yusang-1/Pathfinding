@@ -114,7 +114,7 @@ public class PathManager : MonoBehaviour
         pathfinder.FindPath(from, to);
 
         // nodeList.NodeInfo.ShowAStarPath();
-        var result = nodeList.NodeInfo.DeepCopy();
+        var result = nodeList.NodeInfo.GetNodeInfo();
         nodeList.NodeInfo.ClearDict();
         return result;
     }
@@ -133,7 +133,7 @@ public class PathManager : MonoBehaviour
         searchWithTheClusterResult.FindPath(clusterResult, pathfinder, nodeList, hPAClusterList);
 
         // nodeList.NodeInfo.ShowHPAStarPath();
-        var result = nodeList.NodeInfo.DeepCopy();
+        var result = nodeList.NodeInfo.GetNodeInfo();
         nodeList.NodeInfo.ClearDict();
         return result;
     }
@@ -153,7 +153,7 @@ public class PathManager : MonoBehaviour
         // lineDrawer.DrawLine(smoothPath);
 
         // nodeList.NodeInfo.ShowHPAStarPath();
-        var result = nodeList.NodeInfo.DeepCopy();
+        var result = nodeList.NodeInfo.GetNodeInfo();
         nodeList.NodeInfo.ClearDict();
         return result;
     }
