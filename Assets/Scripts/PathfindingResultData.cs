@@ -76,7 +76,8 @@ public class PathfindingResultShower
 
     private void SetNode(NodeList nodeList, List<Vector2Int> indexes, NodeType type)
     {
-        foreach (var index in indexes)
+        var indexesCopy = indexes.ToArray();
+        foreach (var index in indexesCopy)
         {
             nodeList.SetNodeType(index, type);
         }

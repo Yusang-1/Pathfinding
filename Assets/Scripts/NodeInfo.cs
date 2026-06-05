@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class NodeInfo
 {
@@ -187,5 +188,5 @@ public class NodeInfo
             nodeInfoDict[NodeType.searched]?.Clear();
     }
 
-    public Dictionary<NodeType, List<Vector2Int>> GetNodeInfo() => nodeInfoDict.GetDeepCopy<NodeType, List<Vector2Int>>();
+    public Dictionary<NodeType, List<Vector2Int>> GetNodeInfo() => nodeInfoDict.GetDeepCopy(value => new List<Vector2Int>(value));
 }
