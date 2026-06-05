@@ -1,63 +1,62 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
 public class NodeTypeSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
-{   
+{
+    public event Action<Vector2Int, NodeType> OnSetNodeType;
+    public event Func<Vector2Int, Vector2> OnGridToWorld;
+
     private Vector2Int currentIndex;
-    private NodeList nodeList;
-    
+
     [SerializeField] private float uiSpacing;
-    
+
     [SerializeField] private Image typeSelectorImage;
-    [SerializeField] private Image[] childrenImage; 
+    [SerializeField] private Image[] childrenImage;
     [SerializeField] private float translucentValue;
-    
-    public void Initialize(NodeList nodeList)
+
+    public void ActiveSelector(Vector2Int index, bool value)
     {
-        this.nodeList = nodeList;
-        nodeList.OnSelected += OpenSelector;
-        nodeList.OnDeselected += CloseSelector;
+        gameObject.SetActive(value);
+        
+        if (value)
+        {
+            currentIndex = index;
+            SetTypeSelectorPosition(index);
+        }
     }
-    
-    private void OpenSelector(Vector2Int index)
-    {
-        gameObject.SetActive(true);
-        currentIndex = index;
-        SetTypeSelectorPosition(index);
-    }
-    private void CloseSelector(Vector2Int index) => gameObject.SetActive(false);
 
     public void ButtonUnit()
     {
-        nodeList.SetNodeType(currentIndex, NodeType.unit);
+        OnSetNodeType?.Invoke(currentIndex, NodeType.unit);
         gameObject.SetActive(false);
     }
 
     public void ButtonDestination()
     {
-        nodeList.SetNodeType(currentIndex, NodeType.destination);        
+        OnSetNodeType?.Invoke(currentIndex, NodeType.destination);
         gameObject.SetActive(false);
     }
 
     public void ButtonObstacle()
     {
-        nodeList.SetNodeType(currentIndex, NodeType.obstacle);
+        OnSetNodeType?.Invoke(currentIndex, NodeType.obstacle);
         gameObject.SetActive(false);
     }
 
     public void ButtonRoom()
     {
-        nodeList.SetNodeType(currentIndex, NodeType.room);
+        OnSetNodeType?.Invoke(currentIndex, NodeType.room);
         gameObject.SetActive(false);
     }
-    
+
     private void SetTypeSelectorPosition(Vector2Int nodeIndex)
     {
-        Vector3 uiPosition = Camera.main.WorldToScreenPoint(nodeList.GridToWorld(nodeIndex));
+        Vector3 uiPosition = Camera.main.WorldToScreenPoint((Vector2)OnGridToWorld?.Invoke(nodeIndex));
         uiPosition.x += uiSpacing;
         uiPosition.y -= uiSpacing;
-        
+
         transform.position = uiPosition;
     }
 
@@ -66,8 +65,8 @@ public class NodeTypeSelector : MonoBehaviour, IPointerEnterHandler, IPointerExi
         Color tempColor = typeSelectorImage.color;
         tempColor.a = translucentValue;
         typeSelectorImage.color = tempColor;
-        
-        for(int i = 0; i < childrenImage.Length; i++)
+
+        for (int i = 0; i < childrenImage.Length; i++)
         {
             tempColor = childrenImage[i].color;
             tempColor.a = translucentValue;
@@ -80,8 +79,8 @@ public class NodeTypeSelector : MonoBehaviour, IPointerEnterHandler, IPointerExi
         Color tempColor = typeSelectorImage.color;
         tempColor.a = 1;
         typeSelectorImage.color = tempColor;
-        
-        for(int i = 0; i < childrenImage.Length; i++)
+
+        for (int i = 0; i < childrenImage.Length; i++)
         {
             tempColor = childrenImage[i].color;
             tempColor.a = 1;

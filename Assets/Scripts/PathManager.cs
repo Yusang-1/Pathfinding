@@ -1,8 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class PathManager : MonoBehaviour
 {
+    // public event Action<bool> OnFindAllButtonEnabled;
+    public event Action OnPathFound;
+    public event Action OnMapGenerated;
+    
     private NodeList nodeList;
     private HPAClusterList hPAClusterList;
     private AStarPathfinder pathfinder;
@@ -12,7 +17,7 @@ public class PathManager : MonoBehaviour
     private SearchWithTheClusterResult searchWithTheClusterResult;
     private readonly PathfindingResultShower resultShower = new();        
 
-    [SerializeField] private UIManager uiManager;
+    [SerializeField] private UIRoot uiRoot;
 
     [SerializeField] private Node nodePrefab;
     [SerializeField] private NodeData nodeData;
@@ -42,7 +47,7 @@ public class PathManager : MonoBehaviour
         hPAClusterList = new(nodeList);
 
         lineDrawer.Initialize();
-        uiManager.Initialize(nodeList, GenerateMap, FindAllPath, ResetAll);
+        UIRootInitialize();
         unit.Initialize(lineDrawer);
 
         pathfinder = new AStarPathfinder(nodeList, hPAClusterList);
@@ -52,7 +57,21 @@ public class PathManager : MonoBehaviour
 
         mapGenerator = new MapGenerator(nodePrefab);
 
-        nodeList.NodeInfo.OnPathfindAvailable += uiManager.ActiveFindUI;
+        nodeList.NodeInfo.OnPathfindAvailable += (value) => uiRoot.ActiveFindButton(value);
+        nodeList.OnSelected += (index) => uiRoot.ActiveNodeTypeSelector(index, true);
+        nodeList.OnDeselected += (index) => uiRoot.ActiveNodeTypeSelector(index, false);
+        OnPathFound += () => uiRoot.ActiveResultController(true);
+        OnMapGenerated += () => uiRoot.ActiveFindButton(true);
+    }
+    
+    private void UIRootInitialize()
+    {
+        uiRoot.Initialize();
+        uiRoot.OnGenerateMapRequested += GenerateMap;
+        uiRoot.OnFindAllPathRequested += FindAllPath;
+        uiRoot.OnResetAllRequested += ResetAll;
+        uiRoot.OnSetNodeTypeRequested += nodeList.NodeInfo.SetNodeType;
+        uiRoot.OnGridToWorldRequested += nodeList.GridToWorld;
     }
 
     private const int defaultMapSize = 20;
@@ -81,6 +100,8 @@ public class PathManager : MonoBehaviour
         nodeList.CreateNodeArray(mapSize);
         mapGenerator.GenerateMap(mapSize, nodeList);
         isMapGenerated = true;
+        
+        OnMapGenerated?.Invoke();
     }
 
     private void FindAllPath()
@@ -94,6 +115,7 @@ public class PathManager : MonoBehaviour
         hpaStarSmoothResult = FindHPAStarPathSmoothing();
 
         nodeList.NodeInfo.IsDuringNodeSetting = false;
+        OnPathFound?.Invoke();
     }
 
     private void CreateCluster()

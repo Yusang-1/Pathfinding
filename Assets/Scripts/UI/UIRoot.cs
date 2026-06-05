@@ -1,0 +1,50 @@
+using UnityEngine;
+using System;
+
+public class UIRoot : MonoBehaviour
+{
+    public event Action<int, int> OnGenerateMapRequested;
+    public event Action OnFindAllPathRequested;
+    public event Action OnResetAllRequested;
+    public event Action<Vector2Int, NodeType> OnSetNodeTypeRequested;
+    public event Func<Vector2Int, Vector2> OnGridToWorldRequested;
+    
+    [SerializeField] private NodeTypeSelector nodeTypeSelector;
+    [SerializeField] private UIGenerateMap uiGenerateMap;
+    [SerializeField] private UIFindAllPath uiFindAllPath;
+    [SerializeField] private UIPathShower uiPathShower;
+    [SerializeField] private UIResultController uIResultController;
+    
+    public void Initialize()
+    {
+        uiGenerateMap.OnGenerateMap += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);
+        
+        uiFindAllPath.OnFindAllPathEvent += () => OnFindAllPathRequested?.Invoke();
+        
+        uiPathShower.OnResetAll += () => OnResetAllRequested?.Invoke();
+        
+        nodeTypeSelector.OnGridToWorld += (grid) => (Vector2)OnGridToWorldRequested?.Invoke(grid);
+        nodeTypeSelector.OnSetNodeType += (index, type) => OnSetNodeTypeRequested?.Invoke(index, type);
+        
+        uiFindAllPath.OnFindAllPathEvent += ActiveUIPathShower;
+    }
+    
+    private void ActiveUIPathShower()
+    {
+        uiPathShower.gameObject.SetActive(true);
+    }
+    public void ActiveFindButton(bool value)
+    {
+        uiFindAllPath.gameObject.SetActive(value);
+    }
+    
+    public void ActiveResultController(bool value)
+    {
+        uIResultController.gameObject.SetActive(value);
+    }
+    
+    public void ActiveNodeTypeSelector(Vector2Int index, bool value)
+    {
+        nodeTypeSelector.ActiveSelector(index, value);
+    }
+}

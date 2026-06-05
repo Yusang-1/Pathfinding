@@ -1,21 +1,17 @@
-using System;
 using UnityEngine;
+using System;
 
 public class UIGenerateMap : MonoBehaviour
 {
-    private Action<int, int> generateMap;
+    public event Action<int, int> OnGenerateMap;
     
     [SerializeField] private UIGenerateMapInput input;
     
-    public void Initialize(Action<int, int> generateMap)
-    {
-        this.generateMap = generateMap;
-    }
-    
-    public void OnGenerateMap()
+    public void GenerateMap()
     {
         input.GetInput(out int mapSize, out int clusterSize);
-        generateMap?.Invoke(mapSize, clusterSize);
+        OnGenerateMap?.Invoke(mapSize, clusterSize);
+        
         gameObject.SetActive(false);
     }
 }

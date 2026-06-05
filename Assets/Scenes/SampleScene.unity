@@ -1727,7 +1727,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 323557559}
         m_TargetAssemblyTypeName: UIGenerateMap, Assembly-CSharp
-        m_MethodName: OnGenerateMap
+        m_MethodName: GenerateMap
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2753,7 +2753,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 011e62bfefa91854299f3ac2b84fb126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiManager: {fileID: 1058934443}
+  uiRoot: {fileID: 1058934443}
   nodePrefab: {fileID: -1020127619466002619, guid: 29f9a899b106cc6419333352c7fd97e3, type: 3}
   nodeData: {fileID: 11400000, guid: bf87c0f6c59541f4aaf61f3cc70bc84f, type: 2}
   clusterShower: {fileID: 497125301}
@@ -6576,7 +6576,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 348762226}
         m_TargetAssemblyTypeName: UIPathShower, Assembly-CSharp
-        m_MethodName: OnResetAll
+        m_MethodName: ResetAll
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

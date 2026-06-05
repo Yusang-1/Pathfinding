@@ -98,8 +98,6 @@ public class NodeInfo
             GoalNodeIndex = nodeIndex;
             node.SetType(type, data.GetSprite(type));
         }
-
-        // OnPathfindAvailable(isStartSet && isGoalSet);
     }
 
     public void ShowAStarPath()
