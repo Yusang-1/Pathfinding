@@ -12,7 +12,7 @@ public class HPAClusterList
 
     public HPAClusterList(NodeList nodeList)
     {
-        this.nodeList = nodeList;        
+        this.nodeList = nodeList;
 
         cachedNeighborList = new List<Vector2Int>(4); // 상하좌우 최대 4개의 이웃        
     }
@@ -22,10 +22,10 @@ public class HPAClusterList
         this.clusterSize = clusterSize;
         clusterCount = mapSize / clusterSize;
         clusterList = new HPAClusterOptimized[clusterCount, clusterCount];
-        
+
         cachedEdgeIndexes = new List<Vector2Int>(clusterSize);
         tempEdgeIndexes = new List<Vector2Int>(clusterSize);
-        
+
         // cluster 생성
         for (int i = 0; i < clusterList.GetLength(0); i++)
         {
@@ -89,7 +89,7 @@ public class HPAClusterList
 
             for (int i = 0; i < clusterSize; i++) // x축을 따라 node 수집
             {
-                if (nodeList.Nodes[standardNode.x, standardNode.y].IsWalkable && nodeList.Nodes[standardNode.x, standardNode.y + direction.y].IsWalkable)
+                if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
                 {
                     tempEdgeIndexes.Add(standardNode);
                 }
@@ -107,7 +107,7 @@ public class HPAClusterList
                             standardNode.x++;
                             continue;
                         }
-                        
+
                         int mid = tempEdgeIndexes.Count / 2;
                         cachedEdgeIndexes.Add(tempEdgeIndexes[mid]);
                     }
@@ -117,7 +117,7 @@ public class HPAClusterList
                 standardNode.x++;
             }
         }
-        else // y축 경계선
+        else if (direction.y == 0) // y축 경계선
         {
             if (direction.x > 0) // right
             {
@@ -126,7 +126,7 @@ public class HPAClusterList
 
             for (int i = 0; i < clusterSize; i++) // y축을 따라 node 수집
             {
-                if (nodeList.Nodes[standardNode.x, standardNode.y].IsWalkable && nodeList.Nodes[standardNode.x + direction.x, standardNode.y].IsWalkable)
+                if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
                 {
                     tempEdgeIndexes.Add(standardNode);
                 }
@@ -152,6 +152,13 @@ public class HPAClusterList
                 }
 
                 standardNode.y++;
+            }
+        }
+        else // 대각선
+        {
+            if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
+            {
+                cachedEdgeIndexes.Add(standardNode);
             }
         }
 
@@ -212,7 +219,7 @@ public class HPAClusterList
         {
             for (int j = 0; j < clusterList.GetLength(1); j++)
             {
-                SetClusterActive(new Vector2Int(i, j), false);                
+                SetClusterActive(new Vector2Int(i, j), false);
             }
         }
     }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 public class HPAPathfinder
 {
-    private readonly int clusterSize;
     private readonly HPAClusterList clusterList;
     private readonly NodeList nodeList;
 
@@ -13,9 +12,8 @@ public class HPAPathfinder
     private readonly Stack<List<Vector2Int>> listPool = new();
     private const int PoolSize = 10;
 
-    public HPAPathfinder(int clusterSize, HPAClusterList clusterList, NodeList nodeList, AStarPathfinder lowLvPathfinder)
+    public HPAPathfinder(HPAClusterList clusterList, NodeList nodeList, AStarPathfinder lowLvPathfinder)
     {
-        this.clusterSize = clusterSize;
         this.clusterList = clusterList;
         this.nodeList = nodeList;
 

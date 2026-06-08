@@ -102,7 +102,7 @@ public class PathManager : MonoBehaviour
         }
 
         clusterShower.Initialize(clusterSize, nodeSize);
-        hPAPathfinder = new HPAPathfinder(clusterSize, hPAClusterList, nodeList, pathfinder);
+        hPAPathfinder = new HPAPathfinder(hPAClusterList, nodeList, pathfinder);
         nodeList.CreateNodeArray(mapSize);
         mapGenerator.GenerateMap(mapSize, nodeList);
         isMapGenerated = true;

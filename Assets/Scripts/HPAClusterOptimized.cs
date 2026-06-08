@@ -27,7 +27,9 @@ public class HPAClusterOptimized
 
     private void InitializeGraph(HPAClusterList clusterList, NodeList nodeList)
     {
-        var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
+            new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
+        };
 
         // graph에 entrance node 추가
         for (int i = 0; i < directions.Length; i++)
