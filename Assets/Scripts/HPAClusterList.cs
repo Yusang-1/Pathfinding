@@ -54,7 +54,7 @@ public class HPAClusterList
         {
             for (int j = -1; j <= 1; j++)
             {
-                if ((i == 0 && j == 0) || i * j != 0) continue;
+                if (i == 0 && j == 0) continue;
 
                 int dx = index.x + i;
                 int dy = index.y + j;

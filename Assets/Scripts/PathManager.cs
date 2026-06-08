@@ -4,7 +4,6 @@ using System;
 
 public class PathManager : MonoBehaviour
 {
-    // public event Action<bool> OnFindAllButtonEnabled;
     public event Action OnPathFound;
     public event Action OnMapGenerated;
     public event Action<PathResult> OnAFound;

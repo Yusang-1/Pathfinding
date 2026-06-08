@@ -11,7 +11,9 @@ public class AStarPathfinder : AbstractPathfinder
     {
         this.nodeList = nodeList;
         this.hPAClusterList = hPAClusterList;
-        directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
+            new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
+        };
     }
 
     public override List<Vector3> FindPath(Vector3 startPosition, Vector3 destinationPosition, out PathResult pathResult)
@@ -61,7 +63,7 @@ public class AStarPathfinder : AbstractPathfinder
                 if (closeList.Contains(neighbor)) continue;
 
                 pathResult.SearchedCount++;
-                
+
                 float moveCost = GetMoveCost(current, neighbor);
                 float newG = nodeDict[current].g + moveCost;
 
@@ -136,7 +138,7 @@ public class AStarPathfinder : AbstractPathfinder
                 if (closeList.Contains(neighbor)) continue;
 
                 pathResult.SearchedCount++;
-                
+
                 float moveCost = GetMoveCost(current, neighbor);
                 float newG = nodeDict[current].g + moveCost;
 
@@ -288,31 +290,25 @@ public class AStarPathfinder : AbstractPathfinder
         List<Vector2Int> neighbors = new();
 
         // 상하좌우 + 대각선 (8방향)
-        for (int dx = -1; dx <= 1; dx++)
+        for (int i = 0; i < directions.Length; i++)
         {
-            for (int dy = -1; dy <= 1; dy++)
+            int newX = current.x + directions[i].x;
+            int newY = current.y + directions[i].y;
+
+            if (newX < 0 || newY < 0 ||
+                newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
             {
-                if (dx == 0 && dy == 0) continue;  // 자신은 제외
-                if (dx * dy != 0) continue; // 대각선 제외
+                continue;
+            }
 
-                int newX = current.x + dx;
-                int newY = current.y + dy;
-
-                if (newX < 0 || newY < 0 ||
-                    newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
-                {
-                    continue;
-                }
-
-                Vector2Int neighbor = new(newX, newY);
-                // 워크어빌리티 맵으로 확인
-                var s = nodeList.GridToWorld(neighbor);
-                var c = hPAClusterList.GetClusterIndex((int)s.x, (int)s.y);
-                if (nodeList.Nodes[newX, newY].IsWalkable && hPAClusterList.GetCluster(c).IsActive)
-                {
-                    nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
-                    neighbors.Add(neighbor);
-                }
+            Vector2Int neighbor = new(newX, newY);
+            // 워크어빌리티 맵으로 확인
+            var s = nodeList.GridToWorld(neighbor);
+            var c = hPAClusterList.GetClusterIndex((int)s.x, (int)s.y);
+            if (nodeList.Nodes[newX, newY].IsWalkable && hPAClusterList.GetCluster(c).IsActive)
+            {
+                nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
+                neighbors.Add(neighbor);
             }
         }
 
@@ -378,23 +374,11 @@ public class AStarPathfinder : AbstractPathfinder
         int dx = Mathf.Abs(to.x - from.x);
         int dy = Mathf.Abs(to.y - from.y);
 
-        // 대각선으로 이동 가능한 최대 거리 + 남은 수평/수직 거리
-        // return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
-        return dx + dy;
+        const float ORTHOGONAL_COST = 1f;
+        const float DIAGONAL_COST = 1.4142f;
+        // 대각선으로 이동 가능한 최대 거리 + 남은 수평/수직 거리        
+        return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
     }
 
-    private const float ORTHOGONAL_COST = 1f;  // 상하좌우 비용
-    private const float DIAGONAL_COST = 1.414213562f;  // 대각선 비용 sqrt(2)
-    private float GetMoveCost(Vector2Int from, Vector2Int to)
-    {
-        int dx = Mathf.Abs(to.x - from.x);
-        int dy = Mathf.Abs(to.y - from.y);
-
-        // 대각선 이동
-        if (dx != 0 && dy != 0)
-            return DIAGONAL_COST;
-        // 상하좌우 이동
-        else
-            return ORTHOGONAL_COST;
-    }
+    private float GetMoveCost(Vector2Int from, Vector2Int to) => from.GetNeighborMoveCost(to);
 }

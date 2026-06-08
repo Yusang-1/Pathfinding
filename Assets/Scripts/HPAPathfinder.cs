@@ -221,7 +221,7 @@ public class HPAPathfinder
         results.Reverse();
         return results;
     }
-
+        
     private IEnumerable<(AbstractNode node, float cost)> GetAbstractNeighbors(AbstractNode current, Vector2Int startCluster)
     {
         var cluster = clusterList.GetCluster(current.ClusterIndex);
@@ -246,11 +246,11 @@ public class HPAPathfinder
         foreach (var neighborCluster in neighbors)
         {
             Vector2Int? neighborEntrance = GetEntranceBetweenClusters(current.ClusterIndex, neighborCluster, current.EntrancePos);
-            if (neighborEntrance == null) continue;
-
+            if (neighborEntrance == null) continue;                        
+            
             yield return (
                 new AbstractNode { ClusterIndex = neighborCluster, EntrancePos = (Vector2Int)neighborEntrance },
-                1f // 경계 통과 비용
+                current.ClusterIndex.GetNeighborMoveCost(neighborCluster) // 경계 통과 비용
             );
         }
     }
@@ -291,7 +291,15 @@ public class HPAPathfinder
         return null;
     }
 
-    private float CaculateHeuristic(Vector2Int from, Vector2Int to) => (Mathf.Abs(from.x - to.x) + Mathf.Abs(from.y - to.y)) * clusterSize;
+    private float CaculateHeuristic(Vector2Int from, Vector2Int to)
+    {
+        int dx = Mathf.Abs(to.x - from.x);
+        int dy = Mathf.Abs(to.y - from.y);
+        // 대각선 이동 비용과 상하좌우 이동 비용을 각각 사용
+        const float ORTHOGONAL_COST = 1f;
+        const float DIAGONAL_COST = 1.4142f;
+        return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
+    }
 
     private List<Vector2Int> GetList() => listPool.Count > 0 ? listPool.Pop() : new List<Vector2Int>();
 
