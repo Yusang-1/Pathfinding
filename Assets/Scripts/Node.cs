@@ -64,5 +64,4 @@ public enum NodeType
     room,
     searched,
     entrance,
-    entranceUsed
 }

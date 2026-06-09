@@ -164,7 +164,6 @@ public class HPAPathfinder
         });
 
         nodes.Add(current.ClusterIndex, results.Count - 1);
-        nodeList.SetNodeTypeInPathFinding(current.EntrancePos, NodeType.entranceUsed);
         current = cameFrom[current];
 
         ResultNode temp;
@@ -178,8 +177,6 @@ public class HPAPathfinder
                     temp.enteranceNode = current.EntrancePos;
                     temp.hasEntranceAndExit = true;
                     results[nodes[current.ClusterIndex]] = temp;
-
-                    nodeList.SetNodeTypeInPathFinding(current.EntrancePos, NodeType.entranceUsed);
                 }
                 else
                 {
@@ -189,7 +186,6 @@ public class HPAPathfinder
                         exitNode = current.EntrancePos,
                     });
                     nodes[current.ClusterIndex] = results.Count - 1;
-                    nodeList.SetNodeTypeInPathFinding(current.EntrancePos, NodeType.entranceUsed);
                 }
             }
             else
@@ -201,7 +197,6 @@ public class HPAPathfinder
                 });
 
                 nodes.Add(current.ClusterIndex, results.Count - 1);
-                nodeList.SetNodeTypeInPathFinding(current.EntrancePos, NodeType.entranceUsed);
             }
 
             current = cameFrom[current];

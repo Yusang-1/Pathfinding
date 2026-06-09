@@ -92,8 +92,7 @@ public class NodeInfo
     {
         ShowNodeColor(NodeType.searched);
         ShowNodeColor(NodeType.trace);
-        ShowNodeColor(NodeType.entrance);
-        ShowNodeColor(NodeType.entranceUsed);
+        ShowNodeColor(NodeType.entrance);        
 
         ShowBasicNodes();
     }
@@ -169,8 +168,6 @@ public class NodeInfo
 
     public void ClearDict()
     {
-        if (nodeInfoDict.ContainsKey(NodeType.entranceUsed))
-            nodeInfoDict[NodeType.entranceUsed]?.Clear();
         if (nodeInfoDict.ContainsKey(NodeType.trace))
             nodeInfoDict[NodeType.trace]?.Clear();
         if (nodeInfoDict.ContainsKey(NodeType.searched))

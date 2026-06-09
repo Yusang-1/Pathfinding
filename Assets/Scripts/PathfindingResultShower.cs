@@ -15,11 +15,6 @@ public class PathfindingResultShower
         {
             SetNode(nodeList, nodeInfoDict[NodeType.entrance], NodeType.entrance);
         }
-
-        if (nodeInfoDict.ContainsKey(NodeType.entranceUsed))
-        {
-            SetNode(nodeList, nodeInfoDict[NodeType.entranceUsed], NodeType.entranceUsed);
-        }
         
         DrawBasic(nodeList, nodeInfoDict);
     }
