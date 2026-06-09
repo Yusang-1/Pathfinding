@@ -71,7 +71,7 @@ public class HPAClusterOptimized
         bool value = graph.TryAddNode(newNode, Vector2Int.zero, nodeList);
         if (value)
         {
-            tempNodes.Add(newNode);
+            tempNodes.Add(newNode);            
             foreach (var entrance in cachedEntrances)
             {
                 float distance = pathfinder.FindPathInClusterForPathCache(entrance, newNode, clusterList);
@@ -80,6 +80,7 @@ public class HPAClusterOptimized
                     graph.AddBidirectionalEdge(entrance, newNode, distance);
                 }
             }
+            cachedEntrances.Add(newNode);
         }
     }
     public void RemoveTempNodeInGraph()
@@ -87,6 +88,7 @@ public class HPAClusterOptimized
         foreach (var node in tempNodes)
         {
             graph.RemoveTempNode(node);
+            cachedEntrances.Remove(node);
         }
     }
 
