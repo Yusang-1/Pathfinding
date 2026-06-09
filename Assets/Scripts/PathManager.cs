@@ -144,11 +144,6 @@ public class PathManager : MonoBehaviour
         OnAFound?.Invoke(pathResult);
 
         var result = nodeList.NodeInfo.GetNodeInfo();
-        List<Vector2Int> temp = new();
-        temp.Add(nodeList.NodeInfo.StartNodeIndex);
-        temp.AddRange(result[NodeType.trace]);
-        temp.Add(nodeList.NodeInfo.GoalNodeIndex);
-        result[NodeType.trace] = temp;
         nodeList.NodeInfo.ClearDict();
         return result;
     }
@@ -169,11 +164,6 @@ public class PathManager : MonoBehaviour
         OnHPAFound?.Invoke(clusterPathResult);
 
         var result = nodeList.NodeInfo.GetNodeInfo();
-        List<Vector2Int> temp = new();
-        temp.Add(nodeList.NodeInfo.StartNodeIndex);
-        temp.AddRange(result[NodeType.trace]);
-        temp.Add(nodeList.NodeInfo.GoalNodeIndex);
-        result[NodeType.trace] = temp;
         nodeList.NodeInfo.ClearDict();
         return result;
     }

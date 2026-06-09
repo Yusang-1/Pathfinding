@@ -69,36 +69,15 @@ public class NodeInfo
 
         node.SetType(type, data.GetSprite(type));
     }
-    public void SetNodeTypeInPathFinding(Vector2Int nodeIndex, NodeType type)
+    public void SetNodeTypeInPathFinding(Vector2Int nodeIndex, NodeType type) // 실제 sprite를 변경할 필요 없음, Dictionary에만 type을 저장
     {
         Node node = nodeList.GetNode(nodeIndex);
-        NodeType currentType = node.GetNodeType();
-        if (currentType == NodeType.unit || currentType == NodeType.destination || currentType == NodeType.obstacle) return;
-        if (currentType == NodeType.trace && type == NodeType.searched) return;
 
         if (!nodeInfoDict.ContainsKey(type))
         {
             nodeInfoDict.Add(type, new List<Vector2Int>());
         }
-
         nodeInfoDict[type].Add(nodeIndex);
-
-        if (type == NodeType.obstacle)
-        {
-            node.SetType(type, data.GetSprite(type));
-        }
-        else if (type == NodeType.unit)
-        {
-            isStartSet = true;
-            StartNodeIndex = nodeIndex;
-            node.SetType(type, data.GetSprite(type));
-        }
-        else if (type == NodeType.destination)
-        {
-            isGoalSet = true;
-            GoalNodeIndex = nodeIndex;
-            node.SetType(type, data.GetSprite(type));
-        }
     }
 
     public void ShowAStarPath()

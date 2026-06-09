@@ -6,7 +6,7 @@ public class Node : MonoBehaviour, ISelectable
     [SerializeField] private SpriteRenderer spriteRenderer;
     private Action<Vector2Int> OnSelectedCallback;
     private Action<Vector2Int> OnDeselectedCallback;
-    
+
     public int NodeArea { get; private set; }
     public bool IsAreaSet { get => NodeArea > 0; }
 
@@ -27,7 +27,7 @@ public class Node : MonoBehaviour, ISelectable
     public void Selected()
     {
         OnSelectedCallback?.Invoke(index);
-        if(IsAreaSet) Debug.Log($"areaNum : {NodeArea}");        
+        if (IsAreaSet) Debug.Log($"areaNum : {NodeArea}");
     }
     public void Deselected()
     {
@@ -45,7 +45,7 @@ public class Node : MonoBehaviour, ISelectable
         }
         else IsWalkable = true;
     }
-    
+
     public void SetNodeArea(int areaNum) => NodeArea = areaNum;
     public void ResetNodeArea() => NodeArea = 0;
 
