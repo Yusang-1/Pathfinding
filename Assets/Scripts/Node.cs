@@ -66,12 +66,3 @@ public enum NodeType
     entrance,
     entranceUsed
 }
-
-public class NodeEventAggregator
-{
-    public event Action<Vector2Int> OnNodeSelected;
-    public event Action<Vector2Int> OnNodeDeselected;
-    
-    public void NodeSelected(Vector2Int index) => OnNodeSelected?.Invoke(index);
-    public void NodeDeselected(Vector2Int index) => OnNodeDeselected?.Invoke(index);
-}

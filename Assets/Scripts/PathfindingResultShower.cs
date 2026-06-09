@@ -40,10 +40,10 @@ public class PathfindingResultShower
             SetNode(nodeList, nodeInfoDict[NodeType.searched], NodeType.searched);
         }
 
-        if (nodeInfoDict.ContainsKey(NodeType.trace))
-        {
-            SetNode(nodeList, nodeInfoDict[NodeType.trace], NodeType.trace);
-        }
+        // if (nodeInfoDict.ContainsKey(NodeType.trace))
+        // {
+        //     SetNode(nodeList, nodeInfoDict[NodeType.trace], NodeType.trace);
+        // }
     }
     
     private void DrawBasic(NodeList nodeList, Dictionary<NodeType, List<Vector2Int>> nodeInfoDict)

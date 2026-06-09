@@ -243,13 +243,15 @@ public class ThetaStar : AbstractPathfinder
                 {
                     continue;
                 }
-
+                
+                var neighbor = new Vector2Int(newX, newY);
                 // 워크어빌리티 맵으로 확인
-                var s = nodeList.GridToWorld(current);
-                var c = clusterList.GetClusterIndex((int)s.x, (int)s.y);
-                if (nodeList.Nodes[newX, newY].IsWalkable && clusterList.GetCluster(c).IsActive && clusterList.IsNodesInSameCluster(current, new Vector2Int(newX, newY)))
+                var nodeWorldPosition = nodeList.GridToWorld(current);
+                var clusterIndex = clusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
+                if (nodeList.Nodes[newX, newY].IsWalkable && clusterList.GetCluster(clusterIndex).IsActive && clusterList.IsNodesInSameCluster(current, new Vector2Int(newX, newY)))
                 {
-                    neighbors.Add(new Vector2Int(newX, newY));
+                    nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
+                    neighbors.Add(neighbor);
                 }
             }
         }

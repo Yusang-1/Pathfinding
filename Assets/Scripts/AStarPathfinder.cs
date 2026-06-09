@@ -166,64 +166,6 @@ public class AStarPathfinder : AbstractPathfinder
         // 경로 찾지 못함
         return new List<Vector3>();
     }
-    public float FindPath(Vector2Int startIndex, Vector2Int goalIndex)
-    {
-        PriorityQueue<Vector2Int, float> openList = new();
-        HashSet<Vector2Int> closeList = new();
-        Dictionary<Vector2Int, PathNode> nodeDict = new();
-
-        PathNode startNode = new PathNode
-        {
-            index = startIndex
-        };
-        openList.Enqueue(startNode.index, startNode.f);
-        nodeDict[startNode.index] = startNode;
-
-        while (openList.Count > 0)
-        {
-            Vector2Int current = openList.Dequeue();
-
-            if (current == goalIndex)
-            {
-                return nodeDict[current].g;
-            }
-
-            closeList.Add(current);
-
-            List<Vector2Int> neighborList = GetNeighborNode(current);
-            for (int i = 0; i < neighborList.Count; i++)
-            {
-                Vector2Int neighbor = neighborList[i];
-
-                if (closeList.Contains(neighbor)) continue;
-
-                float moveCost = GetMoveCost(current, neighbor);
-                float newG = nodeDict[current].g + moveCost;
-
-                if (!nodeDict.ContainsKey(neighbor) || newG < nodeDict[neighbor].g)
-                {
-                    if (!nodeDict.ContainsKey(neighbor))
-                    {
-                        nodeDict[neighbor] = new PathNode
-                        {
-                            index = neighbor,
-                            h = CaculateHeuristic(neighbor, goalIndex)
-                        };
-                    }
-                    PathNode neighborNode = nodeDict[neighbor];
-                    neighborNode.g = newG;
-                    neighborNode.parentIndex = current;
-                    neighborNode.isParentSet = true;
-                    nodeDict[neighbor] = neighborNode;
-
-                    openList.Enqueue(nodeDict[neighbor].index, nodeDict[neighbor].f);
-                }
-            }
-        }
-
-        // 경로 찾지 못함
-        return 0;
-    }
     public float FindPathInClusterForPathCache(Vector2Int from, Vector2Int to, HPAClusterList clusterList)
     {
         PriorityQueue<Vector2Int, float> openList = new();
@@ -250,6 +192,7 @@ public class AStarPathfinder : AbstractPathfinder
             closeList.Add(current);
 
             var neighbors = GetNeighborNodesInCluster(current, clusterList);
+            nodeList.NodeInfo.ResetSearched();
             for (int i = 0; i < neighbors.Count; i++)
             {
                 var neighbor = neighbors[i];
@@ -336,6 +279,7 @@ public class AStarPathfinder : AbstractPathfinder
             // 워크어빌리티 맵으로 확인      
             if (nodeList.Nodes[newX, newY].IsWalkable)
             {
+                nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                 neighbors.Add(neighbor);
             }
         }

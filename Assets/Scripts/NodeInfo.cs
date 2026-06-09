@@ -163,7 +163,7 @@ public class NodeInfo
         {
             foreach (var nodeIndex in nodes)
             {
-                node = nodeList.Nodes[nodeIndex.x, nodeIndex.y];
+                node = nodeList.GetNode(nodeIndex);
                 type = node.GetNodeType();
 
                 if (type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle) continue;
@@ -176,6 +176,16 @@ public class NodeInfo
 
             item.Value.Clear();
         }
+    }
+    public void ResetSearched()
+    {
+        Node node;
+        foreach(var nodes in nodeInfoDict[NodeType.searched])
+        {
+            node = nodeList.GetNode(nodes);
+            node.SetType(NodeType.room, data.GetSprite(NodeType.room));
+        }
+        nodeInfoDict[NodeType.searched].Clear();
     }
 
     public void ClearDict()
