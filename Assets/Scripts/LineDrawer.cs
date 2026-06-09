@@ -51,6 +51,10 @@ public class LineDrawer : MonoBehaviour
         {
             lines.Add(Instantiate(linePrefab));
         }
+        if (lineHeads.Count <= current)
+        {
+            lineHeads.Add(Instantiate(lineHeadPrefab));
+        }
 
         GameObject line = lines[current];
         line.SetActive(true);
