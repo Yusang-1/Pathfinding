@@ -5,6 +5,7 @@ public class ThetaStar : AbstractPathfinder
 {
     private readonly NodeList nodeList;
     private readonly HPAClusterList clusterList;
+    private const float EPS = 1e-4f;
     public ThetaStar(NodeList nodeList, HPAClusterList clusterList)
     {
         this.nodeList = nodeList;
@@ -23,7 +24,8 @@ public class ThetaStar : AbstractPathfinder
         pathResult = new PathResult();
         var startNode = new PathNode
         {
-            index = startNodeIndex
+            index = startNodeIndex,
+            g = 0
         };
         openList.Enqueue(startNode.index, startNode.f);
         nodeDict.Add(startNode.index, startNode);
@@ -55,14 +57,15 @@ public class ThetaStar : AbstractPathfinder
                 float moveCost = currentIndex.GetNeighborMoveCost(neighborIndex);
                 float newG = nodeDict[currentIndex].g + moveCost;
 
-                if (!nodeDict.ContainsKey(neighborIndex) || newG < nodeDict[neighborIndex].g)
+                if (!nodeDict.ContainsKey(neighborIndex) || newG + EPS < nodeDict[neighborIndex].g)
                 {
                     if (!nodeDict.ContainsKey(neighborIndex))
                     {
                         nodeDict[neighborIndex] = new PathNode
                         {
                             index = neighborIndex,
-                            h = CaculateHeuristic(neighborIndex, goalNodeIndex)
+                            h = CaculateHeuristic(neighborIndex, goalNodeIndex),
+                            g = float.PositiveInfinity
                         };
                     }
                     PathNode tempNode = nodeDict[neighborIndex];
@@ -115,7 +118,7 @@ public class ThetaStar : AbstractPathfinder
         if (nodeDict[current].isParentSet && LineOfSight(parentIndex, neighbor))
         {
             float euclideanDistance = EuclideanDistance(parentIndex, neighbor);
-            if (nodeDict[parentIndex].g + euclideanDistance <= nodeDict[neighbor].g)
+            if (nodeDict[parentIndex].g + euclideanDistance <= nodeDict[neighbor].g + EPS)
             {
                 PathNode temp = nodeDict[neighbor];
                 temp.g = nodeDict[parentIndex].g + euclideanDistance;
@@ -131,8 +134,8 @@ public class ThetaStar : AbstractPathfinder
             // If the length of the path from start to s and from s to 
             // neighbor is shorter than the shortest currently known distance
             // from start to neighbor, then update node with the new distance
-            float euclideanDistance = EuclideanDistance(parentIndex, neighbor);
-            if (nodeDict[current].g + euclideanDistance < nodeDict[neighbor].g)
+            float euclideanDistance = EuclideanDistance(current, neighbor);
+            if (nodeDict[current].g + euclideanDistance < nodeDict[neighbor].g + EPS)
             {
                 PathNode temp = nodeDict[neighbor];
                 temp.g = nodeDict[current].g + euclideanDistance;
