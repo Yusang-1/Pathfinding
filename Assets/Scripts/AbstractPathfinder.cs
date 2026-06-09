@@ -18,6 +18,7 @@ public abstract class AbstractPathfinder
         public float f => g + h;
         public Vector2Int index;
         public Vector2Int parentIndex;
+        public Vector2Int beforeNodeIndex;
         public bool isParentSet;
     }
 }

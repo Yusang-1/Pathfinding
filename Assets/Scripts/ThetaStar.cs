@@ -68,6 +68,7 @@ public class ThetaStar : AbstractPathfinder
                     PathNode tempNode = nodeDict[neighborIndex];
                     tempNode.g = newG;
                     tempNode.parentIndex = currentIndex;
+                    tempNode.beforeNodeIndex = currentIndex;
                     tempNode.isParentSet = true;
                     nodeDict[neighborIndex] = tempNode;
                     
@@ -111,6 +112,7 @@ public class ThetaStar : AbstractPathfinder
     {
         // current의 parent와 neighbor간에 line of Sight가 존재한다면 current의 parent에서 neighbor의 경로를 사용
         Vector2Int parentIndex = nodeDict[current].parentIndex;
+        Vector2Int beforeNode = nodeDict[current].beforeNodeIndex;
         if (nodeDict[current].isParentSet && LineOfSight(parentIndex, neighbor))
         {
             float euclideanDistance = EuclideanDistance(parentIndex, neighbor);
@@ -119,6 +121,21 @@ public class ThetaStar : AbstractPathfinder
                 PathNode temp = nodeDict[neighbor];
                 temp.g = nodeDict[parentIndex].g + euclideanDistance;
                 temp.parentIndex = parentIndex;
+                temp.beforeNodeIndex = current;
+                temp.isParentSet = true;
+                temp.h = CaculateHeuristic(neighbor, goalNodeIndex);
+                nodeDict[neighbor] = temp;
+            }
+        }
+        else if(nodeDict[current].isParentSet && LineOfSight(beforeNode, neighbor))
+        {
+            float euclideanDistance = EuclideanDistance(beforeNode, neighbor);
+            if (nodeDict[beforeNode].g + euclideanDistance <= nodeDict[neighbor].g)
+            {
+                PathNode temp = nodeDict[neighbor];
+                temp.g = nodeDict[beforeNode].g + euclideanDistance;
+                temp.parentIndex = beforeNode;
+                temp.beforeNodeIndex = current;
                 temp.isParentSet = true;
                 temp.h = CaculateHeuristic(neighbor, goalNodeIndex);
                 nodeDict[neighbor] = temp;
@@ -135,6 +152,7 @@ public class ThetaStar : AbstractPathfinder
                 PathNode temp = nodeDict[neighbor];
                 temp.g = nodeDict[current].g + euclideanDistance;
                 temp.parentIndex = current;
+                temp.beforeNodeIndex = current;
                 temp.isParentSet = true;
                 temp.h = CaculateHeuristic(neighbor, goalNodeIndex);
                 nodeDict[neighbor] = temp;
