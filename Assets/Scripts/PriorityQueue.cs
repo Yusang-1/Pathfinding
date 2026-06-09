@@ -17,6 +17,13 @@ public class PriorityQueue<TElement, TPriority> where TPriority : struct, ICompa
     {
         heap = new (TElement, TPriority)[initialHeapSize];
     }
+    
+    public void Clear()
+    {        
+        indexMap.Clear();
+        head = 0;
+        tail = 0;
+    }
 
     public void Enqueue(TElement element, TPriority priority)
     {

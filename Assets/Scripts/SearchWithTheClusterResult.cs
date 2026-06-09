@@ -25,7 +25,7 @@ public class SearchWithTheClusterResult
                 goalPosition = nodeList.GridToWorld(data.exitNode);
             }
             
-            List<Vector3> pathInCluster = pathfinder.FindPathInSameCluster(entrancePosition, goalPosition, clusterList, out PathResult result);
+            List<Vector3> pathInCluster = pathfinder.FindPathInSameCluster(entrancePosition, goalPosition, out PathResult result);
             pathResult.AddResult(result);
             pathResult.PathLength++; // cluster이동 비용 1;            
             

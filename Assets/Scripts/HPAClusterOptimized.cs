@@ -56,7 +56,7 @@ public class HPAClusterOptimized
                 var entrance1 = entranceList[i];
                 var entrance2 = entranceList[j];
 
-                float distance = pathfinder.FindPathInClusterForPathCache(entrance1, entrance2, clusterList);
+                float distance = pathfinder.FindPathInClusterForPathCache(entrance1, entrance2);
                 if (distance > 0)
                 {
                     graph.AddBidirectionalEdge(entrance1, entrance2, distance);
@@ -74,7 +74,7 @@ public class HPAClusterOptimized
             tempNodes.Add(newNode);            
             foreach (var entrance in cachedEntrances)
             {
-                float distance = pathfinder.FindPathInClusterForPathCache(entrance, newNode, clusterList);
+                float distance = pathfinder.FindPathInClusterForPathCache(entrance, newNode);
                 if (distance > 0)
                 {
                     graph.AddBidirectionalEdge(entrance, newNode, distance);

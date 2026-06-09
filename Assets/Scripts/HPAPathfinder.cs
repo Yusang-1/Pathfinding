@@ -45,6 +45,8 @@ public class HPAPathfinder
         // start cluster, goal cluster에 노드 추가
         clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList);
         clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList);
+        nodeList.NodeInfo.ResetSearched();
+        nodeList.NodeInfo.ResetTrace();
 
         List<ResultNode> clusterPath;
         // from과 to가 같은 클러스터에 존재할 경우 저수준 경로만 반환
@@ -129,7 +131,7 @@ public class HPAPathfinder
             if (closedSet.Contains(current)) continue;
             closedSet.Add(current);
 
-            foreach (var (neighbor, cost) in GetAbstractNeighbors(current, startCluster))
+            foreach (var (neighbor, cost) in GetAbstractNeighbors(current))
             {
                 if (closedSet.Contains(neighbor)) continue;
 
@@ -214,8 +216,8 @@ public class HPAPathfinder
         results.Reverse();
         return results;
     }
-        
-    private IEnumerable<(AbstractNode node, float cost)> GetAbstractNeighbors(AbstractNode current, Vector2Int startCluster)
+
+    private IEnumerable<(AbstractNode node, float cost)> GetAbstractNeighbors(AbstractNode current)
     {
         var cluster = clusterList.GetCluster(current.ClusterIndex);
 
@@ -239,8 +241,8 @@ public class HPAPathfinder
         foreach (var neighborCluster in neighbors)
         {
             Vector2Int? neighborEntrance = GetEntranceBetweenClusters(current.ClusterIndex, neighborCluster, current.EntrancePos);
-            if (neighborEntrance == null) continue;                        
-            
+            if (neighborEntrance == null) continue;
+
             yield return (
                 new AbstractNode { ClusterIndex = neighborCluster, EntrancePos = (Vector2Int)neighborEntrance },
                 current.ClusterIndex.GetNeighborMoveCost(neighborCluster) // 경계 통과 비용

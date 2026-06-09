@@ -165,6 +165,16 @@ public class NodeInfo
         }
         nodeInfoDict[NodeType.searched].Clear();
     }
+    public void ResetTrace()
+    {
+        Node node;
+        foreach(var nodes in nodeInfoDict[NodeType.trace])
+        {
+            node = nodeList.GetNode(nodes);
+            node.SetType(NodeType.room, data.GetSprite(NodeType.room));
+        }
+        nodeInfoDict[NodeType.trace].Clear();
+    }
 
     public void ClearDict()
     {

@@ -20,11 +20,9 @@ public class NodeData : ScriptableObject
         spriteGetter.Add(NodeType.unit, spriteUnit);
         spriteGetter.Add(NodeType.destination, spriteDestination);
         spriteGetter.Add(NodeType.obstacle, spriteObstacle);
-        // spriteGetter.Add(NodeType.trace, spriteTrace);
         spriteGetter.Add(NodeType.room, spriteRoom);
         spriteGetter.Add(NodeType.searched, spriteSearched);
         spriteGetter.Add(NodeType.entrance, spriteEntrance);
-        // spriteGetter.Add(NodeType.entranceUsed, spriteEntranceUsed);
     }
 
     public Sprite GetSprite(NodeType type)
