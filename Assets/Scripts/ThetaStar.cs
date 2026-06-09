@@ -19,7 +19,7 @@ public class ThetaStar : AbstractPathfinder
 
         Vector2Int startNodeIndex = nodeList.GetNodeIndex(from);
         Vector2Int goalNodeIndex = nodeList.GetNodeIndex(to);
-        
+
         pathResult = new PathResult();
         var startNode = new PathNode
         {
@@ -39,7 +39,7 @@ public class ThetaStar : AbstractPathfinder
                 pathResult.MemoryUsed += openList.Capacity;
                 pathResult.MemoryUsed += closeList.Count;
                 pathResult.MemoryUsed += nodeDict.Count;
-                
+
                 return CaculateResult(nodeDict, currentIndex, startNodeIndex);
             }
 
@@ -49,15 +49,15 @@ public class ThetaStar : AbstractPathfinder
                 Vector2Int neighborIndex = neighborIndexes[i];
 
                 if (closeList.Contains(neighborIndex)) continue;
-                
+
                 pathResult.SearchedCount++;
-                
-                float moveCost = 1;
+
+                float moveCost = currentIndex.GetNeighborMoveCost(neighborIndex);
                 float newG = nodeDict[currentIndex].g + moveCost;
 
                 if (!nodeDict.ContainsKey(neighborIndex) || newG < nodeDict[neighborIndex].g)
                 {
-                     if (!nodeDict.ContainsKey(neighborIndex))
+                    if (!nodeDict.ContainsKey(neighborIndex))
                     {
                         nodeDict[neighborIndex] = new PathNode
                         {
@@ -71,7 +71,7 @@ public class ThetaStar : AbstractPathfinder
                     tempNode.beforeNodeIndex = currentIndex;
                     tempNode.isParentSet = true;
                     nodeDict[neighborIndex] = tempNode;
-                    
+
                     UpdateVertex(nodeDict, currentIndex, neighborIndex, goalNodeIndex);
                     openList.Enqueue(nodeDict[neighborIndex].index, nodeDict[neighborIndex].f);
                 }
@@ -112,7 +112,6 @@ public class ThetaStar : AbstractPathfinder
     {
         // current의 parent와 neighbor간에 line of Sight가 존재한다면 current의 parent에서 neighbor의 경로를 사용
         Vector2Int parentIndex = nodeDict[current].parentIndex;
-        Vector2Int beforeNode = nodeDict[current].beforeNodeIndex;
         if (nodeDict[current].isParentSet && LineOfSight(parentIndex, neighbor))
         {
             float euclideanDistance = EuclideanDistance(parentIndex, neighbor);
@@ -121,20 +120,6 @@ public class ThetaStar : AbstractPathfinder
                 PathNode temp = nodeDict[neighbor];
                 temp.g = nodeDict[parentIndex].g + euclideanDistance;
                 temp.parentIndex = parentIndex;
-                temp.beforeNodeIndex = current;
-                temp.isParentSet = true;
-                temp.h = CaculateHeuristic(neighbor, goalNodeIndex);
-                nodeDict[neighbor] = temp;
-            }
-        }
-        else if(nodeDict[current].isParentSet && LineOfSight(beforeNode, neighbor))
-        {
-            float euclideanDistance = EuclideanDistance(beforeNode, neighbor);
-            if (nodeDict[beforeNode].g + euclideanDistance <= nodeDict[neighbor].g)
-            {
-                PathNode temp = nodeDict[neighbor];
-                temp.g = nodeDict[beforeNode].g + euclideanDistance;
-                temp.parentIndex = beforeNode;
                 temp.beforeNodeIndex = current;
                 temp.isParentSet = true;
                 temp.h = CaculateHeuristic(neighbor, goalNodeIndex);
@@ -218,7 +203,7 @@ public class ThetaStar : AbstractPathfinder
             }
         }
     }
-    
+
     protected override float CaculateHeuristic(Vector2Int from, Vector2Int to)
     {
         int dx = Mathf.Abs(to.x - from.x);
@@ -242,10 +227,10 @@ public class ThetaStar : AbstractPathfinder
         // 상하좌우 + 대각선 (8방향)
         for (int dx = -1; dx <= 1; dx++)
         {
-            for (int dy = -1; dy <= 1; dy++) 
+            for (int dy = -1; dy <= 1; dy++)
             {
                 if (dx == 0 && dy == 0) continue;  // 자신은 제외
-                if (dx * dy != 0) continue; // 대각선 제외
+                // if (dx * dy != 0) continue; // 대각선 제외
 
                 int newX = current.x + dx;
                 int newY = current.y + dy;
