@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Unit : MonoBehaviour
 {
@@ -61,17 +61,16 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void MoveWithResult(List<HPAPathfinder.ResultNode> resultNodes, HPAPathfinder hPAPathfinder, ThetaStar thetaStar, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
+    public void MoveWithResult(List<HPAPathfinder.ResultNode> resultNodes, ThetaStar thetaStar, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
     {
-        gameObject.SetActive(true);
-        // transform.position = new Vector3(resultNodes[0].enteranceNode.x, resultNodes[0].enteranceNode.y, 0);
+        gameObject.SetActive(true);        
 
         pathNum = 0;
         currentPath = resultNodes[pathNum];
         lazyGoal = new Vector3(currentPath.exitNode.x, currentPath.exitNode.y);
         currentAbstractPath = resultNodes;
 
-        lazyRefine ??= new LazyRefine(hPAPathfinder, thetaStar, clusterList, nodeList, searchWithTheClusterResult);
+        lazyRefine ??= new LazyRefine(thetaStar, clusterList, nodeList, searchWithTheClusterResult);
         lazyRefine.DoLazyRefinement(resultNodes[pathNum++], lineDrawer);
 
         if (lazyRefine.TryGetPathFromQueue(out Vector3 destination))

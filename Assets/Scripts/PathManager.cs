@@ -231,7 +231,7 @@ public class PathManager : MonoBehaviour
         ResetPath();
         resultShower.DrawHPAStar(nodeList, hpaStarSmoothResult);
 
-        unit.MoveWithResult(currentAbstractResults, hPAPathfinder, thetaStarPathfinder, hPAClusterList, nodeList, searchWithTheClusterResult);
+        unit.MoveWithResult(currentAbstractResults, thetaStarPathfinder, hPAClusterList, nodeList, searchWithTheClusterResult);
     }
 }
 

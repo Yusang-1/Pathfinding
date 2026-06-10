@@ -1,19 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 public class LazyRefine
 {
     private readonly Queue<Vector3> pathQueue = new();
 
-    private readonly HPAPathfinder hPAPathfinder;
     private readonly ThetaStar thetaStarPathfinder;
     private readonly HPAClusterList clusterList;
     private readonly SearchWithTheClusterResult searchWithTheClusterResult;
     private readonly NodeList nodeList;
-    public LazyRefine(HPAPathfinder hPAPathfinder, ThetaStar thetaStarPathfinder, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
+    public LazyRefine(ThetaStar thetaStarPathfinder, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
     {
-        this.hPAPathfinder = hPAPathfinder;
         this.thetaStarPathfinder = thetaStarPathfinder;
         this.clusterList = clusterList;
         this.nodeList = nodeList;
@@ -36,12 +33,12 @@ public class LazyRefine
     }
 
     public void DoLazyRefinement(HPAPathfinder.ResultNode result, LineDrawer lineDrawer)
-    {        
+    {
         List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, thetaStarPathfinder, nodeList, clusterList);
-        
+
         lineDrawer.DrawLine(resultPath);
-        
-        for(int i = 0; i < resultPath.Count; i++)
+
+        for (int i = 0; i < resultPath.Count; i++)
         {
             pathQueue.Enqueue(resultPath[i]);
         }
