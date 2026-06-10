@@ -4,8 +4,16 @@ using System.Collections.Generic;
 public class SearchWithTheClusterResult
 {
     private readonly List<Vector3> resultPath = new();
+    
+    private readonly AStarPathfinder aStarPathfinder;
+    private readonly ThetaStar thetaStarPathfinder;
+    public SearchWithTheClusterResult(AStarPathfinder aStarPathfinder, ThetaStar thetaStarPathfinder)
+    {
+        this.aStarPathfinder = aStarPathfinder;
+        this.thetaStarPathfinder = thetaStarPathfinder;
+    }
 
-    public List<Vector3> FindPath(List<HPAPathfinder.ResultNode> pathData, AStarPathfinder pathfinder, NodeList nodeList, HPAClusterList clusterList, out PathResult pathResult)
+    public List<Vector3> FindPath(List<HPAPathfinder.ResultNode> pathData, NodeList nodeList, HPAClusterList clusterList, out PathResult pathResult)
     {
         pathResult = new();
         resultPath.Clear();
@@ -25,7 +33,7 @@ public class SearchWithTheClusterResult
                 goalPosition = nodeList.GridToWorld(data.exitNode);
             }
             
-            List<Vector3> pathInCluster = pathfinder.FindPathInSameCluster(entrancePosition, goalPosition, out PathResult result);
+            List<Vector3> pathInCluster = aStarPathfinder.FindPathInSameCluster(entrancePosition, goalPosition, out PathResult result);
             pathResult.AddResult(result);
             pathResult.PathLength++; // cluster이동 비용 1;            
             
@@ -38,7 +46,7 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindPathTheta(List<HPAPathfinder.ResultNode> pathData, ThetaStar pathfinder, NodeList nodeList, HPAClusterList clusterList, out PathResult pathResult)
+    public List<Vector3> FindPathTheta(List<HPAPathfinder.ResultNode> pathData, NodeList nodeList, HPAClusterList clusterList, out PathResult pathResult)
     {
         resultPath.Clear();
         pathResult = new();
@@ -58,7 +66,7 @@ public class SearchWithTheClusterResult
                 goalPosition = nodeList.GridToWorld(data.exitNode);
             }
 
-            List<Vector3> pathInCluster = pathfinder.FindPath(entrancePosition, goalPosition, out PathResult result);
+            List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, out PathResult result);
             pathResult.AddResult(result);
             pathResult.PathLength++; // cluster이동 비용 1;
             
@@ -72,7 +80,7 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindPathTheta(HPAPathfinder.ResultNode data, ThetaStar pathfinder, NodeList nodeList, HPAClusterList clusterList)
+    public List<Vector3> FindPathTheta(HPAPathfinder.ResultNode data, NodeList nodeList, HPAClusterList clusterList)
     {
         clusterList.SetClusterActive(data.Index, true);
 
@@ -88,7 +96,7 @@ public class SearchWithTheClusterResult
             goalPosition = nodeList.GridToWorld(data.exitNode);
         }
 
-        List<Vector3> pathInCluster = pathfinder.FindPath(entrancePosition, goalPosition, out PathResult pathResult);
+        List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, out PathResult pathResult);
 
         clusterList.SetClusterActive(data.Index, false);
 

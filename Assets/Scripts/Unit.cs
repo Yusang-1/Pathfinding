@@ -61,7 +61,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void MoveWithResult(List<HPAPathfinder.ResultNode> resultNodes, ThetaStar thetaStar, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
+    public void MoveWithResult(List<HPAPathfinder.ResultNode> resultNodes, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
     {
         gameObject.SetActive(true);        
 
@@ -70,7 +70,7 @@ public class Unit : MonoBehaviour
         lazyGoal = new Vector3(currentPath.exitNode.x, currentPath.exitNode.y);
         currentAbstractPath = resultNodes;
 
-        lazyRefine ??= new LazyRefine(thetaStar, clusterList, nodeList, searchWithTheClusterResult);
+        lazyRefine ??= new LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
         lazyRefine.DoLazyRefinement(resultNodes[pathNum++], lineDrawer);
 
         if (lazyRefine.TryGetPathFromQueue(out Vector3 destination))

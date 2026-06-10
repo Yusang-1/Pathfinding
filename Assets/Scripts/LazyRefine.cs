@@ -5,13 +5,11 @@ public class LazyRefine
 {
     private readonly Queue<Vector3> pathQueue = new();
 
-    private readonly ThetaStar thetaStarPathfinder;
     private readonly HPAClusterList clusterList;
     private readonly SearchWithTheClusterResult searchWithTheClusterResult;
     private readonly NodeList nodeList;
-    public LazyRefine(ThetaStar thetaStarPathfinder, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
+    public LazyRefine(HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
     {
-        this.thetaStarPathfinder = thetaStarPathfinder;
         this.clusterList = clusterList;
         this.nodeList = nodeList;
         this.searchWithTheClusterResult = searchWithTheClusterResult;
@@ -34,7 +32,7 @@ public class LazyRefine
 
     public void DoLazyRefinement(HPAPathfinder.ResultNode result, LineDrawer lineDrawer)
     {
-        List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, thetaStarPathfinder, nodeList, clusterList);
+        List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList);
 
         lineDrawer.DrawLine(resultPath);
 
