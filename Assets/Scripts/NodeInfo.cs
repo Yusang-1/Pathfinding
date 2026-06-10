@@ -126,6 +126,12 @@ public class NodeInfo
         foreach(var nodes in nodeInfoDict[NodeType.searched])
         {
             node = nodeList.GetNode(nodes);
+            NodeType type = node.GetNodeType();
+            if(type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle)
+            {
+                continue;
+            }
+            
             node.SetType(NodeType.room, data.GetSprite(NodeType.room));
         }
         nodeInfoDict[NodeType.searched].Clear();
@@ -138,6 +144,12 @@ public class NodeInfo
         foreach(var nodes in nodeInfoDict[NodeType.trace])
         {
             node = nodeList.GetNode(nodes);
+            NodeType type = node.GetNodeType();
+            if(type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle)
+            {
+                continue;
+            }
+            
             node.SetType(NodeType.room, data.GetSprite(NodeType.room));
         }
         nodeInfoDict[NodeType.trace].Clear();

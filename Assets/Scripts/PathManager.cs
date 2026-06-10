@@ -201,7 +201,8 @@ public class PathManager : MonoBehaviour
         hPAClusterList.ResetClusterList();
         clusterShower.ResetClusters();
         lineDrawer.ResetLineDrawer();
-
+        unit.gameObject.SetActive(false);
+        
         nodeList.NodeInfo.IsDuringNodeSetting = true;
     }
 
