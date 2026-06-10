@@ -90,23 +90,6 @@ public class HPACluster
         }
     }
 
-    public float GetHeuristic(Vector2Int from, Vector2Int to)
-    {
-        return Vector2Int.Distance(from, to);
-    }
-
-    private List<Vector2Int> ReconstructPath(Dictionary<Vector2Int, Vector2Int> cameFrom, Vector2Int current)
-    {
-        var path = new List<Vector2Int> { current };
-        while (cameFrom.ContainsKey(current))
-        {
-            current = cameFrom[current];
-            path.Add(current);
-        }
-        path.Reverse();
-        return path;
-    }
-
     public bool TryGetIntraEdgeCost(Vector2Int entrance1, Vector2Int entrance2, out float cost)
     {
         if (graph.TryGetEdgeWeight(entrance1, entrance2, out cost)) return true;

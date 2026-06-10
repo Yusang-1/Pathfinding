@@ -8,7 +8,6 @@ public class HPAClusterList
 
     private int clusterSize;
     private int clusterCount;
-    public int ClusterSize => clusterSize;
 
     public HPAClusterList(NodeList nodeList)
     {

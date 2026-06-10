@@ -9,7 +9,6 @@ public class MapGenerator
         this.nodePrefab = nodePrefab;
     }
 
-    const int nodeSize = 1;
     public void GenerateMap(int mapSize, NodeList nodeList)
     {
         Node node;

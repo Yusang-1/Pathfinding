@@ -24,25 +24,13 @@ public class ClusterShower : MonoBehaviour
             }
         }
     }
-    
-    public void ShowActivatedClusters(List<Vector2Int> list)
-    {
-        for(int i = 0; i < list.Count; i++)
-        {
-            clusters[list[i]].SetActive(true);
-        }
-    }
+
     public void ShowActivatedClusters(List<HPAPathfinder.ResultNode> results)
     {
         for(int i = 0; i < results.Count; i++)
         {
             clusters[results[i].Index].SetActive(true);
         }
-    }
-    
-    public void ShowActivated(Vector2Int index)
-    {
-        clusters[index].SetActive(true);
     }
     
     public void ResetClusters()

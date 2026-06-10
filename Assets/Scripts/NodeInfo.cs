@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class NodeInfo
 {
@@ -78,42 +77,6 @@ public class NodeInfo
             nodeInfoDict.Add(type, new List<Vector2Int>());
         }
         nodeInfoDict[type].Add(nodeIndex);
-    }
-
-    public void ShowAStarPath()
-    {
-        ShowNodeColor(NodeType.searched);
-        ShowNodeColor(NodeType.trace);
-
-        ShowBasicNodes();
-    }
-
-    public void ShowHPAStarPath()
-    {
-        ShowNodeColor(NodeType.searched);
-        ShowNodeColor(NodeType.trace);
-        ShowNodeColor(NodeType.entrance);        
-
-        ShowBasicNodes();
-    }
-
-    private void ShowNodeColor(NodeType type)
-    {
-        if (nodeInfoDict.ContainsKey(type))
-        {
-            List<Vector2Int> nodes = nodeInfoDict[type];
-            foreach (var node in nodes)
-            {
-                nodeList.Nodes[node.x, node.y].SetType(type, data.GetSprite(type));
-            }
-        }
-    }
-
-    private void ShowBasicNodes()
-    {
-        ShowNodeColor(NodeType.unit);
-        ShowNodeColor(NodeType.destination);
-        ShowNodeColor(NodeType.obstacle);
     }
 
     public void ResetAllNodes()

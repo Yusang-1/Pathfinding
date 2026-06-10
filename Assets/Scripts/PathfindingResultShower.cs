@@ -34,11 +34,6 @@ public class PathfindingResultShower
         {
             SetNode(nodeList, nodeInfoDict[NodeType.searched], NodeType.searched);
         }
-
-        // if (nodeInfoDict.ContainsKey(NodeType.trace))
-        // {
-        //     SetNode(nodeList, nodeInfoDict[NodeType.trace], NodeType.trace);
-        // }
     }
     
     private void DrawBasic(NodeList nodeList, Dictionary<NodeType, List<Vector2Int>> nodeInfoDict)
@@ -56,16 +51,6 @@ public class PathfindingResultShower
         if (nodeInfoDict.ContainsKey(NodeType.destination))
         {
             SetNode(nodeList, nodeInfoDict[NodeType.unit], NodeType.unit);
-        }
-    }
-    
-    public void ResetMap(NodeList nodeList)
-    {
-        foreach(var item in currentData)
-        {
-            if(item.Key == NodeType.room) continue;
-            
-            SetNode(nodeList, item.Value, NodeType.room);
         }
     }
 

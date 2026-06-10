@@ -11,13 +11,8 @@ public class NodeList
     private readonly NodeInfo nodeInfo;
     private Node[,] nodes;
 
-    private Vector2Int startPos;
-    private Vector2Int goalPos;
-
     public NodeInfo NodeInfo => nodeInfo;
     public Node[,] Nodes => nodes;
-    public Vector2Int StartPos => startPos;
-    public Vector2Int GoalPos => goalPos;
 
     private readonly int nodeSize = 1;
     public NodeList(int nodeSize, NodeData data)

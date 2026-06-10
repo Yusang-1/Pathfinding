@@ -7,11 +7,9 @@ public class NodeData : ScriptableObject
     [SerializeField] private Sprite spriteUnit;
     [SerializeField] private Sprite spriteDestination;
     [SerializeField] private Sprite spriteObstacle;
-    // [SerializeField] private Sprite spriteTrace;
     [SerializeField] private Sprite spriteRoom;
     [SerializeField] private Sprite spriteSearched;
     [SerializeField] private Sprite spriteEntrance;
-    [SerializeField] private Sprite spriteEntranceUsed;
     
     private readonly Dictionary<NodeType, Sprite> spriteGetter = new();
 
