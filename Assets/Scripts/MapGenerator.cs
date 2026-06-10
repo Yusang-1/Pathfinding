@@ -2,14 +2,7 @@ using UnityEngine;
 
 public class MapGenerator
 {
-    private readonly Node nodePrefab;
-    
-    public MapGenerator(Node nodePrefab)
-    {
-        this.nodePrefab = nodePrefab;
-    }
-
-    public void GenerateMap(int mapSize, NodeList nodeList)
+    public void GenerateMap(int mapSize, Node nodePrefab , NodeList nodeList)
     {
         Node node;
         for (int i = 0; i < mapSize; i++)

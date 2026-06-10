@@ -15,8 +15,8 @@ public class PathManager : MonoBehaviour
     private AStarPathfinder pathfinder;
     private HPAPathfinder hPAPathfinder;
     private ThetaStar thetaStarPathfinder;
-    private MapGenerator mapGenerator;
     private SearchWithTheClusterResult searchWithTheClusterResult;
+    private readonly MapGenerator mapGenerator;
     private readonly PathfindingResultShower resultShower = new();
 
     [SerializeField] private UIRoot uiRoot;
@@ -56,8 +56,6 @@ public class PathManager : MonoBehaviour
         thetaStarPathfinder = new ThetaStar(nodeList, hPAClusterList);
 
         searchWithTheClusterResult = new SearchWithTheClusterResult(pathfinder, thetaStarPathfinder);
-
-        mapGenerator = new MapGenerator(nodePrefab);
 
         nodeList.NodeInfo.OnPathfindAvailable += (value) => uiRoot.ActiveFindButton(value);
         nodeList.OnSelected += (index) => uiRoot.ActiveNodeTypeSelector(index, true);
@@ -104,7 +102,7 @@ public class PathManager : MonoBehaviour
         clusterShower.Initialize(clusterSize, nodeSize);
         hPAPathfinder = new HPAPathfinder(hPAClusterList, nodeList, pathfinder);
         nodeList.CreateNodeArray(mapSize);
-        mapGenerator.GenerateMap(mapSize, nodeList);
+        mapGenerator.GenerateMap(mapSize, nodePrefab, nodeList);
         isMapGenerated = true;
 
         OnMapGenerated?.Invoke();
