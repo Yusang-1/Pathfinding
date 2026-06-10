@@ -1,19 +1,18 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class HPAClusterOptimized
+public class HPACluster
 {
     private readonly HPAGraph graph = new();
     private readonly Vector2Int clusterIndex;
     private readonly AStarPathfinder pathfinder;
 
     private readonly HashSet<Vector2Int> cachedEntrances = new();
-    private HPAClusterList clusterList;
 
     public HPAGraph Grpah => graph;
     public bool IsActive { get; private set; }
 
-    public HPAClusterOptimized(Vector2Int index, AStarPathfinder pathfinder)
+    public HPACluster(Vector2Int index, AStarPathfinder pathfinder)
     {
         clusterIndex = index;
         this.pathfinder = pathfinder;
@@ -21,7 +20,6 @@ public class HPAClusterOptimized
 
     public void Initialize(HPAClusterList clusterList, NodeList nodeList)
     {
-        this.clusterList = clusterList;
         InitializeGraph(clusterList, nodeList);
     }
 
@@ -95,47 +93,6 @@ public class HPAClusterOptimized
     public float GetHeuristic(Vector2Int from, Vector2Int to)
     {
         return Vector2Int.Distance(from, to);
-    }
-
-    public IEnumerable<Vector2Int> GetPath(Vector2Int start, Vector2Int goal)
-    {
-        return AStarHPA(start, goal);
-    }
-
-    private List<Vector2Int> AStarHPA(Vector2Int start, Vector2Int goal)
-    {
-        PriorityQueue<Vector2Int, float> openSet = new();
-        Dictionary<Vector2Int, Vector2Int> cameFrom = new();
-        Dictionary<Vector2Int, float> gScore = new() { { start, 0 } };
-        Dictionary<Vector2Int, float> fScore = new() { { start, GetHeuristic(start, goal) } };
-
-        openSet.Enqueue(start, fScore[start]);
-
-        while (openSet.Count > 0)
-        {
-            var current = openSet.Dequeue();
-            if (current == goal)
-            {
-                return ReconstructPath(cameFrom, current);
-            }
-
-            foreach (var neighbor in graph.GetNeighbors(current))
-            {
-                if (!graph.TryGetEdgeWeight(current, neighbor, out float edgeWeight)) continue;
-
-                float tentativeGScore = gScore[current] + edgeWeight;
-
-                if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
-                {
-                    cameFrom[neighbor] = current;
-                    gScore[neighbor] = tentativeGScore;
-                    fScore[neighbor] = gScore[neighbor] + GetHeuristic(neighbor, goal);
-                    openSet.Enqueue(neighbor, fScore[neighbor]);
-                }
-            }
-        }
-
-        return null;
     }
 
     private List<Vector2Int> ReconstructPath(Dictionary<Vector2Int, Vector2Int> cameFrom, Vector2Int current)

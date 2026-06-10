@@ -18,7 +18,7 @@ public class HPAGraph
         {
             Position = position;
 
-            Direction ??= new List<Vector2Int>(2);
+            Direction ??= new List<Vector2Int>(3);
             Direction.Add(direction);
         }
     }
