@@ -78,13 +78,10 @@ public class HPAClusterList
             || cluster.y + direction.y < 0 || cluster.y + direction.y >= clusterCount)
             return null;
 
-        const int entranceConstraint = 3; // 3보다 작은 너비의 입구는 중앙에 하나의 입구를 가짐, 3이상의 입구는 시작점과 끝점에 하나씩 가짐
-        const int bigEntrance = 9; // 9이상 너비의 입구는 시작, 중간, 끝에 입구를 가짐
-        
         cachedEdgeIndexes.Clear();
         tempEdgeIndexes.Clear();
         Vector2Int standardNode = GetLeftDownNodeIndexOfCluster(cluster);
-
+        bool isSuccess;
         if (direction.x == 0) // x축 경계선
         {
             if (direction.y > 0) // up
@@ -100,28 +97,12 @@ public class HPAClusterList
                 }
                 else // 막힌 edge발견시 tempEdgeIndexes에 있던 entrance들의 수를 파악해 선별된 entrance를 cachedEdgeIndexes에 담는다
                 {
-                    if (tempEdgeIndexes.Count >= bigEntrance)
-                    {
-                        int mid = tempEdgeIndexes.Count / 2;
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[0]);
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[mid]);
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[^1]);
-                    }
-                    else if (tempEdgeIndexes.Count >= entranceConstraint)
-                    {
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[0]);
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[^1]);
-                    }
-                    else
-                    {
-                        if (tempEdgeIndexes.Count == 0)
-                        {
-                            standardNode.x++;
-                            continue;
-                        }
+                    GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, out isSuccess);
 
-                        int mid = tempEdgeIndexes.Count / 2;
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[mid]);
+                    if (!isSuccess)
+                    {
+                        standardNode.x++;
+                        continue;
                     }
                     tempEdgeIndexes.Clear();
                 }
@@ -144,28 +125,12 @@ public class HPAClusterList
                 }
                 else
                 {
-                    if (tempEdgeIndexes.Count >= bigEntrance)
-                    {
-                        int mid = tempEdgeIndexes.Count / 2;
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[0]);
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[mid]);
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[^1]);
-                    }
-                    else if (tempEdgeIndexes.Count >= entranceConstraint)
-                    {
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[0]);
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[^1]);
-                    }
-                    else
-                    {
-                        if (tempEdgeIndexes.Count == 0)
-                        {
-                            standardNode.y++;
-                            continue;
-                        }
+                    GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, out isSuccess);
 
-                        int mid = tempEdgeIndexes.Count / 2;
-                        cachedEdgeIndexes.Add(tempEdgeIndexes[mid]);
+                    if (!isSuccess)
+                    {
+                        standardNode.x++;
+                        continue;
                     }
                     tempEdgeIndexes.Clear();
                 }
@@ -182,30 +147,40 @@ public class HPAClusterList
         }
 
         // entrance가 중간에 가로막히지 않았을 경우
-        if (tempEdgeIndexes.Count >= bigEntrance)
+        if (tempEdgeIndexes.Count > 0)
         {
-            int mid = tempEdgeIndexes.Count / 2;
-            cachedEdgeIndexes.Add(tempEdgeIndexes[0]);
-            cachedEdgeIndexes.Add(tempEdgeIndexes[mid]);
-            cachedEdgeIndexes.Add(tempEdgeIndexes[^1]);
-        }
-        else if (tempEdgeIndexes.Count >= entranceConstraint)
-        {
-            cachedEdgeIndexes.Add(tempEdgeIndexes[0]);
-            cachedEdgeIndexes.Add(tempEdgeIndexes[^1]);
-        }
-        else if (tempEdgeIndexes.Count > 0)
-        {
-            int mid = tempEdgeIndexes.Count / 2;
-            cachedEdgeIndexes.Add(tempEdgeIndexes[mid]);
-        }
-        else if (cachedEdgeIndexes.Count == 0)
-        {
-            return null;
+            GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, out isSuccess);
+            if (!isSuccess) return null;
         }
 
         return cachedEdgeIndexes;
     }
+    private void GetCachedIndexes(List<Vector2Int> tempEdges, List<Vector2Int> cachedEdges, out bool isSuccess)
+    {
+        const int entranceConstraint = 3; // 3이하 너비의 입구는 중앙에 하나의 입구를 가짐, 3초과의 입구는 시작점과 끝점에 하나씩 가짐
+        const int bigEntrance = 9; // 9이상 너비의 입구는 시작, 중간, 끝에 입구를 가짐
+
+        isSuccess = true;
+        if (tempEdges.Count >= bigEntrance)
+        {
+            int mid = tempEdges.Count / 2;
+            cachedEdges.Add(tempEdges[0]);
+            cachedEdges.Add(tempEdges[mid]);
+            cachedEdges.Add(tempEdges[^1]);
+        }
+        else if (tempEdges.Count > entranceConstraint)
+        {
+            cachedEdges.Add(tempEdges[0]);
+            cachedEdges.Add(tempEdges[^1]);
+        }
+        else if (tempEdges.Count > 0)
+        {
+            int mid = tempEdges.Count / 2;
+            cachedEdges.Add(tempEdges[mid]);
+        }
+        else isSuccess = false;
+    }
+
     public IEnumerable<Vector2Int> GetEntrances(Vector2Int clusterIndex, Vector2Int direction)
     {
         return GetCluster(clusterIndex).Grpah.GetNodesByDirection(direction);

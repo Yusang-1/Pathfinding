@@ -157,6 +157,8 @@ public class NodeInfo
     }
     public void ResetSearched()
     {
+        if(!nodeInfoDict.ContainsKey(NodeType.searched)) return;
+        
         Node node;
         foreach(var nodes in nodeInfoDict[NodeType.searched])
         {
@@ -167,6 +169,8 @@ public class NodeInfo
     }
     public void ResetTrace()
     {
+        if(!nodeInfoDict.ContainsKey(NodeType.trace)) return;
+        
         Node node;
         foreach(var nodes in nodeInfoDict[NodeType.trace])
         {
