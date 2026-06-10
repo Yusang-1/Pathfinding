@@ -11,7 +11,7 @@ public class SearchWithTheClusterResult
         resultPath.Clear();
         foreach (var data in pathData)
         {
-            clusterList.SetClusterActive(data.ClusterIndex, true);
+            clusterList.SetClusterActive(data.Index, true);
 
             Vector3 entrancePosition, goalPosition;
             if (data.hasEntranceAndExit == false)
@@ -31,7 +31,7 @@ public class SearchWithTheClusterResult
             
             resultPath.AddRange(pathInCluster);
 
-            clusterList.SetClusterActive(data.ClusterIndex, false);
+            clusterList.SetClusterActive(data.Index, false);
         }
         
         pathResult.PathLength--; // 마지막 cluster에서는 이동하지 않으므로 비용 -1;
@@ -44,7 +44,7 @@ public class SearchWithTheClusterResult
         pathResult = new();
         foreach (var data in pathData)
         {
-            clusterList.SetClusterActive(data.ClusterIndex, true);
+            clusterList.SetClusterActive(data.Index, true);
 
             Vector3 entrancePosition, goalPosition;
             if (data.hasEntranceAndExit == false)
@@ -65,7 +65,7 @@ public class SearchWithTheClusterResult
             if (pathInCluster == null) continue;
             resultPath.AddRange(pathInCluster);
 
-            clusterList.SetClusterActive(data.ClusterIndex, false);
+            clusterList.SetClusterActive(data.Index, false);
         }
         
         pathResult.PathLength--; // 마지막 cluster에서는 이동하지 않으므로 비용 -1;
@@ -74,7 +74,7 @@ public class SearchWithTheClusterResult
 
     public List<Vector3> FindPathTheta(HPAPathfinder.ResultNode data, ThetaStar pathfinder, NodeList nodeList, HPAClusterList clusterList)
     {
-        clusterList.SetClusterActive(data.ClusterIndex, true);
+        clusterList.SetClusterActive(data.Index, true);
 
         Vector3 entrancePosition, goalPosition;
         if (data.hasEntranceAndExit == false)
@@ -90,7 +90,7 @@ public class SearchWithTheClusterResult
 
         List<Vector3> pathInCluster = pathfinder.FindPath(entrancePosition, goalPosition, out PathResult pathResult);
 
-        clusterList.SetClusterActive(data.ClusterIndex, false);
+        clusterList.SetClusterActive(data.Index, false);
 
         return pathInCluster;
     }

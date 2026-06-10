@@ -36,7 +36,7 @@ public class ClusterShower : MonoBehaviour
     {
         for(int i = 0; i < results.Count; i++)
         {
-            clusters[results[i].ClusterIndex].SetActive(true);
+            clusters[results[i].Index].SetActive(true);
         }
     }
     

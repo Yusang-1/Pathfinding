@@ -12,6 +12,12 @@ public class HPAPathfinder
     private readonly Stack<List<Vector2Int>> listPool = new();
     private const int PoolSize = 10;
 
+    private readonly PriorityQueue<AbstractNode, float> openSet = new();
+    private readonly HashSet<AbstractNode> closedSet = new();
+    private readonly Dictionary<AbstractNode, (float h, float g)> clusterDict = new();
+    // parent map: maps a node to its predecessor for path reconstruction
+    private readonly Dictionary<AbstractNode, AbstractNode> cameFrom = new();
+
     public HPAPathfinder(HPAClusterList clusterList, NodeList nodeList, AStarPathfinder lowLvPathfinder)
     {
         this.clusterList = clusterList;
@@ -49,26 +55,14 @@ public class HPAPathfinder
         nodeList.NodeInfo.ResetTrace();
 
         List<ResultNode> clusterPath;
-        // from과 to가 같은 클러스터에 존재할 경우 저수준 경로만 반환
-        if (startCluster == goalCluster)
+        // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴
+        if (startCluster == goalCluster && clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode))
         {
-            // startNode에서 goalNode로 이동 가능한지 판별
-            if (clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode))
-            {
-                clusterList.SetClusterActive(startCluster, true);
-                // 가능하면 resultNode하나 리턴
-                return new() {
-                    new ResultNode{
-                        ClusterIndex = startCluster, enteranceNode = startNode, exitNode = goalNode, hasEntranceAndExit = true
-                    }
-                };
-            }
-            else
-            {
-                // 고수준 클러스터 경로 탐색
-                clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, out PathResult result);
-                pathResult.AddResult(result);
-            }
+            return new() {
+                new ResultNode{
+                    Index = startCluster, enteranceNode = startNode, exitNode = goalNode, hasEntranceAndExit = true
+                }
+            };
         }
         else
         {
@@ -77,6 +71,7 @@ public class HPAPathfinder
             pathResult.AddResult(result);
         }
 
+        // 시작지점과 도착지점을 clusterPath에 추가
         var temp = clusterPath[0];
         temp.enteranceNode = startNode;
         temp.hasEntranceAndExit = true;
@@ -97,11 +92,10 @@ public class HPAPathfinder
     /// <summary> 고수준 클러스터 경로 탐색 </summary>    
     private List<ResultNode> FindAbstractClusterPath(Vector2Int startCluster, Vector2Int goalCluster, Vector2Int startNode, Vector2Int goalNode, out PathResult pathResult)
     {
-        PriorityQueue<AbstractNode, float> openSet = new();
-        Dictionary<AbstractNode, AbstractNode> cameFrom = new();
-        Dictionary<AbstractNode, float> gCost = new();
-        Dictionary<AbstractNode, float> fCost = new();
-        HashSet<AbstractNode> closedSet = new();
+        openSet.Clear();
+        closedSet.Clear();
+        clusterDict.Clear();
+        cameFrom.Clear();
 
         pathResult = new();
         List<Vector2Int> startEntrances = GetAllEntrances(startCluster);
@@ -109,24 +103,22 @@ public class HPAPathfinder
 
         AbstractNode startVirtual = new()
         {
-            ClusterIndex = startCluster,
-            EntrancePos = startNode
+            Index = startCluster,
+            EntrancePos = startNode,
         };
-        gCost.Add(startVirtual, 0);
-        fCost.Add(startVirtual, CaculateHeuristic(startNode, goalNode));
-        openSet.Enqueue(startVirtual, fCost[startVirtual]);
+        openSet.Enqueue(startVirtual, 0);
+        clusterDict[startVirtual] = (0, 0);
+        cameFrom[startVirtual] = startVirtual;
 
         while (openSet.Count > 0)
         {
             AbstractNode current = openSet.Dequeue();
-            if (current.ClusterIndex == goalCluster && clusterList.GetCluster(current.ClusterIndex).IsNodeConnected(current.EntrancePos, goalNode))
+            if (current.Index == goalCluster && clusterList.GetCluster(current.Index).IsNodeConnected(current.EntrancePos, goalNode))
             {
                 pathResult.MemoryUsed += openSet.Capacity;
-                pathResult.MemoryUsed += cameFrom.Count;
-                pathResult.MemoryUsed += gCost.Count;
-                pathResult.MemoryUsed += fCost.Count;
+                pathResult.MemoryUsed += clusterDict.Count;
                 pathResult.MemoryUsed += closedSet.Count;
-                return ReconstructAbstractPath(cameFrom, current, startVirtual);
+                return ReconstructAbstractPath(clusterDict, cameFrom, current, startVirtual);
             }
             if (closedSet.Contains(current)) continue;
             closedSet.Add(current);
@@ -136,15 +128,22 @@ public class HPAPathfinder
                 if (closedSet.Contains(neighbor)) continue;
 
                 pathResult.SearchedCount++;
-                float tentativeG = gCost[current] + cost;
+                float tentativeG = clusterDict[current].g + cost;
 
-                if (!gCost.ContainsKey(neighbor) || tentativeG < gCost[neighbor])
+                if (!clusterDict.ContainsKey(neighbor) || tentativeG < clusterDict[neighbor].g)
                 {
-                    cameFrom[neighbor] = current;
-                    gCost[neighbor] = tentativeG;
-                    fCost[neighbor] = tentativeG + CaculateHeuristic(neighbor.EntrancePos, goalNode);
+                    if (!clusterDict.ContainsKey(neighbor))
+                    {
+                        clusterDict[neighbor] = (CaculateHeuristic(neighbor.EntrancePos, goalNode), 0);
+                    }
+                    var item = clusterDict[neighbor];
+                    item.g = tentativeG;
+                    clusterDict[neighbor] = item;
 
-                    openSet.Enqueue(neighbor, fCost[neighbor]);
+                    // record parent for reconstruction
+                    cameFrom[neighbor] = current;
+
+                    openSet.Enqueue(neighbor, clusterDict[neighbor].g + clusterDict[neighbor].h);
                 }
             }
         }
@@ -152,53 +151,53 @@ public class HPAPathfinder
         return null; // 경로 없음
     }
 
-    private List<ResultNode> ReconstructAbstractPath(Dictionary<AbstractNode, AbstractNode> cameFrom, AbstractNode current, AbstractNode start)
+    private List<ResultNode> ReconstructAbstractPath(Dictionary<AbstractNode, (float h, float g)> clusterDict, Dictionary<AbstractNode, AbstractNode> cameFrom, AbstractNode current, AbstractNode start)
     {
         var nodes = new Dictionary<Vector2Int, int>();
 
-        // 도착지 노드 세팅
-        //clusterList.SetClusterActive(current.ClusterIndex, true);
+        // 도착지 노드 세팅 (current는 목표 노드)
         results.Add(new ResultNode
         {
-            ClusterIndex = current.ClusterIndex,
+            Index = current.Index,
             enteranceNode = current.EntrancePos,
             hasEntranceAndExit = true
         });
 
-        nodes.Add(current.ClusterIndex, results.Count - 1);
+        nodes.Add(current.Index, results.Count - 1);
+        // move to parent using cameFrom
         current = cameFrom[current];
 
         ResultNode temp;
         while (!current.Equals(start))
         {
-            if (nodes.ContainsKey(current.ClusterIndex))
+            if (nodes.ContainsKey(current.Index))
             {
-                if (!results[nodes[current.ClusterIndex]].hasEntranceAndExit)
+                if (!results[nodes[current.Index]].hasEntranceAndExit)
                 {
-                    temp = results[nodes[current.ClusterIndex]];
+                    temp = results[nodes[current.Index]];
                     temp.enteranceNode = current.EntrancePos;
                     temp.hasEntranceAndExit = true;
-                    results[nodes[current.ClusterIndex]] = temp;
+                    results[nodes[current.Index]] = temp;
                 }
                 else
                 {
                     results.Add(new ResultNode
                     {
-                        ClusterIndex = current.ClusterIndex,
+                        Index = current.Index,
                         exitNode = current.EntrancePos,
                     });
-                    nodes[current.ClusterIndex] = results.Count - 1;
+                    nodes[current.Index] = results.Count - 1;
                 }
             }
             else
             {
                 results.Add(new ResultNode
                 {
-                    ClusterIndex = current.ClusterIndex,
+                    Index = current.Index,
                     exitNode = current.EntrancePos,
                 });
 
-                nodes.Add(current.ClusterIndex, results.Count - 1);
+                nodes.Add(current.Index, results.Count - 1);
             }
 
             current = cameFrom[current];
@@ -207,7 +206,7 @@ public class HPAPathfinder
         {
             results.Add(new ResultNode
             {
-                ClusterIndex = current.ClusterIndex,
+                Index = current.Index,
                 exitNode = current.EntrancePos,
                 hasEntranceAndExit = true
             });
@@ -219,10 +218,10 @@ public class HPAPathfinder
 
     private IEnumerable<(AbstractNode node, float cost)> GetAbstractNeighbors(AbstractNode current)
     {
-        var cluster = clusterList.GetCluster(current.ClusterIndex);
+        var cluster = clusterList.GetCluster(current.Index);
 
         // Intra-cluster edges
-        List<Vector2Int> entranceList = GetAllEntrances(current.ClusterIndex);
+        List<Vector2Int> entranceList = GetAllEntrances(current.Index);
         foreach (var other in entranceList)
         {
             if (other == current.EntrancePos) continue;
@@ -230,27 +229,27 @@ public class HPAPathfinder
             if (cluster.TryGetIntraEdgeCost(current.EntrancePos, other, out float intraCost))
             {
                 yield return (
-                    new AbstractNode { ClusterIndex = current.ClusterIndex, EntrancePos = other },
+                    new AbstractNode { Index = current.Index, EntrancePos = other },
                     intraCost
                 );
             }
         }
 
         // Inter-cluster edge
-        List<Vector2Int> neighbors = clusterList.GetNeighborClusters(current.ClusterIndex);
+        List<Vector2Int> neighbors = clusterList.GetNeighborClusters(current.Index);
         foreach (var neighborCluster in neighbors)
         {
-            Vector2Int? neighborEntrance = GetEntranceBetweenClusters(current.ClusterIndex, neighborCluster, current.EntrancePos);
+            Vector2Int? neighborEntrance = GetEntranceBetweenClusters(current.Index, neighborCluster, current.EntrancePos);
             if (neighborEntrance == null) continue;
 
             yield return (
-                new AbstractNode { ClusterIndex = neighborCluster, EntrancePos = (Vector2Int)neighborEntrance },
-                current.ClusterIndex.GetNeighborMoveCost(neighborCluster) // 경계 통과 비용
+                new AbstractNode { Index = neighborCluster, EntrancePos = (Vector2Int)neighborEntrance },
+                current.Index.GetNeighborMoveCost(neighborCluster) // 경계 통과 비용
             );
         }
     }
 
-    private List<Vector2Int> GetAllEntrances(Vector2Int clusterIndex)
+    private List<Vector2Int> GetAllEntrances(Vector2Int Index)
     {
         List<Vector2Int> entrances = GetList();
         entrances.Clear();
@@ -258,7 +257,7 @@ public class HPAPathfinder
         Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         foreach (Vector2Int dir in directions)
         {
-            foreach (var dirEntrance in clusterList.GetEntrances(clusterIndex, dir))
+            foreach (var dirEntrance in clusterList.GetEntrances(Index, dir))
             {
                 if (dirEntrance != null)
                 {
@@ -302,24 +301,24 @@ public class HPAPathfinder
 
     private struct AbstractNode
     {
-        public Vector2Int ClusterIndex;
+        public Vector2Int Index;
         public Vector2Int EntrancePos;
 
         public override readonly bool Equals(object obj)
         {
             if (obj is not AbstractNode other) return false;
-            return ClusterIndex == other.ClusterIndex && EntrancePos == other.EntrancePos;
+            return Index == other.Index && EntrancePos == other.EntrancePos;
         }
 
         public override readonly int GetHashCode()
         {
-            return ClusterIndex.GetHashCode() ^ EntrancePos.GetHashCode();
+            return Index.GetHashCode() ^ EntrancePos.GetHashCode();
         }
     }
 
     public struct ResultNode
     {
-        public Vector2Int ClusterIndex;
+        public Vector2Int Index;
         public Vector2Int enteranceNode;
         public Vector2Int exitNode;
 

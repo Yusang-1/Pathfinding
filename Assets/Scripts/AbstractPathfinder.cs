@@ -15,7 +15,7 @@ public abstract class AbstractPathfinder
     {
         public float g;
         public float h;
-        public float f => g + h;
+        public readonly float f => g + h;
         public Vector2Int index;
         public Vector2Int parentIndex;
         public Vector2Int beforeNodeIndex;
