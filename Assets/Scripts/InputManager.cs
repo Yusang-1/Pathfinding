@@ -51,33 +51,4 @@ public class InputManager : MonoBehaviour
             mousePosition = context.ReadValue<Vector2>();
         }
     }
-
-    [SerializeField] private CameraController cameraController;
-    public void OnMoveCamera(InputAction.CallbackContext context)
-    {
-        if (context.started)
-        {
-            cameraController.GetDirection(context.ReadValue<Vector2>());
-        }
-
-        if (context.canceled)
-        {
-            cameraController.Stop();
-        }
-    }
-
-    public void OnZoomCamera(InputAction.CallbackContext context)
-    {
-        float scrollY = context.ReadValue<float>();
-
-        if (context.started)
-        {
-            if (scrollY != 0)
-            {
-                Vector3 pos = Camera.main.transform.position;
-                pos.z += scrollY;
-                Camera.main.transform.position = pos;
-            }
-        }
-    }
 }

@@ -104,15 +104,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "ZoomCamera",
-                    "type": "Value",
-                    "id": "e8c68fa6-0dd7-43d7-a7e4-9257db972f6c",
-                    "expectedControlType": "Axis",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -520,17 +511,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "MousePosition",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "09721fde-7181-4eba-896d-43c4ccd2363c",
-                    "path": "<Mouse>/scroll/y",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ZoomCamera",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
