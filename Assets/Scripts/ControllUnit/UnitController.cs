@@ -8,8 +8,8 @@ namespace Assets.Scripts.ControllUnit
         private Pathfinder pathfinder;
         private Vector3 direction;
         private bool HasDirection => direction != Vector3.zero;
-        private bool isNextPathSet;
-        
+        private bool isReadyToNextPathSet;
+
         [SerializeField] private UnitInput input;
         [SerializeField] private float moveSpeed;
         [SerializeField] private float refineLength = 2.2f;
@@ -26,9 +26,13 @@ namespace Assets.Scripts.ControllUnit
         private Vector3 exitOfCluster;
         public void MoveTo(Vector3 destination)
         {
+            isReadyToNextPathSet = true;
             currentPathIndex = 0;
             abstractPath = pathfinder.GetAbstractPath(transform.position, destination);
-            pathfinder.SearchLowLevelPath(abstractPath[currentPathIndex++]);
+            exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
+            pathfinder.SearchLowLevelPath(abstractPath[currentPathIndex]);
+            // currentAbstractPath = abstractPath[currentPathIndex];
+            pathfinder.TryGetShortDestination(out shortDestination); // 출발지(현재 위치) 빼내기
             GetShortDestination();
         }
 
@@ -43,10 +47,13 @@ namespace Assets.Scripts.ControllUnit
 
             transform.position += moveSpeed * Time.deltaTime * direction;
 
-            if (isNextPathSet && IsDistanceInNextRefine() && currentPathIndex < abstractPath.Count)
+            if (isReadyToNextPathSet && IsDistanceInNextRefine() && currentPathIndex < abstractPath.Count)
             {
-                pathfinder.SearchLowLevelPath(currentAbstractPath);
-                isNextPathSet = false;
+                if (currentPathIndex + 1 < abstractPath.Count)
+                {
+                    pathfinder.SearchLowLevelPath(abstractPath[++currentPathIndex]);
+                    isReadyToNextPathSet = false;
+                }
             }
 
             if (IsDistanceInCurrentDestination())
@@ -63,6 +70,11 @@ namespace Assets.Scripts.ControllUnit
                 direction = (shortDestination - transform.position).normalized;
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
                 transform.rotation = Quaternion.Euler(0, 0, angle);
+
+                if (shortDestination == exitOfCluster)
+                {
+                    isReadyToNextPathSet = true;
+                }
             }
             else
             {
@@ -81,7 +93,7 @@ namespace Assets.Scripts.ControllUnit
         private bool IsDistanceInCurrentDestination()
         {
             float sqrtM = Vector3.SqrMagnitude(transform.position - shortDestination);
-            if (sqrtM <= 0.05f)
+            if (sqrtM <= 0.1f)
             {
                 if (shortDestination == exitOfCluster)
                 {
@@ -91,9 +103,7 @@ namespace Assets.Scripts.ControllUnit
                         return false;
                     }
 
-                    currentAbstractPath = abstractPath[currentPathIndex++];
-                    exitOfCluster = new Vector3(currentAbstractPath.exitNode.x, currentAbstractPath.exitNode.y);
-                    isNextPathSet = true;
+                    exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
                 }
 
                 transform.position = shortDestination;

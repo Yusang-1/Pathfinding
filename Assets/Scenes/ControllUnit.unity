@@ -6501,7 +6501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: {fileID: 1661711644}
-  moveSpeed: 1.5
+  moveSpeed: 2.4
   refineLength: 2.2
 --- !u!114 &1869524994
 MonoBehaviour:

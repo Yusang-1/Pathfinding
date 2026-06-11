@@ -11,6 +11,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action OnDisableActionMap;
 
         [SerializeField] private UnitController controller;
+        private UnitInput unitInput;
 
         private void Update()
         {
@@ -19,14 +20,27 @@ namespace Assets.Scripts.ControllUnit
 
         public void Selected()
         {
+            if(unitInput == null)
+            {
+                unitInput = FindAnyObjectByType<UnitInput>();
+            }
+            unitInput.OnRightClickRequested += MoveUnit;
+            
             OnSelectedCallback?.Invoke(this);
             OnEnableActionMap?.Invoke(nameof(Unit));
         }
 
         public void Deselected()
         {
+            unitInput.OnRightClickRequested -= MoveUnit;
+            
             OnDeselectedCallback?.Invoke(this);
             OnDisableActionMap?.Invoke();
+        }
+        
+        public void MoveUnit(Vector3 destination)
+        {
+            controller.MoveTo(destination);
         }
     }
 }

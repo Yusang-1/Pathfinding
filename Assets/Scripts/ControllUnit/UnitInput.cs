@@ -16,13 +16,13 @@ namespace Assets.Scripts.ControllUnit
         private Vector2 mousePosition;
         private bool isPointerOverGameObject;
         private SelectableController selectableController;
-        
+
         private bool isInputActive;
-        
+
         private void Update()
         {
-            if(!isInputActive) return;
-            
+            if (!isInputActive) return;
+
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 isPointerOverGameObject = true;
@@ -32,7 +32,7 @@ namespace Assets.Scripts.ControllUnit
                 isPointerOverGameObject = false;
             }
         }
-        
+
         public void Initialize(SelectableController selectableController)
         {
             this.selectableController = selectableController;
@@ -44,15 +44,15 @@ namespace Assets.Scripts.ControllUnit
 
             if (context.canceled)
             {
-                Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z)); // -Camera.main.transform.position.z
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 Vector3 origin = Camera.main.transform.position;
-                Vector3 direction = -(mousePos - origin).normalized;
+                Vector3 direction = -(worldPos - origin).normalized;
 
                 if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
                 {
                     if (hit.collider.TryGetComponent<ISelectable>(out ISelectable selectable))
                     {
-                        selectableController.Selected(selectable);                        
+                        selectableController.Selected(selectable);
                     }
                     else
                         selectableController.Selected(null);
@@ -61,10 +61,17 @@ namespace Assets.Scripts.ControllUnit
                     selectableController.Selected(null);
             }
         }
-
+        
+        public event Action<Vector3> OnRightClickRequested;
         public void OnRightClick(InputAction.CallbackContext context)
         {
-            Debug.Log("Right Click");
+            if (context.canceled)
+            {
+                Debug.Log("Right Click");
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
+
+                OnRightClickRequested?.Invoke(worldPos);
+            }
         }
 
         public void OnTrackMousePosition(InputAction.CallbackContext context)
@@ -114,7 +121,7 @@ namespace Assets.Scripts.ControllUnit
         private void SetDirection(Vector2 dir)
         {
             sumOfDirection += dir;
-            OnDirectionChanged(sumOfDirection.normalized);
+            OnDirectionChanged?.Invoke(sumOfDirection.normalized);
         }
 
         public void OnZoomCamera(InputAction.CallbackContext context)

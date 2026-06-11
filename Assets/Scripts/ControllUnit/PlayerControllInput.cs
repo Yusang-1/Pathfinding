@@ -8,22 +8,21 @@ namespace Assets.Scripts.ControllUnit
 {
     public class PlayerControllInput : MonoBehaviour
     {
-        // public event Action<string> OnSelectedCallback;
         public event Action<Vector2> OnDirectionChanged;
-        
+
         private Vector2 sumOfDirection;
         private readonly Dictionary<int, Vector2> directionDict = new();
 
         private Vector2 mousePosition;
         private bool isPointerOverGameObject;
         private SelectableController selectableController;
-        
+
         private bool isInputActive;
-        
+
         private void Update()
         {
-            if(!isInputActive) return;
-            
+            if (!isInputActive) return;
+
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 isPointerOverGameObject = true;
@@ -33,7 +32,7 @@ namespace Assets.Scripts.ControllUnit
                 isPointerOverGameObject = false;
             }
         }
-        
+
         public void Initialize(SelectableController selectableController)
         {
             this.selectableController = selectableController;
@@ -45,9 +44,9 @@ namespace Assets.Scripts.ControllUnit
 
             if (context.canceled)
             {
-                Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z)); // -Camera.main.transform.position.z
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 Vector3 origin = Camera.main.transform.position;
-                Vector3 direction = -(mousePos - origin).normalized;
+                Vector3 direction = -(worldPos - origin).normalized;
 
                 if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
                 {

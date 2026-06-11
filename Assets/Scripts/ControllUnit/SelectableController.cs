@@ -17,6 +17,8 @@ namespace Assets.Scripts.ControllUnit
 
         public void Selected(ISelectable selectable)
         {
+            if(currentSelected == selectable) return;
+            
             if (currentSelected != null)
             {
                 currentSelected.Deselected();
