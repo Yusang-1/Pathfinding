@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using System;
 using System.Collections.Generic;
 
-public class PlayerInput : MonoBehaviour
+public class PlayerControllInput : MonoBehaviour
 {
     public event Action<Vector2> OnDirectionChanged;
     private Vector2 sumOfDirection;
@@ -37,10 +37,10 @@ public class PlayerInput : MonoBehaviour
             RaycastHit2D hit2D = Physics2D.Raycast(origin, Vector3.forward, Mathf.Infinity);
             if (hit2D)
             {
-                if (hit2D.collider.TryGetComponent<Node>(out Node node))
+                if (hit2D.collider.TryGetComponent<ISelectable>(out ISelectable selectable))
                 {
                     // node.Selected();
-                    selectableController.Selected(node);
+                    selectableController.Selected(selectable);
                 }
                 else
                     selectableController.Selected(null);

@@ -1,101 +1,104 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class UnitController : MonoBehaviour
+namespace Assets.Scripts.ControllUnit
 {
-    private Pathfinder pathfinder;
-    private Vector3 direction;
-    private bool HasDirection => direction != Vector3.zero;
-    private bool isNextPathSet;
-
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float refineLength = 2.2f;
-
-    private void Start()
+    public class UnitController : MonoBehaviour
     {
-        pathfinder = FindAnyObjectByType<Pathfinder>();
-    }
+        private Pathfinder pathfinder;
+        private Vector3 direction;
+        private bool HasDirection => direction != Vector3.zero;
+        private bool isNextPathSet;
 
-    private List<HPAPathfinder.ResultNode> abstractPath;
-    private HPAPathfinder.ResultNode currentAbstractPath;
-    private int currentPathIndex;
-    private Vector3 shortDestination;
-    private Vector3 exitOfCluster;
-    public void MoveTo(Vector3 destination)
-    {
-        currentPathIndex = 0;
-        abstractPath = pathfinder.GetAbstractPath(transform.position, destination);
-        pathfinder.SearchLowLevelPath(abstractPath[currentPathIndex++]);
-        GetShortDestination();
-    }
+        [SerializeField] private float moveSpeed;
+        [SerializeField] private float refineLength = 2.2f;
 
-    public void ControllerUpdate()
-    {
-        Move();
-    }
-
-    private void Move()
-    {
-        if (!HasDirection) return;
-
-        transform.position += moveSpeed * Time.deltaTime * direction;
-
-        if (isNextPathSet && IsDistanceInNextRefine() && currentPathIndex < abstractPath.Count)
+        private void Start()
         {
-            pathfinder.SearchLowLevelPath(currentAbstractPath);
-            isNextPathSet = false;
+            pathfinder = FindAnyObjectByType<Pathfinder>();
         }
 
-        if (IsDistanceInCurrentDestination())
+        private List<HPAPathfinder.ResultNode> abstractPath;
+        private HPAPathfinder.ResultNode currentAbstractPath;
+        private int currentPathIndex;
+        private Vector3 shortDestination;
+        private Vector3 exitOfCluster;
+        public void MoveTo(Vector3 destination)
         {
+            currentPathIndex = 0;
+            abstractPath = pathfinder.GetAbstractPath(transform.position, destination);
+            pathfinder.SearchLowLevelPath(abstractPath[currentPathIndex++]);
             GetShortDestination();
         }
-    }
 
-    private void GetShortDestination()
-    {
-        bool isSuccess = pathfinder.TryGetShortDestination(out shortDestination);
-        if (isSuccess)
+        public void ControllerUpdate()
         {
-            direction = (shortDestination - transform.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
-            transform.rotation = Quaternion.Euler(0, 0, angle);
+            Move();
         }
-        else
-        {
-            direction = Vector3.zero;
-        }
-    }
 
-    private bool IsDistanceInNextRefine()
-    {
-        float sqrM = Vector3.SqrMagnitude(transform.position - exitOfCluster);
-        float compare = refineLength * refineLength;
-        if (sqrM <= compare) return true;
-        else return false;
-    }
-
-    private bool IsDistanceInCurrentDestination()
-    {
-        float sqrtM = Vector3.SqrMagnitude(transform.position - shortDestination);
-        if (sqrtM <= 0.05f)
+        private void Move()
         {
-            if (shortDestination == exitOfCluster)
+            if (!HasDirection) return;
+
+            transform.position += moveSpeed * Time.deltaTime * direction;
+
+            if (isNextPathSet && IsDistanceInNextRefine() && currentPathIndex < abstractPath.Count)
             {
-                if (currentPathIndex >= abstractPath.Count) // 최종 도착
-                {
-                    direction = Vector3.zero;
-                    return false;
-                }
-
-                currentAbstractPath = abstractPath[currentPathIndex++];
-                exitOfCluster = new Vector3(currentAbstractPath.exitNode.x, currentAbstractPath.exitNode.y);
-                isNextPathSet = true;
+                pathfinder.SearchLowLevelPath(currentAbstractPath);
+                isNextPathSet = false;
             }
 
-            transform.position = shortDestination;
-            return true;
+            if (IsDistanceInCurrentDestination())
+            {
+                GetShortDestination();
+            }
         }
-        else return false;
+
+        private void GetShortDestination()
+        {
+            bool isSuccess = pathfinder.TryGetShortDestination(out shortDestination);
+            if (isSuccess)
+            {
+                direction = (shortDestination - transform.position).normalized;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+                transform.rotation = Quaternion.Euler(0, 0, angle);
+            }
+            else
+            {
+                direction = Vector3.zero;
+            }
+        }
+
+        private bool IsDistanceInNextRefine()
+        {
+            float sqrM = Vector3.SqrMagnitude(transform.position - exitOfCluster);
+            float compare = refineLength * refineLength;
+            if (sqrM <= compare) return true;
+            else return false;
+        }
+
+        private bool IsDistanceInCurrentDestination()
+        {
+            float sqrtM = Vector3.SqrMagnitude(transform.position - shortDestination);
+            if (sqrtM <= 0.05f)
+            {
+                if (shortDestination == exitOfCluster)
+                {
+                    if (currentPathIndex >= abstractPath.Count) // 최종 도착
+                    {
+                        direction = Vector3.zero;
+                        return false;
+                    }
+
+                    currentAbstractPath = abstractPath[currentPathIndex++];
+                    exitOfCluster = new Vector3(currentAbstractPath.exitNode.x, currentAbstractPath.exitNode.y);
+                    isNextPathSet = true;
+                }
+
+                transform.position = shortDestination;
+                return true;
+            }
+            else return false;
+        }
     }
 }

@@ -6619,7 +6619,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3133e982f3c665448ec576df64aef09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathfinder: {fileID: 0}
+  pathfinder: {fileID: 547811150}
   uiRoot: {fileID: 2113284064}
   nodePrefab: {fileID: -1020127619466002619, guid: 29f9a899b106cc6419333352c7fd97e3, type: 3}
   nodeData: {fileID: 11400000, guid: bf87c0f6c59541f4aaf61f3cc70bc84f, type: 2}
@@ -7210,8 +7210,8 @@ SceneRoots:
   - {fileID: 705920040}
   - {fileID: 1117839812}
   - {fileID: 2083070643}
-  - {fileID: 1661711642}
   - {fileID: 547811151}
+  - {fileID: 1661711642}
   - {fileID: 2113284063}
   - {fileID: 1069944962}
   - {fileID: 1869524998}
