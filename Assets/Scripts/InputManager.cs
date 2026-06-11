@@ -8,6 +8,15 @@ public class InputManager : MonoBehaviour
     private bool isPointerOverGameObject;
     private readonly SelectableController selectableController = new();
 
+    [SerializeField] private InputActionAsset inputActions;
+    private InputActionMap actionMap;
+
+    private void Awake()
+    {
+        actionMap = inputActions.actionMaps[0];
+        actionMap.Enable();
+    }
+
     private void Update()
     {
         if (EventSystem.current.IsPointerOverGameObject())

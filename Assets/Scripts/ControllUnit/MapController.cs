@@ -21,7 +21,7 @@ public class MapController : MonoBehaviour
     [SerializeField] private int nodeSize;    
     private int mapSize;
     private int clusterSize;
-    private bool isMapGenerated;
+    // private bool isMapGenerated;
     private const int defaultMapSize = 20;
     private const int maxClusterSize = 10;
 
@@ -61,7 +61,7 @@ public class MapController : MonoBehaviour
         highLevelPathfinder = new HPAPathfinder(clusterList, nodeList, aStarPathfinder);
         nodeList.CreateNodeArray(mapSize);
         mapGenerator.GenerateMap(nodeSize, nodePrefab, nodeList);
-        isMapGenerated = true;
+        // isMapGenerated = true;
 
         OnMapGenerated?.Invoke();
     }

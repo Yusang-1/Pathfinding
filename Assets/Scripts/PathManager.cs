@@ -16,7 +16,7 @@ public class PathManager : MonoBehaviour
     private HPAPathfinder hPAPathfinder;
     private ThetaStar thetaStarPathfinder;
     private SearchWithTheClusterResult searchWithTheClusterResult;
-    private readonly MapGenerator mapGenerator;
+    private readonly MapGenerator mapGenerator = new();
     private readonly PathfindingResultShower resultShower = new();
 
     [SerializeField] private UIRoot uiRoot;
