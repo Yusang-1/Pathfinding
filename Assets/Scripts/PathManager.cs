@@ -58,8 +58,8 @@ public class PathManager : MonoBehaviour
         searchWithTheClusterResult = new SearchWithTheClusterResult(pathfinder, thetaStarPathfinder);
 
         nodeList.NodeInfo.OnPathfindAvailable += (value) => uiRoot.ActiveFindButton(value);
-        nodeList.OnSelected += (index) => uiRoot.ActiveNodeTypeSelector(index, true);
-        nodeList.OnDeselected += (index) => uiRoot.ActiveNodeTypeSelector(index, false);
+        nodeList.OnSelected += (node) => uiRoot.ActiveNodeTypeSelector(node, true);
+        nodeList.OnDeselected += (node) => uiRoot.ActiveNodeTypeSelector(node, false);
         OnPathFound += () => uiRoot.ActiveResultController(true);
         OnMapGenerated += () => uiRoot.ActiveFindButton(true);
 

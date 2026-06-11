@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class NodeList
 {
-    public event Action<Vector2Int> OnSelected;
-    public event Action<Vector2Int> OnDeselected;
+    public event Action<ISelectable> OnSelected;
+    public event Action<ISelectable> OnDeselected;
 
     private readonly NodeData nodeData;
     private readonly NodeInfo nodeInfo;
@@ -46,8 +46,10 @@ public class NodeList
 
     public void SetNode(int x, int y, Node node)
     {
+        node.OnSelectedCallback += OnSelected;
+        node.OnDeselectedCallback += OnDeselected;        
+        node.Initialize(new Vector2Int(x,y));
         nodes[x, y] = node;
-        nodes[x, y].Initialize(new Vector2Int(x,y), OnSelected, OnDeselected);
     }
 
     public void SetNodeType(Vector2Int index, NodeType type)

@@ -44,8 +44,9 @@ public class UIRoot : MonoBehaviour
         uIResultController.gameObject.SetActive(value);
     }
     
-    public void ActiveNodeTypeSelector(Vector2Int index, bool value)
+    public void ActiveNodeTypeSelector(ISelectable selectable, bool value)
     {
+        Vector2Int index = (selectable as Node).Index;
         nodeTypeSelector.ActiveSelector(index, value);
     }
     

@@ -4,34 +4,33 @@ using System;
 public class Node : MonoBehaviour, ISelectable
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
-    private Action<Vector2Int> OnSelectedCallback;
-    private Action<Vector2Int> OnDeselectedCallback;
+    public event Action<ISelectable> OnSelectedCallback;
+    public event Action<ISelectable> OnDeselectedCallback;
 
     public int NodeArea { get; private set; }
     public bool IsAreaSet { get => NodeArea > 0; }
 
     private Vector2Int index;
+    public Vector2Int Index => index;
     private NodeType type;
 
     public bool IsWalkable { get; private set; }
 
-    public void Initialize(Vector2Int index, Action<Vector2Int> onSelected, Action<Vector2Int> onDeselected)
+    public void Initialize(Vector2Int index)
     {
         this.index = index;
         IsWalkable = true;
         type = NodeType.room;
-        OnSelectedCallback = onSelected;
-        OnDeselectedCallback = onDeselected;
     }
 
     public void Selected()
     {
-        OnSelectedCallback?.Invoke(index);
+        OnSelectedCallback?.Invoke(this);
         if (IsAreaSet) Debug.Log($"areaNum : {NodeArea}");
     }
     public void Deselected()
     {
-        OnDeselectedCallback?.Invoke(index);
+        OnDeselectedCallback?.Invoke(this);
     }
 
     public void SetType(NodeType type, Sprite sprite)
