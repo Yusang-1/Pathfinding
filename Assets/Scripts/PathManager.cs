@@ -26,7 +26,7 @@ public class PathManager : MonoBehaviour
     [SerializeField] private ClusterShower clusterShower;
     [SerializeField] private LineDrawer lineDrawer;
 
-    [SerializeField] private Unit unit;
+    [SerializeField] private UnitUncontrollable unit;
 
     [Header("Values")]
     [SerializeField] private int nodeSize;

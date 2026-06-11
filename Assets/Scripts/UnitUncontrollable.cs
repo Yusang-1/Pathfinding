@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Unit : MonoBehaviour
+public class UnitUncontrollable : MonoBehaviour
 {
     private LazyRefine lazyRefine;
     [SerializeField] private float unitSpeed = 3.2f;
