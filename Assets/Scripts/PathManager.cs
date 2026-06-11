@@ -30,8 +30,8 @@ public class PathManager : MonoBehaviour
 
     [Header("Values")]
     [SerializeField] private int nodeSize;
-    [SerializeField] private int clusterSize;
-    [SerializeField] private int mapSize;
+    private int clusterSize;
+    private int mapSize;
 
     private bool isMapGenerated = false;
     private List<HPAPathfinder.ResultNode> currentAbstractResults;

@@ -60,7 +60,7 @@ public class MapController : MonoBehaviour
         
         highLevelPathfinder = new HPAPathfinder(clusterList, nodeList, aStarPathfinder);
         nodeList.CreateNodeArray(mapSize);
-        mapGenerator.GenerateMap(nodeSize, nodePrefab, nodeList);
+        mapGenerator.GenerateMap(mapSize, nodePrefab, nodeList);
         // isMapGenerated = true;
 
         OnMapGenerated?.Invoke();

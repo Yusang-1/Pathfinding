@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private CameraControllerInput input;
+    [SerializeField] private PlayerInput input;
     [SerializeField] private float speed;
     
     private Vector3 direction;

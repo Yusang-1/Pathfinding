@@ -2776,7 +2776,7 @@ GameObject:
   - component: {fileID: 705920041}
   - component: {fileID: 705920042}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: Main Camera_Player
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5712,8 +5712,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711641}
-        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+      - m_Target: {fileID: 1661711640}
+        m_TargetAssemblyTypeName: PlayerInput, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 0
         m_Arguments:
@@ -5728,8 +5728,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Clock[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711641}
-        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+      - m_Target: {fileID: 1661711640}
+        m_TargetAssemblyTypeName: PlayerInput, Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
         m_Arguments:
@@ -5862,6 +5862,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 9de05671-ba30-40cf-8bbf-60979a709c2b
     m_ActionName: 'Player/ZoomCamera[/Mouse/scroll/y]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 99d98d91-f423-4306-a588-ffc43ec17012
+    m_ActionName: 'Player/PressRight[/Mouse/rightButton]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
