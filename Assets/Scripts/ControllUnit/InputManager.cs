@@ -6,10 +6,12 @@ namespace Assets.Scripts.ControllUnit
     public class InputManager : MonoBehaviour
     {
         [SerializeField] private InputActionAsset inputActions;
-        [SerializeField] private PlayerInput playerInput;
-        [SerializeField] private PlayerControllInput playerControllInput;
+        [SerializeField] private PlayerInput playerInputComponent;
+        [SerializeField] private PlayerControllInput playerInput;
+        [SerializeField] private UnitInput unitInput;
         
         private InputActionMap actionMap;
+        private SelectableController selectableController;
 
         private void Awake()
         {
@@ -19,12 +21,22 @@ namespace Assets.Scripts.ControllUnit
 
         private void Start()
         {
-            playerControllInput.OnSelectedCallback += ChangeActionMapSelected;
+            selectableController = new SelectableController(ChangeActionMapSelected, ChangeActionMapDefault);
+            
+            playerInput.Initialize(selectableController);
+            unitInput.Initialize(selectableController);
+            
+            // playerControllInput.OnSelectedCallback += ChangeActionMapSelected;
         }
         
         private void ChangeActionMapSelected(string value)
         {
-            playerInput.SwitchCurrentActionMap(value);
+            playerInputComponent.SwitchCurrentActionMap(value);
+        }
+        
+        private void ChangeActionMapDefault()
+        {
+            playerInputComponent.SwitchCurrentActionMap("Player");
         }
     }
 }

@@ -9,7 +9,8 @@ namespace Assets.Scripts.ControllUnit
         private Vector3 direction;
         private bool HasDirection => direction != Vector3.zero;
         private bool isNextPathSet;
-
+        
+        [SerializeField] private UnitInput input;
         [SerializeField] private float moveSpeed;
         [SerializeField] private float refineLength = 2.2f;
 
