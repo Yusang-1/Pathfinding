@@ -1739,6 +1739,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 511772137}
   m_CullTransparentMesh: 1
+--- !u!1 &547811149
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 547811151}
+  - component: {fileID: 547811150}
+  m_Layer: 0
+  m_Name: Pathfinder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &547811150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547811149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff8a12acd5c380743bfb28b8d49a4a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &547811151
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547811149}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.0478194, y: 3.0478194, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &554076888
 GameObject:
   m_ObjectHideFlags: 0
@@ -6305,6 +6349,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 134f5eefb990f114985f3cc858fdad57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 1.5
+  refineLength: 2.2
 --- !u!114 &1869524994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6317,7 +6363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7706979a69e7d36468be9bfe66320241, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 0}
+  controller: {fileID: 1869524993}
 --- !u!135 &1869524995
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -6573,6 +6619,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3133e982f3c665448ec576df64aef09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pathfinder: {fileID: 0}
   uiRoot: {fileID: 2113284064}
   nodePrefab: {fileID: -1020127619466002619, guid: 29f9a899b106cc6419333352c7fd97e3, type: 3}
   nodeData: {fileID: 11400000, guid: bf87c0f6c59541f4aaf61f3cc70bc84f, type: 2}
@@ -7164,6 +7211,7 @@ SceneRoots:
   - {fileID: 1117839812}
   - {fileID: 2083070643}
   - {fileID: 1661711642}
+  - {fileID: 547811151}
   - {fileID: 2113284063}
   - {fileID: 1069944962}
   - {fileID: 1869524998}
