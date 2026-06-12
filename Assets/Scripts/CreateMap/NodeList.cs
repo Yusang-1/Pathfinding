@@ -37,5 +37,16 @@ namespace Assets.Scripts.CreateMap
         }
 
         public Node GetNode(Vector2Int index) => nodes[index.x, index.y];
+        
+        public void DestroyNodes()
+        {
+            for(int i = 0; i < nodes.GetLength(0); i++)
+            {
+                for(int j = 0; j < nodes.GetLength(1); j++)
+                {
+                    GameObject.Destroy(nodes[i, j].gameObject);                    
+                }
+            }
+        }
     }
 }

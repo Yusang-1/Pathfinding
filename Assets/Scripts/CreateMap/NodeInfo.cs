@@ -72,6 +72,8 @@ namespace Assets.Scripts.CreateMap
             Vector2Int[] nodesCopy;
             foreach (var nodes in nodeInfoDict.Values)
             {
+                if(nodes.Count == 0) continue;
+                
                 nodesCopy = nodes.ToArray();
                 foreach (var nodeIndex in nodesCopy)
                 {

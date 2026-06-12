@@ -15,4 +15,5 @@ public class UIExportMap : MonoBehaviour
     }
     
     public void SetActiveTrue() => gameObject.SetActive(true);
+    public void SetActiveFalse() => gameObject.SetActive(false);
 }

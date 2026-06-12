@@ -28,6 +28,9 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnGenerateMapRequested += CreateEmptyMap;
             uiRoot.OnTileSelectorRequested += nodeTypeController.SetCurrentSelected;
             uiRoot.OnExportMapRequested += ExportMap;
+            uiRoot.OnClearMapRequested += nodeList.NodeInfo.ResetAllNodes;
+            uiRoot.OnRemoveMapRequested += nodeList.NodeInfo.ResetAllNodes;
+            uiRoot.OnRemoveMapRequested += nodeList.DestroyNodes;
             uiRoot.Initialize();
 
             nodeTypeController.Initialize(nodeList);

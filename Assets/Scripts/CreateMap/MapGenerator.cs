@@ -16,5 +16,10 @@ namespace Assets.Scripts.CreateMap
                 }
             }
         }
+        
+        public void DestroyMap()
+        {
+            
+        }
     }
 }
