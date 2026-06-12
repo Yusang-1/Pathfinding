@@ -1,16 +1,38 @@
 using UnityEngine;
+using System;
+using TMPro;
 
 public class UIPopup : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private TextMeshProUGUI popupText;
+    
+    public void Initialize()
     {
-        
+        gameObject.SetActive(true);
+        PopupService.OnPopupRequested += ShowPopup;
+        gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
-        
+        PopupService.OnPopupRequested -= ShowPopup;
+    }
+
+    public void ShowPopup(string text)
+    {
+        popupText.text = text;
+        gameObject.SetActive(true);
+    }
+    
+    public void SetActiveFalse() => gameObject.SetActive(false);
+}
+
+public static class PopupService
+{
+    public static event Action<string> OnPopupRequested;
+
+    public static void Show(string message)
+    {
+        OnPopupRequested?.Invoke(message);
     }
 }

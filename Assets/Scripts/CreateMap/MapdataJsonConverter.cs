@@ -12,6 +12,8 @@ namespace Assets.Scripts.CreateMap
             // Windows: C:\Users\<user>\AppData\LocalLow\<companyname>\<productname>
             var filePath = Path.Combine(Application.persistentDataPath, mapData.MapName + ".json");
             File.WriteAllText(filePath, json);
+            
+            PopupService.Show($"\'{mapData.MapName}\' is saved in \'{Application.persistentDataPath}\'");
         }
         
         public CreateMapManager.MapData ConvertJsonToMapData(string json)

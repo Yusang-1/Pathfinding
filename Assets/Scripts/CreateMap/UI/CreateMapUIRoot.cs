@@ -15,9 +15,12 @@ namespace Assets.Scripts.CreateMap.UI
         [SerializeField] private UITileSelector uiTileSelector;
         [SerializeField] private UIExportMap uiExportMap;
         [SerializeField] private UIManageMap uiManageMap;
+        [SerializeField] private UIPopup uiPopup;
 
         public void Initialize()
         {
+            uiPopup.Initialize();
+            
             uiGenerateMap.OnGenerateMap += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);
             uiGenerateMap.OnGenerateMapUI += uiTileSelector.SetActiveTrue;
             uiGenerateMap.OnGenerateMapUI += uiExportMap.SetActiveTrue;
@@ -25,7 +28,7 @@ namespace Assets.Scripts.CreateMap.UI
 
             uiTileSelector.OnTileSelect += (type) => OnTileSelectorRequested?.Invoke(type);
 
-            uiExportMap.OnExprotMap += (mapName) => OnExportMapRequested?.Invoke(mapName);
+            uiExportMap.OnExprotMap += (mapName) => OnExportMapRequested?.Invoke(mapName);            
 
             uiManageMap.OnClear += () => OnClearMapRequested?.Invoke();
             uiManageMap.OnRemove += () => OnRemoveMapRequested?.Invoke();

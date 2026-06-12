@@ -76,7 +76,7 @@ namespace Assets.Scripts.CreateMap
                 ClusterSize = clusterSize,
                 ObstacleIndexes = obstacleIndexes
             };
-
+            
             mapdataJsonConverter.SaveMapDataToJson(mapData);
         }
 
