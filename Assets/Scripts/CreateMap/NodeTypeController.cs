@@ -1,24 +1,25 @@
-using UnityEngine;
-
-public class NodeTypeController
+namespace Assets.Scripts.CreateMap
 {
-    private NodeType currentSelectedType;
-    private NodeData nodeData;
-    
-    public void Initialize(NodeData nodeData)
+    public class NodeTypeController
     {
-        this.nodeData = nodeData;
-    }
-    
-    public void SetCurrentSelected(NodeType type)
-    {
-        currentSelectedType = type;
-    }
-    
-    public void SetNodeType(ISelectable selectable)
-    {
-        if(currentSelectedType == default) currentSelectedType = NodeType.room;
-        
-        (selectable as Node).SetType(currentSelectedType, nodeData.GetSprite(currentSelectedType));
+        private NodeType currentSelectedType;
+        private NodeList nodeList;
+
+        public void Initialize(NodeList nodeList)
+        {
+            this.nodeList = nodeList;
+        }
+
+        public void SetCurrentSelected(NodeType type)
+        {
+            currentSelectedType = type;
+        }
+
+        public void SetNodeType(ISelectable selectable)
+        {
+            if (currentSelectedType == default) currentSelectedType = NodeType.room;
+
+            nodeList.SetNodeType((selectable as Node).Index, currentSelectedType);
+        }
     }
 }

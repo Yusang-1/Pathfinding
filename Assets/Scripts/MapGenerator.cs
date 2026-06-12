@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MapGenerator
 {
-    public void GenerateMap(int mapSize, Node nodePrefab , NodeList nodeList)
+    public void GenerateMap(int mapSize, Node nodePrefab, NodeList nodeList)
     {
         Node node;
         for (int i = 0; i < mapSize; i++)
@@ -12,6 +12,6 @@ public class MapGenerator
                 node = Node.Instantiate(nodePrefab, new Vector3(i, j, 0), Quaternion.identity);
                 nodeList.SetNode(i, j, node);
             }
-        }        
+        }
     }
 }
