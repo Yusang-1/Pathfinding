@@ -47,7 +47,6 @@ namespace Assets.Scripts.CreateMap
                 Vector2 origin = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
 
                 RaycastHit2D hit2D = Physics2D.Raycast(origin, Vector3.forward, Mathf.Infinity);
-                Debug.DrawRay(origin, Vector3.forward * 10, Color.cyan, 1.2f);
                 if (hit2D)
                 {
                     if (hit2D.collider.TryGetComponent<ISelectable>(out ISelectable selectable))

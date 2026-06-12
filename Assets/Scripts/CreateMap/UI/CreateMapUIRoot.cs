@@ -5,11 +5,18 @@ namespace Assets.Scripts.CreateMap.UI
 {
     public class CreateMapUIRoot : MonoBehaviour
     {
-        [SerializeField] private UIGenerateMap uiGenerateMap;
+        public event Action<int, int> OnGenerateMapRequested;
+        public event Action<NodeType> OnTileSelectorRequested;
         
-        public void Initialize(Action<int, int> generateMapAction)
+        [SerializeField] private UIGenerateMap uiGenerateMap;
+        [SerializeField] private UITileSelector uiTileSelector;
+        
+        public void Initialize()
         {
-            uiGenerateMap.OnGenerateMap += generateMapAction;
+            uiGenerateMap.OnGenerateMap += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);
+            uiGenerateMap.OnGenerateMapUI += uiTileSelector.SetActiveTrue;
+            
+            uiTileSelector.OnTileSelect += (type) => OnTileSelectorRequested?.Invoke(type);
         }
     }
 }

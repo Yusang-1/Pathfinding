@@ -11,6 +11,7 @@ namespace Assets.Scripts.CreateMap
         
         private NodeList nodeList;
         private readonly MapGenerator mapGenerator = new();
+        private readonly NodeTypeController nodeTypeController = new();
         
         [SerializeField] private int nodeSize;
         private int mapSize;
@@ -18,9 +19,16 @@ namespace Assets.Scripts.CreateMap
         
         private void Start()
         {
-            nodeList = new NodeList(nodeSize, nodeData);
+            nodeData.Initialize();
             
-            uiRoot.Initialize(CreateEmptyMap);
+            nodeList = new NodeList(nodeSize, nodeData);
+            nodeList.OnSelected += nodeTypeController.SetNodeType;
+            
+            uiRoot.OnGenerateMapRequested += CreateEmptyMap;
+            uiRoot.OnTileSelectorRequested += nodeTypeController.SetCurrentSelected;
+            uiRoot.Initialize();
+            
+            nodeTypeController.Initialize(nodeData);
         }
         
         private void CreateEmptyMap(int sizeOfMap, int sizeOfCluster)
