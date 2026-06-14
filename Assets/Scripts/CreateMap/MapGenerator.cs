@@ -4,8 +4,19 @@ namespace Assets.Scripts.CreateMap
 {
     public class MapGenerator
     {
-        public void GenerateMap(int mapSize, Node nodePrefab, NodeList nodeList)
+        private readonly Node nodePrefab;
+        private readonly NodeList nodeList;
+
+        public MapGenerator(Node prefab, NodeList list)
         {
+            nodePrefab = prefab;
+            nodeList = list;
+        }
+
+        public void GenerateMap(int mapSize)
+        {
+            nodeList.CreateNodeArray(mapSize);
+            
             Node node;
             for (int i = 0; i < mapSize; i++)
             {
@@ -16,10 +27,20 @@ namespace Assets.Scripts.CreateMap
                 }
             }
         }
-        
+
+        public void GenerateMap(CreateMapManager.MapData mapData)
+        {
+            GenerateMap(mapData.MapSize);
+            
+            foreach(var index in mapData.ObstacleIndexes)
+            {
+                nodeList.SetNodeType(index, NodeType.obstacle);
+            }
+        }
+
         public void DestroyMap()
         {
-            
+
         }
     }
 }

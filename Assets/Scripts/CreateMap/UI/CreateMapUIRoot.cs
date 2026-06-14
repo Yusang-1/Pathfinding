@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using System;
 
 namespace Assets.Scripts.CreateMap.UI
 {
@@ -10,6 +10,9 @@ namespace Assets.Scripts.CreateMap.UI
         public event Action<string> OnExportMapRequested;
         public event Action OnClearMapRequested;
         public event Action OnRemoveMapRequested;
+        public event Func<CreateMapManager.MapData[]> OnGetOfficialMapListRequested;
+        public event Func<CreateMapManager.MapData[]> OnGetPersonalMapListRequested;
+        public event Action<CreateMapManager.MapData> OnLoadMapRequested;
 
         [SerializeField] private UIGenerateMap uiGenerateMap;
         [SerializeField] private UITileSelector uiTileSelector;
@@ -25,7 +28,9 @@ namespace Assets.Scripts.CreateMap.UI
             uiGenerateMap.OnGenerateMapUI += uiTileSelector.SetActiveTrue;
             uiGenerateMap.OnGenerateMapUI += uiExportMap.SetActiveTrue;
             uiGenerateMap.OnGenerateMapUI += uiManageMap.SetActiveTrue;
-
+            uiGenerateMap.OnGetOfficialMapList += () => OnGetOfficialMapListRequested?.Invoke();
+            uiGenerateMap.OnGetPersonalMapList += () => OnGetPersonalMapListRequested?.Invoke();
+            uiGenerateMap.OnLoadMap += (mapData) => OnLoadMapRequested?.Invoke(mapData); 
             uiTileSelector.OnTileSelect += (type) => OnTileSelectorRequested?.Invoke(type);
 
             uiExportMap.OnExprotMap += (mapName) => OnExportMapRequested?.Invoke(mapName);            

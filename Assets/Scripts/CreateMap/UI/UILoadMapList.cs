@@ -1,0 +1,88 @@
+using UnityEngine;
+using System;
+
+namespace Assets.Scripts.CreateMap.UI
+{
+    public class UILoadMapList : MonoBehaviour
+    {
+        public event Action OnLoadMapClosed;
+        public event Action OnLoadMapSuccessed;
+        public event Action<CreateMapManager.MapData> OnLoadMap;
+
+        [SerializeField] private Transform officialMapContainer;
+        [SerializeField] private Transform personalMapContainer;
+        [SerializeField] private UIMapContainer mapContainer;
+        [SerializeField] private UIMapInfo mapInfo;
+
+        private readonly UIMapContainer[] officialContainerPool;
+        private readonly UIMapContainer[] personalContainerPool;
+
+        public void ShowMapList(CreateMapManager.MapData[] officialMaps, CreateMapManager.MapData[] personalMaps)
+        {
+            ShowMap(officialMaps, officialContainerPool, officialMapContainer);
+
+            ShowMap(personalMaps, personalContainerPool, personalMapContainer);
+
+            gameObject.SetActive(true);
+        }
+
+        private void ShowMap(CreateMapManager.MapData[] maps, UIMapContainer[] pool, Transform transform)
+        {
+            if (maps == null || maps.Length == 0) return;
+
+            if (pool == null)
+            {
+                pool = new UIMapContainer[maps.Length];
+                SetMapContainerPosition(0, pool, transform);
+            }
+            else if (pool.Length < maps.Length)
+            {
+                int lastSortedIndex = pool.Length - 1;
+                var newArray = new UIMapContainer[maps.Length];
+                Array.Copy(pool, newArray, pool.Length);
+                pool = newArray;
+                SetMapContainerPosition(lastSortedIndex, pool, transform);
+            }
+
+            for (int i = 0; i < maps.Length; i++)
+            {
+                pool[i].Initialize(maps[i], OnSelect);
+            }
+        }
+
+        private void SetMapContainerPosition(int startIndex, UIMapContainer[] containers, Transform transform)
+        {
+            float height = mapContainer.GetComponent<RectTransform>().sizeDelta.y;
+
+            Vector2 position = Vector2.zero;
+            for (int i = startIndex; i < containers.Length; i++)
+            {
+                position.y = height * i;
+                containers[i] = Instantiate(mapContainer, transform);
+                containers[i].GetComponent<RectTransform>().anchoredPosition = position;
+            }
+        }
+
+        private CreateMapManager.MapData currentSelected;
+        private void OnSelect(CreateMapManager.MapData mapData)
+        {
+            currentSelected = mapData;
+            mapInfo.SetInfo(currentSelected);
+        }
+
+        /// <summary> button에 할당 </summary>
+        public void OnCloseLoadMapList()
+        {
+            OnLoadMapClosed?.Invoke();
+            gameObject.SetActive(false);
+        }
+
+        /// <summary> button에 할당 </summary>
+        public void OnLoadSelectedMap()
+        {
+            OnLoadMap?.Invoke(currentSelected);
+            OnCloseLoadMapList();
+            OnLoadMapSuccessed?.Invoke();
+        }
+    }
+}

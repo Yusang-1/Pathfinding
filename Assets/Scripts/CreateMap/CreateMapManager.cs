@@ -10,9 +10,9 @@ namespace Assets.Scripts.CreateMap
         [SerializeField] private CreateMapUIRoot uiRoot;
 
         private NodeList nodeList;
-        private readonly MapGenerator mapGenerator = new();
+        private MapdataJsonConverter mapdataJsonConverter;
+        private MapGenerator mapGenerator;
         private readonly NodeTypeController nodeTypeController = new();
-        private readonly MapdataJsonConverter mapdataJsonConverter = new();
 
         [SerializeField] private int nodeSize;
         private int mapSize;
@@ -20,10 +20,13 @@ namespace Assets.Scripts.CreateMap
 
         private void Start()
         {
-            nodeData.Initialize();
-
+            nodeData.Initialize();                        
+            
             nodeList = new NodeList(nodeData);
             nodeList.OnSelected += nodeTypeController.SetNodeType;
+            
+            mapGenerator = new MapGenerator(nodePrefab, nodeList);
+            mapdataJsonConverter = new MapdataJsonConverter();
 
             uiRoot.OnGenerateMapRequested += CreateEmptyMap;
             uiRoot.OnTileSelectorRequested += nodeTypeController.SetCurrentSelected;
@@ -31,9 +34,12 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnClearMapRequested += nodeList.NodeInfo.ResetAllNodes;
             uiRoot.OnRemoveMapRequested += nodeList.NodeInfo.ResetAllNodes;
             uiRoot.OnRemoveMapRequested += nodeList.DestroyNodes;
+            uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
+            uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
+            uiRoot.OnLoadMapRequested += LoadSavedMap;
             uiRoot.Initialize();
 
-            nodeTypeController.Initialize(nodeList);
+            nodeTypeController.Initialize(nodeList);                        
         }
 
         private void CreateEmptyMap(int sizeOfMap, int sizeOfCluster)
@@ -60,8 +66,15 @@ namespace Assets.Scripts.CreateMap
                 clusterSize = sizeOfCluster;
             }
 
-            nodeList.CreateNodeArray(mapSize);
-            mapGenerator.GenerateMap(mapSize, nodePrefab, nodeList);
+            mapGenerator.GenerateMap(mapSize);
+        }
+        
+        public void LoadSavedMap(MapData mapData)
+        {
+            mapSize = mapData.MapSize;
+            clusterSize = mapData.ClusterSize;
+            
+            mapGenerator.GenerateMap(mapData);
         }
 
         public void ExportMap(string mapName)
