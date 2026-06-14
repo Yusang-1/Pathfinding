@@ -15,6 +15,17 @@ public class UIGenerateMapInput : MonoBehaviour
         clusterSize = StringToInt(input);
     }
     
+    public int GetMapSize()
+    {
+        var input = inputMapSize.text;
+        return StringToInt(input);
+    }
+    public int GetClusterSize()
+    {
+        var input = inputClusterSize.text;
+        return StringToInt(input);
+    }
+    
     public int StringToInt(string text)
     {
         if(text == null || text.Length == 0) return 0;

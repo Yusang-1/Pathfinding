@@ -6,8 +6,8 @@ namespace Assets.Scripts.CreateMap.UI
     public class UILoadMapList : MonoBehaviour
     {
         public event Action OnLoadMapClosed;
-        public event Action OnLoadMapSuccessed;
-        public event Action<CreateMapManager.MapData> OnLoadMap;
+        public event Action OnLoadMapEnd;
+        public event Action<CreateMapManager.MapData> OnLoadMapRequested;
 
         [SerializeField] private Transform officialMapContainer;
         [SerializeField] private Transform personalMapContainer;
@@ -57,7 +57,7 @@ namespace Assets.Scripts.CreateMap.UI
             Vector2 position = Vector2.zero;
             for (int i = startIndex; i < containers.Length; i++)
             {
-                position.y = height * i;
+                position.y = -height * i;
                 containers[i] = Instantiate(mapContainer, transform);
                 containers[i].GetComponent<RectTransform>().anchoredPosition = position;
             }
@@ -80,9 +80,9 @@ namespace Assets.Scripts.CreateMap.UI
         /// <summary> button에 할당 </summary>
         public void OnLoadSelectedMap()
         {
-            OnLoadMap?.Invoke(currentSelected);
+            OnLoadMapRequested?.Invoke(currentSelected);
             OnCloseLoadMapList();
-            OnLoadMapSuccessed?.Invoke();
+            OnLoadMapEnd?.Invoke();
         }
     }
 }

@@ -5,45 +5,53 @@ namespace Assets.Scripts.CreateMap.UI
 {
     public class UIGenerateMap : MonoBehaviour
     {
-        public event Action<int, int> OnGenerateMap;
-        public event Action OnGenerateMapUI;
-        public event Func<CreateMapManager.MapData[]> OnGetOfficialMapList;
-        public event Func<CreateMapManager.MapData[]> OnGetPersonalMapList;
-        public event Action<CreateMapManager.MapData> OnLoadMap;
+        /// <summary> 맵 생성의 구현 코드들 </summary>
+        public event Action<int, int> OnGenerateMapRequested;
 
-        [SerializeField] private UIGenerateMapInput input;
-        [SerializeField] private UILoadMapList loadMapList;
-        [SerializeField] private GameObject generateUIs;
+        /// <summary> 맵이 생성되었을 때 UI의 작동 </summary>
+        public event Action OnGenerateMapUI;
+        private Func<int> OnMapSizeRequested;
+        private Func<int> OnClusterSizeRequested;
+
+        public event Func<CreateMapManager.MapData[]> OnOfficialMapListRequested;
+        public event Func<CreateMapManager.MapData[]> OnPersonalMapListRequested;
+        private Action<CreateMapManager.MapData[], CreateMapManager.MapData[]> ShowSavedMapsAction;
+
 
         private void Start()
         {
             OnGenerateMapUI += SetActiveFalse;
-            loadMapList.OnLoadMapClosed += SetActiveGenerateUIs;
-            loadMapList.OnLoadMap += (mapData) => OnLoadMap?.Invoke(mapData);
-            loadMapList.OnLoadMapSuccessed += () => OnGenerateMapUI?.Invoke();
+        }
+
+        public void SetProviders(Func<int> mapSizeProvider, Func<int> clusterSizeProvider,
+                                Action<CreateMapManager.MapData[], CreateMapManager.MapData[]> showSavedMaps)
+        {
+            OnMapSizeRequested = mapSizeProvider;
+            OnClusterSizeRequested = clusterSizeProvider;
+            ShowSavedMapsAction = showSavedMaps;
         }
 
         /// <summary> button에 할당 </summary>
         public void OnGenerateMapButton()
         {
-            input.GetInput(out int mapSize, out int clusterSize);
-            OnGenerateMap?.Invoke(mapSize, clusterSize);
+            int mapSize = OnMapSizeRequested?.Invoke() ?? 0;
+            int clusterSize = OnClusterSizeRequested?.Invoke() ?? 0;
+
+            OnGenerateMapRequested?.Invoke(mapSize, clusterSize);
             OnGenerateMapUI?.Invoke();
         }
 
         /// <summary> button에 할당 </summary>
         public void OnShowSavedMapButton()
         {
-            var officlaMapList = OnGetOfficialMapList?.Invoke();
-            var personalMapList = OnGetPersonalMapList?.Invoke();
-            loadMapList.ShowMapList(officlaMapList, personalMapList);
+            var officlaMapList = OnOfficialMapListRequested?.Invoke();
+            var personalMapList = OnPersonalMapListRequested?.Invoke();
+            ShowSavedMapsAction?.Invoke(officlaMapList, personalMapList);
 
-            generateUIs.SetActive(false);
+            gameObject.SetActive(false);
         }
 
         public void SetActiveTrue() => gameObject.SetActive(true);
         public void SetActiveFalse() => gameObject.SetActive(false);
-
-        private void SetActiveGenerateUIs() => generateUIs.SetActive(true);
     }
 }
