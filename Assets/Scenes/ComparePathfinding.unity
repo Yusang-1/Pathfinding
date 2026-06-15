@@ -10275,7 +10275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
+  m_UIInputModule: {fileID: 536904964}
   m_DeviceLostEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -10288,8 +10288,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1837161504}
-        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+      - m_Target: {fileID: 1837161507}
+        m_TargetAssemblyTypeName: PlayerControllInput, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 0
         m_Arguments:
@@ -10304,8 +10304,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Clock[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1837161504}
-        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+      - m_Target: {fileID: 1837161507}
+        m_TargetAssemblyTypeName: PlayerControllInput, Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
         m_Arguments:
@@ -10472,9 +10472,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/ZoomCamera[/Mouse/scroll/y]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: df70fa95-8a34-4494-b137-73ab6b9c7d37
+  m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 330585545}
 --- !u!114 &1837161507
 MonoBehaviour:
   m_ObjectHideFlags: 0
