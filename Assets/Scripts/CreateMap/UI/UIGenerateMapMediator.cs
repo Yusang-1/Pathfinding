@@ -19,7 +19,7 @@ namespace Assets.Scripts.CreateMap.UI
         [SerializeField] private UILoadMapList uiLoadMapList;
         [SerializeField] private GameObject generateUIs;
 
-        private void Start()
+        public void Initialize()
         {
             OnGenerateMapUI += SetActiveFalse;
             uiLoadMapList.OnLoadMapClosed += SetActiveGenerateUIs;
@@ -28,10 +28,12 @@ namespace Assets.Scripts.CreateMap.UI
 
             uiGenerateMap.OnGenerateMapRequested += (mapSize, clusterSize) => OnGenerateMapRequested(mapSize, clusterSize);
             uiGenerateMap.OnOfficialMapListRequested += () => OnOfficialMapListRequested?.Invoke();
-            uiGenerateMap.OnPersonalMapListRequested += () => OnPersonalMapListRequested?.Invoke();            
+            uiGenerateMap.OnPersonalMapListRequested += () => OnPersonalMapListRequested?.Invoke();
             uiGenerateMap.OnGenerateMapUI += () => OnGenerateMapUI?.Invoke();
+
+            uiGenerateMap.SetProviders(uiGenerateMapInput.GetMapSize, uiGenerateMapInput.GetClusterSize, uiLoadMapList.ShowMapList);
             
-            uiGenerateMap.SetProviders(uiGenerateMapInput.GetMapSize, uiGenerateMapInput.GetClusterSize, uiLoadMapList.ShowMapList);            
+            if(!gameObject.activeSelf) SetActiveTrue();
         }
 
         public void SetActiveTrue()

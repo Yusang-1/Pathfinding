@@ -16,9 +16,5 @@ public class UIManageMap : MonoBehaviour
     public void OnRemoveMap()
     {
         OnRemove?.Invoke();
-        SetActiveFalse();
     }
-    
-    public void SetActiveTrue() => gameObject.SetActive(true);
-    public void SetActiveFalse() => gameObject.SetActive(false);
 }

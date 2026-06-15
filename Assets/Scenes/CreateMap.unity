@@ -655,7 +655,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &87903475
 RectTransform:
   m_ObjectHideFlags: 0
@@ -670,11 +670,11 @@ RectTransform:
   m_Children:
   - {fileID: 33147647}
   - {fileID: 1203999056}
-  m_Father: {fileID: 764335150}
+  m_Father: {fileID: 473592032}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -5, y: 5}
+  m_AnchoredPosition: {x: 340.5, y: -167.5}
   m_SizeDelta: {x: 80, y: 115}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &87903477
@@ -1887,6 +1887,60 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!1 &473592031
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 473592032}
+  - component: {fileID: 473592033}
+  m_Layer: 5
+  m_Name: Container_ModifyMapMediator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &473592032
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473592031}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 87903475}
+  - {fileID: 891192624}
+  - {fileID: 688986247}
+  m_Father: {fileID: 764335150}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &473592033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473592031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cfdd616260524147901e4786ea5153f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiTileSelector: {fileID: 87903479}
+  uiExportMap: {fileID: 891192625}
+  uiManageMap: {fileID: 688986248}
 --- !u!1 &527039639
 GameObject:
   m_ObjectHideFlags: 0
@@ -3263,7 +3317,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &688986247
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3271,18 +3325,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 688986246}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 632393757}
   - {fileID: 2036252798}
-  m_Father: {fileID: 764335150}
+  m_Father: {fileID: 473592032}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 8, y: -8}
+  m_AnchoredPosition: {x: -337.5, y: 164.5}
   m_SizeDelta: {x: 120, y: 86}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &688986248
@@ -3525,7 +3579,7 @@ GameObject:
   - component: {fileID: 764335147}
   - component: {fileID: 764335151}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Canvas_CreateMapUIRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3607,9 +3661,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2024434484}
-  - {fileID: 87903475}
-  - {fileID: 891192624}
-  - {fileID: 688986247}
+  - {fileID: 473592032}
   - {fileID: 1012438257}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3631,9 +3683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiGenerateMapMediator: {fileID: 2024434488}
-  uiTileSelector: {fileID: 87903479}
-  uiExportMap: {fileID: 891192625}
-  uiManageMap: {fileID: 688986248}
+  uiModifyMapMediator: {fileID: 473592033}
   uiPopup: {fileID: 1012438258}
 --- !u!1 &827138409
 GameObject:
@@ -3788,7 +3838,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &891192624
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3796,18 +3846,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 891192623}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1030007959}
   - {fileID: 1127774213}
-  m_Father: {fileID: 764335150}
+  m_Father: {fileID: 473592032}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 8, y: 8}
+  m_AnchoredPosition: {x: -337.5, y: -164.5}
   m_SizeDelta: {x: 100, y: 99}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &891192625
@@ -7097,7 +7147,7 @@ GameObject:
   - component: {fileID: 2024434484}
   - component: {fileID: 2024434488}
   m_Layer: 5
-  m_Name: Container_GenerateMap
+  m_Name: Container_GenerateMapMediator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
