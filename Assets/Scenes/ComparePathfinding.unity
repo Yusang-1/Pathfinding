@@ -6293,8 +6293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0588d390c8a6884f9d11821841d3afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  linePrefab: {fileID: 925412003406608379, guid: 5baef98788782aa4690d31b3df6a12ea, type: 3}
-  lineHeadPrefab: {fileID: 3206708417143547938, guid: 7c3857359c59f3e41a3b96fcba588649, type: 3}
+  linePrefab: {fileID: -4163167638344120289, guid: 5baef98788782aa4690d31b3df6a12ea, type: 3}
   width: 0.15
 --- !u!4 &1336710743
 Transform:

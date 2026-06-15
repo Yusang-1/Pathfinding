@@ -53,8 +53,7 @@ public class PathManager : MonoBehaviour
         thetaStarPathfinder = new ThetaStar(nodeList, clusterList);
         searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder);
 
-        nodeData.Initialize();
-        lineDrawer.Initialize();
+        nodeData.Initialize();        
         unit.Initialize(lineDrawer);
 
         UIRootInitialize();
