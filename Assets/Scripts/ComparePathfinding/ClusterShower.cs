@@ -58,6 +58,7 @@ public class ClusterShower : MonoBehaviour
     {
         foreach (var cluster in clusters.Values)
         {
+            cluster.gameObject.SetActive(false);
             cluster.ResetCluster();
         }
         
