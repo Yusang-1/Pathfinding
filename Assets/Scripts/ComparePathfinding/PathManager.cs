@@ -95,7 +95,7 @@ public class PathManager : MonoBehaviour
         clusterSize = mapData.ClusterSize;
 
         nodeList.Initialize(nodeSize, mapSize);
-        clusterShower.Initialize(clusterSize, nodeSize);
+        clusterShower.Initialize(mapSize / clusterSize, clusterSize, nodeSize);
 
         isMapGenerated = true;
     }
@@ -190,7 +190,7 @@ public class PathManager : MonoBehaviour
     {
         nodeList.ResetAll();
         clusterList.ResetClusterList();
-        clusterShower.ResetClusters();
+        clusterShower.ResetAllClusters();
         lineDrawer.ResetLineDrawer();
         unit.gameObject.SetActive(false);
 
