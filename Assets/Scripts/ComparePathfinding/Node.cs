@@ -1,11 +1,13 @@
 using UnityEngine;
 using System;
 
-public class Node : MonoBehaviour, ISelectable
+public class Node : MonoBehaviour, ISelectable, IPoolObject<Node>
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
     public event Action<ISelectable> OnSelectedCallback;
     public event Action<ISelectable> OnDeselectedCallback;
+    public event Action<Node> OnPoolObjectUnused;
+    public event Action<Node> OnPoolObjectFirstCreated;
 
     public int NodeArea { get; private set; }
     public bool IsAreaSet { get => NodeArea > 0; }
@@ -16,11 +18,18 @@ public class Node : MonoBehaviour, ISelectable
 
     public bool IsWalkable { get; private set; }
 
+    private void Start()
+    {
+        OnPoolObjectFirstCreated?.Invoke(this);
+    }
+    
     public void Initialize(Vector2Int index)
     {
         this.index = index;
         IsWalkable = true;
         type = NodeType.room;
+        
+        gameObject.SetActive(true);
     }
 
     public void Selected()
@@ -46,7 +55,12 @@ public class Node : MonoBehaviour, ISelectable
     }
 
     public void SetNodeArea(int areaNum) => NodeArea = areaNum;
-    public void ResetNodeArea() => NodeArea = 0;
+    public void ResetNode()
+    {
+        OnPoolObjectUnused?.Invoke(this);
+        NodeArea = 0;
+        gameObject.SetActive(false);
+    }
 
     public NodeType GetNodeType()
     {

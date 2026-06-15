@@ -23,7 +23,7 @@ public class NodeList
     public void Initialize(int nodeSize, int mapSize)
     {
         nodeInfo.Initialize(this, nodeData);
-        
+
         this.nodeSize = nodeSize;
         nodes = new Node[mapSize, mapSize];
     }
@@ -34,8 +34,8 @@ public class NodeList
     }
     public void ResetAll()
     {
-        nodeInfo.ResetAllNodes();
-        ResetNodeArea();
+        nodeInfo.ResetAllNode();
+        ResetAllNode();
     }
 
     public Vector2Int GetNodeIndex(Vector2 position)
@@ -144,7 +144,7 @@ public class NodeList
             }
         }
     }
-    private void ResetNodeArea()
+    private void ResetAllNode()
     {
         foreach (var value in nodesByAreaNum.Values)
         {
@@ -154,8 +154,9 @@ public class NodeList
         {
             for (int j = 0; j < nodes.GetLength(1); j++)
             {
-                nodes[i, j].ResetNodeArea();
-                GameObject.Destroy(nodes[i, j].gameObject);
+                nodes[i, j].ResetNode();
+                nodes[i, j].OnSelectedCallback -= OnSelected;
+                nodes[i, j].OnDeselectedCallback -= OnDeselected;
             }
         }
     }

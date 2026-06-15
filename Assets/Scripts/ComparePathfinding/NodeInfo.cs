@@ -79,7 +79,7 @@ public class NodeInfo
         nodeInfoDict[type].Add(nodeIndex);
     }
 
-    public void ResetAllNodes()
+    public void ResetAllNode()
     {
         Vector2Int[] nodesCopy;
         foreach (var nodes in nodeInfoDict.Values)
