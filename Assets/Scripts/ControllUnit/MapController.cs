@@ -22,7 +22,8 @@ namespace Assets.Scripts.ControllUnit
         private void Start()
         {
             nodeData.Initialize();
-            nodeList = new NodeList(nodeSize, nodeData);
+            nodeList = new NodeList(nodeData);
+            nodeList.Initialize(nodeSize, mapSize);
 
             uiRoot.Initialize();            
             

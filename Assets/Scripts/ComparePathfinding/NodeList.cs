@@ -8,18 +8,24 @@ public class NodeList
     public event Action<ISelectable> OnDeselected;
 
     private readonly NodeData nodeData;
-    private readonly NodeInfo nodeInfo;
+    private readonly NodeInfo nodeInfo = new();
     private Node[,] nodes;
 
     public NodeInfo NodeInfo => nodeInfo;
     public Node[,] Nodes => nodes;
 
-    private readonly int nodeSize = 1;
-    public NodeList(int nodeSize, NodeData data)
-    {        
-        this.nodeSize = nodeSize;
+    private int nodeSize = 1;
+    public NodeList(NodeData data)
+    {
         nodeData = data;
-        nodeInfo = new NodeInfo(this, nodeData);
+    }
+
+    public void Initialize(int nodeSize, int mapSize)
+    {
+        nodeInfo.Initialize(this, nodeData);
+        
+        this.nodeSize = nodeSize;
+        nodes = new Node[mapSize, mapSize];
     }
 
     public void ResetTrace()
@@ -38,7 +44,7 @@ public class NodeList
         int y = (int)(position.y / nodeSize);
         return new Vector2Int(x, y);
     }
-    
+
     public void CreateNodeArray(int mapSize)
     {
         nodes = new Node[mapSize, mapSize];
@@ -47,8 +53,8 @@ public class NodeList
     public void SetNode(int x, int y, Node node)
     {
         node.OnSelectedCallback += OnSelected;
-        node.OnDeselectedCallback += OnDeselected;        
-        node.Initialize(new Vector2Int(x,y));
+        node.OnDeselectedCallback += OnDeselected;
+        node.Initialize(new Vector2Int(x, y));
         nodes[x, y] = node;
     }
 
@@ -83,9 +89,9 @@ public class NodeList
         {
             for (int j = 0; j < yLength; j++)
             {
-                if(!nodes[i,j].IsWalkable) continue;
+                if (!nodes[i, j].IsWalkable) continue;
                 curNode = new Vector2Int(i, j);
-                
+
                 leftNode = curNode + Vector2Int.left;
                 if (!(leftNode.x < 0 || leftNode.y < 0 || leftNode.x >= xLength || leftNode.y >= yLength))
                 {
@@ -148,7 +154,8 @@ public class NodeList
         {
             for (int j = 0; j < nodes.GetLength(1); j++)
             {
-                nodes[i,j].ResetNodeArea();
+                nodes[i, j].ResetNodeArea();
+                GameObject.Destroy(nodes[i, j].gameObject);
             }
         }
     }
@@ -182,5 +189,5 @@ public class NodeList
         }
 
         return bigAreaNum;
-    }        
+    }
 }

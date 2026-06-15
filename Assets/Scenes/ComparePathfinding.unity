@@ -2014,9 +2014,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 497125298}
-        m_TargetAssemblyTypeName: PathManager, Assembly-CSharp
-        m_MethodName: ShowHPAStarResult
+      - m_Target: {fileID: 348762226}
+        m_TargetAssemblyTypeName: UIPathShower, Assembly-CSharp
+        m_MethodName: OnShowHAPStarPathButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2725,7 +2725,6 @@ MonoBehaviour:
   clusterShower: {fileID: 497125301}
   lineDrawer: {fileID: 1336710742}
   unit: {fileID: 1233999322}
-  nodeSize: 1
 --- !u!4 &497125300
 Transform:
   m_ObjectHideFlags: 0
@@ -3280,9 +3279,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 497125298}
-        m_TargetAssemblyTypeName: PathManager, Assembly-CSharp
-        m_MethodName: MoveUnitLazyRefine
+      - m_Target: {fileID: 348762226}
+        m_TargetAssemblyTypeName: UIPathShower, Assembly-CSharp
+        m_MethodName: OnShowMoveUnitButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4784,10 +4783,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeTypeSelector: {fileID: 919021170}
-  uILoadMapMediator: {fileID: 1679418206}
+  uiLoadMapMediator: {fileID: 1679418206}
   uiFindAllPath: {fileID: 316378664}
   uiPathShower: {fileID: 348762226}
-  uIResultController: {fileID: 1397409231}
+  uiResultController: {fileID: 1397409231}
 --- !u!1 &1072190177
 GameObject:
   m_ObjectHideFlags: 0
@@ -6793,7 +6792,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 348762226}
         m_TargetAssemblyTypeName: UIPathShower, Assembly-CSharp
-        m_MethodName: ResetAll
+        m_MethodName: OnResetAllButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8005,9 +8004,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 497125298}
-        m_TargetAssemblyTypeName: PathManager, Assembly-CSharp
-        m_MethodName: ShowAStarResult
+      - m_Target: {fileID: 348762226}
+        m_TargetAssemblyTypeName: UIPathShower, Assembly-CSharp
+        m_MethodName: OnShowAStarPathButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8404,9 +8403,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 497125298}
-        m_TargetAssemblyTypeName: PathManager, Assembly-CSharp
-        m_MethodName: ShowHPAStarSmoothingResult
+      - m_Target: {fileID: 348762226}
+        m_TargetAssemblyTypeName: UIPathShower, Assembly-CSharp
+        m_MethodName: OnShowHAPStarSmoothingPathButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

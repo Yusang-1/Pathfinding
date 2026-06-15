@@ -24,6 +24,9 @@ public class UILoadMapMediator : MonoBehaviour
         uiLoadMap.SetProviders(uiLoadMapList.ShowMapList);
     }
 
-    public void SetActiveTrue() => gameObject.SetActive(true);
-    public void SetActiveFalse() => gameObject.SetActive(false);
+    public void ResetMediator()
+    {
+        gameObject.SetActive(true);
+        uiLoadMap.gameObject.SetActive(true);
+    }
 }

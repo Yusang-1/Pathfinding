@@ -13,7 +13,7 @@ public class HPAClusterList
     {
         this.nodeList = nodeList;
 
-        cachedNeighborList = new List<Vector2Int>(4); // 상하좌우 최대 4개의 이웃        
+        cachedNeighborList = new List<Vector2Int>(4); // 상하좌우 최대 4개의 이웃
     }
 
     public void Initialize(AStarPathfinder pathfinder, int mapSize, int clusterSize)

@@ -4,34 +4,50 @@ using System;
 public class UIRoot : MonoBehaviour
 {
     public event Action OnFindAllPathRequested;
-    public event Action OnResetAllRequested;
+    
     public event Action<Vector2Int, NodeType> OnSetNodeTypeRequested;
     public event Func<Vector2Int, Vector2> OnGridToWorldRequested;
+    
+    // UILoadMapMediator event
     public event Action<MapData> OnLoadMapRequested;
     public event Func<MapData[]> OnGetOfficialMapListRequested;
     public event Func<MapData[]> OnGetPersonalMapListRequested;
+    
+    // UIPathShower event
+    public event Action OnShowAStarPathRequested;
+    public event Action OnShowHAPStarPathRequested;
+    public event Action OnShowHAPStarSmoothingPathRequested;
+    public event Action OnResetAllRequested;
+    public event Action OnShowMoveUnitRequested;
 
     [SerializeField] private NodeTypeSelector nodeTypeSelector;
-    [SerializeField] private UILoadMapMediator uILoadMapMediator;
+    [SerializeField] private UILoadMapMediator uiLoadMapMediator;
     [SerializeField] private UIFindAllPath uiFindAllPath;
     [SerializeField] private UIPathShower uiPathShower;
-    [SerializeField] private UIResultController uIResultController;
+    [SerializeField] private UIResultController uiResultController;
 
     public void Initialize()
     {
-        uILoadMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
-        uILoadMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
-        uILoadMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
+        uiLoadMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
+        uiLoadMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
+        uiLoadMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
 
         uiFindAllPath.OnFindAllPathEvent += () => OnFindAllPathRequested?.Invoke();
-
-        uiPathShower.OnResetAll += () => OnResetAllRequested?.Invoke();
-        uiPathShower.OnResetAll += () => ActiveResultController(false);
-
+        
+        uiPathShower.OnShowAStarPathRequested += () => OnShowAStarPathRequested?.Invoke();
+        uiPathShower.OnShowHAPStarPathRequested += () => OnShowHAPStarPathRequested?.Invoke();
+        uiPathShower.OnShowHAPStarSmoothingPathRequested += () => OnShowHAPStarSmoothingPathRequested?.Invoke();        
+        uiPathShower.OnResetAllRequested += () => OnResetAllRequested?.Invoke();
+        uiPathShower.OnResetAllRequested += () => ActiveResultController(false);
+        uiPathShower.OnResetAllRequested += uiLoadMapMediator.ResetMediator;
+        uiPathShower.OnShowMoveUnitRequested += () => OnShowMoveUnitRequested?.Invoke();
+        
         nodeTypeSelector.OnGridToWorld += (grid) => (Vector2)OnGridToWorldRequested?.Invoke(grid);
         nodeTypeSelector.OnSetNodeType += (index, type) => OnSetNodeTypeRequested?.Invoke(index, type);
 
         uiFindAllPath.OnFindAllPathEvent += ActiveUIPathShower;
+        
+        
     }
 
     private void ActiveUIPathShower()
@@ -45,7 +61,7 @@ public class UIRoot : MonoBehaviour
 
     public void ActiveResultController(bool value)
     {
-        uIResultController.gameObject.SetActive(value);
+        uiResultController.gameObject.SetActive(value);
     }
 
     public void ActiveNodeTypeSelector(ISelectable selectable, bool value)
@@ -56,14 +72,14 @@ public class UIRoot : MonoBehaviour
 
     public void SetAResult(PathResult result)
     {
-        uIResultController.SetAResult(result);
+        uiResultController.SetAResult(result);
     }
     public void SetHPAResult(PathResult result)
     {
-        uIResultController.SetHPAResult(result);
+        uiResultController.SetHPAResult(result);
     }
     public void SetHPASmoothResult(PathResult result)
     {
-        uIResultController.SetHPASmoothResult(result);
+        uiResultController.SetHPASmoothResult(result);
     }
 }

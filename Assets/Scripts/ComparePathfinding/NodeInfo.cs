@@ -7,8 +7,8 @@ public class NodeInfo
     public event Action<bool> OnPathfindAvailable;
 
     private readonly Dictionary<NodeType, List<Vector2Int>> nodeInfoDict = new();
-    private readonly NodeList nodeList;
-    private readonly NodeData data;
+    private NodeList nodeList;
+    private NodeData data;
 
     private bool isStartSet;
     private bool isGoalSet;
@@ -16,8 +16,8 @@ public class NodeInfo
 
     public Vector2Int StartNodeIndex { get; private set; }
     public Vector2Int GoalNodeIndex { get; private set; }
-
-    public NodeInfo(NodeList nodeList, NodeData data)
+    
+    public void Initialize(NodeList nodeList, NodeData data)
     {
         this.nodeList = nodeList;
         this.data = data;
