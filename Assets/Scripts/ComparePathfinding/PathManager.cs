@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class PathManager : MonoBehaviour
 {
     public event Action OnPathFound;
-    public event Action OnMapGenerated;
+    // public event Action OnMapGenerated;
     public event Action<PathResult> OnAFound;
     public event Action<PathResult> OnHPAFound;
     public event Action<PathResult> OnHPASmoothFound;
@@ -64,7 +64,7 @@ public class PathManager : MonoBehaviour
         nodeList.OnSelected += (node) => uiRoot.ActiveNodeTypeSelector(node, true);
         nodeList.OnDeselected += (node) => uiRoot.ActiveNodeTypeSelector(node, false);
         OnPathFound += () => uiRoot.ActiveResultController(true);
-        OnMapGenerated += () => uiRoot.ActiveFindButton(true);
+        // OnMapGenerated += () => uiRoot.ActiveFindButton(true);
 
         OnAFound += uiRoot.SetAResult;
         OnHPAFound += uiRoot.SetHPAResult;
@@ -74,7 +74,6 @@ public class PathManager : MonoBehaviour
     private void UIRootInitialize()
     {
         uiRoot.Initialize();
-        uiRoot.OnGenerateMapRequested += GenerateMap;
         uiRoot.OnFindAllPathRequested += FindAllPath;
         uiRoot.OnResetAllRequested += ResetAll;
         uiRoot.OnSetNodeTypeRequested += nodeList.NodeInfo.SetNodeType;
@@ -82,36 +81,6 @@ public class PathManager : MonoBehaviour
         uiRoot.OnLoadMapRequested += mapGenerator.GenerateMap;
         uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
         uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
-    }
-
-    private const int defaultMapSize = 20;
-    private const int maxClusterSize = 10;
-    private void GenerateMap(int sizeOfMap, int sizeOfCluster)
-    {
-        if (sizeOfMap == 0)
-        {
-            mapSize = defaultMapSize;
-        }
-        else
-            mapSize = sizeOfMap;
-
-        if (sizeOfCluster == 0)
-        {
-            clusterSize = mapSize / 4;
-            clusterSize = Mathf.Clamp(clusterSize, 0, maxClusterSize);
-        }
-        else
-        {
-            clusterSize = sizeOfCluster;
-        }
-
-        clusterShower.Initialize(clusterSize, nodeSize);
-        hPAPathfinder = new HPAPathfinder(hPAClusterList, nodeList, pathfinder);
-        nodeList.CreateNodeArray(mapSize);
-        mapGenerator.GenerateMap(mapSize);
-        isMapGenerated = true;
-
-        OnMapGenerated?.Invoke();
     }
 
     private void FindAllPath()

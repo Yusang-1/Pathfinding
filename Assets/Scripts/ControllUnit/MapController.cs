@@ -24,8 +24,7 @@ namespace Assets.Scripts.ControllUnit
             nodeData.Initialize();
             nodeList = new NodeList(nodeSize, nodeData);
 
-            uiRoot.Initialize();
-            uiRoot.OnGenerateMapRequested += GenerateMap;
+            uiRoot.Initialize();            
             
             mapGenerator = new MapGenerator(nodePrefab, nodeList);
         }

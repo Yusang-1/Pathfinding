@@ -3,7 +3,6 @@ using System;
 
 public class UIRoot : MonoBehaviour
 {
-    public event Action<int, int> OnGenerateMapRequested;
     public event Action OnFindAllPathRequested;
     public event Action OnResetAllRequested;
     public event Action<Vector2Int, NodeType> OnSetNodeTypeRequested;
@@ -13,17 +12,16 @@ public class UIRoot : MonoBehaviour
     public event Func<MapData[]> OnGetPersonalMapListRequested;
 
     [SerializeField] private NodeTypeSelector nodeTypeSelector;
-    [SerializeField] private UIGenerateMapMediator uIGenerateMapMediator;
+    [SerializeField] private UILoadMapMediator uILoadMapMediator;
     [SerializeField] private UIFindAllPath uiFindAllPath;
     [SerializeField] private UIPathShower uiPathShower;
     [SerializeField] private UIResultController uIResultController;
 
     public void Initialize()
     {
-        uIGenerateMapMediator.OnGenerateMapRequested += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);
-        uIGenerateMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
-        uIGenerateMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
-        uIGenerateMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
+        uILoadMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
+        uILoadMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
+        uILoadMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
 
         uiFindAllPath.OnFindAllPathEvent += () => OnFindAllPathRequested?.Invoke();
 
