@@ -6,7 +6,7 @@ public class ObjectPool<TObject> where TObject : class, IPoolObject<TObject>
     private readonly Stack<TObject> stackNotUsed = new();
     private readonly HashSet<TObject> stackCurrentUsed = new();
     
-    public void UsedToUnused(TObject tObject)
+    public void PoolObjectUnused(TObject tObject)
     {
         if(stackCurrentUsed.Contains(tObject))
         {
@@ -15,7 +15,7 @@ public class ObjectPool<TObject> where TObject : class, IPoolObject<TObject>
         }
     }
     
-    public void AddToPool(TObject tObject)
+    public void PoolObjectFirstCreated(TObject tObject)
     {
         stackCurrentUsed.Add(tObject);
     }

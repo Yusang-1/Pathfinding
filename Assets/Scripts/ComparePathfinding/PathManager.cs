@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class PathManager : MonoBehaviour
 {
     public event Action OnPathFound;
-    // public event Action OnMapGenerated;
     public event Action<PathResult> OnAFound;
     public event Action<PathResult> OnHPAFound;
     public event Action<PathResult> OnHPASmoothFound;

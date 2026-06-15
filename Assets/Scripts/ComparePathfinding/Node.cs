@@ -6,13 +6,13 @@ public class Node : MonoBehaviour, ISelectable, IPoolObject<Node>
     [SerializeField] private SpriteRenderer spriteRenderer;
     public event Action<ISelectable> OnSelectedCallback;
     public event Action<ISelectable> OnDeselectedCallback;
-    public event Action<Node> OnPoolObjectUnused;
-    public event Action<Node> OnPoolObjectFirstCreated;
+    public virtual event Action<Node> OnPoolObjectUnused;
+    public virtual event Action<Node> OnPoolObjectFirstCreated;
 
     public int NodeArea { get; private set; }
     public bool IsAreaSet { get => NodeArea > 0; }
 
-    private Vector2Int index;
+    protected Vector2Int index;
     public Vector2Int Index => index;
     private NodeType type;
 
@@ -23,7 +23,7 @@ public class Node : MonoBehaviour, ISelectable, IPoolObject<Node>
         OnPoolObjectFirstCreated?.Invoke(this);
     }
     
-    public void Initialize(Vector2Int index)
+    public virtual void Initialize(Vector2Int index)
     {
         this.index = index;
         IsWalkable = true;

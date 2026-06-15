@@ -1,44 +1,66 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class ClusterShower : MonoBehaviour
 {
-    [SerializeField] private GameObject clusterPrefab;
-    private readonly Dictionary<Vector2Int, GameObject> clusters = new();
-    
+    [SerializeField] private Cluster clusterPrefab;
+    private readonly Dictionary<Vector2Int, Cluster> clusters = new();
+
+    private readonly ObjectPool<Cluster> clusterPool = new();
+
     public void Initialize(int clusterCount, int clusterSize, int nodeSize)
     {
         CreateClusterImage(clusterCount, clusterSize, nodeSize);
     }
-    
+
     private void CreateClusterImage(int clusterCount, int clusterSize, int nodeSize)
     {
         for (int i = 0; i < clusterCount; i++)
         {
             for (int j = 0; j < clusterCount; j++)
             {
-                GameObject go = Instantiate(clusterPrefab, new Vector2((float)clusterSize/2 - (float)nodeSize/2 + i * clusterSize, (float)clusterSize/2 - (float)nodeSize/2  + j * clusterSize), Quaternion.identity);
-                go.transform.localScale = new Vector3(clusterSize, clusterSize, 1);
-                go.SetActive(false);
-                clusters.Add(new Vector2Int(i, j), go);
+                if (!clusterPool.TryGetObject(out Cluster cluster))
+                {
+                    // pool에서 찾지 못한 경우
+                    cluster = Instantiate(clusterPrefab, new Vector2((float)clusterSize / 2 - (float)nodeSize / 2 + i * clusterSize, (float)clusterSize / 2 - (float)nodeSize / 2 + j * clusterSize), Quaternion.identity);
+                    cluster.OnPoolObjectFirstCreated += clusterPool.PoolObjectFirstCreated;
+                    cluster.OnPoolObjectUnused += clusterPool.PoolObjectUnused;
+                    cluster.Initialize();
+                }
+                else
+                {
+                    cluster.transform.position = new Vector2((float)clusterSize / 2 - (float)nodeSize / 2 + i * clusterSize, (float)clusterSize / 2 - (float)nodeSize / 2 + j * clusterSize);
+                }
+                
+                cluster.transform.localScale = new Vector3(clusterSize, clusterSize, 1);
+                cluster.gameObject.SetActive(false);
+                clusters.Add(new Vector2Int(i, j), cluster);
             }
         }
     }
 
     public void ShowActivatedClusters(List<HPAPathfinder.ResultNode> results)
     {
-        for(int i = 0; i < results.Count; i++)
+        for (int i = 0; i < results.Count; i++)
         {
-            clusters[results[i].Index].SetActive(true);
+            clusters[results[i].Index].gameObject.SetActive(true);
         }
     }
-    
+
     public void ResetClusters()
     {
-        foreach(var item in clusters)
+        foreach (var item in clusters)
         {
-            item.Value.SetActive(false);
-        }        
+            item.Value.gameObject.SetActive(false);
+        }
     }
-    public void ResetAllClusters() => clusters.Clear();
+    public void ResetAllClusters()
+    {
+        foreach (var cluster in clusters.Values)
+        {
+            cluster.ResetCluster();
+        }
+        
+        clusters.Clear();
+    }
 }

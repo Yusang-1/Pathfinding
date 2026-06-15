@@ -24,11 +24,14 @@ public class MapGenerator
                 {
                     // nodePool에서 가져올게 없다면
                     node = Node.Instantiate(nodePrefab, new Vector3(i, j, 0), Quaternion.identity);
-                    node.OnPoolObjectFirstCreated += nodePool.AddToPool;
-                    node.OnPoolObjectUnused += nodePool.UsedToUnused;
+                    node.OnPoolObjectFirstCreated += nodePool.PoolObjectFirstCreated;
+                    node.OnPoolObjectUnused += nodePool.PoolObjectUnused;
+                }
+                else
+                {
+                    node.transform.position = new Vector3(i, j, 0);                    
                 }
                 
-                node.transform.position = new Vector3(i, j, 0);
                 nodeList.SetNode(i, j, node);
             }
         }
