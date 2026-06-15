@@ -34,7 +34,11 @@ namespace Assets.Scripts.CreateMap.UI
             uiGenerateMap.SetProviders(uiGenerateMapInput.GetMapSize, uiGenerateMapInput.GetClusterSize, uiLoadMapList.ShowMapList);            
         }
 
-        public void SetActiveTrue() => gameObject.SetActive(true);
+        public void SetActiveTrue()
+        {
+            uiGenerateMap.gameObject.SetActive(true);
+            gameObject.SetActive(true);
+        }
         public void SetActiveFalse() => gameObject.SetActive(false);
 
         private void SetActiveGenerateUIs() => generateUIs.SetActive(true);

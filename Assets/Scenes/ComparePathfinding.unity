@@ -10439,72 +10439,40 @@ MonoBehaviour:
     m_ActionId: 9de05671-ba30-40cf-8bbf-60979a709c2b
     m_ActionName: 'Player/ZoomCamera[/Mouse/scroll/y]'
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: zTestInput, Assembly-CSharp
-        m_MethodName: OnPressQ
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: bca8a46f-2c52-4bcf-b64e-74f1da59048d
-    m_ActionName: 'TestMap/PressQ[/Keyboard/q]'
+      m_Calls: []
+    m_ActionId: b8d7e681-4fb7-46e1-ac7d-5c90bf466892
+    m_ActionName: 'Unit/ClickLeft[/Mouse/leftButton]'
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: zTestInput, Assembly-CSharp
-        m_MethodName: OnPressW
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 7d32b495-0bd1-4002-9708-576afb0c7f0f
-    m_ActionName: 'TestMap/PressW[/Keyboard/w]'
+      m_Calls: []
+    m_ActionId: c782e779-377c-4508-a1f1-8800f80c6914
+    m_ActionName: 'Unit/ClickRight[/Mouse/rightButton]'
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: zTestInput, Assembly-CSharp
-        m_MethodName: OnPressE
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 6aa02196-8796-41f1-a022-903be7575140
-    m_ActionName: 'TestMap/PressE[/Keyboard/e]'
+      m_Calls: []
+    m_ActionId: 47175b8a-8db1-4947-8931-2ebee9189347
+    m_ActionName: 'Unit/MousePosition[/Mouse/position]'
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1837161504}
-        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
-        m_MethodName: OnPressLeft
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 99d98d91-f423-4306-a588-ffc43ec17012
-    m_ActionName: 'Player/PressRight[/Mouse/rightButton]'
+      m_Calls: []
+    m_ActionId: 2d727749-2d82-4bf1-a1b0-55ccdf678961
+    m_ActionName: 'Unit/MoveW[/Keyboard/w]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: bb065763-c445-4407-9e8e-029b7514e6d0
+    m_ActionName: 'Unit/MoveA[/Keyboard/a]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 58cc85c3-aabe-46ba-a719-07eba9e39c61
+    m_ActionName: 'Unit/MoveS[/Keyboard/s]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 14e214be-2d4a-4e42-9801-08ae447120d2
+    m_ActionName: 'Unit/MoveD[/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 260f6b3d-2572-44b1-9653-01e07d039907
+    m_ActionName: 'Unit/ZoomCamera[/Mouse/scroll/y]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: 
+  m_DefaultActionMap: df70fa95-8a34-4494-b137-73ab6b9c7d37
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &1837161507

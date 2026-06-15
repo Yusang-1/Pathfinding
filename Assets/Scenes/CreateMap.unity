@@ -1272,7 +1272,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 942946334}
-        m_TargetAssemblyTypeName: UILoadMapList, Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.CreateMap.UI.UILoadMapList, Assembly-CSharp
         m_MethodName: OnLoadSelectedMap
         m_Mode: 1
         m_Arguments:
@@ -1786,7 +1786,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 942946334}
-        m_TargetAssemblyTypeName: UILoadMapList, Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.CreateMap.UI.UILoadMapList, Assembly-CSharp
         m_MethodName: OnCloseLoadMapList
         m_Mode: 1
         m_Arguments:
@@ -2391,7 +2391,7 @@ MonoBehaviour:
     m_ActionName: 'Unit/ZoomCamera[/Mouse/scroll/y]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
+  m_DefaultActionMap: df70fa95-8a34-4494-b137-73ab6b9c7d37
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &558100856
@@ -3630,7 +3630,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb9199c5aa3ef1488eb285f322a6cb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiGenerateMapContainer: {fileID: 2024434488}
+  uiGenerateMapMediator: {fileID: 2024434488}
   uiTileSelector: {fileID: 87903479}
   uiExportMap: {fileID: 891192625}
   uiManageMap: {fileID: 688986248}
@@ -3910,12 +3910,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 942946330}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4214d7d6e7cea140ac363b60114b8a0, type: 3}
+  m_Script: {fileID: 11500000, guid: 715036ff633d01643b023fbcca6dc87e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   officialMapContainer: {fileID: 87122948}
   personalMapContainer: {fileID: 2082101214}
-  mapContainer: {fileID: 1961712170234980868, guid: 2ae584df46d6f5a4287b6db4143bc173, type: 3}
+  mapContainer: {fileID: 8551645777524396895, guid: 2ae584df46d6f5a4287b6db4143bc173, type: 3}
   mapInfo: {fileID: 1824788607}
 --- !u!1 &956708017
 GameObject:

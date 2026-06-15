@@ -7,7 +7,7 @@ public class InputManager : MonoBehaviour
     private InputActionMap actionMap;
 
     private void Awake()
-    {
+    {        
         actionMap = inputActions.actionMaps[0];
         actionMap.Enable();
     }    
