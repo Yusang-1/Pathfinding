@@ -1,11 +1,9 @@
 using UnityEngine;
 using System;
 
-namespace Assets.Scripts.CreateMap.UI
+public class UIGenerateMap : MonoBehaviour
 {
-    public class UIGenerateMap : MonoBehaviour
-    {
-        /// <summary> 맵 생성의 구현 코드들 </summary>
+    /// <summary> 맵 생성의 구현 코드들 </summary>
         public event Action<int, int> OnGenerateMapRequested;
 
         /// <summary> 맵이 생성되었을 때 UI의 작동 </summary>
@@ -53,5 +51,4 @@ namespace Assets.Scripts.CreateMap.UI
 
         public void SetActiveTrue() => gameObject.SetActive(true);
         public void SetActiveFalse() => gameObject.SetActive(false);
-    }
 }

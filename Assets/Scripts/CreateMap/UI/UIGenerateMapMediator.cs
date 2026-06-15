@@ -9,10 +9,10 @@ namespace Assets.Scripts.CreateMap.UI
         public event Action<int, int> OnGenerateMapRequested;
         /// <summary> 맵이 생성되었을 때 UI의 작동 </summary>
         public event Action OnGenerateMapUI;
-        public event Func<CreateMapManager.MapData[]> OnOfficialMapListRequested;
-        public event Func<CreateMapManager.MapData[]> OnPersonalMapListRequested;
+        public event Func<MapData[]> OnOfficialMapListRequested;
+        public event Func<MapData[]> OnPersonalMapListRequested;
 
-        public event Action<CreateMapManager.MapData> OnLoadMapRequested;
+        public event Action<MapData> OnLoadMapRequested;
 
         [SerializeField] private UIGenerateMap uiGenerateMap;
         [SerializeField] private UIGenerateMapInput uiGenerateMapInput;

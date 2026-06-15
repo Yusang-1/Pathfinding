@@ -10,8 +10,8 @@ namespace Assets.Scripts.CreateMap
         [SerializeField] private CreateMapUIRoot uiRoot;
 
         private NodeList nodeList;
-        private MapdataJsonConverter mapdataJsonConverter;
         private MapGenerator mapGenerator;
+        private MapdataJsonConverter mapdataJsonConverter;
         private readonly NodeTypeController nodeTypeController = new();
 
         [SerializeField] private int nodeSize;
@@ -20,13 +20,13 @@ namespace Assets.Scripts.CreateMap
 
         private void Start()
         {
-            nodeData.Initialize();                        
-            
+            nodeData.Initialize();
+
             nodeList = new NodeList(nodeData);
             nodeList.OnSelected += nodeTypeController.SetNodeType;
-            
-            mapGenerator = new MapGenerator(nodePrefab, nodeList);
+
             mapdataJsonConverter = new MapdataJsonConverter();
+            mapGenerator = new MapGenerator(nodePrefab, nodeList);
 
             uiRoot.OnGenerateMapRequested += CreateEmptyMap;
             uiRoot.OnTileSelectorRequested += nodeTypeController.SetCurrentSelected;
@@ -39,7 +39,7 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnLoadMapRequested += LoadSavedMap;
             uiRoot.Initialize();
 
-            nodeTypeController.Initialize(nodeList);                        
+            nodeTypeController.Initialize(nodeList);
         }
 
         private void CreateEmptyMap(int sizeOfMap, int sizeOfCluster)
@@ -68,12 +68,12 @@ namespace Assets.Scripts.CreateMap
 
             mapGenerator.GenerateMap(mapSize);
         }
-        
+
         public void LoadSavedMap(MapData mapData)
         {
             mapSize = mapData.MapSize;
             clusterSize = mapData.ClusterSize;
-            
+
             mapGenerator.GenerateMap(mapData);
         }
 
@@ -89,18 +89,8 @@ namespace Assets.Scripts.CreateMap
                 ClusterSize = clusterSize,
                 ObstacleIndexes = obstacleIndexes
             };
-            
-            mapdataJsonConverter.SaveMapDataToJson(mapData);
-        }
 
-        [System.Serializable]
-        public struct MapData
-        {
-            public string MapName;
-            public int NodeSize;
-            public int MapSize;
-            public int ClusterSize;
-            public Vector2Int[] ObstacleIndexes;
+            mapdataJsonConverter.SaveMapDataToJson(mapData);
         }
     }
 }

@@ -10,11 +10,11 @@ namespace Assets.Scripts.CreateMap.UI
         public event Action<string> OnExportMapRequested;
         public event Action OnClearMapRequested;
         public event Action OnRemoveMapRequested;
-        public event Func<CreateMapManager.MapData[]> OnGetOfficialMapListRequested;
-        public event Func<CreateMapManager.MapData[]> OnGetPersonalMapListRequested;
-        public event Action<CreateMapManager.MapData> OnLoadMapRequested;
+        public event Func<MapData[]> OnGetOfficialMapListRequested;
+        public event Func<MapData[]> OnGetPersonalMapListRequested;
+        public event Action<MapData> OnLoadMapRequested;
 
-        [SerializeField] private UIGenerateMapMediator uiGenerateMapContainer;
+        [SerializeField] private UIGenerateMapMediator uiGenerateMapMediator;
         [SerializeField] private UITileSelector uiTileSelector;
         [SerializeField] private UIExportMap uiExportMap;
         [SerializeField] private UIManageMap uiManageMap;
@@ -24,14 +24,14 @@ namespace Assets.Scripts.CreateMap.UI
         {
             uiPopup.Initialize();
             
-            uiGenerateMapContainer.OnGenerateMapRequested += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);
+            uiGenerateMapMediator.OnGenerateMapRequested += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);
             
-            uiGenerateMapContainer.OnGenerateMapUI += uiTileSelector.SetActiveTrue;
-            uiGenerateMapContainer.OnGenerateMapUI += uiExportMap.SetActiveTrue;
-            uiGenerateMapContainer.OnGenerateMapUI += uiManageMap.SetActiveTrue;
-            uiGenerateMapContainer.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
-            uiGenerateMapContainer.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
-            uiGenerateMapContainer.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
+            uiGenerateMapMediator.OnGenerateMapUI += uiTileSelector.SetActiveTrue;
+            uiGenerateMapMediator.OnGenerateMapUI += uiExportMap.SetActiveTrue;
+            uiGenerateMapMediator.OnGenerateMapUI += uiManageMap.SetActiveTrue;
+            uiGenerateMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
+            uiGenerateMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
+            uiGenerateMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
             
             uiTileSelector.OnTileSelect += (type) => OnTileSelectorRequested?.Invoke(type);
 
@@ -39,7 +39,7 @@ namespace Assets.Scripts.CreateMap.UI
 
             uiManageMap.OnClear += () => OnClearMapRequested?.Invoke();
             uiManageMap.OnRemove += () => OnRemoveMapRequested?.Invoke();
-            uiManageMap.OnRemove += uiGenerateMapContainer.SetActiveTrue;
+            uiManageMap.OnRemove += uiGenerateMapMediator.SetActiveTrue;
             uiManageMap.OnRemove += uiTileSelector.SetActiveFalse;
             uiManageMap.OnRemove += uiExportMap.SetActiveFalse;
         }

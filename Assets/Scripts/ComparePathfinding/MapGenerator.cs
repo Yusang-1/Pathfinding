@@ -1,7 +1,5 @@
 using UnityEngine;
 
-namespace Assets.Scripts.CreateMap
-{
     public class MapGenerator
     {
         private readonly Node nodePrefab;
@@ -43,4 +41,3 @@ namespace Assets.Scripts.CreateMap
 
         }
     }
-}

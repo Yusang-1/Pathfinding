@@ -4,7 +4,7 @@ namespace Assets.Scripts.ControllUnit
 {
     public class MapController : MonoBehaviour
     {
-        private readonly MapGenerator mapGenerator = new();
+        private MapGenerator mapGenerator;
         private NodeList nodeList;
 
         [SerializeField] private Pathfinder pathfinder;
@@ -24,9 +24,10 @@ namespace Assets.Scripts.ControllUnit
             nodeData.Initialize();
             nodeList = new NodeList(nodeSize, nodeData);
 
-
             uiRoot.Initialize();
             uiRoot.OnGenerateMapRequested += GenerateMap;
+            
+            mapGenerator = new MapGenerator(nodePrefab, nodeList);
         }
 
         private void GenerateMap(int sizeOfMap, int sizeOfCluster)
@@ -49,7 +50,7 @@ namespace Assets.Scripts.ControllUnit
             }
 
             nodeList.CreateNodeArray(mapSize);
-            mapGenerator.GenerateMap(mapSize, nodePrefab, nodeList);
+            mapGenerator.GenerateMap(mapSize);
 
             pathfinder.SetNodeAndCluster(nodeList, mapSize, clusterSize);
         }

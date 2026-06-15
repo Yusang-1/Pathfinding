@@ -7,7 +7,7 @@ namespace Assets.Scripts.CreateMap.UI
     {
         public event Action OnLoadMapClosed;
         public event Action OnLoadMapEnd;
-        public event Action<CreateMapManager.MapData> OnLoadMapRequested;
+        public event Action<MapData> OnLoadMapRequested;
 
         [SerializeField] private Transform officialMapContainer;
         [SerializeField] private Transform personalMapContainer;
@@ -17,7 +17,7 @@ namespace Assets.Scripts.CreateMap.UI
         private readonly UIMapContainer[] officialContainerPool;
         private readonly UIMapContainer[] personalContainerPool;
 
-        public void ShowMapList(CreateMapManager.MapData[] officialMaps, CreateMapManager.MapData[] personalMaps)
+        public void ShowMapList(MapData[] officialMaps, MapData[] personalMaps)
         {
             ShowMap(officialMaps, officialContainerPool, officialMapContainer);
 
@@ -26,7 +26,7 @@ namespace Assets.Scripts.CreateMap.UI
             gameObject.SetActive(true);
         }
 
-        private void ShowMap(CreateMapManager.MapData[] maps, UIMapContainer[] pool, Transform transform)
+        private void ShowMap(MapData[] maps, UIMapContainer[] pool, Transform transform)
         {
             if (maps == null || maps.Length == 0) return;
 
@@ -63,8 +63,8 @@ namespace Assets.Scripts.CreateMap.UI
             }
         }
 
-        private CreateMapManager.MapData currentSelected;
-        private void OnSelect(CreateMapManager.MapData mapData)
+        private MapData currentSelected;
+        private void OnSelect(MapData mapData)
         {
             currentSelected = mapData;
             mapInfo.SetInfo(currentSelected);

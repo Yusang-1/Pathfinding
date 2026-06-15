@@ -121,7 +121,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1961712170234980868}
+      - m_Target: {fileID: 8551645777524396895}
         m_TargetAssemblyTypeName: UIMapContainer, Assembly-CSharp
         m_MethodName: OnSelect
         m_Mode: 1
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 5310784516355203918}
   - component: {fileID: 1422303751559282149}
   - component: {fileID: 2779276716855675837}
-  - component: {fileID: 1961712170234980868}
+  - component: {fileID: 8551645777524396895}
   m_Layer: 5
   m_Name: Container_Map
   m_TagString: Untagged
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1961712170234980868
+--- !u!114 &8551645777524396895
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -219,7 +219,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2895985857960247284}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c5d3f3a37fb0bf48893290b177f9c6b, type: 3}
+  m_Script: {fileID: 11500000, guid: c534d68ed855e2b49b81eb166278f396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mapNameText: {fileID: 6242640519426622218}

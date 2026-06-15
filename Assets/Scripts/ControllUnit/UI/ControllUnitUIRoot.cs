@@ -10,6 +10,6 @@ public class ControllUnitUIRoot : MonoBehaviour
     
     public void Initialize()
     {
-        uiGenerateMap.OnGenerateMap += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);                
+        uiGenerateMap.OnGenerateMapRequested += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);                
     }
 }

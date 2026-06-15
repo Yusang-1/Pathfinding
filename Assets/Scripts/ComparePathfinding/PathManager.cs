@@ -16,7 +16,8 @@ public class PathManager : MonoBehaviour
     private HPAPathfinder hPAPathfinder;
     private ThetaStar thetaStarPathfinder;
     private SearchWithTheClusterResult searchWithTheClusterResult;
-    private readonly MapGenerator mapGenerator = new();
+    private MapGenerator mapGenerator;
+    private MapdataJsonConverter mapdataJsonConverter;
     private readonly PathfindingResultShower resultShower = new();
 
     [SerializeField] private UIRoot uiRoot;
@@ -47,6 +48,8 @@ public class PathManager : MonoBehaviour
         nodeData.Initialize();
         nodeList = new NodeList(nodeSize, nodeData);
         hPAClusterList = new(nodeList);
+        mapGenerator = new MapGenerator(nodePrefab, nodeList);
+        mapdataJsonConverter = new MapdataJsonConverter();
 
         lineDrawer.Initialize();
         UIRootInitialize();
@@ -76,6 +79,9 @@ public class PathManager : MonoBehaviour
         uiRoot.OnResetAllRequested += ResetAll;
         uiRoot.OnSetNodeTypeRequested += nodeList.NodeInfo.SetNodeType;
         uiRoot.OnGridToWorldRequested += nodeList.GridToWorld;
+        uiRoot.OnLoadMapRequested += mapGenerator.GenerateMap;
+        uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
+        uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
     }
 
     private const int defaultMapSize = 20;
@@ -102,7 +108,7 @@ public class PathManager : MonoBehaviour
         clusterShower.Initialize(clusterSize, nodeSize);
         hPAPathfinder = new HPAPathfinder(hPAClusterList, nodeList, pathfinder);
         nodeList.CreateNodeArray(mapSize);
-        mapGenerator.GenerateMap(mapSize, nodePrefab, nodeList);
+        mapGenerator.GenerateMap(mapSize);
         isMapGenerated = true;
 
         OnMapGenerated?.Invoke();
@@ -200,7 +206,7 @@ public class PathManager : MonoBehaviour
         clusterShower.ResetClusters();
         lineDrawer.ResetLineDrawer();
         unit.gameObject.SetActive(false);
-        
+
         nodeList.NodeInfo.IsDuringNodeSetting = true;
     }
 

@@ -9,7 +9,7 @@ namespace Assets.Scripts.CreateMap.UI
         [SerializeField] private Image image;
         [SerializeField] private TextMeshProUGUI mapName;
 
-        public void SetInfo(CreateMapManager.MapData mapData)
+        public void SetInfo(MapData mapData)
         {
             mapName.text = mapData.MapName;
         }
