@@ -3,13 +3,17 @@ using System;
 
 public class ControllUnitUIRoot : MonoBehaviour
 {
-    // public event Action<int, int> OnGenerateMapRequested;
+    public event Action<MapData> OnLoadMapRequested;
+    public event Func<MapData[]> OnGetOfficialMapListRequested;
+    public event Func<MapData[]> OnGetPersonalMapListRequested;
     
-    [SerializeField] private UILoadMap uiLoadMap;
+    [SerializeField] private UILoadMapMediator uILoadMapMediator;
     [SerializeField] private UIResultController uIResultController;
     
-    public void Initialize()
+    private void Start()
     {
-        // uiGenerateMap.OnGenerateMapRequested += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);                
+        uILoadMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
+        uILoadMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
+        uILoadMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
     }
 }

@@ -1,11 +1,19 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class MapController : MonoBehaviour
     {
+        private AStarPathfinder aStarPathfinder;
+        private HPAPathfinder hPAPathfinder;
+        private ThetaStar thetaStarPathfinder;
+        private SearchWithTheClusterResult searchWithTheClusterResult;
+
         private MapGenerator mapGenerator;
         private NodeList nodeList;
+        private HPAClusterList clusterList;
+        private MapdataJsonConverter mapdataJsonConverter;
 
         [SerializeField] private Pathfinder pathfinder;
         [SerializeField] private ControllUnitUIRoot uiRoot;
@@ -13,46 +21,64 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private NodeData nodeData;
 
         [Header("Values")]
-        [SerializeField] private int nodeSize;
+        private int nodeSize;
         private int mapSize;
         private int clusterSize;
-        private const int defaultMapSize = 20;
-        private const int maxClusterSize = 10;
+        private bool isMapGenerated = false;
 
         private void Start()
         {
-            nodeData.Initialize();
+            mapdataJsonConverter = new MapdataJsonConverter();
             nodeList = new NodeList(nodeData);
-            nodeList.Initialize(nodeSize, mapSize);
-
-            uiRoot.Initialize();            
-            
+            clusterList = new HPAClusterList(nodeList);
             mapGenerator = new MapGenerator(nodePrefab, nodeList);
+            aStarPathfinder = new AStarPathfinder(nodeList, clusterList);
+            hPAPathfinder = new HPAPathfinder(clusterList, nodeList, aStarPathfinder);
+            thetaStarPathfinder = new ThetaStar(nodeList, clusterList);
+            searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder);
+
+            nodeData.Initialize();
+
+
+
+            uiRoot.OnLoadMapRequested += SetMapData;
+            uiRoot.OnLoadMapRequested += mapGenerator.GenerateMap;
+            uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
+            uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
         }
 
-        private void GenerateMap(int sizeOfMap, int sizeOfCluster)
+        private void SetMapData(MapData mapData)
         {
-            if (sizeOfMap == 0)
-            {
-                mapSize = defaultMapSize;
-            }
-            else
-                mapSize = sizeOfMap;
+            nodeSize = mapData.NodeSize;
+            mapSize = mapData.MapSize;
+            clusterSize = mapData.ClusterSize;
 
-            if (sizeOfCluster == 0)
-            {
-                clusterSize = mapSize / 4;
-                clusterSize = Mathf.Clamp(clusterSize, 0, maxClusterSize);
-            }
-            else
-            {
-                clusterSize = sizeOfCluster;
-            }
+            nodeList.Initialize(nodeSize, mapSize);
 
-            nodeList.CreateNodeArray(mapSize);
-            mapGenerator.GenerateMap(mapSize);
+            isMapGenerated = true;
+        }
 
-            pathfinder.SetNodeAndCluster(nodeList, mapSize, clusterSize);
+        private void CreateCluster()
+        {
+            if (!isMapGenerated) return;
+
+            clusterList.Initialize(aStarPathfinder, mapSize, clusterSize);
+            nodeList.SetNodeArea();
+        }
+
+        private void FindPath()
+        {
+            var hpaStarSmoothResult = FindHighLevelPath();
+        }
+
+        private List<HPAPathfinder.ResultNode> FindHighLevelPath()
+        {
+            clusterList.ResetClusterList();
+
+            Vector3 from = nodeList.GridToWorld(nodeList.NodeInfo.StartNodeIndex);
+            Vector3 to = nodeList.GridToWorld(nodeList.NodeInfo.GoalNodeIndex);
+            var clusterResult = hPAPathfinder.FindClusterPath(from, to, out PathResult clusterPathResult);
+            return clusterResult;
         }
     }
 }

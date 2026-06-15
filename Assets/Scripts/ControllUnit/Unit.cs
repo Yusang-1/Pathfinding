@@ -3,10 +3,10 @@ using System;
 
 namespace Assets.Scripts.ControllUnit
 {
-    public class Unit : MonoBehaviour, ISelectable, IHaveOwnActionMap
+    public class Unit : MonoBehaviour, ISelectableUnit, IHaveOwnActionMap
     {
-        public event Action<ISelectable> OnSelectedCallback;
-        public event Action<ISelectable> OnDeselectedCallback;
+        public event Action<ISelectableUnit> OnSelectedCallback;
+        public event Action<ISelectableUnit> OnDeselectedCallback;
         public event Action<string> OnEnableActionMap;
         public event Action OnDisableActionMap;
 

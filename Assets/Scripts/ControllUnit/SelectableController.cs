@@ -45,10 +45,10 @@ namespace Assets.Scripts.ControllUnit
         }
     }
 
-    public interface ISelectable
+    public interface ISelectableUnit
     {
-        public event Action<ISelectable> OnSelectedCallback;
-        public event Action<ISelectable> OnDeselectedCallback;
+        public event Action<ISelectableUnit> OnSelectedCallback;
+        public event Action<ISelectableUnit> OnDeselectedCallback;
 
         public void Selected();
         public void Deselected();
