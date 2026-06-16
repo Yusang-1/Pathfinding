@@ -1,47 +1,84 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class SelectableController
     {
-        private ISelectableUnit currentSelected;
+        private SelectableType currentSelectedType;
+        private readonly List<ISelectableUnit> currentSelectedList = new();
 
-        private readonly Action<string> enableActionMap;
-        private readonly Action disableActionMap;
+        private readonly Action<string> OnchangeActionMapSelected;
+        private readonly Action OnchangeActionMapDefault;
 
-        public SelectableController(Action<string> enableActionMap, Action disableActionMap)
+        public SelectableController(Action<string> changeActionMapSelected, Action changeActionMapDefault)
         {
-            this.enableActionMap = enableActionMap;
-            this.disableActionMap = disableActionMap;
+            OnchangeActionMapSelected = changeActionMapSelected;
+            OnchangeActionMapDefault = changeActionMapDefault;
         }
 
         public void Selected(ISelectableUnit selectable)
         {
-            if(currentSelected == selectable) return;
-            
-            if (currentSelected != null)
+            if (selectable == null)
             {
-                currentSelected.Deselected();
-                if (currentSelected is IHaveOwnActionMap)
-                {
-                    (currentSelected as IHaveOwnActionMap).OnEnableActionMap -= enableActionMap;
-                    (currentSelected as IHaveOwnActionMap).OnDisableActionMap -= disableActionMap;
-                }
+                DeselectedAll();
+                return;
             }
 
-            currentSelected = selectable;
-            if (currentSelected is IHaveOwnActionMap)
-            {
-                (currentSelected as IHaveOwnActionMap).OnEnableActionMap += enableActionMap;
-                (currentSelected as IHaveOwnActionMap).OnDisableActionMap += disableActionMap;
-            }
-
-            currentSelected?.Selected();
+            NewSelected(selectable);
         }
-        public void Deselected(ISelectable selectable)
+        public void ShiftSelected(ISelectableUnit selectable)
         {
-            currentSelected?.Deselected();
-            currentSelected = null;
+            if (selectable == null) return;
+
+            if (currentSelectedType == selectable.GetSelectableType()) // 현재 타입과 같으면
+            {
+                AddSelected(selectable);
+            }
+        }
+
+        private void NewSelected(ISelectableUnit selectable)
+        {
+            DeselectedAll();
+            AddSelected(selectable);
+            currentSelectedType = selectable.GetSelectableType();
+
+            if (selectable is IHaveOwnActionMap)
+            {
+                var actionMapOwner = selectable as IHaveOwnActionMap;
+                OnchangeActionMapSelected?.Invoke(actionMapOwner.GetActionMapName());
+            }
+        }
+        private void AddSelected(ISelectableUnit selectable)
+        {
+            selectable.Selected();
+            currentSelectedList.Add(selectable);
+        }
+
+        public void Deselected(ISelectableUnit selectable)
+        {
+            selectable.Deselected();
+            currentSelectedList.Remove(selectable);
+
+            if (currentSelectedList.Count == 0)
+            {
+                currentSelectedType = SelectableType.None;
+                OnchangeActionMapDefault?.Invoke();
+            }
+        }
+        private void DeselectedAll()
+        {
+            if (currentSelectedList.Count == 0) return;
+
+            foreach (var selected in currentSelectedList)
+            {
+                selected.Deselected();
+            }
+            currentSelectedList.Clear();
+
+            currentSelectedType = SelectableType.None;
+            OnchangeActionMapDefault?.Invoke();
         }
     }
 
@@ -52,5 +89,12 @@ namespace Assets.Scripts.ControllUnit
 
         public void Selected();
         public void Deselected();
+        public SelectableType GetSelectableType();
+    }
+
+    public enum SelectableType
+    {
+        None,
+        Unit
     }
 }

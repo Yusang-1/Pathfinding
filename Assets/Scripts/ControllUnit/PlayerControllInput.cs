@@ -6,17 +6,18 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.ControllUnit
 {
-    public class PlayerControllInput : MonoBehaviour
+    public class PlayerControllInput : MonoBehaviour, IActionMapInputer
     {
         public event Action<Vector2> OnDirectionChanged;
 
-        private Vector2 sumOfDirection;
+        private SelectableController selectableController;
+        
         private readonly Dictionary<int, Vector2> directionDict = new();
 
+        [SerializeField] private string actionMapName;
+        private Vector2 sumOfDirection;
         private Vector2 mousePosition;
         private bool isPointerOverGameObject;
-        private SelectableController selectableController;
-
         private bool isInputActive;
 
         private void Update()
@@ -47,7 +48,7 @@ namespace Assets.Scripts.ControllUnit
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 Vector3 origin = Camera.main.transform.position;
                 Vector3 direction = -(worldPos - origin).normalized;
-
+                Debug.DrawRay(origin, direction * 10, Color.green, 1.2f);
                 if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
                 {
                     if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
@@ -127,5 +128,9 @@ namespace Assets.Scripts.ControllUnit
                 }
             }
         }
+
+        public string GetActionMapName() => actionMapName;
+        public void ActionMapActivated() => isInputActive = true;
+        public void ActionMapDeactivated() => isInputActive = false;
     }
 }

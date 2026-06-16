@@ -6,17 +6,19 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.ControllUnit
 {
-    public class UnitInput : MonoBehaviour
+    public class UnitInput : MonoBehaviour, IActionMapInputer
     {
         public event Action<Vector2> OnDirectionChanged;
 
-        private Vector2 sumOfDirection;
-        private readonly Dictionary<int, Vector2> directionDict = new();
-
-        private Vector2 mousePosition;
-        private bool isPointerOverGameObject;
         private SelectableController selectableController;
 
+        private readonly Dictionary<int, Vector2> directionDict = new();
+
+        [SerializeField] private string actionMapName;
+        private Vector2 sumOfDirection;
+        private Vector2 mousePosition;
+        private bool isPointerOverGameObject;
+        private bool isShiftPressed;
         private bool isInputActive;
 
         private void Update()
@@ -52,16 +54,25 @@ namespace Assets.Scripts.ControllUnit
                 {
                     if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
                     {
-                        selectableController.Selected(selectable);
+                        if (isShiftPressed)
+                        {
+                            selectableController.ShiftSelected(selectable);
+                        }
+                        else
+                        {
+                            selectableController.Selected(selectable);
+                        }
                     }
                     else
                         selectableController.Selected(null);
                 }
                 else
+                {
                     selectableController.Selected(null);
+                }
             }
         }
-        
+
         public event Action<Vector3> OnRightClickRequested;
         public void OnRightClick(InputAction.CallbackContext context)
         {
@@ -71,6 +82,11 @@ namespace Assets.Scripts.ControllUnit
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
 
                 OnRightClickRequested?.Invoke(worldPos);
+
+                if (isShiftPressed)
+                {
+
+                }
             }
         }
 
@@ -124,6 +140,21 @@ namespace Assets.Scripts.ControllUnit
             OnDirectionChanged?.Invoke(sumOfDirection.normalized);
         }
 
+        public void OnPressShift(InputAction.CallbackContext context)
+        {
+            if (context.started)
+            {
+                isShiftPressed = true;
+
+            }
+
+            if (context.canceled)
+            {
+                isShiftPressed = false;
+
+            }
+        }
+
         public void OnZoomCamera(InputAction.CallbackContext context)
         {
             float scrollY = context.ReadValue<float>();
@@ -138,5 +169,9 @@ namespace Assets.Scripts.ControllUnit
                 }
             }
         }
+
+        public string GetActionMapName() => actionMapName;
+        public void ActionMapActivated() => isInputActive = true;
+        public void ActionMapDeactivated() => isInputActive = false;
     }
 }
