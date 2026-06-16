@@ -8,7 +8,7 @@ namespace Assets.Scripts.ControllUnit
         private NodeList nodeList;
         private HPAClusterList clusterList;
 
-        AStarPathfinder aStarPathfinder;
+        private AStarPathfinder aStarPathfinder;
         private ThetaStar thetaStarPathfinder;
         private HPAPathfinder highLevelPathfinder;
         private SearchWithTheClusterResult searchWithTheClusterResult;

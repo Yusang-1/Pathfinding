@@ -51,7 +51,7 @@ namespace Assets.Scripts.ControllUnit
             OnDisableActionMap?.Invoke();
         }
 
-        public void MoveUnit(Vector3 destination)
+        private void MoveUnit(Vector3 destination)
         {
             controller.MoveTo(destination);
         }

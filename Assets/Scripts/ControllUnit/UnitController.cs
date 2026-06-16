@@ -24,6 +24,7 @@ namespace Assets.Scripts.ControllUnit
         private int currentPathIndex;
         private Vector3 shortDestination;
         private Vector3 exitOfCluster;
+        
         public void MoveTo(Vector3 destination)
         {
             isReadyToNextPathSet = true;
