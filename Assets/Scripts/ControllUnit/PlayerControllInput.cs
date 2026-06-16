@@ -50,7 +50,7 @@ namespace Assets.Scripts.ControllUnit
 
                 if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
                 {
-                    if (hit.collider.TryGetComponent<ISelectable>(out ISelectable selectable))
+                    if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
                     {
                         selectableController.Selected(selectable);
                         // OnSelectedCallback(selectable.GetActionMapString());

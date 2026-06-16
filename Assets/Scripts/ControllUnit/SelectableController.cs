@@ -4,7 +4,7 @@ namespace Assets.Scripts.ControllUnit
 {
     public class SelectableController
     {
-        private ISelectable currentSelected;
+        private ISelectableUnit currentSelected;
 
         private readonly Action<string> enableActionMap;
         private readonly Action disableActionMap;
@@ -15,7 +15,7 @@ namespace Assets.Scripts.ControllUnit
             this.disableActionMap = disableActionMap;
         }
 
-        public void Selected(ISelectable selectable)
+        public void Selected(ISelectableUnit selectable)
         {
             if(currentSelected == selectable) return;
             

@@ -1,5 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
+using Assets.Scripts.ControllUnit.UI;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -19,6 +20,7 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private ControllUnitUIRoot uiRoot;
         [SerializeField] private Node nodePrefab;
         [SerializeField] private NodeData nodeData;
+        [SerializeField] private UnitSpawner unitSpawner;
 
         [Header("Values")]
         private int nodeSize;
@@ -45,6 +47,8 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnLoadMapRequested += mapGenerator.GenerateMap;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
+            
+            uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
         }
 
         private void SetMapData(MapData mapData)
