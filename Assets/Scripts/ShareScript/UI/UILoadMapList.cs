@@ -3,8 +3,7 @@ using System;
 
 public class UILoadMapList : MonoBehaviour
 {
-    public event Action OnLoadMapClosed;
-    public event Action OnLoadMapEnd;
+    public event Action OnLoadMapFinished;
     public event Action<MapData> OnLoadMapRequested;
 
     [SerializeField] private Transform officialMapContainer;
@@ -71,7 +70,6 @@ public class UILoadMapList : MonoBehaviour
     /// <summary> button에 할당 </summary>
     public void OnCloseLoadMapList()
     {
-        OnLoadMapClosed?.Invoke();
         gameObject.SetActive(false);
     }
 
@@ -80,7 +78,7 @@ public class UILoadMapList : MonoBehaviour
     {
         OnLoadMapRequested?.Invoke(currentSelected);
         OnCloseLoadMapList();
-        OnLoadMapEnd?.Invoke();
+        OnLoadMapFinished?.Invoke();
     }
 }
 

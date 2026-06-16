@@ -23,8 +23,8 @@ namespace Assets.Scripts.ControllUnit.UI
             uiLoadMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
             uiLoadMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
             uiLoadMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
-            uiLoadMapMediator.OnLoadMapEnd += uiSpawnUnit.SetActiveTrue;
-            uiLoadMapMediator.OnLoadMapEnd += uiUnitPanel.SetActiveTrue;
+            uiLoadMapMediator.OnLoadMapFinished += uiSpawnUnit.SetActiveTrue;
+            uiLoadMapMediator.OnLoadMapFinished += uiUnitPanel.SetActiveTrue;
             
             uiSpawnUnit.OnSpawnUnitRequested += () => OnSpawnUnitRequested?.Invoke();
         }
