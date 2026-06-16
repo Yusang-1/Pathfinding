@@ -50,7 +50,7 @@ namespace Assets.Scripts.ControllUnit
         private const string DefaultActionMapName = "Player";
         private void ChangeActionMapDefault()
         {
-            playerInputComponent.SwitchCurrentActionMap(DefaultActionMapName);
+            ChangeActionMapSelected(DefaultActionMapName);
         }
     }
 }

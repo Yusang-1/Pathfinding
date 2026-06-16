@@ -42,7 +42,7 @@ namespace Assets.Scripts.ControllUnit
 
         public void OnLeftClick(InputAction.CallbackContext context)
         {
-            if (isPointerOverGameObject) return;
+            if (isPointerOverGameObject || !isInputActive) return;
 
             if (context.canceled)
             {
@@ -76,6 +76,8 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector3> OnRightClickRequested;
         public void OnRightClick(InputAction.CallbackContext context)
         {
+            if (isPointerOverGameObject || !isInputActive) return;
+            
             if (context.canceled)
             {
                 Debug.Log("Right Click");
@@ -92,6 +94,8 @@ namespace Assets.Scripts.ControllUnit
 
         public void OnTrackMousePosition(InputAction.CallbackContext context)
         {
+            if (isPointerOverGameObject || !isInputActive) return;
+            
             if (context.performed)
             {
                 mousePosition = context.ReadValue<Vector2>();
@@ -120,6 +124,8 @@ namespace Assets.Scripts.ControllUnit
 
         private void HandleKeyInput(int index, InputAction.CallbackContext context)
         {
+            if (!isInputActive) return;
+            
             if (context.started)
             {
                 Vector2 value = context.ReadValue<Vector2>();
@@ -142,6 +148,8 @@ namespace Assets.Scripts.ControllUnit
 
         public void OnPressShift(InputAction.CallbackContext context)
         {
+            if (!isInputActive) return;
+            
             if (context.started)
             {
                 isShiftPressed = true;
@@ -157,6 +165,8 @@ namespace Assets.Scripts.ControllUnit
 
         public void OnZoomCamera(InputAction.CallbackContext context)
         {
+            if (!isInputActive) return;
+            
             float scrollY = context.ReadValue<float>();
 
             if (context.started)
