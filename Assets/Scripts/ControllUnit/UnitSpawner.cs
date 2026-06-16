@@ -1,9 +1,13 @@
 using UnityEngine;
+using System;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class UnitSpawner : MonoBehaviour
     {
+        public event Action<ISelectableUnit> OnSelectedCallback;
+        public event Action<ISelectableUnit> OnDeselectedCallback;
+        
         [SerializeField] private Unit unitPrefab;
         [SerializeField] private Vector3 spawnPosition;
 
@@ -17,6 +21,12 @@ namespace Assets.Scripts.ControllUnit
                 unit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
                 unit.OnPoolObjectFirstCreated += unitPool.PoolObjectFirstCreated;
                 unit.OnPoolObjectUnused += unitPool.PoolObjectUnused;
+                
+                if(unit is ISelectableUnit)
+                {
+                    unit.OnSelectedCallback += (s) => OnSelectedCallback?.Invoke(s);
+                    unit.OnDeselectedCallback += (s) => OnDeselectedCallback?.Invoke(s);
+                }
             }
             else
             {

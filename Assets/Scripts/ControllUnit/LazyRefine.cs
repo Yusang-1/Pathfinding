@@ -20,8 +20,7 @@ namespace Assets.Scripts.ControllUnit
         public bool TryGetPathFromQueue(out Vector3 path)
         {
             if (pathQueue.Count <= 0)
-            {
-                Debug.LogWarning("pathQueue가 비어있음");
+            {                
                 path = Vector3.zero;
                 return false;
             }

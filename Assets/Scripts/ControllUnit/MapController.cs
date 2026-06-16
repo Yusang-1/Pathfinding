@@ -8,12 +8,12 @@ namespace Assets.Scripts.ControllUnit
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
-
+        
         [SerializeField] private Pathfinder pathfinder;
+        [SerializeField] private UnitSpawner unitSpawner;
         [SerializeField] private ControllUnitUIRoot uiRoot;
         [SerializeField] private Node nodePrefab;
         [SerializeField] private NodeData nodeData;
-        [SerializeField] private UnitSpawner unitSpawner;
 
         [Header("Values")]
         private int nodeSize;
@@ -33,6 +33,9 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
 
             uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
+            
+            unitSpawner.OnSelectedCallback += uiRoot.UnitSelected;
+            unitSpawner.OnDeselectedCallback += uiRoot.UnitDeselected;
         }
 
         private void SetMapData(MapData mapData)

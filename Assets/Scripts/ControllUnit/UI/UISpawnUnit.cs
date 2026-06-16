@@ -11,5 +11,7 @@ namespace Assets.Scripts.ControllUnit.UI
         {
             OnSpawnUnitRequested?.Invoke();
         }
+        
+        public void SetActiveTrue() => gameObject.SetActive(true);
     }
 }
