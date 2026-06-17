@@ -23,7 +23,7 @@ namespace Assets.Scripts.ControllUnit.UI
         }
         public void DeSelect()
         {
-
+            gameObject.SetActive(false);
         }
 
         public void SetActiveTrue() => gameObject.SetActive(true);

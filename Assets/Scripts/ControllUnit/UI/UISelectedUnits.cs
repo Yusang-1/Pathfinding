@@ -11,7 +11,6 @@ namespace Assets.Scripts.ControllUnit.UI
         private UISelectedUnit[] uis;
         private readonly Dictionary<ISelectableUnit, int> uiIndexDict = new();
         private readonly PriorityQueue<UISelectedUnit, int> UnusedUI = new();
-        private int index = 0;
 
         [SerializeField] private float uiMargin;
         [SerializeField] private int uiRow;
@@ -65,8 +64,7 @@ namespace Assets.Scripts.ControllUnit.UI
             var ii = UnusedUI.Dequeue();
             ii.GetUnitInfo((unit as Unit).name);
             
-            uiIndexDict.Add(unit, index);
-            uis[index++].GetUnitInfo((unit as Unit).name);
+            uiIndexDict.Add(unit, ii.Index);           
         }
         public void DeSelectedUnit(ISelectableUnit unit)
         {
@@ -78,6 +76,7 @@ namespace Assets.Scripts.ControllUnit.UI
             
             var ii = uis[uiIndexDict[unit]];
             ii.DeSelect();
+            uiIndexDict.Remove(unit);
             
             UnusedUI.Enqueue(ii, ii.Index);
         }

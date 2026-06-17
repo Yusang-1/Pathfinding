@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class SelectableController
     {
         private SelectableType currentSelectedType;
-        private readonly List<ISelectableUnit> currentSelectedList = new();
+        private readonly HashSet<ISelectableUnit> currentSelectedList = new();
 
         private readonly Action<string> OnchangeActionMapSelected;
         private readonly Action OnchangeActionMapDefault;
@@ -31,8 +30,12 @@ namespace Assets.Scripts.ControllUnit
         public void ShiftSelected(ISelectableUnit selectable)
         {
             if (selectable == null) return;
-
-            if (currentSelectedType == selectable.GetSelectableType()) // 현재 타입과 같으면
+            
+            if(currentSelectedList.Contains(selectable)) // 이미 선택중이면
+            {
+                Deselected(selectable);
+            }
+            else if (currentSelectedType == selectable.GetSelectableType()) // 현재 타입과 같으면
             {
                 AddSelected(selectable);
             }
