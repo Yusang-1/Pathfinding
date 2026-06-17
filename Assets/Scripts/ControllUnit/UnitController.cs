@@ -43,9 +43,7 @@ namespace Assets.Scripts.ControllUnit
             exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
             pathfinder.SearchLowLevelPath(abstractPath[currentPathIndex]);
             pathfinder.TryGetShortDestination(out shortDestination); // 출발지(현재 위치) 빼내기
-            GetShortDestination();
-            
-            spatialHash.CheckUnitHash(unit);
+            GetShortDestination();                        
         }
 
         public void ControllerUpdate()
@@ -58,7 +56,8 @@ namespace Assets.Scripts.ControllUnit
             if (!HasDirection) return;
 
             transform.position += moveSpeed * Time.deltaTime * direction;
-
+            spatialHash.CheckUnitHash(unit);
+            
             if (isReadyToNextPathSet && IsDistanceInNextRefine() && currentPathIndex < abstractPath.Count)
             {
                 if (currentPathIndex + 1 < abstractPath.Count)

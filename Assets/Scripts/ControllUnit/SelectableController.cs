@@ -31,14 +31,23 @@ namespace Assets.Scripts.ControllUnit
         {
             if(selectableList == null || selectableList.Count == 0) return;
             
+            int count = 0;
             foreach (var selectable in selectableList)
             {
                 if (selectable == null)
                 {
                     continue;
                 }
-
-                NewSelected(selectable);
+                
+                if(count == 0)
+                {
+                    NewSelected(selectable);                    
+                }
+                else
+                {
+                    AddSelected(selectable);
+                }
+                count++;
             }
         }
         public void ShiftSelected(ISelectableUnit selectable)
