@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.ControllUnit
@@ -9,9 +10,12 @@ namespace Assets.Scripts.ControllUnit
     public class PlayerControllInput : MonoBehaviour, IActionMapInputer
     {
         public event Action<Vector2> OnDirectionChanged;
+        public event Action<Vector3> OnHoldStarted;
+        public event Action<Vector3> OnHoldPreformed;
+        public event Func<List<ISelectableUnit>> OnHoldCanceled;
 
         private SelectableController selectableController;
-        
+
         private readonly Dictionary<int, Vector2> directionDict = new();
 
         [SerializeField] private string actionMapName;
@@ -43,31 +47,97 @@ namespace Assets.Scripts.ControllUnit
         {
             if (isPointerOverGameObject || !isInputActive) return;
 
+            if (context.started)
+            {
+                StartCoroutine(HoldJudger());
+            }
+
             if (context.canceled)
             {
-                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
-                Vector3 origin = Camera.main.transform.position;
-                Vector3 direction = -(worldPos - origin).normalized;
-                Debug.DrawRay(origin, direction * 10, Color.green, 1.2f);
-                if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
+                isClickCanceled = true;
+
+                if (isHold)
                 {
-                    if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
-                    {
-                        selectableController.Selected(selectable);
-                        // OnSelectedCallback(selectable.GetActionMapString());
-                    }
-                    else
-                        selectableController.Selected(null);
+                    HoldCanceled();
                 }
                 else
-                    selectableController.Selected(null);
+                {
+                    Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
+                    Vector3 origin = Camera.main.transform.position;
+                    Vector3 direction = -(worldPos - origin).normalized;
+                    Debug.DrawRay(origin, direction * 10, Color.green, 1.2f);
+                    if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
+                    {
+                        if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
+                        {
+                            selectableController.Selected(selectable);
+                            // OnSelectedCallback(selectable.GetActionMapString());
+                        }
+                        else
+                            selectableController.Selected(null);
+                    }
+                    else
+                    {
+                        selectableController.Selected(null);                        
+                    }
+                }
             }
+        }
+
+        [SerializeField] private float holdJudgeLimit;
+        private float holdJudgeTime;
+        private bool isHold;
+        private bool isClickCanceled;
+
+        /// <summary>
+        /// holdJudgeLimit 만큼의 시간이 지나면 hold 판정
+        /// </summary>
+        private IEnumerator HoldJudger()
+        {
+            holdJudgeTime = 0;
+            isHold = false;
+            isClickCanceled = false;
+
+            while (holdJudgeTime < holdJudgeLimit)
+            {
+                if (isClickCanceled)
+                {
+                    break;
+                }
+                holdJudgeTime += Time.deltaTime;
+                yield return null;
+            }
+
+            if (!isClickCanceled)
+            {
+                HoldStarted();
+            }
+
+            while (!isClickCanceled)
+            {
+                HoldPerformed();
+                yield return null;
+            }
+        }
+        private void HoldStarted()
+        {
+            OnHoldStarted?.Invoke(mousePosition);
+            isHold = true;
+        }
+        private void HoldPerformed()
+        {
+            OnHoldPreformed?.Invoke(mousePosition);
+        }
+        private void HoldCanceled()
+        {
+            var selectedList = OnHoldCanceled?.Invoke();
+            selectableController.SelectedList(selectedList);
         }
 
         public void OnTrackMousePosition(InputAction.CallbackContext context)
         {
             if (isPointerOverGameObject || !isInputActive) return;
-            
+
             if (context.performed)
             {
                 mousePosition = context.ReadValue<Vector2>();
@@ -97,7 +167,7 @@ namespace Assets.Scripts.ControllUnit
         private void HandleKeyInput(int index, InputAction.CallbackContext context)
         {
             if (!isInputActive) return;
-            
+
             if (context.started)
             {
                 Vector2 value = context.ReadValue<Vector2>();
@@ -121,7 +191,7 @@ namespace Assets.Scripts.ControllUnit
         public void OnZoomCamera(InputAction.CallbackContext context)
         {
             if (!isInputActive) return;
-            
+
             float scrollY = context.ReadValue<float>();
 
             if (context.started)

@@ -27,11 +27,25 @@ namespace Assets.Scripts.ControllUnit
 
             NewSelected(selectable);
         }
+        public void SelectedList(List<ISelectableUnit> selectableList)
+        {
+            if(selectableList == null || selectableList.Count == 0) return;
+            
+            foreach (var selectable in selectableList)
+            {
+                if (selectable == null)
+                {
+                    continue;
+                }
+
+                NewSelected(selectable);
+            }
+        }
         public void ShiftSelected(ISelectableUnit selectable)
         {
             if (selectable == null) return;
-            
-            if(currentSelectedList.Contains(selectable)) // 이미 선택중이면
+
+            if (currentSelectedList.Contains(selectable)) // 이미 선택중이면
             {
                 Deselected(selectable);
             }

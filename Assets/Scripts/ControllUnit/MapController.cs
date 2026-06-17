@@ -8,7 +8,8 @@ namespace Assets.Scripts.ControllUnit
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
-        
+
+        [SerializeField] private InputManager inputManager;
         [SerializeField] private Pathfinder pathfinder;
         [SerializeField] private UnitSpawner unitSpawner;
         [SerializeField] private ControllUnitUIRoot uiRoot;
@@ -18,14 +19,14 @@ namespace Assets.Scripts.ControllUnit
         [Header("Values")]
         private int nodeSize;
         private int mapSize;
-        private int clusterSize;        
+        private int clusterSize;
 
         private void Start()
         {
             nodeList = new NodeList(nodeData);
             mapdataJsonConverter = new MapdataJsonConverter();
             mapGenerator = new MapGenerator(nodePrefab, nodeList);
-            
+
             nodeData.Initialize();
 
             uiRoot.OnLoadMapRequested += SetMapData;
@@ -33,9 +34,13 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
 
             uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
-            
+
             unitSpawner.OnSelectedCallback += uiRoot.UnitSelected;
             unitSpawner.OnDeselectedCallback += uiRoot.UnitDeselected;
+
+            inputManager.OnHoldStarted += (vec) => uiRoot.OnHoldStarted?.Invoke(vec);
+            inputManager.OnHoldPreformed += (vec) => uiRoot.OnHoldPreformed?.Invoke(vec);
+            inputManager.OnHoldCanceled += () => uiRoot.OnHoldCanceled?.Invoke();
         }
 
         private void SetMapData(MapData mapData)
@@ -43,11 +48,11 @@ namespace Assets.Scripts.ControllUnit
             nodeSize = mapData.NodeSize;
             mapSize = mapData.MapSize;
             clusterSize = mapData.ClusterSize;
-            
+
             nodeList.Initialize(nodeSize, mapSize);
-            
+
             mapGenerator.GenerateMap(mapData);
-            
+
             pathfinder.SetNodeAndCluster(nodeList, mapSize, clusterSize);
         }
     }

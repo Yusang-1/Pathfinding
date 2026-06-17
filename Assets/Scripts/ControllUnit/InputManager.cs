@@ -1,11 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class InputManager : MonoBehaviour
     {
+        public event Action<Vector3> OnHoldStarted;
+        public event Action<Vector3> OnHoldPreformed;
+        public event Func<List<ISelectableUnit>> OnHoldCanceled;
+        
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
         [SerializeField] private PlayerControllInput playerInput;
@@ -32,6 +37,14 @@ namespace Assets.Scripts.ControllUnit
 
             inputerDict.Add((playerInput as IActionMapInputer).GetActionMapName(), playerInput);
             inputerDict.Add((unitInput as IActionMapInputer).GetActionMapName(), unitInput);
+            
+            playerInput.OnHoldStarted += (vec) => OnHoldStarted?.Invoke(vec);
+            playerInput.OnHoldPreformed += (vec) => OnHoldPreformed?.Invoke(vec);
+            playerInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
+            
+            unitInput.OnHoldStarted += (vec) => OnHoldStarted?.Invoke(vec);
+            unitInput.OnHoldPreformed += (vec) => OnHoldPreformed?.Invoke(vec);
+            unitInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
             
             ChangeActionMapDefault();
         }
