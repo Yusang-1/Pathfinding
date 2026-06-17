@@ -6,23 +6,34 @@ namespace Assets.Scripts.ControllUnit
     public class UnitController : MonoBehaviour
     {
         private Pathfinder pathfinder;
+        private SpatialHash spatialHash;
+        private Unit unit;
+        
         private Vector3 direction;
         private bool HasDirection => direction != Vector3.zero;
         private bool isReadyToNextPathSet;
 
         [SerializeField] private float moveSpeed;
-        [SerializeField] private float refineLength = 2.2f;
-
-        private void Start()
-        {
-            pathfinder = FindAnyObjectByType<Pathfinder>();
-        }
+        [SerializeField] private float refineLength = 2.2f;        
 
         private List<HPAPathfinder.ResultNode> abstractPath;
         private HPAPathfinder.ResultNode currentAbstractPath;
         private int currentPathIndex;
         private Vector3 shortDestination;
         private Vector3 exitOfCluster;
+        
+        private void Start()
+        {
+            pathfinder = FindAnyObjectByType<Pathfinder>();
+        }
+        
+        public void Initialize(Unit unit, SpatialHash spatialHash)
+        {
+            this.unit = unit;
+            this.spatialHash = spatialHash;
+            
+            spatialHash.AddUnit(unit);
+        }
         
         public void MoveTo(Vector3 destination)
         {
@@ -31,9 +42,10 @@ namespace Assets.Scripts.ControllUnit
             abstractPath = pathfinder.GetAbstractPath(transform.position, destination);
             exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
             pathfinder.SearchLowLevelPath(abstractPath[currentPathIndex]);
-            // currentAbstractPath = abstractPath[currentPathIndex];
             pathfinder.TryGetShortDestination(out shortDestination); // 출발지(현재 위치) 빼내기
             GetShortDestination();
+            
+            spatialHash.CheckUnitHash(unit);
         }
 
         public void ControllerUpdate()

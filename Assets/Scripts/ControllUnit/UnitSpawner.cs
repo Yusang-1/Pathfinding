@@ -10,9 +10,15 @@ namespace Assets.Scripts.ControllUnit
         
         [SerializeField] private Unit unitPrefab;
         [SerializeField] private Vector3 spawnPosition;
-
+        
+        private SpatialHash spatialHash;
         private readonly ObjectPool<Unit> unitPool = new();
-
+        
+        public void Initialize(SpatialHash spatialHash)
+        {
+            this.spatialHash = spatialHash;
+        }
+        
         public void SpawnUnit()
         {
             if (!unitPool.TryGetObject(out Unit unit))
@@ -32,7 +38,8 @@ namespace Assets.Scripts.ControllUnit
             {
                 unit.transform.position = spawnPosition;
             }
-
+            
+            unit.Initialize(spatialHash);
             unit.UnitSpawned();
         }
     }

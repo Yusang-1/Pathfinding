@@ -41,11 +41,11 @@ namespace Assets.Scripts.ControllUnit
             {
                 dragUIRect.pivot = new Vector2(1, 0);
             }
-            else if (x < 0 && y < 0)  // 3사분면 1,1
+            else if (x < 0 && y < 0)  // 3사분면
             {
                 dragUIRect.pivot = new Vector2(1, 1);
             }
-            else if (x > 0 && y < 0) // 4사분면 0,1
+            else if (x > 0 && y < 0) // 4사분면
             {
                 dragUIRect.pivot = new Vector2(0, 1);
             }

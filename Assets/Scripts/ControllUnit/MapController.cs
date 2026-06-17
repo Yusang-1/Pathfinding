@@ -8,6 +8,7 @@ namespace Assets.Scripts.ControllUnit
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
+        private readonly SpatialHash spatialHash = new();
 
         [SerializeField] private InputManager inputManager;
         [SerializeField] private Pathfinder pathfinder;
@@ -28,6 +29,7 @@ namespace Assets.Scripts.ControllUnit
             mapGenerator = new MapGenerator(nodePrefab, nodeList);
 
             nodeData.Initialize();
+            unitSpawner.Initialize(spatialHash);
 
             uiRoot.OnLoadMapRequested += SetMapData;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;

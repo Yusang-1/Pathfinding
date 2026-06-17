@@ -15,17 +15,25 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private UnitSO unitData;
         
         private UnitInput unitInput;
+        
+        public Vector2Int CurrentKey;
 
         private void Update()
         {
             controller.ControllerUpdate();
         }
         
+        public void Initialize(SpatialHash spatialHash)
+        {
+            controller.Initialize(this, spatialHash);
+        }
+        
         public void UnitSpawned()
         {
-            OnPoolObjectFirstCreated?.Invoke(this);
+            OnPoolObjectFirstCreated?.Invoke(this);            
             gameObject.SetActive(true);
         }
+        
         public void UnitDespawned()
         {
             OnPoolObjectUnused?.Invoke(this);
