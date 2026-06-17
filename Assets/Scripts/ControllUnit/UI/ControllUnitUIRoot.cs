@@ -18,6 +18,8 @@ namespace Assets.Scripts.ControllUnit.UI
         public Action<Vector3> OnHoldStarted;
         public Action<Vector3> OnHoldPreformed;
         public Func<List<ISelectableUnit>> OnHoldCanceled;
+        public event Func<Vector3, float, float, List<ISelectableUnit>> OnDragCanceledRequested;
+        
 
         [SerializeField] private UILoadMapMediator uiLoadMapMediator;
         [SerializeField] private UIResultController uiResultController;
@@ -38,6 +40,8 @@ namespace Assets.Scripts.ControllUnit.UI
             OnHoldStarted += uiDragController.DragStarted;
             OnHoldPreformed += uiDragController.DragPerformed;
             OnHoldCanceled += uiDragController.DragCanceled;
+            
+            uiDragController.OnDragCanceledRequested += (standard, x, y) => OnDragCanceledRequested?.Invoke(standard, x, y);
         }
         
         public void UnitSelected(ISelectableUnit unit)

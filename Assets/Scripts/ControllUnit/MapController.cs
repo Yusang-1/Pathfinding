@@ -34,8 +34,8 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnLoadMapRequested += SetMapData;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
-
-            uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
+            uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;            
+            uiRoot.OnDragCanceledRequested += spatialHash.GetUnitsInRange;
 
             unitSpawner.OnSelectedCallback += uiRoot.UnitSelected;
             unitSpawner.OnDeselectedCallback += uiRoot.UnitDeselected;
