@@ -3910,7 +3910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cadd3d788c5c75443975a5ed99c8cf16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnitName: {fileID: 0}
+  uiSelectedUnits: {fileID: 1475167602}
 --- !u!224 &862872899
 RectTransform:
   m_ObjectHideFlags: 0

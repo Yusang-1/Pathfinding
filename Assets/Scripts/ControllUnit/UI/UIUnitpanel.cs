@@ -1,24 +1,18 @@
 using UnityEngine;
-using TMPro;
 
 namespace Assets.Scripts.ControllUnit.UI
 {
     public class UIUnitpanel : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI UnitName;
-
+        [SerializeField] UISelectedUnits uiSelectedUnits;
+        
         public void UnitSelected(ISelectableUnit unit)
         {
-            GetUnitInfo((unit as Unit).name);
+            uiSelectedUnits.SetSelectedUnitInfo(unit);
         }
         public void UnitDeselected(ISelectableUnit unit)
         {
-            GetUnitInfo(" ");
-        }
-
-        private void GetUnitInfo(string name)
-        {
-            UnitName.text = name;
+            uiSelectedUnits.DeSelectedUnit(unit);
         }
         
         public void SetActiveTrue() => gameObject.SetActive(true);
