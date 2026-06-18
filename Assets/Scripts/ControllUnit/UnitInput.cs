@@ -121,7 +121,14 @@ namespace Assets.Scripts.ControllUnit
         }
         private void HoldCanceled()
         {
-            selectableController.Selected();
+            if(isShiftPressed)
+            {
+                selectableController.ShiftSelectedList();
+            }
+            else
+            {
+                selectableController.Selected();                
+            }
             OnHoldCanceled?.Invoke();
         }
 

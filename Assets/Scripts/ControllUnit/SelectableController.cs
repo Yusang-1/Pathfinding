@@ -75,6 +75,18 @@ namespace Assets.Scripts.ControllUnit
                 }
             }
         }
+        public void ShiftSelectedList()
+        {
+            if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
+
+            foreach (var selectable in alreadyFocusedHash)
+            {
+                if (currentSelectedType == selectable.GetSelectableType()) // 현재 타입과 같으면
+                {
+                    AddSelected(selectable);
+                }
+            }
+        }
 
         private void NewSelected(ISelectableUnit selectable)
         {
