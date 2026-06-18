@@ -1490,7 +1490,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitPrefab: {fileID: 7363356796979461122, guid: dea378e3fc15eb94e8a669555eea03bb, type: 3}
-  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnPosition: {x: 0, y: 0, z: -0.5}
 --- !u!4 &225355843
 Transform:
   m_ObjectHideFlags: 0
