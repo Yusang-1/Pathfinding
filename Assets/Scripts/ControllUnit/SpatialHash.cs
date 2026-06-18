@@ -7,6 +7,7 @@ namespace Assets.Scripts.ControllUnit
     {
         private readonly int cellSize = 2;
         private readonly Dictionary<Vector2Int, List<Unit>> hashTable = new();
+        private readonly HashSet<ISelectableUnit> unitsInRange = new();
 
         // 해시 키 생성
         private Vector2Int GetHashKey(Vector3 pos) => new((int)(pos.x / cellSize), (int)(pos.y / cellSize));
@@ -64,7 +65,7 @@ namespace Assets.Scripts.ControllUnit
         }
         public HashSet<ISelectableUnit> GetUnitsInRange(Vector3 standard, float width, float height)
         {
-            Rect screenRect = new Rect(
+            Rect screenRect = new(
                 Mathf.Min(standard.x, standard.x + width),
                 Mathf.Min(standard.y, standard.y + height),
                 Mathf.Abs(width),
@@ -82,19 +83,19 @@ namespace Assets.Scripts.ControllUnit
             Vector2Int minKey = GetHashKey(new Vector3(Mathf.Min(worldBottomLeft.x, worldTopRight.x), Mathf.Min(worldBottomLeft.y, worldTopRight.y)));
             Vector2Int maxKey = GetHashKey(new Vector3(Mathf.Max(worldBottomLeft.x, worldTopRight.x), Mathf.Max(worldBottomLeft.y, worldTopRight.y)));
 
-            HashSet<ISelectableUnit> result = new HashSet<ISelectableUnit>();
+            unitsInRange.Clear();
 
             for (int x = minKey.x; x <= maxKey.x; x++)
             {
                 for (int y = minKey.y; y <= maxKey.y; y++)
                 {
-                    Vector2Int key = new Vector2Int(x, y);
+                    Vector2Int key = new(x, y);
                     if (!hashTable.TryGetValue(key, out List<Unit> bucket))
                         continue;
 
                     foreach (Unit unit in bucket)
                     {
-                        if (!(unit is ISelectableUnit selectable))
+                        if (unit is not ISelectableUnit selectable)
                             continue;
 
                         Vector3 screenPos = cam.WorldToScreenPoint(unit.transform.position);
@@ -103,13 +104,13 @@ namespace Assets.Scripts.ControllUnit
 
                         if (screenRect.Contains(screenPos))
                         {
-                            result.Add(selectable);
+                            unitsInRange.Add(selectable);
                         }
                     }
                 }
             }
 
-            return result;
+            return unitsInRange;
         }
     }
 }

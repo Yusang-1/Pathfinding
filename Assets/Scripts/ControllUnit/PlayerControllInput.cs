@@ -65,7 +65,7 @@ namespace Assets.Scripts.ControllUnit
                     Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                     Vector3 origin = Camera.main.transform.position;
                     Vector3 direction = -(worldPos - origin).normalized;
-                    Debug.DrawRay(origin, direction * 10, Color.green, 1.2f);
+
                     if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
                     {
                         if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
@@ -78,7 +78,7 @@ namespace Assets.Scripts.ControllUnit
                     }
                     else
                     {
-                        selectableController.Selected(null);                        
+                        selectableController.Selected(null);
                     }
                 }
             }
@@ -141,6 +141,26 @@ namespace Assets.Scripts.ControllUnit
             if (context.performed)
             {
                 mousePosition = context.ReadValue<Vector2>();
+                
+                if(isHold) return;
+                
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
+                Vector3 origin = Camera.main.transform.position;
+                Vector3 direction = -(worldPos - origin).normalized;
+  
+                if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
+                {
+                    if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
+                    {
+                        selectableController.UnitFocusedPoint(selectable);                        
+                    }
+                    else
+                        selectableController.UnitFocusedPoint(null);
+                }
+                else
+                {
+                    selectableController.UnitFocusedPoint(null);
+                }
             }
         }
 

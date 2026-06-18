@@ -47,12 +47,12 @@ namespace Assets.Scripts.ControllUnit
         public void OnLeftClick(InputAction.CallbackContext context)
         {
             if (isPointerOverGameObject || !isInputActive) return;
-            
+
             if (context.started)
             {
                 StartCoroutine(HoldJudger());
             }
-            
+
             if (context.canceled)
             {
                 isClickCanceled = true;
@@ -167,6 +167,26 @@ namespace Assets.Scripts.ControllUnit
             if (context.performed)
             {
                 mousePosition = context.ReadValue<Vector2>();
+                
+                if(isHold) return;
+                
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
+                Vector3 origin = Camera.main.transform.position;
+                Vector3 direction = -(worldPos - origin).normalized;
+
+                if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
+                {
+                    if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
+                    {
+                        selectableController.UnitFocusedPoint(selectable);
+                    }
+                    else
+                        selectableController.UnitFocusedPoint(null);
+                }
+                else
+                {
+                    selectableController.UnitFocusedPoint(null);
+                }
             }
         }
 

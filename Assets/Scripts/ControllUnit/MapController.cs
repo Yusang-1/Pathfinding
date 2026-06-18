@@ -38,8 +38,7 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;            
             uiRoot.OnFindSelectableUnitInDragUI += spatialHash.GetUnitsInRange;
-            uiRoot.OnUnitFocused += selectableController.UnitFocused;
-            uiRoot.OnUnitUnfocused += selectableController.UnitUnfocused;
+            uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
 
             unitSpawner.OnSelectedCallback += uiRoot.UnitSelected;
             unitSpawner.OnDeselectedCallback += uiRoot.UnitDeselected;

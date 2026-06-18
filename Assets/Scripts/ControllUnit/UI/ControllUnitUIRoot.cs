@@ -19,8 +19,7 @@ namespace Assets.Scripts.ControllUnit.UI
         public Action<Vector3> OnHoldPreformed;
         public Func<HashSet<ISelectableUnit>> OnHoldCanceled;
         public event Func<Vector3, float, float, HashSet<ISelectableUnit>> OnFindSelectableUnitInDragUI;
-        public event Action<List<ISelectableUnit>> OnUnitFocused;
-        public event Action<List<ISelectableUnit>> OnUnitUnfocused;
+        public event Action<HashSet<ISelectableUnit>> OnUnitFocused;
         
 
         [SerializeField] private UILoadMapMediator uiLoadMapMediator;
@@ -44,8 +43,7 @@ namespace Assets.Scripts.ControllUnit.UI
             OnHoldCanceled += uiDragController.DragCanceled;
             
             uiDragController.OnFindSelectableUnitInDragUI += (standard, x, y) => OnFindSelectableUnitInDragUI?.Invoke(standard, x, y);
-            uiDragController.OnUnitFocused += (units) => OnUnitFocused?.Invoke(units);
-            uiDragController.OnUnitUnfocused += (units) => OnUnitUnfocused?.Invoke(units);
+            uiDragController.OnUnitFocused += (units) => OnUnitFocused?.Invoke(units);            
         }
         
         public void UnitSelected(ISelectableUnit unit)
