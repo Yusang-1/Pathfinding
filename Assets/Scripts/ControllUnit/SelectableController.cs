@@ -24,13 +24,21 @@ namespace Assets.Scripts.ControllUnit
 
         public void Selected()
         {
-            if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
+            if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0)
+            {
+                DeselectedAll();
+                return;
+            }
 
             SelectedList(alreadyFocusedHash);
         }
-        public void SelectedList(ICollection<ISelectableUnit> selectableList)
+        private void SelectedList(ICollection<ISelectableUnit> selectableList)
         {
-            if (selectableList == null || selectableList.Count == 0) return;
+            if (selectableList == null || selectableList.Count == 0)
+            {
+                DeselectedAll();
+                return;
+            }
 
             int count = 0;
             foreach (var selectable in selectableList)

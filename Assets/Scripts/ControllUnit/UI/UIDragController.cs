@@ -71,11 +71,9 @@ namespace Assets.Scripts.ControllUnit.UI
             focusedUnits  = OnFindSelectableUnitInDragUI?.Invoke(standardPosition, compareSizeDelta.x, compareSizeDelta.y);            
             OnUnitFocused?.Invoke(focusedUnits);
         }
-        public HashSet<ISelectableUnit> DragCanceled()
+        public void DragCanceled()
         {
             dragUI.SetActive(false);
-
-            return focusedUnits;
         }
     }
 }

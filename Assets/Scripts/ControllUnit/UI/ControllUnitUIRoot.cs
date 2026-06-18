@@ -17,7 +17,7 @@ namespace Assets.Scripts.ControllUnit.UI
         // UIDragController event
         public Action<Vector3> OnHoldStarted;
         public Action<Vector3> OnHoldPreformed;
-        public Func<HashSet<ISelectableUnit>> OnHoldCanceled;
+        public Action OnHoldCanceled;
         public event Func<Vector3, float, float, HashSet<ISelectableUnit>> OnFindSelectableUnitInDragUI;
         public event Action<HashSet<ISelectableUnit>> OnUnitFocused;
         

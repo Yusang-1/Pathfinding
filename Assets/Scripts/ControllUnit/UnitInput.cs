@@ -12,7 +12,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector2> OnDirectionChanged;
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPreformed;
-        public event Func<ICollection<ISelectableUnit>> OnHoldCanceled;
+        public event Action OnHoldCanceled;
 
         private SelectableController selectableController;
 
@@ -121,8 +121,8 @@ namespace Assets.Scripts.ControllUnit
         }
         private void HoldCanceled()
         {
-            var selectedList = OnHoldCanceled?.Invoke();
-            selectableController.SelectedList(selectedList);
+            selectableController.Selected();
+            OnHoldCanceled?.Invoke();
         }
 
         public event Action<Vector3> OnRightClickRequested;

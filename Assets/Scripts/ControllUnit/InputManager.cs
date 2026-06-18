@@ -9,7 +9,7 @@ namespace Assets.Scripts.ControllUnit
     {
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPreformed;
-        public event Func<ICollection<ISelectableUnit>> OnHoldCanceled;
+        public event Action OnHoldCanceled;
         
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
