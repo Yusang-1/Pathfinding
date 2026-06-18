@@ -102,6 +102,8 @@ namespace Assets.Scripts.ControllUnit
         }
         private void AddSelected(ISelectableUnit selectable)
         {
+            if(currentSelectedHash.Contains(selectable)) return;
+            
             selectable.Selected();
             currentSelectedHash.Add(selectable);
         }

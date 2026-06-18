@@ -60,12 +60,12 @@ namespace Assets.Scripts.ControllUnit
         
         public void Focused()
         {
-            Debug.Log($"{name} Focused");
+            
         }
         
         public void Unfocused()
         {
-            Debug.Log($"{name} Unfocused");
+
         }
         
         public SelectableType GetSelectableType() => unitData.SelectableType;
