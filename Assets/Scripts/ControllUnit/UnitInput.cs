@@ -12,7 +12,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector2> OnDirectionChanged;
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPreformed;
-        public event Func<List<ISelectableUnit>> OnHoldCanceled;
+        public event Func<ICollection<ISelectableUnit>> OnHoldCanceled;
 
         private SelectableController selectableController;
 

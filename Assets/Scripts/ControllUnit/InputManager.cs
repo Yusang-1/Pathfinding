@@ -9,7 +9,7 @@ namespace Assets.Scripts.ControllUnit
     {
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPreformed;
-        public event Func<List<ISelectableUnit>> OnHoldCanceled;
+        public event Func<HashSet<ISelectableUnit>> OnHoldCanceled;
         
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
@@ -17,7 +17,7 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private UnitInput unitInput;
 
         private InputActionMap actionMap;
-        private SelectableController selectableController;
+        private readonly SelectableController selectableController;
 
         private IActionMapInputer currentInputer;
         private readonly Dictionary<string, IActionMapInputer> inputerDict = new();
@@ -30,11 +30,6 @@ namespace Assets.Scripts.ControllUnit
 
         private void Start()
         {
-            selectableController = new SelectableController(ChangeActionMapSelected, ChangeActionMapDefault);
-
-            playerInput.Initialize(selectableController);
-            unitInput.Initialize(selectableController);
-
             inputerDict.Add((playerInput as IActionMapInputer).GetActionMapName(), playerInput);
             inputerDict.Add((unitInput as IActionMapInputer).GetActionMapName(), unitInput);
             
@@ -47,6 +42,14 @@ namespace Assets.Scripts.ControllUnit
             unitInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
             
             ChangeActionMapDefault();
+        }
+        
+        public void Initialize(SelectableController selectableController)
+        {
+            selectableController.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
+
+            playerInput.Initialize(selectableController);
+            unitInput.Initialize(selectableController);
         }
 
         private void ChangeActionMapSelected(string value)

@@ -8,6 +8,7 @@ namespace Assets.Scripts.ControllUnit
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
+        private readonly SelectableController selectableController = new();
         private readonly SpatialHash spatialHash = new();
 
         [SerializeField] private InputManager inputManager;
@@ -30,12 +31,15 @@ namespace Assets.Scripts.ControllUnit
 
             nodeData.Initialize();
             unitSpawner.Initialize(spatialHash);
+            inputManager.Initialize(selectableController);
 
             uiRoot.OnLoadMapRequested += SetMapData;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;            
-            uiRoot.OnDragCanceledRequested += spatialHash.GetUnitsInRange;
+            uiRoot.OnFindSelectableUnitInDragUI += spatialHash.GetUnitsInRange;
+            uiRoot.OnUnitFocused += selectableController.UnitFocused;
+            uiRoot.OnUnitUnfocused += selectableController.UnitUnfocused;
 
             unitSpawner.OnSelectedCallback += uiRoot.UnitSelected;
             unitSpawner.OnDeselectedCallback += uiRoot.UnitDeselected;

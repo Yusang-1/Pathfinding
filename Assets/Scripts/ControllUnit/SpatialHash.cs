@@ -62,7 +62,7 @@ namespace Assets.Scripts.ControllUnit
             }
             return result;
         }
-        public List<ISelectableUnit> GetUnitsInRange(Vector3 standard, float width, float height)
+        public HashSet<ISelectableUnit> GetUnitsInRange(Vector3 standard, float width, float height)
         {
             Rect screenRect = new Rect(
                 Mathf.Min(standard.x, standard.x + width),
@@ -73,7 +73,7 @@ namespace Assets.Scripts.ControllUnit
 
             Camera cam = Camera.main;
             if (cam == null)
-                return new List<ISelectableUnit>();
+                return new HashSet<ISelectableUnit>();
 
             float depth = cam.orthographic ? 0f : Mathf.Abs(cam.transform.position.z);
             Vector3 worldBottomLeft = cam.ScreenToWorldPoint(new Vector3(screenRect.xMin, screenRect.yMin, depth));
@@ -82,7 +82,7 @@ namespace Assets.Scripts.ControllUnit
             Vector2Int minKey = GetHashKey(new Vector3(Mathf.Min(worldBottomLeft.x, worldTopRight.x), Mathf.Min(worldBottomLeft.y, worldTopRight.y)));
             Vector2Int maxKey = GetHashKey(new Vector3(Mathf.Max(worldBottomLeft.x, worldTopRight.x), Mathf.Max(worldBottomLeft.y, worldTopRight.y)));
 
-            List<ISelectableUnit> result = new List<ISelectableUnit>();
+            HashSet<ISelectableUnit> result = new HashSet<ISelectableUnit>();
 
             for (int x = minKey.x; x <= maxKey.x; x++)
             {

@@ -6,10 +6,16 @@ namespace Assets.Scripts.ControllUnit.UI
 {
     public class UIDragController : MonoBehaviour
     {
-        public event Func<Vector3, float, float, List<ISelectableUnit>> OnDragCanceledRequested;
+        public event Func<Vector3, float, float, HashSet<ISelectableUnit>> OnFindSelectableUnitInDragUI;
+        public event Action<List<ISelectableUnit>> OnUnitFocused;
+        public event Action<List<ISelectableUnit>> OnUnitUnfocused;
 
         [SerializeField] private GameObject dragUI;
 
+        private HashSet<ISelectableUnit> alreadyFocusedHash = new();
+        private HashSet<ISelectableUnit> newFocusedHash = new();
+        private readonly List<ISelectableUnit> unfocusedUnits = new();
+        private readonly List<ISelectableUnit> newlyFocusedUnit = new();
         private RectTransform dragUIRect;
 
         private Vector3 standardPosition;
@@ -34,7 +40,7 @@ namespace Assets.Scripts.ControllUnit.UI
             dragUISizeDelta.x = standardPosition.x - position.x;
             dragUISizeDelta.y = standardPosition.y - position.y;
             compareSizeDelta = dragUISizeDelta;
-            
+
             int x = standardPosition.x < position.x ? 1 : -1;
             int y = standardPosition.y < position.y ? 1 : -1;
 
@@ -64,12 +70,75 @@ namespace Assets.Scripts.ControllUnit.UI
             }
 
             dragUIRect.sizeDelta = new Vector2(Mathf.Abs(dragUISizeDelta.x), Mathf.Abs(dragUISizeDelta.y));
+            
+            newFocusedHash = OnFindSelectableUnitInDragUI?.Invoke(standardPosition, compareSizeDelta.x, compareSizeDelta.y);
+            var unfocusedUnits = FindUnfocusedUnits(alreadyFocusedHash, newFocusedHash);
+            var newlyFocusedUnit = FindNewlyFocusedUnits(alreadyFocusedHash, newFocusedHash);
+            
+            alreadyFocusedHash = newFocusedHash;
+            
+            OnUnitFocused?.Invoke(newlyFocusedUnit);
+            OnUnitUnfocused?.Invoke(unfocusedUnits);
         }
-        public List<ISelectableUnit> DragCanceled()
+        public HashSet<ISelectableUnit> DragCanceled()
         {
             dragUI.SetActive(false);
-
-            return OnDragCanceledRequested?.Invoke(standardPosition, compareSizeDelta.x, compareSizeDelta.y);
+                        
+            return alreadyFocusedHash;
+        }
+        
+        private List<ISelectableUnit> FindUnfocusedUnits(HashSet<ISelectableUnit> alreadyFocused, HashSet<ISelectableUnit> newFocused)
+        {
+            if(alreadyFocused == null || alreadyFocused.Count == 0) return null;
+            if(newFocused == null || newFocused.Count == 0)
+            {
+                // alreadyFocused Hash의 요소를 unfocusedUnits List에 복사해 리턴
+                unfocusedUnits.Clear();
+                foreach(var focused in alreadyFocused)
+                {
+                    unfocusedUnits.Add(focused);
+                }
+                return unfocusedUnits;
+            }
+            
+            unfocusedUnits.Clear();
+            
+            foreach(var focused in alreadyFocused)
+            {
+                if(!newFocused.Contains(focused))
+                {
+                    unfocusedUnits.Add(focused);
+                }
+            }
+            
+            return unfocusedUnits;
+        }
+        
+        private List<ISelectableUnit> FindNewlyFocusedUnits(HashSet<ISelectableUnit> alreadyFocused, HashSet<ISelectableUnit> newFocused)
+        {            
+            if(newFocused == null || newFocused.Count == 0) return null;
+            if(alreadyFocused == null || alreadyFocused.Count == 0)
+            {
+                // newFocused Hash의 요소를 newlyFocusedUnit List에 복사해 리턴
+                newlyFocusedUnit.Clear();
+                foreach(var focused in newFocused)
+                {
+                    newlyFocusedUnit.Add(focused);
+                }
+                return newlyFocusedUnit;
+            }
+            
+            newlyFocusedUnit.Clear();
+            
+            foreach(var newFocus in newFocused)
+            {
+                if(!alreadyFocused.Contains(newFocus))
+                {
+                    newlyFocusedUnit.Add(newFocus);
+                }
+            }
+            
+            return newlyFocusedUnit;
         }
     }
 }

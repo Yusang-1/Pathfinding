@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -8,10 +9,10 @@ namespace Assets.Scripts.ControllUnit
         private SelectableType currentSelectedType;
         private readonly HashSet<ISelectableUnit> currentSelectedList = new();
 
-        private readonly Action<string> OnchangeActionMapSelected;
-        private readonly Action OnchangeActionMapDefault;
-
-        public SelectableController(Action<string> changeActionMapSelected, Action changeActionMapDefault)
+        private Action<string> OnchangeActionMapSelected;
+        private Action OnchangeActionMapDefault;
+        
+        public void GetActions(Action<string> changeActionMapSelected, Action changeActionMapDefault)
         {
             OnchangeActionMapSelected = changeActionMapSelected;
             OnchangeActionMapDefault = changeActionMapDefault;
@@ -27,7 +28,7 @@ namespace Assets.Scripts.ControllUnit
 
             NewSelected(selectable);
         }
-        public void SelectedList(List<ISelectableUnit> selectableList)
+        public void SelectedList(ICollection<ISelectableUnit> selectableList)
         {
             if(selectableList == null || selectableList.Count == 0) return;
             
@@ -106,21 +107,33 @@ namespace Assets.Scripts.ControllUnit
             currentSelectedType = SelectableType.None;
             OnchangeActionMapDefault?.Invoke();
         }
-    }
-
-    public interface ISelectableUnit
-    {
-        public event Action<ISelectableUnit> OnSelectedCallback;
-        public event Action<ISelectableUnit> OnDeselectedCallback;
-
-        public void Selected();
-        public void Deselected();
-        public SelectableType GetSelectableType();
-    }
-
-    public enum SelectableType
-    {
-        None,
-        Unit
-    }
+        
+        public void UnitFocused(List<ISelectableUnit> selectables)
+        {
+            if(selectables == null || selectables.Count == 0) return;
+            
+            foreach(var selectable in selectables)
+            {
+                UnitFocused(selectable);
+            }
+        }
+        public void UnitFocused(ISelectableUnit selectable)
+        {
+            selectable.Focused();
+        }
+        
+        public void UnitUnfocused(List<ISelectableUnit> selectables)
+        {
+            if(selectables == null || selectables.Count == 0) return;
+            
+            foreach(var selectable in selectables)
+            {
+                UnitUnfocused(selectable);
+            }
+        }
+        public void UnitUnfocused(ISelectableUnit selectable)
+        {
+            selectable.Unfocused();
+        }
+    }    
 }

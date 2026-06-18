@@ -58,6 +58,16 @@ namespace Assets.Scripts.ControllUnit
             OnDeselectedCallback?.Invoke(this);
         }
         
+        public void Focused()
+        {
+            Debug.Log($"{name} Focused");
+        }
+        
+        public void Unfocused()
+        {
+            Debug.Log($"{name} Unfocused");
+        }
+        
         public SelectableType GetSelectableType() => unitData.SelectableType;
 
         private void MoveUnit(Vector3 destination)
