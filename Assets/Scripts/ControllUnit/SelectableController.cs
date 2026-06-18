@@ -22,15 +22,11 @@ namespace Assets.Scripts.ControllUnit
             OnchangeActionMapDefault = changeActionMapDefault;
         }
 
-        public void Selected(ISelectableUnit selectable)
+        public void Selected()
         {
-            if (selectable == null)
-            {
-                DeselectedAll();
-                return;
-            }
+            if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
 
-            NewSelected(selectable);
+            SelectedList(alreadyFocusedHash);
         }
         public void SelectedList(ICollection<ISelectableUnit> selectableList)
         {
@@ -55,17 +51,20 @@ namespace Assets.Scripts.ControllUnit
                 count++;
             }
         }
-        public void ShiftSelected(ISelectableUnit selectable)
+        public void ShiftSelected()
         {
-            if (selectable == null) return;
+            if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
 
-            if (currentSelectedHash.Contains(selectable)) // 이미 선택중이면
+            foreach (var selectable in alreadyFocusedHash)
             {
-                Deselected(selectable);
-            }
-            else if (currentSelectedType == selectable.GetSelectableType()) // 현재 타입과 같으면
-            {
-                AddSelected(selectable);
+                if (currentSelectedHash.Contains(selectable)) // 이미 선택중이면
+                {
+                    Deselected(selectable);
+                }
+                else if (currentSelectedType == selectable.GetSelectableType()) // 현재 타입과 같으면
+                {
+                    AddSelected(selectable);
+                }
             }
         }
 
@@ -133,8 +132,8 @@ namespace Assets.Scripts.ControllUnit
                 UnfocusedAll();
                 return;
             }
-            if(alreadyFocusedHash.Contains(selectable)) return;
-            
+            if (alreadyFocusedHash.Contains(selectable)) return;
+
             UnitFocused(selectable);
         }
         private void UnitFocused(ISelectableUnit selectable)
@@ -146,15 +145,15 @@ namespace Assets.Scripts.ControllUnit
         }
         private void UnfocusedAll()
         {
-            if(alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
-            
-            foreach(var focused in alreadyFocusedHash)
+            if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
+
+            foreach (var focused in alreadyFocusedHash)
             {
                 focused.Unfocused();
             }
             alreadyFocusedHash.Clear();
         }
-        
+
         private void UnitUnfocusedList(List<ISelectableUnit> selectables)
         {
             if (selectables == null || selectables.Count == 0) return;

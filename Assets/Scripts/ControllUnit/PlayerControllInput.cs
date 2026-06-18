@@ -61,25 +61,8 @@ namespace Assets.Scripts.ControllUnit
                     HoldCanceled();
                 }
                 else
-                {
-                    Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
-                    Vector3 origin = Camera.main.transform.position;
-                    Vector3 direction = -(worldPos - origin).normalized;
-
-                    if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
-                    {
-                        if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
-                        {
-                            selectableController.Selected(selectable);
-                            // OnSelectedCallback(selectable.GetActionMapString());
-                        }
-                        else
-                            selectableController.Selected(null);
-                    }
-                    else
-                    {
-                        selectableController.Selected(null);
-                    }
+                {                    
+                    selectableController.Selected();                    
                 }
             }
         }

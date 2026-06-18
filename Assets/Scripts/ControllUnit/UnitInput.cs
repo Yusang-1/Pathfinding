@@ -63,29 +63,13 @@ namespace Assets.Scripts.ControllUnit
                 }
                 else
                 {
-                    Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
-                    Vector3 origin = Camera.main.transform.position;
-                    Vector3 direction = -(worldPos - origin).normalized;
-
-                    if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
+                    if (isShiftPressed)
                     {
-                        if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
-                        {
-                            if (isShiftPressed)
-                            {
-                                selectableController.ShiftSelected(selectable);
-                            }
-                            else
-                            {
-                                selectableController.Selected(selectable);
-                            }
-                        }
-                        else
-                            selectableController.Selected(null);
+                        selectableController.ShiftSelected();
                     }
                     else
                     {
-                        selectableController.Selected(null);
+                        selectableController.Selected();
                     }
                 }
             }
@@ -167,9 +151,9 @@ namespace Assets.Scripts.ControllUnit
             if (context.performed)
             {
                 mousePosition = context.ReadValue<Vector2>();
-                
-                if(isHold) return;
-                
+
+                if (isHold) return;
+
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 Vector3 origin = Camera.main.transform.position;
                 Vector3 direction = -(worldPos - origin).normalized;
