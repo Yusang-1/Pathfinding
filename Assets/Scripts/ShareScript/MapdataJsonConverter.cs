@@ -27,13 +27,6 @@ public class MapdataJsonConverter
         PopupService.Show($"\'{mapData.MapName}\' is saved in \'{personalMapFilePath}\'");
     }
 
-    public MapData ConvertJsonToMapData(string json)
-    {
-        var mapData = JsonUtility.FromJson<MapData>(json);
-
-        return mapData;
-    }
-
     public MapData[] GetPersonalSavedMaps()
     {
         if (!Directory.Exists(personalMapFilePath))
@@ -59,13 +52,30 @@ public class MapdataJsonConverter
             return null;
         }
 
-        string[] files = Directory.GetFiles(officialMapFilePath);
-        var results = new MapData[files.Length];
+        string[] files = Directory.GetFiles(officialMapFilePath);        
+        int correspondingFileCount = 0;
         for (int i = 0; i < files.Length; i++)
         {
+            if (files[i].EndsWith(".meta")) continue;
+            
+            correspondingFileCount++;
+        }
+        
+        var results = new MapData[correspondingFileCount];
+        for (int i = 0; i < files.Length; i++)
+        {
+            if (files[i].EndsWith(".meta")) continue;
+            
             results[i] = ConvertJsonToMapData(File.ReadAllText(files[i]));
         }
-
+        
         return results;
+    }
+
+    private MapData ConvertJsonToMapData(string json)
+    {
+        var mapData = JsonUtility.FromJson<MapData>(json);
+
+        return mapData;
     }
 }
