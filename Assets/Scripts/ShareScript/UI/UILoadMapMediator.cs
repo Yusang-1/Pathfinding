@@ -16,7 +16,8 @@ public class UILoadMapMediator : MonoBehaviour
     {
         uiLoadMapList.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
         uiLoadMapList.OnLoadMapFinished += () => OnLoadMapFinished?.Invoke();
-
+        uiLoadMapList.OnLoadMapListClosed += uiLoadMap.SetActiveTrue;
+        
         uiLoadMap.OnOfficialMapListRequested += () => OnOfficialMapListRequested?.Invoke();
         uiLoadMap.OnPersonalMapListRequested += () => OnPersonalMapListRequested?.Invoke();
 
