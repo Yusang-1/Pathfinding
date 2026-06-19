@@ -16,8 +16,7 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private PlayerControllInput playerInput;
         [SerializeField] private UnitInput unitInput;
 
-        private InputActionMap actionMap;
-        private readonly SelectableController selectableController;
+        private InputActionMap actionMap;        
 
         private IActionMapInputer currentInputer;
         private readonly Dictionary<string, IActionMapInputer> inputerDict = new();

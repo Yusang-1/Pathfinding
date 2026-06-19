@@ -9,10 +9,12 @@ namespace Assets.Scripts.ControllUnit
         public event Action<ISelectableUnit> OnDeselectedCallback;
         
         [SerializeField] private Unit unitPrefab;
+        [SerializeField] private UnitBottomSelectChanger unitBottomPrefab;
         [SerializeField] private Vector3 spawnPosition;
         
         private SpatialHash spatialHash;
         private readonly ObjectPool<Unit> unitPool = new();
+        private readonly ObjectPool<UnitBottomSelectChanger> unitBottomPool = new();
         
         public void Initialize(SpatialHash spatialHash)
         {
@@ -24,22 +26,29 @@ namespace Assets.Scripts.ControllUnit
             if (!unitPool.TryGetObject(out Unit unit))
             {
                 // 유닛을 가져오지 못한 경우
-                unit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
+                unit = Instantiate(unitPrefab);
                 unit.OnPoolObjectFirstCreated += unitPool.PoolObjectFirstCreated;
                 unit.OnPoolObjectUnused += unitPool.PoolObjectUnused;
-                
+                                
                 if(unit is ISelectableUnit)
                 {
                     unit.OnSelectedCallback += (s) => OnSelectedCallback?.Invoke(s);
                     unit.OnDeselectedCallback += (s) => OnDeselectedCallback?.Invoke(s);
                 }
             }
-            else
-            {
-                unit.transform.position = spawnPosition;
-            }
+            unit.transform.position = spawnPosition;
             
-            unit.Initialize(spatialHash);
+            
+            if (!unitBottomPool.TryGetObject(out UnitBottomSelectChanger unitBottom))
+            {
+                // 유닛을 가져오지 못한 경우
+                unitBottom = Instantiate(unitBottomPrefab);
+                unitBottom.OnPoolObjectFirstCreated += unitBottomPool.PoolObjectFirstCreated;
+                unitBottom.OnPoolObjectUnused += unitBottomPool.PoolObjectUnused;                            
+            }
+            unitBottom.transform.position = spawnPosition;            
+            
+            unit.Initialize(spatialHash, unitBottom);            
             unit.UnitSpawned();
         }
     }

@@ -11,11 +11,11 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Unit> OnPoolObjectFirstCreated;
         public event Action<Unit> OnPoolObjectUnused;
 
-        [SerializeField] private UnitController controller;
-        [SerializeField] private UnitBottomSelectChanger bottomChanger;
         [SerializeField] private UnitSO unitData;
 
+        private UnitController controller;        
         private UnitInput unitInput;
+        private UnitBottomSelectChanger bottomChanger;        
         
         private UnitBottomStatus bottomStatus;
         public Vector2Int CurrentKey;        
@@ -25,14 +25,21 @@ namespace Assets.Scripts.ControllUnit
             controller.ControllerUpdate();
         }
 
-        public void Initialize(SpatialHash spatialHash)
+        private void LateUpdate()
         {
-            controller.Initialize(this, spatialHash);
+            controller.ControllerLateUpdate();
+        }
+
+        public void Initialize(SpatialHash spatialHash, UnitBottomSelectChanger bottomChanger)
+        {
+            controller = new UnitController(this, spatialHash, bottomChanger.transform, unitData, FindAnyObjectByType<Pathfinder>());
+            this.bottomChanger = bottomChanger;
         }
 
         public void UnitSpawned()
         {
             OnPoolObjectFirstCreated?.Invoke(this);
+            bottomChanger.Initialize();
             gameObject.SetActive(true);
         }
 
@@ -40,9 +47,8 @@ namespace Assets.Scripts.ControllUnit
         {
             OnPoolObjectUnused?.Invoke(this);
             gameObject.SetActive(false);
-            
-            bottomStatus = UnitBottomStatus.None;
-            bottomChanger.StatusChanged(bottomStatus);
+            bottomChanger.Despawned();
+            ChangeBottomStatus(UnitBottomStatus.None);
         }
 
         public void Selected()
@@ -53,8 +59,7 @@ namespace Assets.Scripts.ControllUnit
             }
             unitInput.OnRightClickRequested += MoveUnit;
             
-            bottomStatus = UnitBottomStatus.Selected;
-            bottomChanger.StatusChanged(bottomStatus);
+            ChangeBottomStatus(UnitBottomStatus.Selected);
             OnSelectedCallback?.Invoke(this);
         }
 
@@ -62,8 +67,7 @@ namespace Assets.Scripts.ControllUnit
         {
             unitInput.OnRightClickRequested -= MoveUnit;
 
-            bottomStatus = UnitBottomStatus.None;
-            bottomChanger.StatusChanged(bottomStatus);
+            ChangeBottomStatus(UnitBottomStatus.None);
             OnDeselectedCallback?.Invoke(this);
         }
 
@@ -71,15 +75,14 @@ namespace Assets.Scripts.ControllUnit
         {
             if(bottomStatus == UnitBottomStatus.Selected) return;
             
-            bottomStatus = UnitBottomStatus.Focused;
-            bottomChanger.StatusChanged(bottomStatus);
+            ChangeBottomStatus(UnitBottomStatus.Focused);
         }
 
         public void Unfocused()
         {
             if(bottomStatus == UnitBottomStatus.Selected) return;
             
-            bottomChanger.StatusChanged(UnitBottomStatus.None);
+            ChangeBottomStatus(UnitBottomStatus.None);
         }
 
         public SelectableType GetSelectableType() => unitData.SelectableType;
@@ -87,6 +90,12 @@ namespace Assets.Scripts.ControllUnit
         private void MoveUnit(Vector3 destination)
         {
             controller.MoveTo(destination);
+        }
+        
+        private void ChangeBottomStatus(UnitBottomStatus status)
+        {
+            bottomStatus = status;
+            bottomChanger.StatusChanged(bottomStatus);
         }
 
         public string GetActionMapName() => unitData.ActionMapName;

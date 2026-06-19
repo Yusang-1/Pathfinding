@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d102a2f5e50511342805a4505cc96328, type: 3}
   m_Name: UnitBottomSelectSO
   m_EditorClassIdentifier: 
-  selectedSprite: {fileID: 0}
-  focusedSprite: {fileID: 0}
+  selectedSprite: {fileID: 21300000, guid: 3780f4c31d326f04babb9a125de5550e, type: 3}
+  focusedSprite: {fileID: 21300000, guid: b18d0ad89722959438c538ac68020cfe, type: 3}

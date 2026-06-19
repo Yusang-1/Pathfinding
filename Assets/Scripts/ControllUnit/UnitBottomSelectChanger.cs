@@ -1,17 +1,27 @@
 using UnityEngine;
 using Assets.Scripts.ControllUnit.SO;
+using System;
 
 namespace Assets.Scripts.ControllUnit
 {
-    public class UnitBottomSelectChanger : MonoBehaviour
+    public class UnitBottomSelectChanger : MonoBehaviour, IPoolObject<UnitBottomSelectChanger>
     {
+        public event Action<UnitBottomSelectChanger> OnPoolObjectFirstCreated;
+        public event Action<UnitBottomSelectChanger> OnPoolObjectUnused;
+        
         [SerializeField] private UnitBottomSelectSO unitBottomSelectSO;
-        private SpriteRenderer bottomImage;
+        private SpriteRenderer bottomImage;        
 
-        private void Start()
+        public void Initialize()
         {
             unitBottomSelectSO.Initialize();
             bottomImage = GetComponent<SpriteRenderer>();
+            OnPoolObjectFirstCreated?.Invoke(this);
+            gameObject.SetActive(false);
+        }
+        public void Despawned()
+        {
+            OnPoolObjectUnused?.Invoke(this);
             gameObject.SetActive(false);
         }
         

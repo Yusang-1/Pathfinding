@@ -15,3 +15,5 @@ MonoBehaviour:
   unitName: Marin
   actionMapName: Unit
   selectableType: 1
+  moveSpeed: 3.1
+  refineLength: 2.2
