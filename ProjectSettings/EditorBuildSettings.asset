@@ -6,7 +6,16 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Title.unity
+    guid: ff4b927620c4a7a4ab15ff1f987e0826
+  - enabled: 1
     path: Assets/Scenes/ComparePathfinding.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/CreateMap.unity
+    guid: 4382a3c2c3259f7449c0b339380e4657
+  - enabled: 1
+    path: Assets/Scenes/ControllUnit.unity
+    guid: 46d6ce66a1ea59a4db012ed939c0ba95
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

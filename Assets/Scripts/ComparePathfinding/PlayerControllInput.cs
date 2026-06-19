@@ -7,6 +7,8 @@ using System.Collections.Generic;
 public class PlayerControllInput : MonoBehaviour
 {
     public event Action<Vector2> OnDirectionChanged;
+    public event Action ControllMenu;
+    
     private Vector2 sumOfDirection;
     private readonly Dictionary<int, Vector2> directionDict = new();
     
@@ -112,6 +114,14 @@ public class PlayerControllInput : MonoBehaviour
                 pos.z += scrollY;
                 Camera.main.transform.position = pos;
             }
+        }
+    }
+    
+    public void OnMenu(InputAction.CallbackContext context)
+    {
+        if(context.started)
+        {
+            ControllMenu?.Invoke();            
         }
     }
 }

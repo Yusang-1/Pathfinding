@@ -13,6 +13,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPreformed;
         public event Action OnHoldCanceled;
+        public event Action OnControllMenu;
 
         private SelectableController selectableController;
 
@@ -256,6 +257,14 @@ namespace Assets.Scripts.ControllUnit
                     pos.z += scrollY;
                     Camera.main.transform.position = pos;
                 }
+            }
+        }
+        
+        public void OnMenu(InputAction.CallbackContext context)
+        {
+            if(context.started)
+            {
+                OnControllMenu?.Invoke();                
             }
         }
 

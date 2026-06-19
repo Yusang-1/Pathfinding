@@ -8,15 +8,21 @@ namespace Assets.Scripts.ControllUnit.SO
     {
         [SerializeField] private Sprite selectedSprite;
         [SerializeField] private Sprite focusedSprite;
-        
+
         private Dictionary<UnitBottomStatus, Sprite> spriteGetter = new();
-        
+
         public void Initialize()
         {
-            spriteGetter.Add(UnitBottomStatus.Selected, selectedSprite);
-            spriteGetter.Add(UnitBottomStatus.Focused, focusedSprite);
+            if (!spriteGetter.ContainsKey(UnitBottomStatus.Selected))
+            {
+                spriteGetter.Add(UnitBottomStatus.Selected, selectedSprite);
+            }
+            if (!spriteGetter.ContainsKey(UnitBottomStatus.Focused))
+            {
+                spriteGetter.Add(UnitBottomStatus.Focused, focusedSprite);
+            }
         }
-        
+
         public Sprite GetSprite(UnitBottomStatus status)
         {
             return spriteGetter[status];

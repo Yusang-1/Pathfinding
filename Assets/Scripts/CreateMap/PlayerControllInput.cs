@@ -9,6 +9,7 @@ namespace Assets.Scripts.CreateMap
     public class PlayerControllInput : MonoBehaviour
     {
         public event Action<Vector2> OnDirectionChanged;
+        public event Action OnControllMenu;
 
         private Vector2 sumOfDirection;
         private readonly Dictionary<int, Vector2> directionDict = new();
@@ -123,6 +124,14 @@ namespace Assets.Scripts.CreateMap
                     pos.z += scrollY;
                     Camera.main.transform.position = pos;
                 }
+            }
+        }
+        
+        public void OnMenu(InputAction.CallbackContext context)
+        {
+            if(context.started)
+            {
+                OnControllMenu?.Invoke();                
             }
         }
     }

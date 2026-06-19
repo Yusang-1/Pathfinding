@@ -8,6 +8,7 @@ namespace Assets.Scripts.CreateMap
         [SerializeField] private Node nodePrefab;
         [SerializeField] private NodeData nodeData;
         [SerializeField] private CreateMapUIRoot uiRoot;
+        [SerializeField] private InputManager inputManager;
 
         private NodeList nodeList;
         private MapGenerator mapGenerator;
@@ -38,7 +39,9 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnLoadMapRequested += LoadSavedMap;
             uiRoot.Initialize();
-
+            
+            inputManager.OnControllMenu += () => uiRoot.OnControllMenu?.Invoke();
+            
             nodeTypeController.Initialize(nodeList);
         }
 

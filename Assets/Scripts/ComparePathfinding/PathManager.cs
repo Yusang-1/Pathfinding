@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 public class PathManager : MonoBehaviour
-{
+{    
     public event Action OnPathFound;
     public event Action<PathResult> OnAFound;
     public event Action<PathResult> OnHPAFound;
@@ -20,7 +20,7 @@ public class PathManager : MonoBehaviour
     private readonly PathfindingResultShower resultShower = new();
 
     [SerializeField] private UIRoot uiRoot;
-
+    [SerializeField] private InputManager inputManager;
     [SerializeField] private Node nodePrefab;
     [SerializeField] private NodeData nodeData;
     [SerializeField] private ClusterShower clusterShower;
@@ -62,6 +62,8 @@ public class PathManager : MonoBehaviour
         OnAFound += uiRoot.SetAResult;
         OnHPAFound += uiRoot.SetHPAResult;
         OnHPASmoothFound += uiRoot.SetHPASmoothResult;
+        
+        inputManager.ControllMenu += uiRoot.ControllMenu;
 
         nodeList.NodeInfo.OnPathfindAvailable += (value) => uiRoot.ActiveFindButton(value);
         nodeList.OnSelected += (node) => uiRoot.ActiveNodeTypeSelector(node, true);

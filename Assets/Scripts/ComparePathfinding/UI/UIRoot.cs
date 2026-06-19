@@ -25,6 +25,7 @@ public class UIRoot : MonoBehaviour
     [SerializeField] private UIFindAllPath uiFindAllPath;
     [SerializeField] private UIPathShower uiPathShower;
     [SerializeField] private UIResultController uiResultController;
+    [SerializeField] private UIContainerScenes uiContainerScenes;
 
     public void Initialize()
     {
@@ -82,4 +83,6 @@ public class UIRoot : MonoBehaviour
     {
         uiResultController.SetHPASmoothResult(result);
     }
+    
+    public void ControllMenu() => uiContainerScenes.OnControllMenu();
 }

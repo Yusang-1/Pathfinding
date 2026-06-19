@@ -10,17 +10,35 @@ public class NodeData : ScriptableObject
     [SerializeField] private Sprite spriteRoom;
     [SerializeField] private Sprite spriteSearched;
     [SerializeField] private Sprite spriteEntrance;
-    
+
     private readonly Dictionary<NodeType, Sprite> spriteGetter = new();
 
     public void Initialize()
     {
-        spriteGetter.Add(NodeType.unit, spriteUnit);
-        spriteGetter.Add(NodeType.destination, spriteDestination);
-        spriteGetter.Add(NodeType.obstacle, spriteObstacle);
-        spriteGetter.Add(NodeType.room, spriteRoom);
-        spriteGetter.Add(NodeType.searched, spriteSearched);
-        spriteGetter.Add(NodeType.entrance, spriteEntrance);
+        if(!spriteGetter.ContainsKey(NodeType.unit))
+        {
+            spriteGetter.Add(NodeType.unit, spriteUnit);
+        }
+        if(!spriteGetter.ContainsKey(NodeType.destination))
+        {
+            spriteGetter.Add(NodeType.destination, spriteDestination);
+        }
+        if(!spriteGetter.ContainsKey(NodeType.obstacle))
+        {
+            spriteGetter.Add(NodeType.obstacle, spriteObstacle);
+        }
+        if(!spriteGetter.ContainsKey(NodeType.room))
+        {
+            spriteGetter.Add(NodeType.room, spriteRoom);
+        }
+        if(!spriteGetter.ContainsKey(NodeType.searched))
+        {
+            spriteGetter.Add(NodeType.searched, spriteSearched);
+        }
+        if(!spriteGetter.ContainsKey(NodeType.entrance))
+        {
+            spriteGetter.Add(NodeType.entrance, spriteEntrance);
+        }
     }
 
     public Sprite GetSprite(NodeType type)

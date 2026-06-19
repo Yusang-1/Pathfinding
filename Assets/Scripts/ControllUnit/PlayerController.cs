@@ -4,7 +4,6 @@ namespace Assets.Scripts.ControllUnit
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private PlayerControllInput input;
         [SerializeField] private float speed;
 
         private Vector3 direction;
@@ -12,7 +11,8 @@ namespace Assets.Scripts.ControllUnit
 
         private void Start()
         {
-            input.OnDirectionChanged += GetDirection;
+            FindAnyObjectByType<PlayerControllInput>().OnDirectionChanged += GetDirection;
+            FindAnyObjectByType<UnitInput>().OnDirectionChanged += GetDirection;
         }
 
         private void Update()
@@ -20,7 +20,7 @@ namespace Assets.Scripts.ControllUnit
             Move();
         }
 
-        public void GetDirection(Vector2 vec)
+        private void GetDirection(Vector2 vec)
         {
             if (vec == Vector2.zero)
             {

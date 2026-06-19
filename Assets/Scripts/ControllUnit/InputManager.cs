@@ -10,6 +10,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPreformed;
         public event Action OnHoldCanceled;
+        public event Action OnControllMenu;
         
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
@@ -35,10 +36,12 @@ namespace Assets.Scripts.ControllUnit
             playerInput.OnHoldStarted += (vec) => OnHoldStarted?.Invoke(vec);
             playerInput.OnHoldPreformed += (vec) => OnHoldPreformed?.Invoke(vec);
             playerInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
+            playerInput.OnControllMenu += () => OnControllMenu?.Invoke();
             
             unitInput.OnHoldStarted += (vec) => OnHoldStarted?.Invoke(vec);
             unitInput.OnHoldPreformed += (vec) => OnHoldPreformed?.Invoke(vec);
             unitInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
+            unitInput.OnControllMenu += () => OnControllMenu?.Invoke();
             
             ChangeActionMapDefault();
         }

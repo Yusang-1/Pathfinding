@@ -46,6 +46,7 @@ namespace Assets.Scripts.ControllUnit
             inputManager.OnHoldStarted += (vec) => uiRoot.OnHoldStarted?.Invoke(vec);
             inputManager.OnHoldPreformed += (vec) => uiRoot.OnHoldPreformed?.Invoke(vec);
             inputManager.OnHoldCanceled += () => uiRoot.OnHoldCanceled?.Invoke();
+            inputManager.OnControllMenu += () => uiRoot.OnManageMenu?.Invoke();
         }
 
         private void SetMapData(MapData mapData)

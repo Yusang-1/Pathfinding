@@ -13,20 +13,23 @@ namespace Assets.Scripts.ControllUnit.UI
 
         // UISpawnUnit event
         public event Action OnSpawnUnitRequested;
-        
+
         // UIDragController event
         public Action<Vector3> OnHoldStarted;
         public Action<Vector3> OnHoldPreformed;
         public Action OnHoldCanceled;
         public event Func<Vector3, float, float, HashSet<ISelectableUnit>> OnFindSelectableUnitInDragUI;
         public event Action<HashSet<ISelectableUnit>> OnUnitFocused;
-        
+
+        // UIContainerScenes event
+        public Action OnManageMenu;
 
         [SerializeField] private UILoadMapMediator uiLoadMapMediator;
         [SerializeField] private UIResultController uiResultController;
         [SerializeField] private UISpawnUnit uiSpawnUnit;
         [SerializeField] private UIUnitpanel uiUnitPanel;
         [SerializeField] private UIDragController uiDragController;
+        [SerializeField] private UIContainerScenes uiContainerScenes;
 
         private void Start()
         {
@@ -35,17 +38,19 @@ namespace Assets.Scripts.ControllUnit.UI
             uiLoadMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
             uiLoadMapMediator.OnLoadMapFinished += uiSpawnUnit.SetActiveTrue;
             uiLoadMapMediator.OnLoadMapFinished += uiUnitPanel.SetActiveTrue;
-            
+
             uiSpawnUnit.OnSpawnUnitRequested += () => OnSpawnUnitRequested?.Invoke();
-            
+
             OnHoldStarted += uiDragController.DragStarted;
             OnHoldPreformed += uiDragController.DragPerformed;
             OnHoldCanceled += uiDragController.DragCanceled;
-            
+
             uiDragController.OnFindSelectableUnitInDragUI += (standard, x, y) => OnFindSelectableUnitInDragUI?.Invoke(standard, x, y);
-            uiDragController.OnUnitFocused += (units) => OnUnitFocused?.Invoke(units);            
+            uiDragController.OnUnitFocused += (units) => OnUnitFocused?.Invoke(units);
+            
+            OnManageMenu += uiContainerScenes.OnControllMenu;
         }
-        
+
         public void UnitSelected(ISelectableUnit unit)
         {
             uiUnitPanel.UnitSelected(unit);
