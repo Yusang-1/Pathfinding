@@ -4,12 +4,10 @@ using System.IO;
 public class MapdataJsonConverter
 {
     private readonly string personalMapFilePath;
-    private readonly string officialMapFilePath;
 
     public MapdataJsonConverter()
     {
         personalMapFilePath = Application.persistentDataPath + "\\MapData";
-        officialMapFilePath = Application.dataPath + "\\Resources\\Maps";
     }
 
     public void SaveMapDataToJson(MapData mapData)
@@ -46,27 +44,12 @@ public class MapdataJsonConverter
     }
     public MapData[] GetOfficialSavedMaps()
     {
-        if (!Directory.Exists(officialMapFilePath))
+        var jsonFiles = Resources.LoadAll<TextAsset>("Maps");
+        Debug.Log(jsonFiles.Length);
+        var results = new MapData[jsonFiles.Length];
+        for(int i = 0; i < jsonFiles.Length; i++)
         {
-            Directory.CreateDirectory(officialMapFilePath);
-            return null;
-        }
-
-        string[] files = Directory.GetFiles(officialMapFilePath);        
-        int correspondingFileCount = 0;
-        for (int i = 0; i < files.Length; i++)
-        {
-            if (files[i].EndsWith(".meta")) continue;
-            
-            correspondingFileCount++;
-        }
-        
-        var results = new MapData[correspondingFileCount];
-        for (int i = 0; i < files.Length; i++)
-        {
-            if (files[i].EndsWith(".meta")) continue;
-            
-            results[i] = ConvertJsonToMapData(File.ReadAllText(files[i]));
+            results[i] = ConvertJsonToMapData(jsonFiles[i].text);
         }
         
         return results;
