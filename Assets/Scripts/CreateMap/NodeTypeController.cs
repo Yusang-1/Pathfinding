@@ -17,7 +17,7 @@ namespace Assets.Scripts.CreateMap
 
         public void SetNodeType(ISelectable selectable)
         {
-            if (currentSelectedType == default) currentSelectedType = NodeType.room;
+            if (currentSelectedType == default) currentSelectedType = NodeType.obstacle;
 
             nodeList.SetNodeType((selectable as Node).Index, currentSelectedType);
         }
