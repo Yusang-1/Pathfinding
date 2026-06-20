@@ -46,7 +46,10 @@ namespace Assets.Scripts.ControllUnit
 
         public void OnLeftClick(InputAction.CallbackContext context)
         {
-            if (isPointerOverGameObject || !isInputActive) return;
+            if (isPointerOverGameObject || !isInputActive)
+            {
+                if(!(context.canceled && isHold)) return;                
+            }
 
             if (context.started)
             {
@@ -120,13 +123,13 @@ namespace Assets.Scripts.ControllUnit
 
         public void OnTrackMousePosition(InputAction.CallbackContext context)
         {
-            if (isPointerOverGameObject || !isInputActive) return;
+            if (!isInputActive) return;
 
             if (context.performed)
             {
                 mousePosition = context.ReadValue<Vector2>();
                 
-                if(isHold) return;
+                if (isHold || isPointerOverGameObject) return;
                 
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 Vector3 origin = Camera.main.transform.position;
