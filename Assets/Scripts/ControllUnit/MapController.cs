@@ -40,8 +40,8 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnFindSelectableUnitInDragUI += spatialHash.GetUnitsInRange;
             uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
 
-            unitSpawner.OnSelectedCallback += uiRoot.UnitSelected;
-            unitSpawner.OnDeselectedCallback += uiRoot.UnitDeselected;
+            unitSpawner.OnSelectedCallback += (selectable) => uiRoot.OnUnitSelected?.Invoke(selectable);
+            unitSpawner.OnDeselectedCallback += (selectable) => uiRoot.OnUnitDeselected?.Invoke(selectable);
 
             inputManager.OnHoldStarted += (vec) => uiRoot.OnHoldStarted?.Invoke(vec);
             inputManager.OnHoldPreformed += (vec) => uiRoot.OnHoldPreformed?.Invoke(vec);

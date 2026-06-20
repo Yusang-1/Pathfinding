@@ -20,7 +20,7 @@ namespace Assets.Scripts.ControllUnit
         // parent map: maps a node to its predecessor for path reconstruction
         private readonly Dictionary<AbstractNode, AbstractNode> cameFrom = new();
 
-        public HPAPathfinder(HPAClusterList clusterList, NodeList nodeList, AStarPathfinder lowLvPathfinder)
+        public HPAPathfinder(HPAClusterList clusterList, NodeList nodeList)
         {
             this.clusterList = clusterList;
             this.nodeList = nodeList;

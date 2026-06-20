@@ -24,7 +24,7 @@ namespace Assets.Scripts.ControllUnit
             nodeList.SetNodeArea();
 
             thetaStarPathfinder = new ThetaStar(nodeList, clusterList);
-            highLevelPathfinder = new HPAPathfinder(clusterList, nodeList, aStarPathfinder);
+            highLevelPathfinder = new HPAPathfinder(clusterList, nodeList);
             searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder);
             lazyRefine = new LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
         }

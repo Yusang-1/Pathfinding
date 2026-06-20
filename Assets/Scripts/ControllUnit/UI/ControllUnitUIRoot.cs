@@ -23,6 +23,10 @@ namespace Assets.Scripts.ControllUnit.UI
 
         // UIContainerScenes event
         public Action OnManageMenu;
+        
+        // UIUnitpanel event
+        public Action<ISelectableUnit> OnUnitSelected;
+        public Action<ISelectableUnit> OnUnitDeselected;
 
         [SerializeField] private UILoadMapMediator uiLoadMapMediator;
         [SerializeField] private UIResultController uiResultController;
@@ -49,15 +53,9 @@ namespace Assets.Scripts.ControllUnit.UI
             uiDragController.OnUnitFocused += (units) => OnUnitFocused?.Invoke(units);
             
             OnManageMenu += uiContainerScenes.OnControllMenu;
-        }
-
-        public void UnitSelected(ISelectableUnit unit)
-        {
-            uiUnitPanel.UnitSelected(unit);
-        }
-        public void UnitDeselected(ISelectableUnit unit)
-        {
-            uiUnitPanel.UnitDeselected(unit);
+            
+            OnUnitSelected += uiUnitPanel.UnitSelected;
+            OnUnitDeselected += uiUnitPanel.UnitDeselected;
         }
     }
 }
