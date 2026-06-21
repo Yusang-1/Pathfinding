@@ -20,7 +20,7 @@ namespace Assets.Scripts.ControllUnit
         public bool TryGetPathFromQueue(out Vector3 path)
         {
             if (pathQueue.Count <= 0)
-            {                
+            {
                 path = Vector3.zero;
                 return false;
             }
@@ -44,10 +44,15 @@ namespace Assets.Scripts.ControllUnit
         }
 
         /// <summary> 하나의 cluster ResultNode의 경로를 PathQueue에 담는다. </summary>
-        public void DoLazyRefinement(HPAPathfinder.ResultNode result)
+        public void DoLazyRefinement(HPAPathfinder.ResultNode result, bool isEnd, Vector3 finalDestination)
         {
             List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList);
-
+            
+            if(isEnd)
+            {
+                resultPath[^1] = finalDestination;
+            }
+            
             for (int i = 0; i < resultPath.Count; i++)
             {
                 pathQueue.Enqueue(resultPath[i]);

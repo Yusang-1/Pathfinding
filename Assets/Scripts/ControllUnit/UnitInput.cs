@@ -136,7 +136,7 @@ namespace Assets.Scripts.ControllUnit
             OnHoldCanceled?.Invoke();
         }
 
-        public event Action<Vector3> OnRightClickRequested;
+        // public event Action<Vector3> OnRightClickRequested;        
         public void OnRightClick(InputAction.CallbackContext context)
         {
             if (isPointerOverGameObject || !isInputActive) return;
@@ -146,7 +146,8 @@ namespace Assets.Scripts.ControllUnit
                 Debug.Log("Right Click");
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
 
-                OnRightClickRequested?.Invoke(worldPos);
+                // OnRightClickRequested?.Invoke(worldPos);
+                selectableController.RightClickMove(worldPos);
 
                 if (isShiftPressed)
                 {

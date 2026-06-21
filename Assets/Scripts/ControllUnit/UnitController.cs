@@ -19,6 +19,7 @@ namespace Assets.Scripts.ControllUnit
 
         private List<HPAPathfinder.ResultNode> abstractPath;
         private int currentPathIndex;
+        private Vector3 finalDestination;
         private Vector3 shortDestination;
         private Vector3 exitOfCluster;
 
@@ -36,9 +37,10 @@ namespace Assets.Scripts.ControllUnit
 
         public void MoveTo(Vector3 destination)
         {
+            finalDestination = destination;
             currentPathIndex = 0;
-            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);            
-            SearchLowLevelPath(abstractPath[currentPathIndex]);
+            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);                        
+            SearchLowLevelPath(abstractPath[currentPathIndex], abstractPath.Count == 1);
             TryGetShortDestination(out shortDestination); // 출발지(현재 위치) 빼내기
             GetShortDestination();
         }
@@ -98,25 +100,29 @@ namespace Assets.Scripts.ControllUnit
             else return false;
         }
 
-        public void SearchLowLevelPath(HPAPathfinder.ResultNode resultNode)
-        {
-            lazyRefine.DoLazyRefinement(resultNode);
-            exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
-        }
-
-        public bool TryGetShortDestination(out Vector3 path)
+        private bool TryGetShortDestination(out Vector3 path)
         {
             if (lazyRefine.TryGetPathFromQueue(out path))
             {
                 // 받은 경로가 cluster의 exit인 경우 다음 cluster의 lowLevelPath를 찾음
                 if (path == exitOfCluster && currentPathIndex + 1 < abstractPath.Count)
                 {
-                    SearchLowLevelPath(abstractPath[++currentPathIndex]);
+                    bool isEnd = false;
+                    if (currentPathIndex + 1 == abstractPath.Count - 1) isEnd = true;
+
+                    SearchLowLevelPath(abstractPath[++currentPathIndex], isEnd);
                 }
 
                 return true;
             }
             else return false;
+        }
+
+        private void SearchLowLevelPath(HPAPathfinder.ResultNode resultNode, bool isEnd)
+        {
+            lazyRefine.DoLazyRefinement(resultNode, isEnd, finalDestination);
+
+            exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
         }
     }
 }

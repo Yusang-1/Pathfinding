@@ -13,12 +13,11 @@ namespace Assets.Scripts.ControllUnit
 
         [SerializeField] private UnitSO unitData;
 
-        private UnitController controller;        
-        private UnitInput unitInput;
-        private UnitBottomSelectChanger bottomChanger;        
-        
+        private UnitController controller;
+        private UnitBottomSelectChanger bottomChanger;
+
         private UnitBottomStatus bottomStatus;
-        public Vector2Int CurrentKey;        
+        public Vector2Int CurrentKey;
 
         private void Update()
         {
@@ -53,45 +52,37 @@ namespace Assets.Scripts.ControllUnit
 
         public void Selected()
         {
-            if (unitInput == null)
-            {
-                unitInput = FindAnyObjectByType<UnitInput>();
-            }
-            unitInput.OnRightClickRequested += MoveUnit;
-            
             ChangeBottomStatus(UnitBottomStatus.Selected);
             OnSelectedCallback?.Invoke(this);
         }
 
         public void Deselected()
         {
-            unitInput.OnRightClickRequested -= MoveUnit;
-
             ChangeBottomStatus(UnitBottomStatus.None);
             OnDeselectedCallback?.Invoke(this);
         }
 
         public void Focused()
         {
-            if(bottomStatus == UnitBottomStatus.Selected) return;
-            
+            if (bottomStatus == UnitBottomStatus.Selected) return;
+
             ChangeBottomStatus(UnitBottomStatus.Focused);
         }
 
         public void Unfocused()
         {
-            if(bottomStatus == UnitBottomStatus.Selected) return;
-            
+            if (bottomStatus == UnitBottomStatus.Selected) return;
+
             ChangeBottomStatus(UnitBottomStatus.None);
         }
 
         public SelectableType GetSelectableType() => unitData.SelectableType;
 
-        private void MoveUnit(Vector3 destination)
+        public void MoveUnit(Vector3 destination)
         {
             controller.MoveTo(destination);
         }
-        
+
         private void ChangeBottomStatus(UnitBottomStatus status)
         {
             bottomStatus = status;

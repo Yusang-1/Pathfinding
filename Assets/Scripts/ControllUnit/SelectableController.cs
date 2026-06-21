@@ -1,14 +1,15 @@
+using UnityEngine;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class SelectableController
     {
+        private readonly UnitCrowdControl unitCrowdControl = new();
+        
         private SelectableType currentSelectedType;
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
-
         private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();
         private readonly List<ISelectableUnit> unfocusedUnits = new();
         private readonly List<ISelectableUnit> newlyFocusedUnit = new();
@@ -92,7 +93,7 @@ namespace Assets.Scripts.ControllUnit
         {
             DeselectedAll();
             AddSelected(selectable);
-            currentSelectedType = selectable.GetSelectableType();
+            currentSelectedType = selectable.GetSelectableType();            
 
             if (selectable is IHaveOwnActionMap)
             {
@@ -243,6 +244,11 @@ namespace Assets.Scripts.ControllUnit
             }
 
             return newlyFocusedUnit;
+        }
+        
+        public void RightClickMove(Vector3 destination)
+        {
+            unitCrowdControl.MoveCrowd(destination, currentSelectedHash);
         }
     }
 }
