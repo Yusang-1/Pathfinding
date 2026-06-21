@@ -41,10 +41,17 @@ namespace Assets.Scripts.ControllUnit
 
         public void MoveTo(Vector3 destination)
         {
+            if(HasDirection)
+            {
+                lazyRefine.ResetLazyRefine();
+            }
+            
             beforePosition = unit.transform.position;
             finalDestination = destination;
             currentPathIndex = 0;
-            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);                        
+            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);   
+            if(abstractPath == null || abstractPath.Count == 0) return;
+                                 
             SearchLowLevelPath(abstractPath[currentPathIndex], abstractPath.Count == 1);
             TryGetShortDestination(out shortDestination); // 출발지(현재 위치) 빼내기
             GetShortDestination();

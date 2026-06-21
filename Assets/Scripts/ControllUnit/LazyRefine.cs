@@ -58,5 +58,10 @@ namespace Assets.Scripts.ControllUnit
                 pathQueue.Enqueue(resultPath[i]);
             }
         }
+        
+        public void ResetLazyRefine()
+        {
+            pathQueue.Clear();
+        }
     }
 }
