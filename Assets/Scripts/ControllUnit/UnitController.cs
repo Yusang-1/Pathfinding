@@ -13,18 +13,19 @@ namespace Assets.Scripts.ControllUnit
         private readonly SpatialHash spatialHash;
         private readonly Transform bottomChangerTransform;
         // private readonly SteeringBehavior steeringBehavior = new();
-        
+
         private Vector3 beforePosition;
         private Vector3 direction;
         private Vector3 velocity;
-        private bool HasDirection => direction != Vector3.zero;
 
         private List<HPAPathfinder.ResultNode> abstractPath;
         private int currentPathIndex;
+        private bool isMoving;
+        private Vector3 startPosition;
         private Vector3 finalDestination;
         private Vector3 shortDestination;
         private Vector3 exitOfCluster;
-        
+
         public Vector3 Velocity => velocity;
 
         public UnitController(Unit unit, SpatialHash spatialHash, Transform bottomChangerTransform, UnitSO unitData, Pathfinder pathfinder)
@@ -41,20 +42,38 @@ namespace Assets.Scripts.ControllUnit
 
         public void MoveTo(Vector3 destination)
         {
-            if(HasDirection)
+            if (isMoving)
             {
                 lazyRefine.ResetLazyRefine();
             }
             
+            startPosition = unit.transform.position;
             beforePosition = unit.transform.position;
             finalDestination = destination;
             currentPathIndex = 0;
-            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);   
-            if(abstractPath == null || abstractPath.Count == 0) return;
-                                 
-            SearchLowLevelPath(abstractPath[currentPathIndex], abstractPath.Count == 1);
+            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);
+            if (abstractPath == null || abstractPath.Count == 0) return;
+
+            SearchLowLevelPath(abstractPath[currentPathIndex], abstractPath.Count == 1, true);
             TryGetShortDestination(out shortDestination); // 출발지(현재 위치) 빼내기
             GetShortDestination();
+            isMoving = true;
+        }
+        public void MoveToReservation(Vector3 destination)
+        {
+            bool haveToDoLazyRefine = false;
+            if (currentPathIndex + 1 == abstractPath.Count) haveToDoLazyRefine = true;
+
+            var newAbstractPath = pathfinder.GetAbstractPath(finalDestination, destination);
+            if (abstractPath == null || abstractPath.Count == 0) return;
+            
+            startPosition = finalDestination;
+            abstractPath.AddRange(newAbstractPath);
+            finalDestination = destination;
+            if (haveToDoLazyRefine)
+            {
+                SearchLowLevelPath(abstractPath[++currentPathIndex], currentPathIndex == abstractPath.Count - 1, true);
+            }
         }
 
         public void ControllerUpdate()
@@ -69,11 +88,11 @@ namespace Assets.Scripts.ControllUnit
 
         private void Move()
         {
-            if (!HasDirection) return;
+            if (!isMoving) return;
 
             unit.transform.position += unitData.MoveSpeed * Time.deltaTime * direction;
             GetVelocity();
-            spatialHash.CheckUnitHash(unit);                        
+            spatialHash.CheckUnitHash(unit);
 
             if (IsDistanceInCurrentDestination())
             {
@@ -85,7 +104,7 @@ namespace Assets.Scripts.ControllUnit
         {
             bool isSuccess = TryGetShortDestination(out shortDestination);
             if (isSuccess)
-            {
+            {                                
                 direction = (shortDestination - unit.transform.position).normalized;
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
                 unit.transform.rotation = Quaternion.Euler(0, 0, angle);
@@ -104,6 +123,7 @@ namespace Assets.Scripts.ControllUnit
                 if (shortDestination == exitOfCluster && currentPathIndex >= abstractPath.Count) // 최종 도착
                 {
                     direction = Vector3.zero;
+                    isMoving = false;
                     return false;
                 }
 
@@ -123,7 +143,7 @@ namespace Assets.Scripts.ControllUnit
                     bool isEnd = false;
                     if (currentPathIndex + 1 == abstractPath.Count - 1) isEnd = true;
 
-                    SearchLowLevelPath(abstractPath[++currentPathIndex], isEnd);
+                    SearchLowLevelPath(abstractPath[++currentPathIndex], isEnd, false);
                 }
 
                 return true;
@@ -131,17 +151,17 @@ namespace Assets.Scripts.ControllUnit
             else return false;
         }
 
-        private void SearchLowLevelPath(HPAPathfinder.ResultNode resultNode, bool isEnd)
+        private void SearchLowLevelPath(HPAPathfinder.ResultNode resultNode, bool isEnd, bool isStart)
         {
-            lazyRefine.DoLazyRefinement(resultNode, isEnd, finalDestination);
+            lazyRefine.DoLazyRefinement(resultNode, isEnd, finalDestination, isStart, startPosition);
 
             exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
         }
-        
+
         private void GetVelocity()
         {
             velocity = direction * Mathf.Abs(Vector3.Distance(beforePosition, unit.transform.position)) / Time.deltaTime;
-            
+
             beforePosition = unit.transform.position;
         }
     }

@@ -13,7 +13,17 @@ namespace Assets.Scripts.ControllUnit
             foreach (var unit in units)
             {
                 var allocatedDestination = destinationClusterManager.GetAllocatedDestination(destination, units, count++);
-                (unit as Unit).MoveUnit(allocatedDestination);
+                (unit as Unit).Controller.MoveTo(allocatedDestination);
+            }
+        }
+        
+        public void MoveCrowdReservation(Vector3 destination, HashSet<ISelectableUnit> units)
+        {
+            int count = 0;
+            foreach (var unit in units)
+            {
+                var allocatedDestination = destinationClusterManager.GetAllocatedDestination(destination, units, count++);
+                (unit as Unit).Controller.MoveToReservation(allocatedDestination);
             }
         }
     }

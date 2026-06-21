@@ -44,10 +44,14 @@ namespace Assets.Scripts.ControllUnit
         }
 
         /// <summary> 하나의 cluster ResultNode의 경로를 PathQueue에 담는다. </summary>
-        public void DoLazyRefinement(HPAPathfinder.ResultNode result, bool isEnd, Vector3 finalDestination)
+        public void DoLazyRefinement(HPAPathfinder.ResultNode result, bool isEnd, Vector3 finalDestination, bool isFirst, Vector3 startPosition)
         {
             List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList);
             
+            if(isFirst)
+            {
+                resultPath[0] = startPosition;
+            }
             if(isEnd)
             {
                 resultPath[^1] = finalDestination;

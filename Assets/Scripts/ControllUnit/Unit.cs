@@ -81,11 +81,6 @@ namespace Assets.Scripts.ControllUnit
 
         public SelectableType GetSelectableType() => unitData.SelectableType;
 
-        public void MoveUnit(Vector3 destination)
-        {
-            controller.MoveTo(destination);
-        }
-
         private void ChangeBottomStatus(UnitBottomStatus status)
         {
             bottomStatus = status;

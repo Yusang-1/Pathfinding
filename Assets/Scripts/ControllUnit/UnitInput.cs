@@ -146,12 +146,13 @@ namespace Assets.Scripts.ControllUnit
                 Debug.Log("Right Click");
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
 
-                // OnRightClickRequested?.Invoke(worldPos);
-                selectableController.RightClickMove(worldPos);
-
                 if (isShiftPressed)
                 {
-
+                    selectableController.ShiftRightClickMove(worldPos);
+                }
+                else
+                {
+                    selectableController.RightClickMove(worldPos);
                 }
             }
         }

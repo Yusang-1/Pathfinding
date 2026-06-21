@@ -250,5 +250,9 @@ namespace Assets.Scripts.ControllUnit
         {
             unitCrowdControl.MoveCrowd(destination, currentSelectedHash);
         }
+        public void ShiftRightClickMove(Vector3 destination)
+        {
+            unitCrowdControl.MoveCrowdReservation(destination, currentSelectedHash);
+        }
     }
 }
