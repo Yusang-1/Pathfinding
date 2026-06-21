@@ -37,8 +37,7 @@ namespace Assets.Scripts.ControllUnit
         public void MoveTo(Vector3 destination)
         {
             currentPathIndex = 0;
-            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);
-            if (abstractPath == null || abstractPath.Count == 0) Debug.Log(22);
+            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);            
             SearchLowLevelPath(abstractPath[currentPathIndex]);
             TryGetShortDestination(out shortDestination); // 출발지(현재 위치) 빼내기
             GetShortDestination();

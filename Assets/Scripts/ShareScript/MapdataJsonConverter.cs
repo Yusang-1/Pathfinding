@@ -45,7 +45,7 @@ public class MapdataJsonConverter
     public MapData[] GetOfficialSavedMaps()
     {
         var jsonFiles = Resources.LoadAll<TextAsset>("Maps");
-        Debug.Log(jsonFiles.Length);
+
         var results = new MapData[jsonFiles.Length];
         for(int i = 0; i < jsonFiles.Length; i++)
         {
