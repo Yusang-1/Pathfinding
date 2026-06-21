@@ -18,6 +18,9 @@ namespace Assets.Scripts.ControllUnit
 
         private UnitBottomStatus bottomStatus;
         public Vector2Int CurrentKey;
+        
+        public UnitSO UnitData => unitData;
+        public UnitController Controller => controller;
 
         private void Update()
         {

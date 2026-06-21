@@ -13,8 +13,10 @@ namespace Assets.Scripts.ControllUnit
         private readonly SpatialHash spatialHash;
         private readonly Transform bottomChangerTransform;
         // private readonly SteeringBehavior steeringBehavior = new();
-
+        
+        private Vector3 beforePosition;
         private Vector3 direction;
+        private Vector3 velocity;
         private bool HasDirection => direction != Vector3.zero;
 
         private List<HPAPathfinder.ResultNode> abstractPath;
@@ -22,6 +24,8 @@ namespace Assets.Scripts.ControllUnit
         private Vector3 finalDestination;
         private Vector3 shortDestination;
         private Vector3 exitOfCluster;
+        
+        public Vector3 Velocity => velocity;
 
         public UnitController(Unit unit, SpatialHash spatialHash, Transform bottomChangerTransform, UnitSO unitData, Pathfinder pathfinder)
         {
@@ -37,6 +41,7 @@ namespace Assets.Scripts.ControllUnit
 
         public void MoveTo(Vector3 destination)
         {
+            beforePosition = unit.transform.position;
             finalDestination = destination;
             currentPathIndex = 0;
             abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);                        
@@ -60,7 +65,8 @@ namespace Assets.Scripts.ControllUnit
             if (!HasDirection) return;
 
             unit.transform.position += unitData.MoveSpeed * Time.deltaTime * direction;
-            spatialHash.CheckUnitHash(unit);
+            GetVelocity();
+            spatialHash.CheckUnitHash(unit);                        
 
             if (IsDistanceInCurrentDestination())
             {
@@ -123,6 +129,13 @@ namespace Assets.Scripts.ControllUnit
             lazyRefine.DoLazyRefinement(resultNode, isEnd, finalDestination);
 
             exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
+        }
+        
+        private void GetVelocity()
+        {
+            velocity = direction * Mathf.Abs(Vector3.Distance(beforePosition, unit.transform.position)) / Time.deltaTime;
+            
+            beforePosition = unit.transform.position;
         }
     }
 }
