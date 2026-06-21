@@ -139,6 +139,9 @@ public class HPAClusterList
         }
         else // 대각선
         {
+            if(direction.x > 0) standardNode.x += clusterSize - 1;
+            if(direction.y > 0) standardNode.y += clusterSize - 1;
+            
             if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
             {
                 cachedEdgeIndexes.Add(standardNode);
