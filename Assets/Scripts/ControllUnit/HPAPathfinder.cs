@@ -204,7 +204,27 @@ namespace Assets.Scripts.ControllUnit
 
                 current = cameFrom[current];
             }
-            if (results.Count == 1) // 도착지 노드만 세팅된 경우 출발지 노드를 별도로 세팅
+
+            if (nodes.ContainsKey(current.Index)) // 출발지 노드를 별도로 세팅
+            {
+                if (!results[nodes[current.Index]].hasEntranceAndExit)
+                {
+                    temp = results[nodes[current.Index]];
+                    temp.enteranceNode = current.EntrancePos;
+                    temp.hasEntranceAndExit = true;
+                    results[nodes[current.Index]] = temp;
+                }
+                else
+                {
+                    results.Add(new ResultNode
+                    {
+                        Index = current.Index,
+                        exitNode = current.EntrancePos,
+                    });
+                    nodes[current.Index] = results.Count - 1;
+                }
+            }
+            else
             {
                 results.Add(new ResultNode
                 {
