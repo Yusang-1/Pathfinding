@@ -15,7 +15,7 @@ namespace Assets.Scripts.CrowdSimulation
         {
             uiSpawnUnit.OnSpawnUnitRequested += SpawnUnit;
         }
-        
+
         public void Initialize(UnitList unitList, SpatialHash hash)
         {
             this.unitList = unitList;
@@ -25,8 +25,8 @@ namespace Assets.Scripts.CrowdSimulation
         public void SpawnUnit()
         {
             var unit = Instantiate<CrowdUnit>(unitPrefab);
+            unitList.AddUnit(unit);
             unit.UnitSpawned(spatialHash);
-            unitList.AddUnit(unit);            
         }
     }
 }

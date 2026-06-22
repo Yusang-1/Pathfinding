@@ -6,25 +6,29 @@ namespace Assets.Scripts.CrowdSimulation
     {
         private CrowdUnit thisUnit;
         private SpatialHash spatialHash;
-
+        private BoidsAlgorithm boidsAlgorithm;
+        
         private Vector3 destination;
         private Vector3 velocity;
         private float speed;
         private bool hasDestination;
 
-        public void Initialize(CrowdUnit unit, float speed, SpatialHash hash)
+        public void Initialize(CrowdUnit unit, float speed, SpatialHash hash, BoidsAlgorithm boids)
         {
             thisUnit = unit;
             this.speed = speed;
             spatialHash = hash;
             spatialHash.AddUnit(thisUnit);
+            boidsAlgorithm = boids;
         }
 
         public void ContorllerUpdate()
         {
             if (!hasDestination) return;
-
-            Vector3 direction = (destination - thisUnit.transform.position).normalized;
+            
+            Vector3 steeringVector = boidsAlgorithm.GetSteeringVector(thisUnit, spatialHash.GetUnitsInRange(thisUnit.transform.position, 1));
+            
+            Vector3 direction = (destination - thisUnit.transform.position + steeringVector).normalized;
             velocity = direction * speed;
             thisUnit.transform.position += velocity * Time.deltaTime;
             
