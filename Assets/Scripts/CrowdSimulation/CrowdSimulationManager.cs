@@ -5,12 +5,13 @@ namespace Assets.Scripts.CrowdSimulation
     public class CrowdSimulationManager : MonoBehaviour
     {
         [SerializeField] private UnitSpawner unitSpawner;
-        [SerializeField] private UnitInput unitInput;
+        [SerializeField] private UnitInput unitInput;                
         
         private void Start()
         {
+            SpatialHash spatialHash = new();
             UnitList unitList = new();
-            unitSpawner.Initialize(unitList);
+            unitSpawner.Initialize(unitList, spatialHash);
             unitInput.Initialize(unitList);
         }
     }

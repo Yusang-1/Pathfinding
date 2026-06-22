@@ -5,42 +5,47 @@ namespace Assets.Scripts.CrowdSimulation
     public class CrowdUnitController
     {
         private CrowdUnit thisUnit;
-        
+        private SpatialHash spatialHash;
+
         private Vector3 destination;
         private Vector3 velocity;
         private float speed;
         private bool hasDestination;
-        
-        public void Initialize(CrowdUnit unit, float speed)
+
+        public void Initialize(CrowdUnit unit, float speed, SpatialHash hash)
         {
             thisUnit = unit;
             this.speed = speed;
+            spatialHash = hash;
+            spatialHash.AddUnit(thisUnit);
         }
-        
+
         public void ContorllerUpdate()
         {
-            if(!hasDestination) return;
-            
-            Vector3 direction = (destination - thisUnit.transform.position).normalized;            
+            if (!hasDestination) return;
+
+            Vector3 direction = (destination - thisUnit.transform.position).normalized;
             velocity = direction * speed;
             thisUnit.transform.position += velocity * Time.deltaTime;
             
-            if(CheckArrive())
-            {                
+            spatialHash.CheckUnitHash(thisUnit);
+            
+            if (CheckArrive())
+            {
                 hasDestination = false;
             }
         }
-        
+
         public void SetDestination(Vector3 destination)
         {
             this.destination = destination;
             hasDestination = true;
         }
-        
+
         private const float arriveThreshold = 0.01f;
         private bool CheckArrive()
         {
-            if(Vector3.SqrMagnitude(destination - thisUnit.transform.position) <= arriveThreshold)
+            if (Vector3.SqrMagnitude(destination - thisUnit.transform.position) <= arriveThreshold)
             {
                 return true;
             }

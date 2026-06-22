@@ -8,15 +8,17 @@ namespace Assets.Scripts.CrowdSimulation
         [SerializeField] private CrowdUnitSO unitData;
         
         private readonly CrowdUnitController controller = new();
-
-        private void Start()
-        {
-            controller.Initialize(this, unitData.Speed);            
-        }
+        
+        public Vector2Int CurrentKey;   
         
         private void Update()
         {
             controller.ContorllerUpdate();
+        }
+        
+        public void UnitSpawned(SpatialHash spatialHash)
+        {
+            controller.Initialize(this, unitData.Speed, spatialHash);
         }
         
         public void MoveUnit(Vector3 destination)

@@ -9,21 +9,24 @@ namespace Assets.Scripts.CrowdSimulation
         [SerializeField] private UISpawnUnit uiSpawnUnit;
 
         private UnitList unitList;
+        private SpatialHash spatialHash;
 
         private void Start()
         {
             uiSpawnUnit.OnSpawnUnitRequested += SpawnUnit;
         }
         
-        public void Initialize(UnitList unitList)
+        public void Initialize(UnitList unitList, SpatialHash hash)
         {
             this.unitList = unitList;
+            spatialHash = hash;
         }
 
         public void SpawnUnit()
         {
             var unit = Instantiate<CrowdUnit>(unitPrefab);
-            unitList.AddUnit(unit);
+            unit.UnitSpawned(spatialHash);
+            unitList.AddUnit(unit);            
         }
     }
 }
