@@ -7,14 +7,19 @@ namespace Assets.Scripts.CrowdSimulation
     {
         [SerializeField] private CrowdUnit unitPrefab;
         [SerializeField] private UISpawnUnit uiSpawnUnit;
-        
-        private readonly UnitList unitList = new();
+
+        private UnitList unitList;
 
         private void Start()
         {
             uiSpawnUnit.OnSpawnUnitRequested += SpawnUnit;
         }
         
+        public void Initialize(UnitList unitList)
+        {
+            this.unitList = unitList;
+        }
+
         public void SpawnUnit()
         {
             var unit = Instantiate<CrowdUnit>(unitPrefab);

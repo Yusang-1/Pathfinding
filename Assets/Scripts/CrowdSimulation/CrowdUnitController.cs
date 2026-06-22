@@ -21,7 +21,7 @@ namespace Assets.Scripts.CrowdSimulation
         {
             if(!hasDestination) return;
             
-            Vector3 direction = (destination - thisUnit.transform.position).normalized;
+            Vector3 direction = (destination - thisUnit.transform.position).normalized;            
             velocity = direction * speed;
             thisUnit.transform.position += velocity * Time.deltaTime;
             
