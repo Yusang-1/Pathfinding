@@ -48,19 +48,20 @@ namespace Assets.Scripts.ControllUnit
         {
             if (isPointerOverGameObject || !isInputActive)
             {
-                if(!(context.canceled && isHold)) return;                
+                if(!(context.canceled && isDrag)) return;                
             }
 
             if (context.started)
             {
-                StartCoroutine(HoldJudger());
+                WaitDragCoroutine = WaitDrag(mousePosition);
+                StartCoroutine(WaitDragCoroutine);
             }
 
             if (context.canceled)
             {
-                isClickCanceled = true;
+                StopCoroutine(WaitDragCoroutine);
 
-                if (isHold)
+                if (isDrag)
                 {
                     HoldCanceled();
                 }
@@ -71,45 +72,31 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        [SerializeField] private float holdJudgeLimit;
-        private float holdJudgeTime;
-        private bool isHold;
-        private bool isClickCanceled;
-
-        /// <summary>
-        /// holdJudgeLimit 만큼의 시간이 지나면 hold 판정
-        /// </summary>
-        private IEnumerator HoldJudger()
+        private bool isDrag;
+        private IEnumerator WaitDragCoroutine;
+        private IEnumerator WaitDrag(Vector2 startPosition)
         {
-            holdJudgeTime = 0;
-            isHold = false;
-            isClickCanceled = false;
-
-            while (holdJudgeTime < holdJudgeLimit)
+            while (true)
             {
-                if (isClickCanceled)
+                if(startPosition != mousePosition)
                 {
+                    HoldStarted();
                     break;
                 }
-                holdJudgeTime += Time.deltaTime;
                 yield return null;
             }
-
-            if (!isClickCanceled)
-            {
-                HoldStarted();
-            }
-
-            while (!isClickCanceled)
+            
+            while(isDrag)
             {
                 HoldPerformed();
                 yield return null;
             }
         }
+        
         private void HoldStarted()
         {
             OnHoldStarted?.Invoke(mousePosition);
-            isHold = true;
+            isDrag = true;
         }
         private void HoldPerformed()
         {
@@ -117,6 +104,7 @@ namespace Assets.Scripts.ControllUnit
         }
         private void HoldCanceled()
         {
+            isDrag = false;
             selectableController.Selected();
             OnHoldCanceled?.Invoke();
         }
@@ -129,7 +117,7 @@ namespace Assets.Scripts.ControllUnit
             {
                 mousePosition = context.ReadValue<Vector2>();
                 
-                if (isHold || isPointerOverGameObject) return;
+                if (isDrag || isPointerOverGameObject) return;
                 
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 Vector3 origin = Camera.main.transform.position;
