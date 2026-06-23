@@ -6,6 +6,7 @@ namespace Assets.Scripts.CrowdSimulation
     public class CrowdUnit : MonoBehaviour
     {        
         [SerializeField] private CrowdUnitSO unitData;
+        [SerializeField] private SteeringWeightingSO steeringWeightingData;
         
         private readonly CrowdUnitController controller = new();
         
@@ -20,7 +21,7 @@ namespace Assets.Scripts.CrowdSimulation
         
         public void UnitSpawned(SpatialHash spatialHash)
         {
-            controller.Initialize(this, unitData.Speed, spatialHash);
+            controller.Initialize(this, unitData.Speed, spatialHash, steeringWeightingData);
         }
         
         public void MoveUnit(Vector3 destination)

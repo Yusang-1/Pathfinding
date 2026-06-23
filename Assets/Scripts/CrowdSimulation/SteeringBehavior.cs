@@ -1,18 +1,26 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Assets.Scripts.CrowdSimulation.SO;
 
 namespace Assets.Scripts.CrowdSimulation
 {
     public class SteeringBehavior
     {
-        public Vector3 GetSteering(CrowdUnit unit, List<CrowdUnit> nearby, float maxSpeed, Vector3 destination)
+        public Vector3 GetSteering(CrowdUnit unit, List<CrowdUnit> nearby, float maxSpeed, Vector3 destination, SteeringConfig weighting)
         {
-            if(nearby == null || nearby.Count == 0) return Vector3.zero;
-            
+            if (nearby == null || nearby.Count == 0) return Vector3.zero;
+
             var seekVector = Seek(unit.transform.position, destination, maxSpeed, unit.Controller.Velocity);
+            seekVector *= weighting.SeekWeight;
+            
             var separationVector = Separation(unit, nearby, 0.7f);
+            separationVector *= weighting.SeparationWeight;
+            
             var cohesionVector = Cohesion(unit, nearby, maxSpeed);
+            cohesionVector *= weighting.CohesionWeight;
+            
             var alignmentVector = Alignment(unit, nearby);
+            alignmentVector *= weighting.AlignmentWeight;
             
             return seekVector + separationVector + cohesionVector + alignmentVector;
         }

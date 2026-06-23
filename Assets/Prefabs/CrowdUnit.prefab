@@ -101,3 +101,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitData: {fileID: 11400000, guid: 59b70bf0ee088ce4ba2ce0b87d6b7d90, type: 2}
+  steeringWeightingData: {fileID: 11400000, guid: 33ef8a80e716a474e8cf542bc221237c, type: 2}
+  CurrentKey: {x: 0, y: 0}

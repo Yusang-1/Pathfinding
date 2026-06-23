@@ -1,4 +1,5 @@
 using UnityEngine;
+using Assets.Scripts.CrowdSimulation.SO;
 
 namespace Assets.Scripts.CrowdSimulation
 {
@@ -6,6 +7,7 @@ namespace Assets.Scripts.CrowdSimulation
     {
         private CrowdUnit thisUnit;
         private SpatialHash spatialHash;
+        private SteeringWeightingSO steeringWeightingData;
         private readonly SteeringBehavior steeringBehavior = new();
 
         private Vector3 destination;
@@ -15,12 +17,13 @@ namespace Assets.Scripts.CrowdSimulation
 
         public Vector3 Velocity => velocity;
 
-        public void Initialize(CrowdUnit unit, float speed, SpatialHash hash)
+        public void Initialize(CrowdUnit unit, float speed, SpatialHash hash, SteeringWeightingSO weightingData)
         {
             thisUnit = unit;
             this.speed = speed;
             spatialHash = hash;
             spatialHash.AddUnit(thisUnit);
+            steeringWeightingData = weightingData;
         }
 
         public void ContorllerUpdate()
@@ -28,7 +31,7 @@ namespace Assets.Scripts.CrowdSimulation
             if (!hasDestination) return;
             
             var nearby = spatialHash.GetUnitsInRange(thisUnit.transform.position, 1);
-            Vector3 steering = steeringBehavior.GetSteering(thisUnit, nearby, speed, destination);
+            Vector3 steering = steeringBehavior.GetSteering(thisUnit, nearby, speed, destination, steeringWeightingData.WalkConfig);
             velocity = steering * Time.deltaTime;
             velocity = Vector3.ClampMagnitude(velocity, speed);
                         
