@@ -37,7 +37,6 @@ namespace Assets.Scripts.CrowdSimulation
             Vector2Int key = GetHashKey(unit.transform.position);
             if (unit.CurrentKey != key)
             {
-                Debug.Log($"unit의 hash변경 {unit.CurrentKey} -> {key}");
                 RemoveUnit(unit);
                 AddUnit(unit);
             }

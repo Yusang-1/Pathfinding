@@ -8,23 +8,19 @@ namespace Assets.Scripts.CrowdSimulation
         [SerializeField] private CrowdUnitSO unitData;
         
         private readonly CrowdUnitController controller = new();
-        private BoidsAlgorithm boidsAlgorithm;
         
         public Vector2Int CurrentKey;   
+        
+        public CrowdUnitController Controller => controller;
         
         private void Update()
         {
             controller.ContorllerUpdate();
         }
         
-        public void Initialize(BoidsAlgorithm boidsAlgorithm)
-        {
-            this.boidsAlgorithm = boidsAlgorithm;
-        }
-        
         public void UnitSpawned(SpatialHash spatialHash)
         {
-            controller.Initialize(this, unitData.Speed, spatialHash, boidsAlgorithm);
+            controller.Initialize(this, unitData.Speed, spatialHash);
         }
         
         public void MoveUnit(Vector3 destination)

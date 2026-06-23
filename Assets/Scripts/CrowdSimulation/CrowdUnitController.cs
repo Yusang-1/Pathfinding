@@ -6,34 +6,36 @@ namespace Assets.Scripts.CrowdSimulation
     {
         private CrowdUnit thisUnit;
         private SpatialHash spatialHash;
-        private BoidsAlgorithm boidsAlgorithm;
-        
+        private readonly SteeringBehavior steeringBehavior = new();
+
         private Vector3 destination;
         private Vector3 velocity;
         private float speed;
         private bool hasDestination;
 
-        public void Initialize(CrowdUnit unit, float speed, SpatialHash hash, BoidsAlgorithm boids)
+        public Vector3 Velocity => velocity;
+
+        public void Initialize(CrowdUnit unit, float speed, SpatialHash hash)
         {
             thisUnit = unit;
             this.speed = speed;
             spatialHash = hash;
             spatialHash.AddUnit(thisUnit);
-            boidsAlgorithm = boids;
         }
 
         public void ContorllerUpdate()
         {
             if (!hasDestination) return;
             
-            Vector3 steeringVector = boidsAlgorithm.GetSteeringVector(thisUnit, spatialHash.GetUnitsInRange(thisUnit.transform.position, 1));
-            
-            Vector3 direction = (destination - thisUnit.transform.position + steeringVector).normalized;
-            velocity = direction * speed;
-            thisUnit.transform.position += velocity * Time.deltaTime;
-            
+            var nearby = spatialHash.GetUnitsInRange(thisUnit.transform.position, 1);
+            Vector3 steering = steeringBehavior.GetSteering(thisUnit, nearby, speed, destination);
+            velocity = steering * Time.deltaTime;
+            velocity = Vector3.ClampMagnitude(velocity, speed);
+                        
+            thisUnit.transform.position += velocity;
+
             spatialHash.CheckUnitHash(thisUnit);
-            
+
             if (CheckArrive())
             {
                 hasDestination = false;
