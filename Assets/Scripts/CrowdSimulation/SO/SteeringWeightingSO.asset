@@ -15,5 +15,5 @@ MonoBehaviour:
   WalkConfig:
     SeekWeight: 1
     SeparationWeight: 1.5
-    CohesionWeight: 0.15
-    AlignmentWeight: 1
+    CohesionWeight: 0.25
+    AlignmentWeight: 0.3
