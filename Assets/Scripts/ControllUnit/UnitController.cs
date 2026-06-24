@@ -12,11 +12,9 @@ namespace Assets.Scripts.ControllUnit
         private readonly LazyRefine lazyRefine;
         private readonly SpatialHash spatialHash;
         private readonly Transform bottomChangerTransform;
-        // private readonly SteeringBehavior steeringBehavior = new();
-
-        private Vector3 beforePosition;
-        private Vector3 direction;
-        private Vector3 velocity;
+        private readonly SteeringBehavior steeringBehavior = new();
+        private SteeringConfig steeringConfig;
+        
 
         private List<HPAPathfinder.ResultNode> abstractPath;
         private int currentPathIndex;
@@ -25,15 +23,17 @@ namespace Assets.Scripts.ControllUnit
         private Vector3 finalDestination;
         private Vector3 shortDestination;
         private Vector3 exitOfCluster;
+        private Vector3 velocity;
 
         public Vector3 Velocity => velocity;
 
-        public UnitController(Unit unit, SpatialHash spatialHash, Transform bottomChangerTransform, UnitSO unitData, Pathfinder pathfinder)
+        public UnitController(Unit unit, SpatialHash spatialHash, Transform bottomChangerTransform, UnitSO unitData, Pathfinder pathfinder, SteeringConfig steeringConfig)
         {
             this.unit = unit;
             this.spatialHash = spatialHash;
             this.bottomChangerTransform = bottomChangerTransform;
             this.unitData = unitData;
+            this.steeringConfig = steeringConfig;
             this.pathfinder = pathfinder;
             lazyRefine = pathfinder.GetLazyRefine();
 
@@ -48,7 +48,6 @@ namespace Assets.Scripts.ControllUnit
             }
             
             startPosition = unit.transform.position;
-            beforePosition = unit.transform.position;
             finalDestination = destination;
             currentPathIndex = 0;
             abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination, unitData.Radius);
@@ -59,6 +58,7 @@ namespace Assets.Scripts.ControllUnit
             GetShortDestination();
             isMoving = true;
         }
+        
         public void MoveToReservation(Vector3 destination)
         {
             bool haveToDoLazyRefine = false;
@@ -89,9 +89,10 @@ namespace Assets.Scripts.ControllUnit
         private void Move()
         {
             if (!isMoving) return;
-
-            unit.transform.position += unitData.MoveSpeed * Time.deltaTime * direction;
+                        
             GetVelocity();
+            unit.transform.position += velocity;
+            
             spatialHash.CheckUnitHash(unit);
 
             if (IsDistanceInCurrentDestination())
@@ -104,14 +105,13 @@ namespace Assets.Scripts.ControllUnit
         {
             bool isSuccess = TryGetShortDestination(out shortDestination);
             if (isSuccess)
-            {                                
-                direction = (shortDestination - unit.transform.position).normalized;
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+            {                                                
+                float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg - 90f;
                 unit.transform.rotation = Quaternion.Euler(0, 0, angle);
             }
             else
             {
-                direction = Vector3.zero;
+                velocity = Vector3.zero;
             }
         }
 
@@ -120,9 +120,9 @@ namespace Assets.Scripts.ControllUnit
             float sqrtM = Vector3.SqrMagnitude(unit.transform.position - shortDestination);
             if (sqrtM <= 0.1f)
             {
-                if (shortDestination == exitOfCluster && currentPathIndex >= abstractPath.Count) // 최종 도착
+                if (shortDestination == finalDestination) // 최종 도착
                 {
-                    direction = Vector3.zero;
+                    velocity = Vector3.zero;
                     isMoving = false;
                     return false;
                 }
@@ -160,9 +160,9 @@ namespace Assets.Scripts.ControllUnit
 
         private void GetVelocity()
         {
-            velocity = direction * Mathf.Abs(Vector3.Distance(beforePosition, unit.transform.position)) / Time.deltaTime;
-
-            beforePosition = unit.transform.position;
+            var nearbyUnits = spatialHash.GetUnitsInRange(unit.transform.position, 2.2f);
+            velocity = steeringBehavior.GetSteering(unit, nearbyUnits, unitData.MoveSpeed, shortDestination, steeringConfig);
+            velocity *= Time.deltaTime;
         }
     }
 }

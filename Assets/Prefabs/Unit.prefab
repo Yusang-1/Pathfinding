@@ -122,4 +122,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitData: {fileID: 11400000, guid: eadadf06a63b7104ca2507b323540b74, type: 2}
+  steeringWeightingData: {fileID: 11400000, guid: 33ef8a80e716a474e8cf542bc221237c, type: 2}
   CurrentKey: {x: 0, y: 0}

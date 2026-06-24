@@ -6,8 +6,6 @@ namespace Assets.Scripts.ControllUnit
 {
     public class SelectableController
     {
-        private readonly UnitCrowdControl unitCrowdControl = new();
-        
         private SelectableType currentSelectedType;
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
         private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();
@@ -248,11 +246,17 @@ namespace Assets.Scripts.ControllUnit
         
         public void RightClickMove(Vector3 destination)
         {
-            unitCrowdControl.MoveCrowd(destination, currentSelectedHash);
+            foreach(var unit in currentSelectedHash)
+            {
+                (unit as Unit).Controller.MoveTo(destination);
+            }
         }
         public void ShiftRightClickMove(Vector3 destination)
         {
-            unitCrowdControl.MoveCrowdReservation(destination, currentSelectedHash);
+            foreach(var unit in currentSelectedHash)
+            {
+                (unit as Unit).Controller.MoveToReservation(destination);
+            }
         }
     }
 }

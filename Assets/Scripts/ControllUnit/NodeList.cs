@@ -238,9 +238,7 @@ namespace Assets.Scripts.ControllUnit
                     }
 
                     otherPosition.x = x; otherPosition.y = y;
-
-                    float squareOfDistance = Vector2.SqrMagnitude(worldPos - otherPosition);
-
+                    
                     nodesInRange.Add(GetNode(GetNodeIndex(otherPosition)));
                 }
             }

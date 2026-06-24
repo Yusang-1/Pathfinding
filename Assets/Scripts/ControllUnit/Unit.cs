@@ -12,6 +12,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Unit> OnPoolObjectUnused;
 
         [SerializeField] private UnitSO unitData;
+        [SerializeField] private SteeringWeightingSO steeringWeightingData;
 
         private UnitController controller;
         private UnitBottomSelectChanger bottomChanger;
@@ -34,7 +35,7 @@ namespace Assets.Scripts.ControllUnit
 
         public void Initialize(SpatialHash spatialHash, UnitBottomSelectChanger bottomChanger)
         {
-            controller = new UnitController(this, spatialHash, bottomChanger.transform, unitData, FindAnyObjectByType<Pathfinder>());
+            controller = new UnitController(this, spatialHash, bottomChanger.transform, unitData, FindAnyObjectByType<Pathfinder>(), steeringWeightingData.WalkConfig);
             this.bottomChanger = bottomChanger;
         }
 
