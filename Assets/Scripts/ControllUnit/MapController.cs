@@ -1,5 +1,6 @@
 using UnityEngine;
 using Assets.Scripts.ControllUnit.UI;
+using Assets.Scripts.ControllUnit.SO;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -17,6 +18,8 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private ControllUnitUIRoot uiRoot;
         [SerializeField] private Node nodePrefab;
         [SerializeField] private NodeData nodeData;
+        [SerializeField] private UnitsSO unitsSO;
+        
 
         [Header("Values")]
         private int nodeSize;
@@ -47,6 +50,8 @@ namespace Assets.Scripts.ControllUnit
             inputManager.OnHoldPreformed += (vec) => uiRoot.OnHoldPreformed?.Invoke(vec);
             inputManager.OnHoldCanceled += () => uiRoot.OnHoldCanceled?.Invoke();
             inputManager.OnControllMenu += () => uiRoot.OnManageMenu?.Invoke();
+            
+            unitsSO.Initialize();
         }
 
         private void SetMapData(MapData mapData)
@@ -59,7 +64,7 @@ namespace Assets.Scripts.ControllUnit
 
             mapGenerator.GenerateMap(mapData);
 
-            pathfinder.SetNodeAndCluster(nodeList, mapSize, clusterSize);
+            pathfinder.SetNodeAndCluster(nodeList, mapSize, clusterSize, unitsSO.UnitRadius);
         }
     }
 }

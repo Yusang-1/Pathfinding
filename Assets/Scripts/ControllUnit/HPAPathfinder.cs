@@ -34,7 +34,7 @@ namespace Assets.Scripts.ControllUnit
 
 
         /// <summary> high level cluster 경로를 반환 </summary>
-        public List<ResultNode> FindClusterPath(Vector3 from, Vector3 to, out PathResult pathResult)
+        public List<ResultNode> FindClusterPath(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
         {
             results.Clear();
             Vector2Int startNode = nodeList.GetNodeIndex(from);
@@ -51,14 +51,14 @@ namespace Assets.Scripts.ControllUnit
             Vector2Int goalCluster = clusterList.GetClusterIndex(goalNode);
 
             // start cluster, goal cluster에 노드 추가
-            clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList);
-            clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList);
+            clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList, unitRadius);
+            clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList, unitRadius);
             nodeList.NodeInfo.ResetSearched();
             nodeList.NodeInfo.ResetTrace();
 
             List<ResultNode> clusterPath;
             // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴
-            if (startCluster == goalCluster && clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode))
+            if (startCluster == goalCluster && clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode, unitRadius))
             {
                 return new() {
                 new ResultNode{
@@ -69,7 +69,7 @@ namespace Assets.Scripts.ControllUnit
             else
             {
                 // 고수준 클러스터 경로 탐색
-                clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, out PathResult result);
+                clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, out PathResult result, unitRadius);
                 pathResult.AddResult(result);
             }
 
@@ -92,7 +92,7 @@ namespace Assets.Scripts.ControllUnit
         }
 
         /// <summary> 고수준 클러스터 경로 탐색 </summary>    
-        private List<ResultNode> FindAbstractClusterPath(Vector2Int startCluster, Vector2Int goalCluster, Vector2Int startNode, Vector2Int goalNode, out PathResult pathResult)
+        private List<ResultNode> FindAbstractClusterPath(Vector2Int startCluster, Vector2Int goalCluster, Vector2Int startNode, Vector2Int goalNode, out PathResult pathResult, float unitRadius)
         {
             openSet.Clear();
             closedSet.Clear();
@@ -100,7 +100,7 @@ namespace Assets.Scripts.ControllUnit
             cameFrom.Clear();
 
             pathResult = new();
-            List<Vector2Int> startEntrances = GetAllEntrances(startCluster);
+            List<Vector2Int> startEntrances = GetAllEntrances(startCluster, unitRadius);
             if (startEntrances == null || startEntrances.Count == 0) return null;
 
             AbstractNode startVirtual = new()
@@ -115,7 +115,7 @@ namespace Assets.Scripts.ControllUnit
             while (openSet.Count > 0)
             {
                 AbstractNode current = openSet.Dequeue();
-                if (current.Index == goalCluster && clusterList.GetCluster(current.Index).IsNodeConnected(current.EntrancePos, goalNode))
+                if (current.Index == goalCluster && clusterList.GetCluster(current.Index).IsNodeConnected(current.EntrancePos, goalNode, unitRadius))
                 {
                     pathResult.MemoryUsed += openSet.Capacity;
                     pathResult.MemoryUsed += clusterDict.Count;
@@ -125,7 +125,7 @@ namespace Assets.Scripts.ControllUnit
                 if (closedSet.Contains(current)) continue;
                 closedSet.Add(current);
 
-                foreach (var (neighbor, cost) in GetAbstractNeighbors(current))
+                foreach (var (neighbor, cost) in GetAbstractNeighbors(current, unitRadius))
                 {
                     if (closedSet.Contains(neighbor)) continue;
 
@@ -238,17 +238,17 @@ namespace Assets.Scripts.ControllUnit
             return results;
         }
 
-        private IEnumerable<(AbstractNode node, float cost)> GetAbstractNeighbors(AbstractNode current)
+        private IEnumerable<(AbstractNode node, float cost)> GetAbstractNeighbors(AbstractNode current, float unitRadius)
         {
             var cluster = clusterList.GetCluster(current.Index);
 
             // Intra-cluster edges
-            List<Vector2Int> entranceList = GetAllEntrances(current.Index);
+            List<Vector2Int> entranceList = GetAllEntrances(current.Index, unitRadius);
             foreach (var other in entranceList)
             {
                 if (other == current.EntrancePos) continue;
 
-                if (cluster.TryGetIntraEdgeCost(current.EntrancePos, other, out float intraCost))
+                if (cluster.TryGetIntraEdgeCost(current.EntrancePos, other, out float intraCost, unitRadius))
                 {
                     yield return (
                         new AbstractNode { Index = current.Index, EntrancePos = other },
@@ -261,7 +261,7 @@ namespace Assets.Scripts.ControllUnit
             List<Vector2Int> neighbors = clusterList.GetNeighborClusters(current.Index);
             foreach (var neighborCluster in neighbors)
             {
-                Vector2Int? neighborEntrance = GetEntranceBetweenClusters(current.Index, neighborCluster, current.EntrancePos);
+                Vector2Int? neighborEntrance = GetEntranceBetweenClusters(current.Index, neighborCluster, current.EntrancePos, unitRadius);
                 if (neighborEntrance == null) continue;
 
                 yield return (
@@ -271,7 +271,7 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        private List<Vector2Int> GetAllEntrances(Vector2Int Index)
+        private List<Vector2Int> GetAllEntrances(Vector2Int Index, float unitRadius)
         {
             List<Vector2Int> entrances = GetList();
             entrances.Clear();
@@ -279,7 +279,7 @@ namespace Assets.Scripts.ControllUnit
             Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
             foreach (Vector2Int dir in directions)
             {
-                foreach (var dirEntrance in clusterList.GetEntrances(Index, dir))
+                foreach (var dirEntrance in clusterList.GetEntrances(Index, dir, unitRadius))
                 {
                     if (dirEntrance != null)
                     {
@@ -290,14 +290,14 @@ namespace Assets.Scripts.ControllUnit
             return entrances;
         }
 
-        private Vector2Int? GetEntranceBetweenClusters(Vector2Int from, Vector2Int to, Vector2Int currentEntrance)
+        private Vector2Int? GetEntranceBetweenClusters(Vector2Int from, Vector2Int to, Vector2Int currentEntrance, float unitRadius)
         {
             Vector2Int direction = to - from; // direction 정규화
             if (direction.x != 0) direction.x = direction.x > 0 ? 1 : -1;
             if (direction.y != 0) direction.y = direction.y > 0 ? 1 : -1;
 
             Vector2Int correspondingPos = currentEntrance + direction;
-            List<Vector2Int> neighborEntrances = clusterList.GetEntrancesOnce(to, -direction);
+            List<Vector2Int> neighborEntrances = clusterList.GetEntrancesOnce(to, -direction, unitRadius);
 
             if (neighborEntrances != null && neighborEntrances.Contains(correspondingPos))
             {

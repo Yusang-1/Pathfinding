@@ -13,10 +13,12 @@ namespace Assets.Scripts.ControllUnit
         private readonly NodeInfo nodeInfo = new();
         private Node[,] nodes;
 
+        private int nodeSize = 1;
+
         public NodeInfo NodeInfo => nodeInfo;
         public Node[,] Nodes => nodes;
+        public int NodeSize => nodeSize;
 
-        private int nodeSize = 1;
         public NodeList(NodeData data)
         {
             nodeData = data;
@@ -192,6 +194,57 @@ namespace Assets.Scripts.ControllUnit
             }
 
             return bigAreaNum;
+        }
+
+        private readonly List<Node> nodesInRange = new();
+        public List<Node> GetNodesInRange(Vector2Int standard, float radius)
+        {
+            nodesInRange.Clear();
+
+            Vector2Int nodeIndex = new();
+            int range = Mathf.CeilToInt(radius / nodeSize);
+            for (int x = standard.x - range; x <= standard.x + range; x++)
+            {
+                for (int y = standard.y - range; y <= standard.y + range; y++)
+                {
+                    if (x < 0 || x >= nodes.GetLength(0) || y < 0 || y >= nodes.GetLength(1)) continue;
+                    nodeIndex.x = x; nodeIndex.y = y;
+
+                    float squareOfDistance = Vector2.SqrMagnitude(GridToWorld(standard) - GridToWorld(nodeIndex));
+
+                    // 현재는 node의 중심이 radius안에 있으면 범위 안에 있는 것으로 판정 node 전체가 들어있어야 범위안에 있는 것으로 할지 나중에 확인, 수정 필요
+                    if (squareOfDistance <= radius * radius)
+                    {
+                        nodesInRange.Add(nodes[x, y]);
+                    }
+                }
+            }
+            return nodesInRange;
+        }
+        public List<Node> GetNodesInRange(Vector2 worldPos, float radius)
+        {
+            nodesInRange.Clear();
+
+            Vector2 otherPosition = new();
+            int range = Mathf.CeilToInt(radius / nodeSize);
+            for (float x = worldPos.x - range; x <= worldPos.x + range; x += nodeSize)
+            {
+                for (float y = worldPos.y - range; y <= worldPos.y + range; y += nodeSize)
+                {
+                    if (x < -nodeSize / 2 || x >= (nodes.GetLength(0) - 1) * nodeSize + nodeSize / 2
+                        || y < -nodeSize / 2 || y >= (nodes.GetLength(1) - 1) * nodeSize + nodeSize / 2)
+                    {
+                        continue;
+                    }
+
+                    otherPosition.x = x; otherPosition.y = y;
+
+                    float squareOfDistance = Vector2.SqrMagnitude(worldPos - otherPosition);
+
+                    nodesInRange.Add(GetNode(GetNodeIndex(otherPosition)));
+                }
+            }
+            return nodesInRange;
         }
     }
 }

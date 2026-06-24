@@ -11,7 +11,7 @@ namespace Assets.Scripts.ControllUnit
             this.thetaStarPathfinder = thetaStarPathfinder;
         }                
 
-        public List<Vector3> FindPathTheta(HPAPathfinder.ResultNode data, NodeList nodeList, HPAClusterList clusterList)
+        public List<Vector3> FindPathTheta(HPAPathfinder.ResultNode data, NodeList nodeList, HPAClusterList clusterList, float unitRadius)
         {
             clusterList.SetClusterActive(data.Index, true);
 
@@ -27,7 +27,7 @@ namespace Assets.Scripts.ControllUnit
                 goalPosition = nodeList.GridToWorld(data.exitNode);
             }
 
-            List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, out PathResult pathResult);
+            List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, out PathResult pathResult, unitRadius);
 
             clusterList.SetClusterActive(data.Index, false);
 

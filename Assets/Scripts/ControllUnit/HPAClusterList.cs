@@ -18,7 +18,7 @@ namespace Assets.Scripts.ControllUnit
             cachedNeighborList = new List<Vector2Int>(4); // 상하좌우 최대 4개의 이웃
         }
 
-        public void Initialize(AStarPathfinder pathfinder, int mapSize, int clusterSize)
+        public void Initialize(AStarPathfinder pathfinder, int mapSize, int clusterSize, Dictionary<UnitSize, float> unitRadiusList)
         {
             this.clusterSize = clusterSize;
             clusterCount = mapSize / clusterSize;
@@ -41,7 +41,7 @@ namespace Assets.Scripts.ControllUnit
             {
                 for (int j = 0; j < clusterList.GetLength(1); j++)
                 {
-                    clusterList[i, j].Initialize(this, nodeList);
+                    clusterList[i, j].Initialize(this, nodeList, unitRadiusList);
                     nodeList.NodeInfo.ResetSearched();
                     nodeList.NodeInfo.ResetTrace();
                 }
@@ -182,13 +182,13 @@ namespace Assets.Scripts.ControllUnit
             else isSuccess = false;
         }
 
-        public IEnumerable<Vector2Int> GetEntrances(Vector2Int clusterIndex, Vector2Int direction)
+        public IEnumerable<Vector2Int> GetEntrances(Vector2Int clusterIndex, Vector2Int direction, float unitRadius)
         {
-            return GetCluster(clusterIndex).Grpah.GetNodesByDirection(direction);
+            return GetCluster(clusterIndex).Grpah.GetNodesByDirection(direction, unitRadius);
         }
-        public List<Vector2Int> GetEntrancesOnce(Vector2Int clusterIndex, Vector2Int direction)
+        public List<Vector2Int> GetEntrancesOnce(Vector2Int clusterIndex, Vector2Int direction, float unitRadius)
         {
-            return GetCluster(clusterIndex).Grpah.GetNodesByDirectionOnce(direction);
+            return GetCluster(clusterIndex).Grpah.GetNodesByDirectionOnce(direction, unitRadius);
         }
 
         private Vector2Int GetLeftDownNodeIndexOfCluster(Vector2Int clusterIndex) => clusterIndex * clusterSize;

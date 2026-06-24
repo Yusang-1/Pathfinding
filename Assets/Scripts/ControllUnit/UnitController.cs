@@ -51,7 +51,7 @@ namespace Assets.Scripts.ControllUnit
             beforePosition = unit.transform.position;
             finalDestination = destination;
             currentPathIndex = 0;
-            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination);
+            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination, unitData.Radius);
             if (abstractPath == null || abstractPath.Count == 0) return;
 
             SearchLowLevelPath(abstractPath[currentPathIndex], abstractPath.Count == 1, true);
@@ -64,7 +64,7 @@ namespace Assets.Scripts.ControllUnit
             bool haveToDoLazyRefine = false;
             if (currentPathIndex + 1 == abstractPath.Count) haveToDoLazyRefine = true;
 
-            var newAbstractPath = pathfinder.GetAbstractPath(finalDestination, destination);
+            var newAbstractPath = pathfinder.GetAbstractPath(finalDestination, destination, unitData.Radius);
             if (abstractPath == null || abstractPath.Count == 0) return;
             
             startPosition = finalDestination;
@@ -153,7 +153,7 @@ namespace Assets.Scripts.ControllUnit
 
         private void SearchLowLevelPath(HPAPathfinder.ResultNode resultNode, bool isEnd, bool isStart)
         {
-            lazyRefine.DoLazyRefinement(resultNode, isEnd, finalDestination, isStart, startPosition);
+            lazyRefine.DoLazyRefinement(resultNode, isEnd, finalDestination, isStart, startPosition, unitData.Radius);
 
             exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
         }

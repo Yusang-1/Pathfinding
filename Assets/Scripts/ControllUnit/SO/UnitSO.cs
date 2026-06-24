@@ -10,11 +10,14 @@ namespace Assets.Scripts.ControllUnit.SO
         [SerializeField] private SelectableType selectableType;
         [SerializeField] private float moveSpeed;
         [SerializeField] private float refineLength = 2.2f;
+        [SerializeField] private UnitSize unitSize;
+        [SerializeField] private UnitsSO unitsData;
         
         public string UnitName => unitName;
         public string ActionMapName => actionMapName;
         public SelectableType SelectableType => selectableType;
         public float MoveSpeed => moveSpeed;
         public float RefineLength => refineLength;
+        public float Radius => unitsData.UnitRadius[unitSize];
     }
 }

@@ -22,7 +22,7 @@ namespace Assets.Scripts.ControllUnit
         };
         }
 
-        private List<Vector3> SearchAStar(Vector3 startPosition, Vector3 destinationPosition, Func<Vector2Int, List<Vector2Int>> getNeighbors, out PathResult pathResult)
+        private List<Vector3> SearchAStar(Vector3 startPosition, Vector3 destinationPosition, Func<Vector2Int, float, List<Vector2Int>> getNeighbors, out PathResult pathResult, float unitRadius)
         {
             openList.Clear();
             closeList.Clear();
@@ -60,7 +60,7 @@ namespace Assets.Scripts.ControllUnit
 
                 closeList.Add(current);
 
-                List<Vector2Int> neighborList = getNeighbors(current);
+                List<Vector2Int> neighborList = getNeighbors(current, unitRadius);
                 for (int i = 0; i < neighborList.Count; i++)
                 {
                     Vector2Int neighbor = neighborList[i];
@@ -96,24 +96,24 @@ namespace Assets.Scripts.ControllUnit
             return null;
         }
 
-        public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult)
+        public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
         {
-            List<Vector3> path = SearchAStar(from, to, GetNeighborNode, out pathResult);
+            List<Vector3> path = SearchAStar(from, to, GetNeighborNode, out pathResult, unitRadius);
             return path;
         }
-        public List<Vector3> FindPathInSameCluster(Vector3 from, Vector3 to, out PathResult pathResult)
+        public List<Vector3> FindPathInSameCluster(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
         {
-            List<Vector3> path = SearchAStar(from, to, GetNeighborNodesInCluster, out pathResult);
+            List<Vector3> path = SearchAStar(from, to, GetNeighborNodesInCluster, out pathResult, unitRadius);
             return path;
         }
-        public float FindPathInClusterForPathCache(Vector2Int from, Vector2Int to)
+        public float FindPathInClusterForPathCache(Vector2Int from, Vector2Int to, float unitRadius)
         {
             PathResult pathResult = new();
 
             Vector3 fromPos = new(from.x, from.y);
             Vector3 toPos = new(to.x, to.y);
 
-            List<Vector3> path = SearchAStar(fromPos, toPos, GetNeighborNodesInCluster, out pathResult);
+            List<Vector3> path = SearchAStar(fromPos, toPos, GetNeighborNodesInCluster, out pathResult, unitRadius);
 
             if (path != null)
                 return pathResult.PathLength;
@@ -122,7 +122,7 @@ namespace Assets.Scripts.ControllUnit
         }
 
         private readonly Vector2Int[] directions;
-        protected override List<Vector2Int> GetNeighborNode(Vector2Int current)
+        protected override List<Vector2Int> GetNeighborNode(Vector2Int current, float unitRadius)
         {
             List<Vector2Int> neighbors = new();
 
@@ -151,7 +151,7 @@ namespace Assets.Scripts.ControllUnit
 
             return neighbors;
         }
-        private List<Vector2Int> GetNeighborNodesInCluster(Vector2Int current)
+        private List<Vector2Int> GetNeighborNodesInCluster(Vector2Int current, float unitRadius)
         {
             List<Vector2Int> neighbors = new();
 

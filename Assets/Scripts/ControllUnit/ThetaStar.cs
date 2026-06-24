@@ -14,7 +14,7 @@ namespace Assets.Scripts.ControllUnit
             this.clusterList = clusterList;
         }
 
-        public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult)
+        public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
         {
             PriorityQueue<Vector2Int, float> openList = new();
             HashSet<Vector2Int> closeList = new();
@@ -47,7 +47,7 @@ namespace Assets.Scripts.ControllUnit
                     return CaculateResult(nodeDict, currentIndex, startNodeIndex);
                 }
 
-                List<Vector2Int> neighborIndexes = GetNeighborNode(currentIndex);
+                List<Vector2Int> neighborIndexes = GetNeighborNode(currentIndex, unitRadius);
                 for (int i = 0; i < neighborIndexes.Count; i++)
                 {
                     Vector2Int neighborIndex = neighborIndexes[i];
@@ -77,7 +77,7 @@ namespace Assets.Scripts.ControllUnit
                         tempNode.isParentSet = true;
                         nodeDict[neighborIndex] = tempNode;
 
-                        UpdateVertex(nodeDict, currentIndex, neighborIndex, goalNodeIndex);
+                        UpdateVertex(nodeDict, currentIndex, neighborIndex, goalNodeIndex, unitRadius);
                         openList.Enqueue(nodeDict[neighborIndex].index, nodeDict[neighborIndex].f);
                     }
                 }
@@ -113,11 +113,11 @@ namespace Assets.Scripts.ControllUnit
             return worldPath;
         }
 
-        private void UpdateVertex(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int neighbor, Vector2Int goalNodeIndex)
+        private void UpdateVertex(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int neighbor, Vector2Int goalNodeIndex, float unitRadius)
         {
             // current의 parent와 neighbor간에 line of Sight가 존재한다면 current의 parent에서 neighbor의 경로를 사용
             Vector2Int parentIndex = nodeDict[current].parentIndex;
-            if (nodeDict[current].isParentSet && LineOfSight(parentIndex, neighbor))
+            if (nodeDict[current].isParentSet && LineOfSight(parentIndex, neighbor, unitRadius))
             {
                 float euclideanDistance = EuclideanDistance(parentIndex, neighbor);
                 if (nodeDict[parentIndex].g + euclideanDistance <= nodeDict[neighbor].g + EPS)
@@ -150,40 +150,43 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        private bool LineOfSight(Vector2Int node1, Vector2Int node2)
+        private bool LineOfSight(Vector2Int node1, Vector2Int node2, float unitRadius)
         {
-            int x0 = node1.x;
-            int y0 = node1.y;
-            int x1 = node2.x;
-            int y1 = node2.y;
-            int dx = Mathf.Abs(x1 - x0);
-            int dy = -Mathf.Abs(y1 - y0);
+            Vector2 node1WorldPos = nodeList.GridToWorld(node1);
+            Vector2 node2WorldPos = nodeList.GridToWorld(node2);
 
-            int sX = -1;
-            if (x0 < x1) sX = 1;
-            int sY = -1;
-            if (y0 < y1) sY = 1;
+            float x0 = node1WorldPos.x;
+            float y0 = node1WorldPos.y;
+            float x1 = node2WorldPos.x;
+            float y1 = node2WorldPos.y;
+            float dx = Mathf.Abs(x1 - x0);
+            float dy = -Mathf.Abs(y1 - y0);
 
-            int e = dx + dy;
+            float sX = -(float)nodeList.NodeSize / 2;
+            if (x0 < x1) sX = (float)nodeList.NodeSize / 2;
+            float sY = -(float)nodeList.NodeSize / 2;
+            if (y0 < y1) sY = (float)nodeList.NodeSize / 2;
+
+            float e = dx + dy;
 
             while (true)
             {
                 // 이동 불가능한 Node이거나 Cluster가 비활성화인 경우 false, 두 Node사이에 시야가 없음
-                var node = nodeList.Nodes[x0, y0];
-                if (!node.IsWalkable) // || !clusterList.GetCluster(new Vector2Int(x0, y0)).IsActive
+                var node = new Vector2(x0, y0);
+                if (!CanUnitFitAtPosition(node, unitRadius))
                 {
                     return false;
                 }
 
                 // 목적지 도착
-                if (x0 == x1 && y0 == y1)
+                if (Mathf.Abs(x0 - x1) <= 0.05f && Mathf.Abs(y0 - y1) <= 0.05f)
                 {
                     return true;
                 }
 
                 // e는 현재 직선과 그리드에 대한 누적 오차값
                 // e2는 비교를 위한 보정값, 두 방향(dx, dy)과의 상대적 위치를 판단하는데 사용
-                int e2 = e * 2;
+                float e2 = e * 2;
 
                 // x방향 이동 조건
                 if (e2 >= dy) // x방향으로 한 칸 이동해야 할 시점인지 판별
@@ -225,7 +228,7 @@ namespace Assets.Scripts.ControllUnit
             return Mathf.Sqrt(dx * dx + dy * dy);
         }
 
-        protected override List<Vector2Int> GetNeighborNode(Vector2Int current) // 같은 cluster에 있는 이웃만
+        protected override List<Vector2Int> GetNeighborNode(Vector2Int current, float unitRadius) // 같은 cluster에 있는 이웃만
         {
             List<Vector2Int> neighbors = new();
 
@@ -234,8 +237,7 @@ namespace Assets.Scripts.ControllUnit
             {
                 for (int dy = -1; dy <= 1; dy++)
                 {
-                    if (dx == 0 && dy == 0) continue;  // 자신은 제외
-                                                       // if (dx * dy != 0) continue; // 대각선 제외
+                    if (dx == 0 && dy == 0) continue;  // 자신은 제외                                        
 
                     int newX = current.x + dx;
                     int newY = current.y + dy;
@@ -250,15 +252,55 @@ namespace Assets.Scripts.ControllUnit
                     // 워크어빌리티 맵으로 확인
                     var nodeWorldPosition = nodeList.GridToWorld(current);
                     var clusterIndex = clusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
-                    if (nodeList.Nodes[newX, newY].IsWalkable && clusterList.GetCluster(clusterIndex).IsActive && clusterList.IsNodesInSameCluster(current, new Vector2Int(newX, newY)))
+
+                    if (CanUnitFitAtNode(neighbor, unitRadius) && clusterList.GetCluster(clusterIndex).IsActive && clusterList.IsNodesInSameCluster(current, new Vector2Int(newX, newY)))
                     {
                         nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
-                        neighbors.Add(neighbor);
+
+                        if (dx * dy != 0) // 대각선 이동의 경우
+                        {                            
+                            if(CanUnitFitAtPosition((nodeWorldPosition + nodeList.GridToWorld(neighbor))/2, unitRadius))
+                            {
+                                neighbors.Add(neighbor);
+                            }
+                        }
+                        else
+                            neighbors.Add(neighbor);
                     }
+
                 }
             }
 
             return neighbors;
+        }
+
+        private bool CanUnitFitAtNode(Vector2Int nodeIndex, float unitRadius)
+        {
+            bool result = true;
+
+            List<Node> nodeInRadius = nodeList.GetNodesInRange(nodeIndex, unitRadius);
+            foreach (var node in nodeInRadius)
+            {
+                if (!result) break;
+
+                result = result && node.IsWalkable;
+            }
+
+            return result;
+        }
+        private bool CanUnitFitAtPosition(Vector2 worldPos, float unitRadius)
+        {
+            bool result = true;
+
+            List<Node> nodeInRadius = nodeList.GetNodesInRange(worldPos, unitRadius);
+            foreach (var node in nodeInRadius)
+            {
+                if (!result) break;
+
+                result = result && node.IsWalkable;
+            }
+
+            return result;
         }
     }
 }

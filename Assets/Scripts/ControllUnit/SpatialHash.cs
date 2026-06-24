@@ -6,8 +6,7 @@ namespace Assets.Scripts.ControllUnit
     public class SpatialHash
     {
         private readonly int cellSize = 2;
-        private readonly Dictionary<Vector2Int, List<Unit>> hashTable = new();
-        private readonly HashSet<ISelectableUnit> unitsInRange = new();
+        private readonly Dictionary<Vector2Int, List<Unit>> hashTable = new();        
 
         // 해시 키 생성
         private Vector2Int GetHashKey(Vector3 pos) => new((int)(pos.x / cellSize), (int)(pos.y / cellSize));
@@ -42,11 +41,12 @@ namespace Assets.Scripts.ControllUnit
                 AddUnit(unit);
             }
         }
-
+        
+        private readonly List<Unit> unitsInRangeCircle = new();
         // 주변 해시 검색
         public List<Unit> GetUnitsInRange(Vector3 center, float radius)
         {
-            List<Unit> result = new List<Unit>();
+            unitsInRangeCircle.Clear();
             Vector2Int centerKey = GetHashKey(center);
             int range = Mathf.CeilToInt(radius / cellSize);
 
@@ -57,12 +57,14 @@ namespace Assets.Scripts.ControllUnit
                     Vector2Int key = new Vector2Int(x, y);
                     if (hashTable.ContainsKey(key))
                     {
-                        result.AddRange(hashTable[key]);
+                        unitsInRangeCircle.AddRange(hashTable[key]);
                     }
                 }
             }
-            return result;
+            return unitsInRangeCircle;
         }
+        
+        private readonly HashSet<ISelectableUnit> unitsInRangeSquare = new();
         public HashSet<ISelectableUnit> GetUnitsInRange(Vector3 standard, float width, float height)
         {
             Rect screenRect = new(
@@ -83,7 +85,7 @@ namespace Assets.Scripts.ControllUnit
             Vector2Int minKey = GetHashKey(new Vector3(Mathf.Min(worldBottomLeft.x, worldTopRight.x), Mathf.Min(worldBottomLeft.y, worldTopRight.y)));
             Vector2Int maxKey = GetHashKey(new Vector3(Mathf.Max(worldBottomLeft.x, worldTopRight.x), Mathf.Max(worldBottomLeft.y, worldTopRight.y)));
 
-            unitsInRange.Clear();
+            unitsInRangeSquare.Clear();
 
             for (int x = minKey.x; x <= maxKey.x; x++)
             {
@@ -104,13 +106,13 @@ namespace Assets.Scripts.ControllUnit
 
                         if (screenRect.Contains(screenPos))
                         {
-                            unitsInRange.Add(selectable);
+                            unitsInRangeSquare.Add(selectable);
                         }
                     }
                 }
             }
 
-            return unitsInRange;
+            return unitsInRangeSquare;
         }
     }
 }

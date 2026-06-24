@@ -7810,7 +7810,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionMapName: Player
-  holdJudgeLimit: 0.5
 --- !u!114 &1661711644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7824,7 +7823,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionMapName: Unit
-  holdJudgeLimit: 0.5
 --- !u!114 &1661711645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8976,6 +8974,7 @@ MonoBehaviour:
   uiRoot: {fileID: 2113284064}
   nodePrefab: {fileID: -1020127619466002619, guid: 29f9a899b106cc6419333352c7fd97e3, type: 3}
   nodeData: {fileID: 11400000, guid: bf87c0f6c59541f4aaf61f3cc70bc84f, type: 2}
+  unitsSO: {fileID: 11400000, guid: d7f8efabe6051f6458897dc7dfe85e54, type: 2}
 --- !u!4 &2083070643
 Transform:
   m_ObjectHideFlags: 0

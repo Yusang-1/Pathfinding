@@ -6,7 +6,10 @@ namespace Assets.Scripts.ControllUnit
 {
     public class HPAGraph
     {
-        private readonly Dictionary<Vector2Int, GraphNode> nodes = new();
+        private readonly Dictionary<float, Dictionary<Vector2Int, GraphNode>> nodesByUnitRadius = new();
+        private readonly Dictionary<float, Dictionary<(Vector2Int from, Vector2Int to), float>> edgeCacheByRadius = new();
+        
+        // private readonly Dictionary<Vector2Int, GraphNode> nodes = new();
         private readonly Dictionary<(Vector2Int from, Vector2Int to), float> edgeCache = new();
 
         private class GraphNode
@@ -24,10 +27,19 @@ namespace Assets.Scripts.ControllUnit
                 Direction.Add(direction);
             }
         }
+        
+        public HPAGraph(Dictionary<UnitSize, float> unitRadiusDict)
+        {
+            foreach(var radius in unitRadiusDict.Values)
+            {
+                nodesByUnitRadius.Add(radius, new Dictionary<Vector2Int, GraphNode>());
+            }
+        }
 
         /// <summary> 노드(entrance) 추가 </summary>
-        public bool TryAddNode(Vector2Int entrance, Vector2Int direction, NodeList nodeList)
+        public bool TryAddNode(Vector2Int entrance, Vector2Int direction, NodeList nodeList, float unitRadius)
         {
+            var nodes = nodesByUnitRadius[unitRadius];
             if (!nodes.ContainsKey(entrance))
             {
                 nodes[entrance] = new GraphNode(entrance, direction);
@@ -42,8 +54,9 @@ namespace Assets.Scripts.ControllUnit
             return false;
         }
 
-        public void AddEdge(Vector2Int from, Vector2Int to, float weight)
+        private void AddEdge(Vector2Int from, Vector2Int to, float weight, float unitRadius)
         {
+            var nodes = nodesByUnitRadius[unitRadius];
             if (!nodes.ContainsKey(from) || !nodes.ContainsKey(to)) return;
 
             var key = (from, to);
@@ -55,15 +68,18 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        public void AddBidirectionalEdge(Vector2Int entrance1, Vector2Int entrance2, float weight)
+        public void AddBidirectionalEdge(Vector2Int entrance1, Vector2Int entrance2, float weight, float unitRadius)
         {
-            AddEdge(entrance1, entrance2, weight);
-            AddEdge(entrance2, entrance1, weight);
+            AddEdge(entrance1, entrance2, weight, unitRadius);
+            AddEdge(entrance2, entrance1, weight, unitRadius);
         }
 
         public void RemoveTempNode(Vector2Int tempNode)
         {
-            nodes.Remove(tempNode);
+            foreach(var nodes in nodesByUnitRadius.Values)
+            {
+                nodes.Remove(tempNode);                
+            }
 
             var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode).ToList();
 
@@ -77,22 +93,24 @@ namespace Assets.Scripts.ControllUnit
         }
 
         /// <summary> 노드의 모든 이웃 노드 반환 </summary>
-        public IEnumerable<Vector2Int> GetNeighbors(Vector2Int node)
+        public IEnumerable<Vector2Int> GetNeighbors(Vector2Int node, float unitRadius)
         {
+            var nodes = nodesByUnitRadius[unitRadius];
             return nodes.ContainsKey(node) ? nodes[node].Neighbors : null;
         }
 
         /// <summary> 간선 가중치 조회 </summary>
-        public bool TryGetEdgeWeight(Vector2Int from, Vector2Int to, out float weight)
+        public bool TryGetEdgeWeight(Vector2Int from, Vector2Int to, out float weight, float unitRadius)
         {
+            var nodes = nodesByUnitRadius[unitRadius];
             weight = 0;
             return nodes.ContainsKey(from) && nodes[from].EdgeWeights.TryGetValue(to, out weight);
         }
 
         /// <summary> 해당 방향의 모든 노드 반환 </summary>
-        public IEnumerable<Vector2Int> GetNodesByDirection(Vector2Int direction)
+        public IEnumerable<Vector2Int> GetNodesByDirection(Vector2Int direction, float unitRadius)
         {
-            foreach (var node in nodes.Values)
+            foreach (var node in nodesByUnitRadius[unitRadius].Values)
             {
                 for (int i = 0; i < node.Direction.Count; i++)
                 {
@@ -103,10 +121,10 @@ namespace Assets.Scripts.ControllUnit
                 }
             }
         }
-        public List<Vector2Int> GetNodesByDirectionOnce(Vector2Int direction)
+        public List<Vector2Int> GetNodesByDirectionOnce(Vector2Int direction, float unitRadius)
         {
             List<Vector2Int> temp = new();
-            foreach (var node in nodes.Values)
+            foreach (var node in nodesByUnitRadius[unitRadius].Values)
             {
                 for (int i = 0; i < node.Direction.Count; i++)
                 {
@@ -119,6 +137,9 @@ namespace Assets.Scripts.ControllUnit
             return temp;
         }
 
-        public bool IsNodeConnected(Vector2Int node1, Vector2Int node2) => nodes[node1].Neighbors.Contains(node2) || node1 == node2;
+        public bool IsNodeConnected(Vector2Int node1, Vector2Int node2, float unitRadius)
+        {
+            return nodesByUnitRadius[unitRadius][node1].Neighbors.Contains(node2) || node1 == node2;
+        }
     }
 }

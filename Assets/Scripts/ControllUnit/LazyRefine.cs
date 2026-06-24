@@ -31,9 +31,9 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        public void DoLazyRefinement(HPAPathfinder.ResultNode result, LineDrawer lineDrawer)
+        public void DoLazyRefinement(HPAPathfinder.ResultNode result, LineDrawer lineDrawer, float unitRadius)
         {
-            List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList);
+            List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList, unitRadius);
 
             lineDrawer.DrawLine(resultPath);
 
@@ -44,25 +44,26 @@ namespace Assets.Scripts.ControllUnit
         }
 
         /// <summary> 하나의 cluster ResultNode의 경로를 PathQueue에 담는다. </summary>
-        public void DoLazyRefinement(HPAPathfinder.ResultNode result, bool isEnd, Vector3 finalDestination, bool isFirst, Vector3 startPosition)
+        public void DoLazyRefinement(HPAPathfinder.ResultNode result, bool isEnd, Vector3 finalDestination, bool isFirst, Vector3 startPosition, float unitRadius)
         {
-            List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList);
-            
-            if(isFirst)
+            List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList, unitRadius);
+            if (resultPath == null) return;
+
+            if (isFirst)
             {
                 resultPath[0] = startPosition;
             }
-            if(isEnd)
+            if (isEnd)
             {
                 resultPath[^1] = finalDestination;
             }
-            
+
             for (int i = 0; i < resultPath.Count; i++)
             {
                 pathQueue.Enqueue(resultPath[i]);
             }
         }
-        
+
         public void ResetLazyRefine()
         {
             pathQueue.Clear();
