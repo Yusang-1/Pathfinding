@@ -8,6 +8,11 @@ namespace Assets.Scripts.ControllUnit
         private readonly NodeList nodeList;
         private readonly HPAClusterList clusterList;
         private const float EPS = 1e-4f;
+
+        private readonly PriorityQueue<Vector2Int, float> openList = new();
+        private readonly HashSet<Vector2Int> closeList = new();
+        private readonly Dictionary<Vector2Int, PathNode> nodeDict = new();
+
         public ThetaStar(NodeList nodeList, HPAClusterList clusterList)
         {
             this.nodeList = nodeList;
@@ -16,9 +21,9 @@ namespace Assets.Scripts.ControllUnit
 
         public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
         {
-            PriorityQueue<Vector2Int, float> openList = new();
-            HashSet<Vector2Int> closeList = new();
-            Dictionary<Vector2Int, PathNode> nodeDict = new();
+            openList.Clear();
+            closeList.Clear();
+            nodeDict.Clear();
 
             Vector2Int startNodeIndex = nodeList.GetNodeIndex(from);
             Vector2Int goalNodeIndex = nodeList.GetNodeIndex(to);
@@ -289,6 +294,7 @@ namespace Assets.Scripts.ControllUnit
 
             return result;
         }
+
         private bool CanUnitFitAtPosition(Vector2 worldPos, float unitRadius)
         {
             bool result = true;
