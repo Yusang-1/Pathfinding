@@ -290,9 +290,10 @@ public class HPAPathfinder
         int dx = Mathf.Abs(to.x - from.x);
         int dy = Mathf.Abs(to.y - from.y);
         // 대각선 이동 비용과 상하좌우 이동 비용을 각각 사용
-        const float ORTHOGONAL_COST = 1f;
-        const float DIAGONAL_COST = 1.4142f;
-        return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
+        // const float ORTHOGONAL_COST = 1f;
+        // const float DIAGONAL_COST = 1.4142f;
+        // return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
+        return dx + dy;
     }
 
     private List<Vector2Int> GetList() => listPool.Count > 0 ? listPool.Pop() : new List<Vector2Int>();

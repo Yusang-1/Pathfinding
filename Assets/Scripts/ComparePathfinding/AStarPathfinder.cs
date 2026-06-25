@@ -15,9 +15,8 @@ public class AStarPathfinder : AbstractPathfinder
     {
         this.nodeList = nodeList;
         this.hPAClusterList = hPAClusterList;
-        directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
-            new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
-        };
+        directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right};
+        // new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
     }
 
     private List<Vector3> SearchAStar(Vector3 startPosition, Vector3 destinationPosition, Func<Vector2Int, List<Vector2Int>> getNeighbors, out PathResult pathResult)
@@ -124,7 +123,6 @@ public class AStarPathfinder : AbstractPathfinder
     {
         List<Vector2Int> neighbors = new();
 
-        // 상하좌우 + 대각선 (8방향)
         for (int i = 0; i < directions.Length; i++)
         {
             int newX = current.x + directions[i].x;
@@ -153,7 +151,6 @@ public class AStarPathfinder : AbstractPathfinder
     {
         List<Vector2Int> neighbors = new();
 
-        // 상하좌우 + 대각선 (8방향)
         for (int i = 0; i < directions.Length; i++)
         {
             int newX = current.x + directions[i].x;

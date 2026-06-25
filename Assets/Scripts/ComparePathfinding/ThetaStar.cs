@@ -227,13 +227,12 @@ public class ThetaStar : AbstractPathfinder
     {
         List<Vector2Int> neighbors = new();
 
-        // 상하좌우 + 대각선 (8방향)
         for (int dx = -1; dx <= 1; dx++)
         {
             for (int dy = -1; dy <= 1; dy++)
             {
+                if (dx * dy != 0) continue; // 대각선 제외
                 if (dx == 0 && dy == 0) continue;  // 자신은 제외
-                // if (dx * dy != 0) continue; // 대각선 제외
 
                 int newX = current.x + dx;
                 int newY = current.y + dy;

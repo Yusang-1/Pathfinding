@@ -237,6 +237,7 @@ namespace Assets.Scripts.ControllUnit
             {
                 for (int dy = -1; dy <= 1; dy++)
                 {
+                    if (dx * dy != 0) continue; // 대각선 제외
                     if (dx == 0 && dy == 0) continue;  // 자신은 제외                                        
 
                     int newX = current.x + dx;
@@ -258,8 +259,8 @@ namespace Assets.Scripts.ControllUnit
                         nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
 
                         if (dx * dy != 0) // 대각선 이동의 경우
-                        {                            
-                            if(CanUnitFitAtPosition((nodeWorldPosition + nodeList.GridToWorld(neighbor))/2, unitRadius))
+                        {
+                            if (CanUnitFitAtPosition((nodeWorldPosition + nodeList.GridToWorld(neighbor)) / 2, unitRadius))
                             {
                                 neighbors.Add(neighbor);
                             }

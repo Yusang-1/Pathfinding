@@ -56,7 +56,8 @@ public class HPAClusterList
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (i == 0 && j == 0) continue;
+                if (i * j != 0) continue; // 대각선 제외
+                if (i == 0 && j == 0) continue; // 본인 제외
 
                 int dx = index.x + i;
                 int dy = index.y + j;
@@ -137,16 +138,16 @@ public class HPAClusterList
                 standardNode.y++;
             }
         }
-        else // 대각선
-        {
-            if(direction.x > 0) standardNode.x += clusterSize - 1;
-            if(direction.y > 0) standardNode.y += clusterSize - 1;
-            
-            if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
-            {
-                cachedEdgeIndexes.Add(standardNode);
-            }
-        }
+        // else // 대각선
+        // {
+        //     if(direction.x > 0) standardNode.x += clusterSize - 1;
+        //     if(direction.y > 0) standardNode.y += clusterSize - 1;
+
+        //     if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
+        //     {
+        //         cachedEdgeIndexes.Add(standardNode);
+        //     }
+        // }
 
         // entrance가 중간에 가로막히지 않았을 경우
         if (tempEdgeIndexes.Count > 0)
