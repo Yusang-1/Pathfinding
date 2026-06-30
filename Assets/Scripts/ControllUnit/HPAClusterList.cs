@@ -185,11 +185,11 @@ namespace Assets.Scripts.ControllUnit
 
         public IEnumerable<Vector2Int> GetEntrances(Vector2Int clusterIndex, Vector2Int direction, float unitRadius)
         {
-            return GetCluster(clusterIndex).Grpah.GetNodesByDirection(direction, unitRadius);
+            return GetCluster(clusterIndex).Graph.GetNodesByDirection(direction, unitRadius);
         }
         public List<Vector2Int> GetEntrancesOnce(Vector2Int clusterIndex, Vector2Int direction, float unitRadius)
         {
-            return GetCluster(clusterIndex).Grpah.GetNodesByDirectionOnce(direction, unitRadius);
+            return GetCluster(clusterIndex).Graph.GetNodesByDirectionOnce(direction, unitRadius);
         }
 
         private Vector2Int GetLeftDownNodeIndexOfCluster(Vector2Int clusterIndex) => clusterIndex * clusterSize;

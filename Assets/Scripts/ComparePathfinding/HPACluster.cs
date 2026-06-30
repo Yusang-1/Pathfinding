@@ -9,7 +9,7 @@ public class HPACluster
 
     private readonly HashSet<Vector2Int> cachedEntrances = new();
 
-    public HPAGraph Grpah => graph;
+    public HPAGraph Graph => graph;
     public bool IsActive { get; private set; }
 
     public HPACluster(Vector2Int index, AStarPathfinder pathfinder)

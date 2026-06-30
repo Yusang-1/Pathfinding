@@ -187,11 +187,11 @@ public class HPAClusterList
 
     public IEnumerable<Vector2Int> GetEntrances(Vector2Int clusterIndex, Vector2Int direction)
     {
-        return GetCluster(clusterIndex).Grpah.GetNodesByDirection(direction);
+        return GetCluster(clusterIndex).Graph.GetNodesByDirection(direction);
     }
     public List<Vector2Int> GetEntrancesOnce(Vector2Int clusterIndex, Vector2Int direction)
     {
-        return GetCluster(clusterIndex).Grpah.GetNodesByDirectionOnce(direction);
+        return GetCluster(clusterIndex).Graph.GetNodesByDirectionOnce(direction);
     }
 
     private Vector2Int GetLeftDownNodeIndexOfCluster(Vector2Int clusterIndex) => clusterIndex * clusterSize;
