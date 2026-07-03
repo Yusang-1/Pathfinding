@@ -39,11 +39,16 @@ public class ClusterShower : MonoBehaviour
         }
     }
 
-    public void ShowActivatedClusters(List<HPAPathfinder.ResultNode> results)
+    public void ShowActivatedClusters(List<ClusterSmootherResult> results)
     {
+        ClusterSmootherResult result;
         for (int i = 0; i < results.Count; i++)
         {
-            clusters[results[i].Index].gameObject.SetActive(true);
+            result = results[i];
+            for(int j = 0; j < result.ClusterIndexes.Count; j++)
+            {
+                clusters[result.ClusterIndexes[j]].gameObject.SetActive(true);                
+            }
         }
     }
 

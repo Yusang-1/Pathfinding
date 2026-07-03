@@ -11,10 +11,10 @@ public class UnitUncontrollable : MonoBehaviour
     private Vector3 direction;
     private bool HasDestination => direction != Vector3.zero;
 
-    private HPAPathfinder.ResultNode currentPath;
+    private ClusterSmootherResult currentPath;
     private Vector3 lazyGoal;
 
-    private List<HPAPathfinder.ResultNode> currentAbstractPath;
+    private List<ClusterSmootherResult> currentAbstractPath;
     private int pathNum;
 
     private LineDrawer lineDrawer;
@@ -61,13 +61,13 @@ public class UnitUncontrollable : MonoBehaviour
         }
     }
 
-    public void MoveWithResult(List<HPAPathfinder.ResultNode> resultNodes, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
+    public void MoveWithResult(List<ClusterSmootherResult> resultNodes, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
     {
         gameObject.SetActive(true);        
 
         pathNum = 0;
         currentPath = resultNodes[pathNum];
-        lazyGoal = new Vector3(currentPath.exitNode.x, currentPath.exitNode.y);
+        lazyGoal = new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y);
         currentAbstractPath = resultNodes;
 
         lazyRefine ??= new LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
@@ -110,7 +110,7 @@ public class UnitUncontrollable : MonoBehaviour
         float sqrtM = Vector3.SqrMagnitude(transform.position - curDestination);
         if (sqrtM <= 0.05f)
         {
-            if (curDestination == new Vector3(currentPath.exitNode.x, currentPath.exitNode.y))
+            if (curDestination == new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y))
             {
                 if (pathNum >= currentAbstractPath.Count) // 최종 도착
                 {
@@ -119,7 +119,7 @@ public class UnitUncontrollable : MonoBehaviour
                 }
 
                 currentPath = currentAbstractPath[pathNum++];
-                lazyGoal = new Vector3(currentPath.exitNode.x, currentPath.exitNode.y);
+                lazyGoal = new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y);
                 isNextPathSet = false;
             }
 

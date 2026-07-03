@@ -15,7 +15,7 @@ public class AStarPathfinder : AbstractPathfinder
     {
         this.nodeList = nodeList;
         this.hPAClusterList = hPAClusterList;
-        directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right};
+        directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         // new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
     }
 
@@ -103,6 +103,11 @@ public class AStarPathfinder : AbstractPathfinder
         List<Vector3> path = SearchAStar(from, to, GetNeighborNodesInCluster, out pathResult);
         return path;
     }
+    public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, out PathResult pathResult, List<Vector2Int> clusters)
+    {
+        List<Vector3> path = SearchAStar(from, to, GetNeightborNodesInClusterList, clusters, out pathResult);
+        return path;
+    }
     public float FindPathInClusterForPathCache(Vector2Int from, Vector2Int to)
     {
         PathResult pathResult = new();
@@ -117,6 +122,80 @@ public class AStarPathfinder : AbstractPathfinder
         else
             return 0;
     }
+    
+    private List<Vector3> SearchAStar(Vector3 startPosition, Vector3 destinationPosition, Func<Vector2Int, List<Vector2Int>, List<Vector2Int>> getNeighbors, List<Vector2Int> clusters, out PathResult pathResult)
+    {
+        openList.Clear();
+        closeList.Clear();
+        nodeDict.Clear();
+
+        Vector2Int startIndex = nodeList.GetNodeIndex(startPosition);
+        Vector2Int goalIndex = nodeList.GetNodeIndex(destinationPosition);
+
+        pathResult = new();
+        if (!nodeList.IsNodeAccessable(startIndex, goalIndex))
+        {
+            Debug.Log("접근 불가능한 노드입니다.");
+            return null;
+        }
+
+        PathNode startNode = new PathNode
+        {
+            index = startIndex
+        };
+        openList.Enqueue(startNode.index, startNode.f);
+        nodeDict[startNode.index] = startNode;
+
+        while (openList.Count > 0)
+        {
+            Vector2Int current = openList.Dequeue();
+
+            if (current == goalIndex)
+            {
+                pathResult.PathLength = nodeDict[current].g;
+                pathResult.MemoryUsed += openList.Capacity;
+                pathResult.MemoryUsed += closeList.Count;
+                pathResult.MemoryUsed += nodeDict.Count;
+                return CaculateResult(nodeDict, current, startIndex);
+            }
+
+            closeList.Add(current);
+
+            List<Vector2Int> neighborList = getNeighbors(current, clusters);
+            for (int i = 0; i < neighborList.Count; i++)
+            {
+                Vector2Int neighbor = neighborList[i];
+
+                if (closeList.Contains(neighbor)) continue;
+
+                pathResult.SearchedCount++;
+                float moveCost = GetMoveCost(current, neighbor);
+                float newG = nodeDict[current].g + moveCost;
+
+                if (!nodeDict.ContainsKey(neighbor) || newG < nodeDict[neighbor].g)
+                {
+                    if (!nodeDict.ContainsKey(neighbor))
+                    {
+                        nodeDict[neighbor] = new PathNode
+                        {
+                            index = neighbor,
+                            h = CaculateHeuristic(neighbor, goalIndex)
+                        };
+                    }
+                    PathNode neighborNode = nodeDict[neighbor];
+                    neighborNode.g = newG;
+                    neighborNode.parentIndex = current;
+                    neighborNode.isParentSet = true;
+                    nodeDict[neighbor] = neighborNode;
+
+                    openList.Enqueue(nodeDict[neighbor].index, nodeDict[neighbor].f);
+                }
+            }
+        }
+
+        // 경로 찾지 못함
+        return null;
+    }    
 
     private readonly Vector2Int[] directions;
     protected override List<Vector2Int> GetNeighborNode(Vector2Int current)
@@ -164,6 +243,41 @@ public class AStarPathfinder : AbstractPathfinder
             {
                 continue;
             }
+
+            // 워크어빌리티 맵으로 확인      
+            if (nodeList.Nodes[newX, newY].IsWalkable)
+            {
+                nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
+                neighbors.Add(neighbor);
+            }
+        }
+
+        return neighbors;
+    }
+    private List<Vector2Int> GetNeightborNodesInClusterList(Vector2Int current, List<Vector2Int> clusters)
+    {
+        List<Vector2Int> neighbors = new();
+
+        for (int i = 0; i < directions.Length; i++)
+        {
+            int newX = current.x + directions[i].x;
+            int newY = current.y + directions[i].y;
+
+            Vector2Int neighbor = new(newX, newY);
+
+            if (newX < 0 || newY < 0 || newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
+            {
+                continue;
+            }
+
+            bool isNeighborInClusters = false;
+            foreach (var cluster in clusters)
+            {
+                isNeighborInClusters = isNeighborInClusters || hPAClusterList.IsNodeInCluster(cluster, neighbor);
+
+                if (isNeighborInClusters) break;
+            }
+            if(!isNeighborInClusters) continue;
 
             // 워크어빌리티 맵으로 확인      
             if (nodeList.Nodes[newX, newY].IsWalkable)

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 public class PathManager : MonoBehaviour
-{    
+{
     public event Action OnPathFound;
     public event Action<PathResult> OnAFound;
     public event Action<PathResult> OnHPAFound;
@@ -18,6 +18,7 @@ public class PathManager : MonoBehaviour
     private MapGenerator mapGenerator;
     private MapdataJsonConverter mapdataJsonConverter;
     private readonly PathfindingResultShower resultShower = new();
+    private readonly ClusterPathSmoother clusterPathSmoother = new();
 
     [SerializeField] private UIRoot uiRoot;
     [SerializeField] private InputManager inputManager;
@@ -34,11 +35,10 @@ public class PathManager : MonoBehaviour
     private int mapSize;
     private bool isMapGenerated = false;
 
-    private List<HPAPathfinder.ResultNode> currentAbstractResults;
+    private List<ClusterSmootherResult> currentAbstractResults;
 
     private Dictionary<NodeType, List<Vector2Int>> aStarResult = new();
     private Dictionary<NodeType, List<Vector2Int>> hpaStarResult = new();
-    private List<HPAPathfinder.ResultNode> clusterResult = new();
     private Dictionary<NodeType, List<Vector2Int>> hpaStarSmoothResult = new();
     private List<Vector3> smoothPath;
 
@@ -53,7 +53,7 @@ public class PathManager : MonoBehaviour
         thetaStarPathfinder = new ThetaStar(nodeList, clusterList);
         searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder);
 
-        nodeData.Initialize();        
+        nodeData.Initialize();
         unit.Initialize(lineDrawer);
 
         UIRootInitialize();
@@ -62,7 +62,7 @@ public class PathManager : MonoBehaviour
         OnAFound += uiRoot.SetAResult;
         OnHPAFound += uiRoot.SetHPAResult;
         OnHPASmoothFound += uiRoot.SetHPASmoothResult;
-        
+
         inputManager.ControllMenu += uiRoot.ControllMenu;
 
         nodeList.NodeInfo.OnPathfindAvailable += (value) => uiRoot.ActiveFindButton(value);
@@ -139,17 +139,20 @@ public class PathManager : MonoBehaviour
     }
 
     private Dictionary<NodeType, List<Vector2Int>> FindHPAStarPath()
-
     {
         clusterList.ResetClusterList();
 
         Vector3 from = nodeList.GridToWorld(nodeList.NodeInfo.StartNodeIndex);
         Vector3 to = nodeList.GridToWorld(nodeList.NodeInfo.GoalNodeIndex);
-        clusterResult = hPAPathfinder.FindClusterPath(from, to, out PathResult clusterPathResult);
+        var clusterResult = hPAPathfinder.FindClusterPath(from, to, out PathResult clusterPathResult);
         if (clusterResult == null) return null;
-        currentAbstractResults = clusterResult;
 
-        searchWithTheClusterResult.FindPath(clusterResult, nodeList, clusterList, out PathResult nodePathResult);
+        var clusterSmoothResult = clusterPathSmoother.SmoothClusterPath(from, to, clusterResult, clusterList, nodeList);
+        if (clusterSmoothResult == null) return null;
+
+        currentAbstractResults = clusterSmoothResult;
+
+        searchWithTheClusterResult.FindPath(clusterSmoothResult, nodeList, clusterList, out PathResult nodePathResult);
 
         clusterPathResult.AddResult(nodePathResult);
         OnHPAFound?.Invoke(clusterPathResult);
@@ -165,11 +168,15 @@ public class PathManager : MonoBehaviour
 
         Vector3 from = nodeList.GridToWorld(nodeList.NodeInfo.StartNodeIndex);
         Vector3 to = nodeList.GridToWorld(nodeList.NodeInfo.GoalNodeIndex);
-        clusterResult = hPAPathfinder.FindClusterPath(from, to, out PathResult clusterPathResult);
+        var clusterResult = hPAPathfinder.FindClusterPath(from, to, out PathResult clusterPathResult);
         if (clusterResult == null) return null;
-        currentAbstractResults = clusterResult;
 
-        smoothPath = searchWithTheClusterResult.FindPathTheta(clusterResult, nodeList, clusterList, out PathResult nodePathResult);
+        var clusterSmoothResult = clusterPathSmoother.SmoothClusterPath(from, to, clusterResult, clusterList, nodeList);
+        if (clusterSmoothResult == null) return null;
+
+        currentAbstractResults = clusterSmoothResult;
+
+        smoothPath = searchWithTheClusterResult.FindPathTheta(clusterSmoothResult, nodeList, clusterList, out PathResult nodePathResult);
 
         clusterPathResult.AddResult(nodePathResult);
         OnHPASmoothFound?.Invoke(clusterPathResult);
@@ -208,13 +215,13 @@ public class PathManager : MonoBehaviour
         ResetPath();
         resultShower.DrawHPAStar(nodeList, hpaStarResult);
         lineDrawer.DrawLine(hpaStarResult[NodeType.trace]);
-        clusterShower.ShowActivatedClusters(clusterResult);
+        clusterShower.ShowActivatedClusters(currentAbstractResults);
     }
     private void ShowHPAStarSmoothingResult()
     {
         ResetPath();
         resultShower.DrawHPAStar(nodeList, hpaStarSmoothResult);
-        clusterShower.ShowActivatedClusters(clusterResult);
+        clusterShower.ShowActivatedClusters(currentAbstractResults);
         lineDrawer.DrawLine(smoothPath);
     }
 

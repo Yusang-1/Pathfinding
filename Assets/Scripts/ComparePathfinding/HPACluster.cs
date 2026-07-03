@@ -25,23 +25,27 @@ public class HPACluster
 
     private void InitializeGraph(HPAClusterList clusterList, NodeList nodeList)
     {
-        var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
-            new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
-        };
+        var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
         // graph에 entrance node 추가
         for (int i = 0; i < directions.Length; i++)
         {
             var entrances = clusterList.SetEntrance(clusterIndex, directions[i]);
-            if (entrances != null)
+            if (entrances == null || entrances.Count == 0) continue;
+
+            for (int j = 0; j < entrances.Count; j++)
             {
-                for (int j = 0; j < entrances.Count; j++)
+                if (graph.TryAddEntranceNode(entrances[j], directions[i], nodeList))
                 {
-                    if (graph.TryAddNode(entrances[j], directions[i], nodeList))
+                    if (entrances[j].LeftEntrance != entrances[j].RightEntrance)
                     {
-                        cachedEntrances.Add(entrances[j]);
+                        cachedEntrances.Add(entrances[j].LeftEntrance);
+                        cachedEntrances.Add(entrances[j].RightEntrance);
                     }
+                    else
+                        cachedEntrances.Add(entrances[j].LeftEntrance);
                 }
+                else Debug.LogWarning("그래프에 노드 추가 실패");
             }
         }
 
@@ -69,7 +73,7 @@ public class HPACluster
         bool value = graph.TryAddNode(newNode, Vector2Int.zero, nodeList);
         if (value)
         {
-            tempNodes.Add(newNode);            
+            tempNodes.Add(newNode);
             foreach (var entrance in cachedEntrances)
             {
                 float distance = pathfinder.FindPathInClusterForPathCache(entrance, newNode);
@@ -81,6 +85,7 @@ public class HPACluster
             cachedEntrances.Add(newNode);
         }
     }
+
     public void RemoveTempNodeInGraph()
     {
         foreach (var node in tempNodes)

@@ -30,22 +30,11 @@ public class LazyRefine
         }
     }
 
-    public void DoLazyRefinement(HPAPathfinder.ResultNode result, LineDrawer lineDrawer)
+    public void DoLazyRefinement(ClusterSmootherResult result, LineDrawer lineDrawer)
     {
         List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList);
 
         lineDrawer.DrawLine(resultPath);
-
-        for (int i = 0; i < resultPath.Count; i++)
-        {
-            pathQueue.Enqueue(resultPath[i]);
-        }
-    }
-
-    /// <summary> 하나의 cluster ResultNode의 경로를 PathQueue에 담는다. </summary>
-    public void DoLazyRefinement(HPAPathfinder.ResultNode result)
-    {
-        List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList);
 
         for (int i = 0; i < resultPath.Count; i++)
         {

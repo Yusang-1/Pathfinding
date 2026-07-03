@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 public class HPAClusterList
 {
@@ -23,7 +22,7 @@ public class HPAClusterList
         clusterCount = mapSize / clusterSize;
         clusterList = new HPACluster[clusterCount, clusterCount];
 
-        cachedEdgeIndexes = new List<Vector2Int>(clusterSize);
+        cachedEdgeIndexes = new List<HPAGraph.EntranceData>(clusterSize);
         tempEdgeIndexes = new List<Vector2Int>(clusterSize);
 
         // cluster 생성
@@ -45,7 +44,6 @@ public class HPAClusterList
                 nodeList.NodeInfo.ResetTrace();
             }
         }
-
     }
 
     private readonly List<Vector2Int> cachedNeighborList;
@@ -71,13 +69,13 @@ public class HPAClusterList
         return cachedNeighborList;
     }
 
-    private List<Vector2Int> cachedEdgeIndexes;
+    private List<HPAGraph.EntranceData> cachedEdgeIndexes;
     private List<Vector2Int> tempEdgeIndexes;
-    public List<Vector2Int> SetEntrance(Vector2Int cluster, Vector2Int direction)
+    public List<HPAGraph.EntranceData> SetEntrance(Vector2Int cluster, Vector2Int direction)
     {
         if (cluster.x + direction.x < 0 || cluster.x + direction.x >= clusterCount
             || cluster.y + direction.y < 0 || cluster.y + direction.y >= clusterCount)
-            return null;
+        return null;
 
         cachedEdgeIndexes.Clear();
         tempEdgeIndexes.Clear();
@@ -139,16 +137,6 @@ public class HPAClusterList
                 standardNode.y++;
             }
         }
-        // else // 대각선
-        // {
-        //     if(direction.x > 0) standardNode.x += clusterSize - 1;
-        //     if(direction.y > 0) standardNode.y += clusterSize - 1;
-
-        //     if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
-        //     {
-        //         cachedEdgeIndexes.Add(standardNode);
-        //     }
-        // }
 
         // entrance가 중간에 가로막히지 않았을 경우
         if (tempEdgeIndexes.Count > 0)
@@ -159,28 +147,20 @@ public class HPAClusterList
 
         return cachedEdgeIndexes;
     }
-    private void GetCachedIndexes(List<Vector2Int> tempEdges, List<Vector2Int> cachedEdges, out bool isSuccess)
+    
+    /// <summary> entrance의 시작점과 끝점을 cachedEdges에 담음 </summary>
+    private void GetCachedIndexes(List<Vector2Int> tempEdges, List<HPAGraph.EntranceData> cachedEdges, out bool isSuccess)
     {
-        const int entranceConstraint = 3; // 3이하 너비의 입구는 중앙에 하나의 입구를 가짐, 3초과의 입구는 시작점과 끝점에 하나씩 가짐
-        const int bigEntrance = 9; // 9이상 너비의 입구는 시작, 중간, 끝에 입구를 가짐
+        if (tempEdges.Count > 0)
+        {
+            HPAGraph.EntranceData entranceData = new()
+            {
+                LeftEntrance = tempEdges[0],
+                RightEntrance = tempEdges[^1]
+            };            
+            cachedEdges.Add(entranceData);
 
-        isSuccess = true;
-        if (tempEdges.Count >= bigEntrance)
-        {
-            int mid = tempEdges.Count / 2;
-            cachedEdges.Add(tempEdges[0]);
-            cachedEdges.Add(tempEdges[mid]);
-            cachedEdges.Add(tempEdges[^1]);
-        }
-        else if (tempEdges.Count > entranceConstraint)
-        {
-            cachedEdges.Add(tempEdges[0]);
-            cachedEdges.Add(tempEdges[^1]);
-        }
-        else if (tempEdges.Count > 0)
-        {
-            int mid = tempEdges.Count / 2;
-            cachedEdges.Add(tempEdges[mid]);
+            isSuccess = true;
         }
         else isSuccess = false;
     }
