@@ -32,7 +32,7 @@ public class LazyRefine
 
     public void DoLazyRefinement(ClusterSmootherResult result, LineDrawer lineDrawer)
     {
-        List<Vector3> resultPath = searchWithTheClusterResult.FindPathTheta(result, nodeList, clusterList);
+        List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(result, nodeList, clusterList);
 
         lineDrawer.DrawLine(resultPath);
 

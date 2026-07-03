@@ -74,7 +74,7 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindPathTheta(ClusterSmootherResult data, NodeList nodeList, HPAClusterList clusterList)
+    public List<Vector3> FindPathThetaWithClusterList(ClusterSmootherResult data, NodeList nodeList, HPAClusterList clusterList)
     {
         for (int i = 0; i < data.ClusterIndexes.Count; i++)
         {
@@ -84,7 +84,7 @@ public class SearchWithTheClusterResult
         Vector3 entrancePosition = nodeList.GridToWorld(data.EnterNodeIndex);
         Vector3 goalPosition = nodeList.GridToWorld(data.ExitNodeIndex);
 
-        List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, out PathResult pathResult);
+        List<Vector3> pathInCluster = thetaStarPathfinder.FindPathInClusterList(entrancePosition, goalPosition, out PathResult pathResult, data.ClusterIndexes);
 
         for (int i = 0; i < data.ClusterIndexes.Count; i++)
         {
