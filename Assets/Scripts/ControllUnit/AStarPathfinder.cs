@@ -143,7 +143,6 @@ namespace Assets.Scripts.ControllUnit
                 var c = hPAClusterList.GetClusterIndex((int)s.x, (int)s.y);
                 if (nodeList.Nodes[newX, newY].IsWalkable && hPAClusterList.GetCluster(c).IsActive)
                 {
-                    nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                     neighbors.Add(neighbor);
                 }
             }
@@ -172,7 +171,6 @@ namespace Assets.Scripts.ControllUnit
                 // 워크어빌리티 맵으로 확인      
                 if (nodeList.Nodes[newX, newY].IsWalkable)
                 {
-                    nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                     neighbors.Add(neighbor);
                 }
             }
@@ -199,8 +197,6 @@ namespace Assets.Scripts.ControllUnit
             foreach (var gridPos in path)
             {
                 worldPath.Add(nodeList.GridToWorld(gridPos));
-
-                nodeList.SetNodeTypeInPathFinding(gridPos, NodeType.trace);
             }
 
             return worldPath;

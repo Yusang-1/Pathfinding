@@ -43,7 +43,7 @@ namespace Assets.Scripts.ControllUnit
             if (!nodes.ContainsKey(entrance))
             {
                 nodes[entrance] = new GraphNode(entrance, direction);
-                nodeList.SetNodeTypeInPathFinding(entrance, NodeType.entrance);
+
                 return true;
             }
             else if (direction != Vector2Int.zero && !nodes[entrance].Direction.Contains(direction))

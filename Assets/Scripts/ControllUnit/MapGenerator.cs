@@ -37,10 +37,5 @@ namespace Assets.Scripts.ControllUnit
                 nodeList.SetNodeType(index, NodeType.obstacle);
             }
         }
-
-        public void DestroyMap()
-        {
-
-        }
     }
 }

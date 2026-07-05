@@ -15,7 +15,6 @@ namespace Assets.Scripts.ControllUnit
 
         private int nodeSize = 1;
 
-        public NodeInfo NodeInfo => nodeInfo;
         public Node[,] Nodes => nodes;
         public int NodeSize => nodeSize;
 
@@ -30,16 +29,6 @@ namespace Assets.Scripts.ControllUnit
 
             this.nodeSize = nodeSize;
             nodes = new Node[mapSize, mapSize];
-        }
-
-        public void ResetTrace()
-        {
-            nodeInfo.ResetTraces();
-        }
-        public void ResetAll()
-        {
-            nodeInfo.ResetAllNode();
-            ResetAllNode();
         }
 
         public Vector2Int GetNodeIndex(Vector2 position)
@@ -65,10 +54,6 @@ namespace Assets.Scripts.ControllUnit
         public void SetNodeType(Vector2Int index, NodeType type)
         {
             nodeInfo.SetNodeType(index, type);
-        }
-        public void SetNodeTypeInPathFinding(Vector2Int index, NodeType type)
-        {
-            nodeInfo.SetNodeTypeInPathFinding(index, type);
         }
 
         public Vector2 GridToWorld(Vector2Int index)

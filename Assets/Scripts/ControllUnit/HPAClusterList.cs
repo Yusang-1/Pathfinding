@@ -42,8 +42,6 @@ namespace Assets.Scripts.ControllUnit
                 for (int j = 0; j < clusterList.GetLength(1); j++)
                 {
                     clusterList[i, j].Initialize(this, nodeList, unitRadiusList);
-                    nodeList.NodeInfo.ResetSearched();
-                    nodeList.NodeInfo.ResetTrace();
                 }
             }
 
@@ -140,13 +138,6 @@ namespace Assets.Scripts.ControllUnit
                     standardNode.y++;
                 }
             }
-            // else // 대각선
-            // {
-            //     if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
-            //     {
-            //         cachedEdgeIndexes.Add(standardNode);
-            //     }
-            // }
 
             // entrance가 중간에 가로막히지 않았을 경우
             if (tempEdgeIndexes.Count > 0)

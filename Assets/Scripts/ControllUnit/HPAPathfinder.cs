@@ -51,8 +51,6 @@ namespace Assets.Scripts.ControllUnit
             // start cluster, goal cluster에 노드 추가
             clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList, unitRadius);
             clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList, unitRadius);
-            nodeList.NodeInfo.ResetSearched();
-            nodeList.NodeInfo.ResetTrace();
 
             List<ClusterResult> clusterPath;
             // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴
@@ -340,10 +338,7 @@ namespace Assets.Scripts.ControllUnit
         {
             int dx = Mathf.Abs(to.x - from.x);
             int dy = Mathf.Abs(to.y - from.y);
-            // 대각선 이동 비용과 상하좌우 이동 비용을 각각 사용
-            // const float ORTHOGONAL_COST = 1f;
-            // const float DIAGONAL_COST = 1.4142f;
-            // return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
+
             return dx + dy;
         }
 

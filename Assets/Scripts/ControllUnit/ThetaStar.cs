@@ -181,10 +181,6 @@ namespace Assets.Scripts.ControllUnit
             for (int i = 0; i < path.Count; i++)
             {
                 worldPath.Add(nodeList.GridToWorld(path[i]));
-                if (nodeList.Nodes[path[i].x, path[i].y].GetNodeType() == NodeType.room)
-                {
-                    nodeList.SetNodeTypeInPathFinding(path[i], NodeType.trace);
-                }
             }
 
             return worldPath;
@@ -333,17 +329,7 @@ namespace Assets.Scripts.ControllUnit
 
                     if (CanUnitFitAtNode(neighbor, unitRadius) && clusterList.GetCluster(clusterIndex).IsActive && clusterList.IsNodesInSameCluster(current, new Vector2Int(newX, newY)))
                     {
-                        nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
-
-                        if (dx * dy != 0) // 대각선 이동의 경우
-                        {
-                            if (CanUnitFitAtPosition((nodeWorldPosition + nodeList.GridToWorld(neighbor)) / 2, unitRadius))
-                            {
-                                neighbors.Add(neighbor);
-                            }
-                        }
-                        else
-                            neighbors.Add(neighbor);
+                        neighbors.Add(neighbor);
                     }
 
                 }
@@ -389,7 +375,6 @@ namespace Assets.Scripts.ControllUnit
                         }
                         if (!isNeighborInClusters) continue;
 
-                        nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                         neighbors.Add(neighbor);
                     }
 
