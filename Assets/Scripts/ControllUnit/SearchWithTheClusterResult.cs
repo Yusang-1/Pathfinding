@@ -9,27 +9,24 @@ namespace Assets.Scripts.ControllUnit
         public SearchWithTheClusterResult(ThetaStar thetaStarPathfinder)
         {
             this.thetaStarPathfinder = thetaStarPathfinder;
-        }                
+        }
 
-        public List<Vector3> FindPathTheta(HPAPathfinder.ResultNode data, NodeList nodeList, HPAClusterList clusterList, float unitRadius)
+        public List<Vector3> FindPathThetaWithClusterList(ClusterSmootherResult data, NodeList nodeList, HPAClusterList clusterList, float unitRadius)
         {
-            clusterList.SetClusterActive(data.Index, true);
-
-            Vector3 entrancePosition, goalPosition;
-            if (data.hasEntranceAndExit == false)
+            for (int i = 0; i < data.ClusterIndexes.Count; i++)
             {
-                entrancePosition = nodeList.GridToWorld(data.exitNode);
-                goalPosition = nodeList.GridToWorld(data.exitNode);
-            }
-            else
-            {
-                entrancePosition = nodeList.GridToWorld(data.enteranceNode);
-                goalPosition = nodeList.GridToWorld(data.exitNode);
+                clusterList.SetClusterActive(data.ClusterIndexes[i], true);
             }
 
-            List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, out PathResult pathResult, unitRadius);
+            Vector3 entrancePosition = nodeList.GridToWorld(data.EnterNodeIndex);
+            Vector3 goalPosition = nodeList.GridToWorld(data.ExitNodeIndex);
 
-            clusterList.SetClusterActive(data.Index, false);
+            List<Vector3> pathInCluster = thetaStarPathfinder.FindPathInClusterList(entrancePosition, goalPosition, out PathResult pathResult, data.ClusterIndexes, unitRadius);
+
+            for (int i = 0; i < data.ClusterIndexes.Count; i++)
+            {
+                clusterList.SetClusterActive(data.ClusterIndexes[i], false);
+            }
 
             return pathInCluster;
         }

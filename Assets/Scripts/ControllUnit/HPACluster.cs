@@ -23,10 +23,10 @@ namespace Assets.Scripts.ControllUnit
         public void Initialize(HPAClusterList clusterList, NodeList nodeList, Dictionary<UnitSize, float> unitRadiusDict)
         {
             graph = new HPAGraph(unitRadiusDict);
-            
-            foreach(var radius in unitRadiusDict.Values)
+
+            foreach (var radius in unitRadiusDict.Values)
             {
-                InitializeGraph(clusterList, nodeList, radius);                
+                InitializeGraph(clusterList, nodeList, radius);
             }
         }
 
@@ -40,15 +40,21 @@ namespace Assets.Scripts.ControllUnit
             for (int i = 0; i < directions.Length; i++)
             {
                 var entrances = clusterList.SetEntrance(clusterIndex, directions[i]);
-                if (entrances != null)
+                if (entrances == null || entrances.Count == 0) continue;
+
+                for (int j = 0; j < entrances.Count; j++)
                 {
-                    for (int j = 0; j < entrances.Count; j++)
+                    if (graph.TryAddEntranceNode(entrances[j], directions[i], nodeList, unitRadius))
                     {
-                        if (graph.TryAddNode(entrances[j], directions[i], nodeList, unitRadius))
+                        if (entrances[j].LeftEntrance != entrances[j].RightEntrance)
                         {
-                            cachedEntrances.Add(entrances[j]);
+                            cachedEntrances.Add(entrances[j].LeftEntrance);
+                            cachedEntrances.Add(entrances[j].RightEntrance);
                         }
+                        else
+                            cachedEntrances.Add(entrances[j].LeftEntrance);
                     }
+                    else Debug.LogWarning("그래프에 노드 추가 실패");
                 }
             }
 

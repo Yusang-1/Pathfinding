@@ -9,6 +9,7 @@ namespace Assets.Scripts.ControllUnit
         private HPAClusterList clusterList;
 
         private HPAPathfinder highLevelPathfinder;
+        private readonly ClusterPathSmoother clusterPathSmoother = new();
 
         public void SetNodeAndCluster(NodeList nodes, int mapSize, int clusterSize, Dictionary<UnitSize, float> unitRadiusList)
         {
@@ -30,9 +31,11 @@ namespace Assets.Scripts.ControllUnit
             return new LazyRefine(clusterList, nodeList, new SearchWithTheClusterResult(thetaStarPathfinder));
         }
 
-        public List<HPAPathfinder.ResultNode> GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)
+        public List<ClusterSmootherResult> GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)
         {
-            return highLevelPathfinder.FindClusterPath(from, to, out PathResult result, unitRadius);
+            var clusterPath = highLevelPathfinder.FindClusterPath(from, to, out PathResult result, unitRadius);
+            var smootherClusterPath = clusterPathSmoother.SmoothClusterPath(from, to, clusterPath, clusterList, nodeList);
+            return smootherClusterPath;
         }        
     }
 }

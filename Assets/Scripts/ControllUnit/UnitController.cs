@@ -16,7 +16,7 @@ namespace Assets.Scripts.ControllUnit
         private SteeringConfig steeringConfig;
         
 
-        private List<HPAPathfinder.ResultNode> abstractPath;
+        private List<ClusterSmootherResult> abstractPath;
         private int currentPathIndex;
         private bool isMoving;
         private Vector3 startPosition;
@@ -151,11 +151,11 @@ namespace Assets.Scripts.ControllUnit
             else return false;
         }
 
-        private void SearchLowLevelPath(HPAPathfinder.ResultNode resultNode, bool isEnd, bool isStart)
+        private void SearchLowLevelPath(ClusterSmootherResult resultNode, bool isEnd, bool isStart)
         {
             lazyRefine.DoLazyRefinement(resultNode, isEnd, finalDestination, isStart, startPosition, unitData.Radius);
 
-            exitOfCluster = new Vector3(abstractPath[currentPathIndex].exitNode.x, abstractPath[currentPathIndex].exitNode.y);
+            exitOfCluster = new Vector3(abstractPath[currentPathIndex].ExitNodeIndex.x, abstractPath[currentPathIndex].ExitNodeIndex.y);
         }
 
         private void GetVelocity()

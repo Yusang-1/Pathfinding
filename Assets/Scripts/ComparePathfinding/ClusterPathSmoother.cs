@@ -23,7 +23,7 @@ public class ClusterPathSmoother
             index = outIndex + 1;
             leftSetIndex = 0;
             rightSetIndex = 0;
-            
+
             if (index < clusterPath.Count)
             {
                 SetResult(clusterIndexes, nodeList.GetNodeIndex(from), startPoint, clusterPath[index].Index, true);

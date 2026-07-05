@@ -24,7 +24,7 @@ namespace Assets.Scripts.ControllUnit
             clusterCount = mapSize / clusterSize;
             clusterList = new HPACluster[clusterCount, clusterCount];
 
-            cachedEdgeIndexes = new List<Vector2Int>(clusterSize);
+            cachedEdgeIndexes = new List<HPAGraph.EntranceData>(clusterSize);
             tempEdgeIndexes = new List<Vector2Int>(clusterSize);
 
             // cluster 생성
@@ -60,7 +60,7 @@ namespace Assets.Scripts.ControllUnit
                 {
                     if (i * j != 0) continue; // 대각선 제외
                     if (i == 0 && j == 0) continue; // 자신 제외
-                                        
+
                     int dx = index.x + i;
                     int dy = index.y + j;
                     if (dx < 0 || dy < 0 || dx >= clusterList.GetLength(0) || dy >= clusterList.GetLength(1)) continue;
@@ -72,9 +72,9 @@ namespace Assets.Scripts.ControllUnit
             return cachedNeighborList;
         }
 
-        private List<Vector2Int> cachedEdgeIndexes;
+        private List<HPAGraph.EntranceData> cachedEdgeIndexes;
         private List<Vector2Int> tempEdgeIndexes;
-        public List<Vector2Int> SetEntrance(Vector2Int cluster, Vector2Int direction)
+        public List<HPAGraph.EntranceData> SetEntrance(Vector2Int cluster, Vector2Int direction)
         {
             if (cluster.x + direction.x < 0 || cluster.x + direction.x >= clusterCount
                 || cluster.y + direction.y < 0 || cluster.y + direction.y >= clusterCount)
@@ -157,28 +157,18 @@ namespace Assets.Scripts.ControllUnit
 
             return cachedEdgeIndexes;
         }
-        private void GetCachedIndexes(List<Vector2Int> tempEdges, List<Vector2Int> cachedEdges, out bool isSuccess)
+        private void GetCachedIndexes(List<Vector2Int> tempEdges, List<HPAGraph.EntranceData> cachedEdges, out bool isSuccess)
         {
-            const int entranceConstraint = 3; // 3이하 너비의 입구는 중앙에 하나의 입구를 가짐, 3초과의 입구는 시작점과 끝점에 하나씩 가짐
-            const int bigEntrance = 9; // 9이상 너비의 입구는 시작, 중간, 끝에 입구를 가짐
+            if (tempEdges.Count > 0)
+            {
+                HPAGraph.EntranceData entranceData = new()
+                {
+                    LeftEntrance = tempEdges[0],
+                    RightEntrance = tempEdges[^1]
+                };
+                cachedEdges.Add(entranceData);
 
-            isSuccess = true;
-            if (tempEdges.Count >= bigEntrance)
-            {
-                int mid = tempEdges.Count / 2;
-                cachedEdges.Add(tempEdges[0]);
-                cachedEdges.Add(tempEdges[mid]);
-                cachedEdges.Add(tempEdges[^1]);
-            }
-            else if (tempEdges.Count > entranceConstraint)
-            {
-                cachedEdges.Add(tempEdges[0]);
-                cachedEdges.Add(tempEdges[^1]);
-            }
-            else if (tempEdges.Count > 0)
-            {
-                int mid = tempEdges.Count / 2;
-                cachedEdges.Add(tempEdges[mid]);
+                isSuccess = true;
             }
             else isSuccess = false;
         }
