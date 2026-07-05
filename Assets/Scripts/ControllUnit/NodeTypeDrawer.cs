@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.ControllUnit
 {
-    public class NodeInfo
+    public class NodeTypeDrawer
     {
         private readonly Dictionary<NodeType, List<Vector2Int>> nodeInfoDict = new();
         private NodeList nodeList;
@@ -63,7 +63,6 @@ namespace Assets.Scripts.ControllUnit
                 GoalNodeIndex = nodeIndex;
                 isGoalSet = true;
             }
-            // OnPathfindAvailable(isStartSet && isGoalSet && IsDuringNodeSetting);
 
             node.SetType(type, data.GetSprite(type));
         }

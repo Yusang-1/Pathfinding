@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-public class NodeInfo
+public class NodeTypeDrawer
 {
     public event Action<bool> OnPathfindAvailable;
 

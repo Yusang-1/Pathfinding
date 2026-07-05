@@ -8,14 +8,14 @@ namespace Assets.Scripts.CreateMap
         public event Action<ISelectable> OnSelected;
         public event Action<ISelectable> OnDeselected;
 
-        private readonly NodeInfo nodeInfo;
+        private readonly NodeTypeDrawer nodeTypeDrawer;
         private Node[,] nodes;
         
-        public NodeInfo NodeInfo => nodeInfo;
+        public NodeTypeDrawer NodeTypeDrawer => nodeTypeDrawer;
         
         public NodeList(NodeData data)
         {
-            nodeInfo = new NodeInfo(this, data);
+            nodeTypeDrawer = new NodeTypeDrawer(this, data);
         }
 
         public void CreateNodeArray(int mapSize)
@@ -33,7 +33,7 @@ namespace Assets.Scripts.CreateMap
 
         public void SetNodeType(Vector2Int index, NodeType type)
         {
-            nodeInfo.SetNodeType(index, type);
+            nodeTypeDrawer.SetNodeType(index, type);
         }
 
         public Node GetNode(Vector2Int index) => nodes[index.x, index.y];

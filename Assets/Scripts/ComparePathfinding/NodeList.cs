@@ -8,10 +8,10 @@ public class NodeList
     public event Action<ISelectable> OnDeselected;
 
     private readonly NodeData nodeData;
-    private readonly NodeInfo nodeInfo = new();
+    private readonly NodeTypeDrawer nodeTypeDrawer = new();
     private Node[,] nodes;
 
-    public NodeInfo NodeInfo => nodeInfo;
+    public NodeTypeDrawer NodeTypeDrawer => nodeTypeDrawer;
     public Node[,] Nodes => nodes;
 
     private int nodeSize = 1;
@@ -22,7 +22,7 @@ public class NodeList
 
     public void Initialize(int nodeSize, int mapSize)
     {
-        nodeInfo.Initialize(this, nodeData);
+        nodeTypeDrawer.Initialize(this, nodeData);
 
         this.nodeSize = nodeSize;
         nodes = new Node[mapSize, mapSize];
@@ -30,11 +30,11 @@ public class NodeList
 
     public void ResetTrace()
     {
-        nodeInfo.ResetTraces();
+        nodeTypeDrawer.ResetTraces();
     }
     public void ResetAll()
     {
-        nodeInfo.ResetAllNode();
+        nodeTypeDrawer.ResetAllNode();
         ResetAllNode();
     }
 
@@ -60,11 +60,11 @@ public class NodeList
 
     public void SetNodeType(Vector2Int index, NodeType type)
     {
-        nodeInfo.SetNodeType(index, type);
+        nodeTypeDrawer.SetNodeType(index, type);
     }
     public void SetNodeTypeInPathFinding(Vector2Int index, NodeType type)
     {
-        nodeInfo.SetNodeTypeInPathFinding(index, type);
+        nodeTypeDrawer.SetNodeTypeInPathFinding(index, type);
     }
 
     public Vector2 GridToWorld(Vector2Int index)

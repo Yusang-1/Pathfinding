@@ -10,7 +10,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action<ISelectable> OnDeselected;
 
         private readonly NodeData nodeData;
-        private readonly NodeInfo nodeInfo = new();
+        private readonly NodeTypeDrawer nodeTypeDrawer = new();
         private Node[,] nodes;
 
         private int nodeSize = 1;
@@ -25,7 +25,7 @@ namespace Assets.Scripts.ControllUnit
 
         public void Initialize(int nodeSize, int mapSize)
         {
-            nodeInfo.Initialize(this, nodeData);
+            nodeTypeDrawer.Initialize(this, nodeData);
 
             this.nodeSize = nodeSize;
             nodes = new Node[mapSize, mapSize];
@@ -53,7 +53,7 @@ namespace Assets.Scripts.ControllUnit
 
         public void SetNodeType(Vector2Int index, NodeType type)
         {
-            nodeInfo.SetNodeType(index, type);
+            nodeTypeDrawer.SetNodeType(index, type);
         }
 
         public Vector2 GridToWorld(Vector2Int index)

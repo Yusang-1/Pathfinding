@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.CreateMap
 {
-    public class NodeInfo
+    public class NodeTypeDrawer
     {
         private readonly Dictionary<NodeType, List<Vector2Int>> nodeInfoDict = new();
         private readonly NodeList nodeList;
@@ -16,7 +16,7 @@ namespace Assets.Scripts.CreateMap
         public Vector2Int StartNodeIndex { get; private set; }
         public Vector2Int GoalNodeIndex { get; private set; }
 
-        public NodeInfo(NodeList nodeList, NodeData data)
+        public NodeTypeDrawer(NodeList nodeList, NodeData data)
         {
             this.nodeList = nodeList;
             this.data = data;

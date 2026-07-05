@@ -32,8 +32,8 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnGenerateMapRequested += CreateEmptyMap;
             uiRoot.OnTileSelectorRequested += nodeTypeController.SetCurrentSelected;
             uiRoot.OnExportMapRequested += ExportMap;
-            uiRoot.OnClearMapRequested += nodeList.NodeInfo.ResetAllNodes;
-            uiRoot.OnRemoveMapRequested += nodeList.NodeInfo.ResetAllNodes;
+            uiRoot.OnClearMapRequested += nodeList.NodeTypeDrawer.ResetAllNodes;
+            uiRoot.OnRemoveMapRequested += nodeList.NodeTypeDrawer.ResetAllNodes;
             uiRoot.OnRemoveMapRequested += nodeList.DestroyNodes;
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
@@ -82,7 +82,7 @@ namespace Assets.Scripts.CreateMap
 
         public void ExportMap(string mapName)
         {
-            Vector2Int[] obstacleIndexes = nodeList.NodeInfo.GetNodeInfo();
+            Vector2Int[] obstacleIndexes = nodeList.NodeTypeDrawer.GetNodeInfo();
 
             MapData mapData = new()
             {
