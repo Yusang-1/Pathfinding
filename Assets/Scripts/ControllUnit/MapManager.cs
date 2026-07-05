@@ -4,7 +4,7 @@ using Assets.Scripts.ControllUnit.SO;
 
 namespace Assets.Scripts.ControllUnit
 {
-    public class MapController : MonoBehaviour
+    public class MapManager : MonoBehaviour
     {
         private NodeList nodeList;
         private MapGenerator mapGenerator;
