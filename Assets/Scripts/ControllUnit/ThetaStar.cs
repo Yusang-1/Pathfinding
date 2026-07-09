@@ -169,7 +169,7 @@ namespace Assets.Scripts.ControllUnit
             while (true)
             {
                 // 이동 불가능한 Node이거나 Cluster가 비활성화인 경우 false, 두 Node사이에 시야가 없음
-                if (!CanUnitFitAtNode(new Vector2Int(x0, y0), unitRadius))
+                if (!CanUnitFitAtNode(new Vector2Int(x0, y0), unitRadius) || !CanUnitFitAtNode(new Vector2Int(x0 + sX, y0), unitRadius) || !CanUnitFitAtNode(new Vector2Int(x0, y0 + sY), unitRadius))
                 {
                     return false;
                 }
@@ -222,7 +222,7 @@ namespace Assets.Scripts.ControllUnit
             int dy = node2.y - node1.y;
 
             return Mathf.Sqrt(dx * dx + dy * dy);
-        }        
+        }
 
         private List<Vector2Int> neighborFindingClusters;
         private List<Vector2Int> GetNeighborNodeWithClusters(Vector2Int current, float unitRadius)
