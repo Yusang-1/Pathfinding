@@ -6,9 +6,9 @@ namespace Assets.Scripts.ControllUnit
 {
     public class MapManager : MonoBehaviour
     {
-        private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
+        private readonly NodeList nodeList = new();
         private readonly SelectableController selectableController = new();
         private readonly SpatialHash spatialHash = new();
 
@@ -28,7 +28,6 @@ namespace Assets.Scripts.ControllUnit
 
         private void Start()
         {
-            nodeList = new NodeList(nodeData);
             mapdataJsonConverter = new MapdataJsonConverter();
             mapGenerator = new MapGenerator(nodePrefab, nodeList);
 
@@ -60,7 +59,7 @@ namespace Assets.Scripts.ControllUnit
             mapSize = mapData.MapSize;
             clusterSize = mapData.ClusterSize;
 
-            nodeList.Initialize(nodeSize, mapSize);
+            nodeList.Initialize(nodeSize, mapSize, nodeData);
 
             mapGenerator.GenerateMap(mapData);
 

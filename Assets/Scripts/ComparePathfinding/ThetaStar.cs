@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class ThetaStar : AbstractPathfinder
@@ -19,77 +20,16 @@ public class ThetaStar : AbstractPathfinder
 
     public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult)
     {
-        openList.Clear();
-        closeList.Clear();
-        nodeDict.Clear();
-
-        Vector2Int startNodeIndex = nodeList.GetNodeIndex(from);
-        Vector2Int goalNodeIndex = nodeList.GetNodeIndex(to);
-
-        pathResult = new PathResult();
-        var startNode = new PathNode
-        {
-            index = startNodeIndex,
-            g = 0
-        };
-        openList.Enqueue(startNode.index, startNode.f);
-        nodeDict.Add(startNode.index, startNode);
-
-        while (openList.Count > 0)
-        {
-            Vector2Int currentIndex = openList.Dequeue();
-            closeList.Add(currentIndex);
-
-            if (currentIndex == goalNodeIndex)
-            {
-                pathResult.PathLength = nodeDict[currentIndex].g;
-                pathResult.MemoryUsed += openList.Capacity;
-                pathResult.MemoryUsed += closeList.Count;
-                pathResult.MemoryUsed += nodeDict.Count;
-
-                return CaculateResult(nodeDict, currentIndex, startNodeIndex);
-            }
-
-            List<Vector2Int> neighborIndexes = GetNeighborNode(currentIndex);
-            for (int i = 0; i < neighborIndexes.Count; i++)
-            {
-                Vector2Int neighborIndex = neighborIndexes[i];
-
-                if (closeList.Contains(neighborIndex)) continue;
-
-                pathResult.SearchedCount++;
-
-                float moveCost = currentIndex.GetNeighborMoveCost(neighborIndex);
-                float newG = nodeDict[currentIndex].g + moveCost;
-
-                if (!nodeDict.ContainsKey(neighborIndex) || newG + EPS < nodeDict[neighborIndex].g)
-                {
-                    if (!nodeDict.ContainsKey(neighborIndex))
-                    {
-                        nodeDict[neighborIndex] = new PathNode
-                        {
-                            index = neighborIndex,
-                            h = CaculateHeuristic(neighborIndex, goalNodeIndex),
-                            g = float.PositiveInfinity
-                        };
-                    }
-                    PathNode tempNode = nodeDict[neighborIndex];
-                    tempNode.g = newG;
-                    tempNode.parentIndex = currentIndex;
-                    tempNode.beforeNodeIndex = currentIndex;
-                    tempNode.isParentSet = true;
-                    nodeDict[neighborIndex] = tempNode;
-
-                    UpdateVertex(nodeDict, currentIndex, neighborIndex, goalNodeIndex);
-                    openList.Enqueue(nodeDict[neighborIndex].index, nodeDict[neighborIndex].f);
-                }
-            }
-        }
-
-        return null;
+        return SearchThetaStar(from, to, out pathResult, GetNeighborNode);
     }
 
     public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, out PathResult pathResult, List<Vector2Int> clusters)
+    {
+        neighborFindingClusters = clusters;
+        return SearchThetaStar(from, to, out pathResult, GetNeighborNodeWithClusters);
+    }
+
+    private List<Vector3> SearchThetaStar(Vector3 from, Vector3 to, out PathResult pathResult, Func<Vector2Int, List<Vector2Int>> getNeighborNodeFunc)
     {
         openList.Clear();
         closeList.Clear();
@@ -122,7 +62,7 @@ public class ThetaStar : AbstractPathfinder
                 return CaculateResult(nodeDict, currentIndex, startNodeIndex);
             }
 
-            List<Vector2Int> neighborIndexes = GetNeighborNode(currentIndex, clusters);
+            List<Vector2Int> neighborIndexes = getNeighborNodeFunc(currentIndex);
             for (int i = 0; i < neighborIndexes.Count; i++)
             {
                 Vector2Int neighborIndex = neighborIndexes[i];
@@ -335,7 +275,8 @@ public class ThetaStar : AbstractPathfinder
         return neighbors;
     }
 
-    private List<Vector2Int> GetNeighborNode(Vector2Int current, List<Vector2Int> clusters) // 같은 cluster에 있는 이웃만
+    private List<Vector2Int> neighborFindingClusters;
+    private List<Vector2Int> GetNeighborNodeWithClusters(Vector2Int current) // 같은 cluster에 있는 이웃만
     {
         List<Vector2Int> neighbors = new();
 
@@ -362,14 +303,14 @@ public class ThetaStar : AbstractPathfinder
                 if (nodeList.Nodes[newX, newY].IsWalkable && clusterList.GetCluster(clusterIndex).IsActive)
                 {
                     bool isNeighborInClusters = false;
-                    foreach (var cluster in clusters)
+                    foreach (var cluster in neighborFindingClusters)
                     {
                         isNeighborInClusters = isNeighborInClusters || clusterList.IsNodeInCluster(cluster, neighbor);
 
                         if (isNeighborInClusters) break;
                     }
                     if (!isNeighborInClusters) continue;
-                    
+
                     nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                     neighbors.Add(neighbor);
                 }

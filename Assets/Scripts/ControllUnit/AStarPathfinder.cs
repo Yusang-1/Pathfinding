@@ -17,11 +17,23 @@ namespace Assets.Scripts.ControllUnit
         {
             this.nodeList = nodeList;
             this.hPAClusterList = hPAClusterList;
-            directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right }; 
-            //new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
+            directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         }
 
-        private List<Vector3> SearchAStar(Vector3 startPosition, Vector3 destinationPosition, Func<Vector2Int, float, List<Vector2Int>> getNeighbors, out PathResult pathResult, float unitRadius)
+        public float FindPathInClusterForPathCache(Vector2Int from, Vector2Int to, float unitRadius)
+        {
+            Vector3 fromPos = nodeList.GridToWorld(from);
+            Vector3 toPos = nodeList.GridToWorld(to);
+
+            List<Vector3> path = SearchPath(fromPos, toPos, unitRadius, GetNeighborNodesInCluster);
+
+            if (path != null)
+                return nodeDict[to].g;
+            else
+                return 0;
+        }
+
+        protected override List<Vector3> SearchPath(Vector3 startPosition, Vector3 destinationPosition, float unitRadius, Func<Vector2Int, float, List<Vector2Int>> getNeighbors)
         {
             openList.Clear();
             closeList.Clear();
@@ -30,7 +42,6 @@ namespace Assets.Scripts.ControllUnit
             Vector2Int startIndex = nodeList.GetNodeIndex(startPosition);
             Vector2Int goalIndex = nodeList.GetNodeIndex(destinationPosition);
 
-            pathResult = new();
             if (!nodeList.IsNodeAccessable(startIndex, goalIndex))
             {
                 Debug.Log("접근 불가능한 노드입니다.");
@@ -50,10 +61,6 @@ namespace Assets.Scripts.ControllUnit
 
                 if (current == goalIndex)
                 {
-                    pathResult.PathLength = nodeDict[current].g;
-                    pathResult.MemoryUsed += openList.Capacity;
-                    pathResult.MemoryUsed += closeList.Count;
-                    pathResult.MemoryUsed += nodeDict.Count;
                     return CaculateResult(nodeDict, current, startIndex);
                 }
 
@@ -66,7 +73,6 @@ namespace Assets.Scripts.ControllUnit
 
                     if (closeList.Contains(neighbor)) continue;
 
-                    pathResult.SearchedCount++;
                     float moveCost = GetMoveCost(current, neighbor);
                     float newG = nodeDict[current].g + moveCost;
 
@@ -95,37 +101,12 @@ namespace Assets.Scripts.ControllUnit
             return null;
         }
 
-        public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
-        {
-            List<Vector3> path = SearchAStar(from, to, GetNeighborNode, out pathResult, unitRadius);
-            return path;
-        }
-        public List<Vector3> FindPathInSameCluster(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
-        {
-            List<Vector3> path = SearchAStar(from, to, GetNeighborNodesInCluster, out pathResult, unitRadius);
-            return path;
-        }
-        public float FindPathInClusterForPathCache(Vector2Int from, Vector2Int to, float unitRadius)
-        {
-            PathResult pathResult = new();
-
-            Vector3 fromPos = new(from.x, from.y);
-            Vector3 toPos = new(to.x, to.y);
-
-            List<Vector3> path = SearchAStar(fromPos, toPos, GetNeighborNodesInCluster, out pathResult, unitRadius);
-
-            if (path != null)
-                return pathResult.PathLength;
-            else
-                return 0;
-        }
-
         private readonly Vector2Int[] directions;
-        protected override List<Vector2Int> GetNeighborNode(Vector2Int current, float unitRadius)
+        protected List<Vector2Int> GetNeighborNode(Vector2Int current, float unitRadius)
         {
             List<Vector2Int> neighbors = new();
 
-            // 상하좌우 + 대각선 (8방향)
+            // 상하좌우
             for (int i = 0; i < directions.Length; i++)
             {
                 int newX = current.x + directions[i].x;
@@ -153,7 +134,7 @@ namespace Assets.Scripts.ControllUnit
         {
             List<Vector2Int> neighbors = new();
 
-            // 상하좌우 + 대각선 (8방향)
+            // 상하좌우
             for (int i = 0; i < directions.Length; i++)
             {
                 int newX = current.x + directions[i].x;
@@ -178,7 +159,7 @@ namespace Assets.Scripts.ControllUnit
             return neighbors;
         }
 
-        protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
+        protected List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
         {
             var path = new List<Vector2Int>();
 

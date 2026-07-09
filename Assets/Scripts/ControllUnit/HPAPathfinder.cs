@@ -49,8 +49,8 @@ namespace Assets.Scripts.ControllUnit
             Vector2Int goalCluster = clusterList.GetClusterIndex(goalNode);
 
             // start cluster, goal cluster에 노드 추가
-            clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList, unitRadius);
-            clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList, unitRadius);
+            clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, unitRadius);
+            clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, unitRadius);
 
             List<ClusterResult> clusterPath;
             // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴

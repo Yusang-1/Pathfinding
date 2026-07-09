@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.ControllUnit
@@ -19,7 +20,13 @@ namespace Assets.Scripts.ControllUnit
             this.clusterList = clusterList;
         }
 
-        public override List<Vector3> FindPath(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
+        public List<Vector3> FindThetaPathInClusterList(Vector3 from, Vector3 to, List<Vector2Int> clusters, float unitRadius)
+        {
+            neighborFindingClusters = clusters;
+            return SearchPath(from, to, unitRadius, GetNeighborNodeWithClusters);
+        }
+
+        protected override List<Vector3> SearchPath(Vector3 from, Vector3 to, float unitRadius, Func<Vector2Int, float, List<Vector2Int>> getNeighborNodeFunc)
         {
             openList.Clear();
             closeList.Clear();
@@ -28,7 +35,6 @@ namespace Assets.Scripts.ControllUnit
             Vector2Int startNodeIndex = nodeList.GetNodeIndex(from);
             Vector2Int goalNodeIndex = nodeList.GetNodeIndex(to);
 
-            pathResult = new PathResult();
             var startNode = new PathNode
             {
                 index = startNodeIndex,
@@ -44,22 +50,15 @@ namespace Assets.Scripts.ControllUnit
 
                 if (currentIndex == goalNodeIndex)
                 {
-                    pathResult.PathLength = nodeDict[currentIndex].g;
-                    pathResult.MemoryUsed += openList.Capacity;
-                    pathResult.MemoryUsed += closeList.Count;
-                    pathResult.MemoryUsed += nodeDict.Count;
-
                     return CaculateResult(nodeDict, currentIndex, startNodeIndex);
                 }
 
-                List<Vector2Int> neighborIndexes = GetNeighborNode(currentIndex, unitRadius);
+                List<Vector2Int> neighborIndexes = getNeighborNodeFunc(currentIndex, unitRadius);
                 for (int i = 0; i < neighborIndexes.Count; i++)
                 {
                     Vector2Int neighborIndex = neighborIndexes[i];
 
                     if (closeList.Contains(neighborIndex)) continue;
-
-                    pathResult.SearchedCount++;
 
                     float moveCost = currentIndex.GetNeighborMoveCost(neighborIndex);
                     float newG = nodeDict[currentIndex].g + moveCost;
@@ -91,79 +90,7 @@ namespace Assets.Scripts.ControllUnit
             return null;
         }
 
-        public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, out PathResult pathResult, List<Vector2Int> clusters, float unitRadius)
-        {
-            openList.Clear();
-            closeList.Clear();
-            nodeDict.Clear();
-
-            Vector2Int startNodeIndex = nodeList.GetNodeIndex(from);
-            Vector2Int goalNodeIndex = nodeList.GetNodeIndex(to);
-
-            pathResult = new PathResult();
-            var startNode = new PathNode
-            {
-                index = startNodeIndex,
-                g = 0
-            };
-            openList.Enqueue(startNode.index, startNode.f);
-            nodeDict.Add(startNode.index, startNode);
-
-            while (openList.Count > 0)
-            {
-                Vector2Int currentIndex = openList.Dequeue();
-                closeList.Add(currentIndex);
-
-                if (currentIndex == goalNodeIndex)
-                {
-                    pathResult.PathLength = nodeDict[currentIndex].g;
-                    pathResult.MemoryUsed += openList.Capacity;
-                    pathResult.MemoryUsed += closeList.Count;
-                    pathResult.MemoryUsed += nodeDict.Count;
-
-                    return CaculateResult(nodeDict, currentIndex, startNodeIndex);
-                }
-
-                List<Vector2Int> neighborIndexes = GetNeighborNode(currentIndex, clusters, unitRadius);
-                for (int i = 0; i < neighborIndexes.Count; i++)
-                {
-                    Vector2Int neighborIndex = neighborIndexes[i];
-
-                    if (closeList.Contains(neighborIndex)) continue;
-
-                    pathResult.SearchedCount++;
-
-                    float moveCost = currentIndex.GetNeighborMoveCost(neighborIndex);
-                    float newG = nodeDict[currentIndex].g + moveCost;
-
-                    if (!nodeDict.ContainsKey(neighborIndex) || newG + EPS < nodeDict[neighborIndex].g)
-                    {
-                        if (!nodeDict.ContainsKey(neighborIndex))
-                        {
-                            nodeDict[neighborIndex] = new PathNode
-                            {
-                                index = neighborIndex,
-                                h = CaculateHeuristic(neighborIndex, goalNodeIndex),
-                                g = float.PositiveInfinity
-                            };
-                        }
-                        PathNode tempNode = nodeDict[neighborIndex];
-                        tempNode.g = newG;
-                        tempNode.parentIndex = currentIndex;
-                        tempNode.beforeNodeIndex = currentIndex;
-                        tempNode.isParentSet = true;
-                        nodeDict[neighborIndex] = tempNode;
-
-                        UpdateVertex(nodeDict, currentIndex, neighborIndex, goalNodeIndex, unitRadius);
-                        openList.Enqueue(nodeDict[neighborIndex].index, nodeDict[neighborIndex].f);
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int start)
+        private List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int start)
         {
             List<Vector2Int> path = new();
 
@@ -225,28 +152,24 @@ namespace Assets.Scripts.ControllUnit
 
         private bool LineOfSight(Vector2Int node1, Vector2Int node2, float unitRadius)
         {
-            Vector2 node1WorldPos = nodeList.GridToWorld(node1);
-            Vector2 node2WorldPos = nodeList.GridToWorld(node2);
+            int x0 = node1.x;
+            int y0 = node1.y;
+            int x1 = node2.x;
+            int y1 = node2.y;
+            int dx = Mathf.Abs(x1 - x0);
+            int dy = -Mathf.Abs(y1 - y0);
 
-            float x0 = node1WorldPos.x;
-            float y0 = node1WorldPos.y;
-            float x1 = node2WorldPos.x;
-            float y1 = node2WorldPos.y;
-            float dx = Mathf.Abs(x1 - x0);
-            float dy = -Mathf.Abs(y1 - y0);
-
-            float sX = -(float)nodeList.NodeSize / 2;
-            if (x0 < x1) sX = (float)nodeList.NodeSize / 2;
-            float sY = -(float)nodeList.NodeSize / 2;
-            if (y0 < y1) sY = (float)nodeList.NodeSize / 2;
+            int sX = -1;
+            if (x0 < x1) sX = 1;
+            int sY = -1;
+            if (y0 < y1) sY = 1;
 
             float e = dx + dy;
 
             while (true)
             {
                 // 이동 불가능한 Node이거나 Cluster가 비활성화인 경우 false, 두 Node사이에 시야가 없음
-                var node = new Vector2(x0, y0);
-                if (!CanUnitFitAtPosition(node, unitRadius))
+                if (!CanUnitFitAtNode(new Vector2Int(x0, y0), unitRadius))
                 {
                     return false;
                 }
@@ -299,46 +222,10 @@ namespace Assets.Scripts.ControllUnit
             int dy = node2.y - node1.y;
 
             return Mathf.Sqrt(dx * dx + dy * dy);
-        }
+        }        
 
-        protected override List<Vector2Int> GetNeighborNode(Vector2Int current, float unitRadius) // 같은 cluster에 있는 이웃만
-        {
-            List<Vector2Int> neighbors = new();
-
-            // 상하좌우 + 대각선 (8방향)
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    if (dx * dy != 0) continue; // 대각선 제외
-                    if (dx == 0 && dy == 0) continue;  // 자신은 제외                                        
-
-                    int newX = current.x + dx;
-                    int newY = current.y + dy;
-
-                    if (newX < 0 || newY < 0 ||
-                        newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
-                    {
-                        continue;
-                    }
-
-                    var neighbor = new Vector2Int(newX, newY);
-                    // 워크어빌리티 맵으로 확인
-                    var nodeWorldPosition = nodeList.GridToWorld(current);
-                    var clusterIndex = clusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
-
-                    if (CanUnitFitAtNode(neighbor, unitRadius) && clusterList.GetCluster(clusterIndex).IsActive && clusterList.IsNodesInSameCluster(current, new Vector2Int(newX, newY)))
-                    {
-                        neighbors.Add(neighbor);
-                    }
-
-                }
-            }
-
-            return neighbors;
-        }
-
-        protected List<Vector2Int> GetNeighborNode(Vector2Int current, List<Vector2Int> clusters, float unitRadius) // 같은 cluster에 있는 이웃만
+        private List<Vector2Int> neighborFindingClusters;
+        private List<Vector2Int> GetNeighborNodeWithClusters(Vector2Int current, float unitRadius)
         {
             List<Vector2Int> neighbors = new();
 
@@ -367,7 +254,7 @@ namespace Assets.Scripts.ControllUnit
                     if (CanUnitFitAtNode(neighbor, unitRadius) && clusterList.GetCluster(clusterIndex).IsActive) // && clusterList.IsNodesInSameCluster(current, neighbor)
                     {
                         bool isNeighborInClusters = false;
-                        foreach (var cluster in clusters)
+                        foreach (var cluster in neighborFindingClusters)
                         {
                             isNeighborInClusters = isNeighborInClusters || clusterList.IsNodeInCluster(cluster, neighbor);
 
@@ -398,22 +285,5 @@ namespace Assets.Scripts.ControllUnit
 
             return result;
         }
-
-        private bool CanUnitFitAtPosition(Vector2 worldPos, float unitRadius)
-        {
-            bool result = true;
-
-            List<Node> nodeInRadius = nodeList.GetNodesInRange(worldPos, unitRadius);
-            foreach (var node in nodeInRadius)
-            {
-                if (!result) break;
-
-                result = result && node.IsWalkable;
-            }
-
-            return result;
-        }
     }
-
-
 }

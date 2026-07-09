@@ -7,8 +7,6 @@ namespace Assets.Scripts.ControllUnit
     public class HPAGraph
     {
         private readonly Dictionary<float, Dictionary<Vector2Int, GraphNode>> nodesByUnitRadius = new();
-        private readonly Dictionary<float, Dictionary<(Vector2Int from, Vector2Int to), float>> edgeCacheByRadius = new();
-
         private readonly Dictionary<Vector2Int, List<EntranceData>> entrancesDataByDirection = new();
         private readonly Dictionary<(Vector2Int from, Vector2Int to), float> edgeCache = new();
 
@@ -28,6 +26,17 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
+        public struct EntranceData
+        {
+            public Vector2Int LeftEntrance;
+            public Vector2Int RightEntrance;
+
+            public readonly bool HasEntrance(Vector2Int entrance)
+            {
+                return LeftEntrance == entrance || RightEntrance == entrance;
+            }
+        }
+
         public HPAGraph(Dictionary<UnitSize, float> unitRadiusDict)
         {
             foreach (var radius in unitRadiusDict.Values)
@@ -37,7 +46,7 @@ namespace Assets.Scripts.ControllUnit
         }
 
         /// <summary> 노드(entrance) 추가 </summary>
-        public bool TryAddNode(Vector2Int entrance, Vector2Int direction, NodeList nodeList, float unitRadius)
+        public bool TryAddNode(Vector2Int entrance, Vector2Int direction, float unitRadius)
         {
             var nodes = nodesByUnitRadius[unitRadius];
             if (!nodes.ContainsKey(entrance))
@@ -54,24 +63,24 @@ namespace Assets.Scripts.ControllUnit
             return false;
         }
 
-        public bool TryAddEntranceNode(EntranceData entranceData, Vector2Int direction, NodeList nodeList, float unitRadius)
+        public bool TryAddEntranceNode(EntranceData entranceData, Vector2Int direction, float unitRadius)
         {
             if (direction != Vector2Int.zero && !entrancesDataByDirection.ContainsKey(direction))
             {
                 entrancesDataByDirection[direction] = new List<EntranceData>
-            {
-                entranceData
-            };
+                {
+                    entranceData
+                };
 
                 if (entranceData.LeftEntrance != entranceData.RightEntrance)
                 {
-                    bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList, unitRadius);
-                    bool isRightSuccess = TryAddNode(entranceData.RightEntrance, direction, nodeList, unitRadius);
+                    bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, unitRadius);
+                    bool isRightSuccess = TryAddNode(entranceData.RightEntrance, direction, unitRadius);
                     return isLeftSuccess && isRightSuccess;
                 }
                 else
                 {
-                    bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList, unitRadius);
+                    bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, unitRadius);
                     return isLeftSuccess;
                 }
             }
@@ -81,17 +90,23 @@ namespace Assets.Scripts.ControllUnit
 
                 if (entranceData.LeftEntrance != entranceData.RightEntrance)
                 {
-                    bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList, unitRadius);
-                    bool isRightSuccess = TryAddNode(entranceData.RightEntrance, direction, nodeList, unitRadius);
+                    bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, unitRadius);
+                    bool isRightSuccess = TryAddNode(entranceData.RightEntrance, direction, unitRadius);
                     return isLeftSuccess && isRightSuccess;
                 }
                 else
                 {
-                    bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList, unitRadius);
+                    bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, unitRadius);
                     return isLeftSuccess;
                 }
             }
             else return false;
+        }
+
+        public void AddBidirectionalEdge(Vector2Int entrance1, Vector2Int entrance2, float weight, float unitRadius)
+        {
+            AddEdge(entrance1, entrance2, weight, unitRadius);
+            AddEdge(entrance2, entrance1, weight, unitRadius);
         }
 
         private void AddEdge(Vector2Int from, Vector2Int to, float weight, float unitRadius)
@@ -106,12 +121,6 @@ namespace Assets.Scripts.ControllUnit
                 nodes[from].EdgeWeights[to] = weight;
                 edgeCache[key] = weight;
             }
-        }
-
-        public void AddBidirectionalEdge(Vector2Int entrance1, Vector2Int entrance2, float weight, float unitRadius)
-        {
-            AddEdge(entrance1, entrance2, weight, unitRadius);
-            AddEdge(entrance2, entrance1, weight, unitRadius);
         }
 
         public void RemoveTempNode(Vector2Int tempNode)
@@ -130,13 +139,6 @@ namespace Assets.Scripts.ControllUnit
                     edgeCache.Remove(key);
                 }
             }
-        }
-
-        /// <summary> 노드의 모든 이웃 노드 반환 </summary>
-        public IEnumerable<Vector2Int> GetNeighbors(Vector2Int node, float unitRadius)
-        {
-            var nodes = nodesByUnitRadius[unitRadius];
-            return nodes.ContainsKey(node) ? nodes[node].Neighbors : null;
         }
 
         /// <summary> 간선 가중치 조회 </summary>
@@ -275,17 +277,6 @@ namespace Assets.Scripts.ControllUnit
                     rightEntrance = left;
                     leftEntrance = right;
                 }
-            }
-        }
-
-        public struct EntranceData
-        {
-            public Vector2Int LeftEntrance;
-            public Vector2Int RightEntrance;
-
-            public readonly bool HasEntrance(Vector2Int entrance)
-            {
-                return LeftEntrance == entrance || RightEntrance == entrance;
             }
         }
     }

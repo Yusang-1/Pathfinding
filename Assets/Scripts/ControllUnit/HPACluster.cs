@@ -20,21 +20,19 @@ namespace Assets.Scripts.ControllUnit
             this.pathfinder = pathfinder;
         }
 
-        public void Initialize(HPAClusterList clusterList, NodeList nodeList, Dictionary<UnitSize, float> unitRadiusDict)
+        public void Initialize(HPAClusterList clusterList, Dictionary<UnitSize, float> unitRadiusDict)
         {
             graph = new HPAGraph(unitRadiusDict);
 
             foreach (var radius in unitRadiusDict.Values)
             {
-                InitializeGraph(clusterList, nodeList, radius);
+                InitializeGraph(clusterList, radius);
             }
         }
 
-        private void InitializeGraph(HPAClusterList clusterList, NodeList nodeList, float unitRadius)
+        private void InitializeGraph(HPAClusterList clusterList, float unitRadius)
         {
-            var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
-            new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
-        };
+            var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
             // graph에 entrance node 추가
             for (int i = 0; i < directions.Length; i++)
@@ -44,7 +42,7 @@ namespace Assets.Scripts.ControllUnit
 
                 for (int j = 0; j < entrances.Count; j++)
                 {
-                    if (graph.TryAddEntranceNode(entrances[j], directions[i], nodeList, unitRadius))
+                    if (graph.TryAddEntranceNode(entrances[j], directions[i], unitRadius))
                     {
                         if (entrances[j].LeftEntrance != entrances[j].RightEntrance)
                         {
@@ -77,9 +75,9 @@ namespace Assets.Scripts.ControllUnit
         }
 
         private readonly List<Vector2Int> tempNodes = new();
-        public void AddNodeToGraph(Vector2Int newNode, NodeList nodeList, float unitRadius)
+        public void AddNodeToGraph(Vector2Int newNode, float unitRadius)
         {
-            bool value = graph.TryAddNode(newNode, Vector2Int.zero, nodeList, unitRadius);
+            bool value = graph.TryAddNode(newNode, Vector2Int.zero, unitRadius);
             if (value)
             {
                 tempNodes.Add(newNode);

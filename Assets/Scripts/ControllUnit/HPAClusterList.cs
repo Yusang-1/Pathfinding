@@ -41,10 +41,9 @@ namespace Assets.Scripts.ControllUnit
             {
                 for (int j = 0; j < clusterList.GetLength(1); j++)
                 {
-                    clusterList[i, j].Initialize(this, nodeList, unitRadiusList);
+                    clusterList[i, j].Initialize(this, unitRadiusList);
                 }
             }
-
         }
 
         private readonly List<Vector2Int> cachedNeighborList;
@@ -196,28 +195,6 @@ namespace Assets.Scripts.ControllUnit
         {
             if (GetClusterIndex(node1) == GetClusterIndex(node2)) return true;
             else return false;
-        }
-
-        public void ResetClusterList()
-        {
-            for (int i = 0; i < clusterList.GetLength(0); i++)
-            {
-                for (int j = 0; j < clusterList.GetLength(1); j++)
-                {
-                    SetClusterActive(new Vector2Int(i, j), false);
-                }
-            }
-        }
-
-        public void SetAllCLusterActive()
-        {
-            for (int i = 0; i < clusterList.GetLength(0); i++)
-            {
-                for (int j = 0; j < clusterList.GetLength(1); j++)
-                {
-                    SetClusterActive(new Vector2Int(i, j), true);
-                }
-            }
         }
 
         public void SetClusterActive(Vector2Int index, bool value) => clusterList[index.x, index.y].SetClusterActive(value);
