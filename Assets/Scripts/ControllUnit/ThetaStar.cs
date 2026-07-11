@@ -229,7 +229,7 @@ namespace Assets.Scripts.ControllUnit
         {
             List<Vector2Int> neighbors = new();
 
-            // 상하좌우 + 대각선 (8방향)
+            // 상하좌우
             for (int dx = -1; dx <= 1; dx++)
             {
                 for (int dy = -1; dy <= 1; dy++)

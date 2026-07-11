@@ -101,35 +101,7 @@ namespace Assets.Scripts.ControllUnit
             return null;
         }
 
-        private readonly Vector2Int[] directions;
-        protected List<Vector2Int> GetNeighborNode(Vector2Int current, float unitRadius)
-        {
-            List<Vector2Int> neighbors = new();
-
-            // 상하좌우
-            for (int i = 0; i < directions.Length; i++)
-            {
-                int newX = current.x + directions[i].x;
-                int newY = current.y + directions[i].y;
-
-                if (newX < 0 || newY < 0 ||
-                    newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
-                {
-                    continue;
-                }
-
-                Vector2Int neighbor = new(newX, newY);
-                // 워크어빌리티 맵으로 확인
-                var s = nodeList.GridToWorld(neighbor);
-                var c = hPAClusterList.GetClusterIndex((int)s.x, (int)s.y);
-                if (nodeList.Nodes[newX, newY].IsWalkable && hPAClusterList.GetCluster(c).IsActive)
-                {
-                    neighbors.Add(neighbor);
-                }
-            }
-
-            return neighbors;
-        }
+        private readonly Vector2Int[] directions;        
         private List<Vector2Int> GetNeighborNodesInCluster(Vector2Int current, float unitRadius)
         {
             List<Vector2Int> neighbors = new();
@@ -150,7 +122,7 @@ namespace Assets.Scripts.ControllUnit
                 }
 
                 // 워크어빌리티 맵으로 확인      
-                if (nodeList.Nodes[newX, newY].IsWalkable)
+                if (CanUnitFitAtNode(neighbor, unitRadius))
                 {
                     neighbors.Add(neighbor);
                 }
@@ -159,7 +131,22 @@ namespace Assets.Scripts.ControllUnit
             return neighbors;
         }
 
-        protected List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
+        private bool CanUnitFitAtNode(Vector2Int nodeIndex, float unitRadius)
+        {
+            bool result = true;
+
+            List<Node> nodeInRadius = nodeList.GetNodesInRange(nodeIndex, unitRadius);
+            foreach (var node in nodeInRadius)
+            {
+                if (!result) break;
+
+                result = result && node.IsWalkable;
+            }
+
+            return result;
+        }
+
+        private List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
         {
             var path = new List<Vector2Int>();
 
