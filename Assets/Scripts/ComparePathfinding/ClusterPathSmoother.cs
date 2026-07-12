@@ -26,16 +26,25 @@ public class ClusterPathSmoother
 
             if (index < clusterPath.Count)
             {
-                SetResult(clusterIndexes, nodeList.GetNodeIndex(from), startPoint, clusterPath[index].Index, true);
+                if (clusterIndexes.Contains(clusterPath[index].Index))
+                {
+                    SetResult(nodeList.GetNodeIndex(from), startPoint, Vector2Int.zero, false);
+                }
+                else
+                {
+                    SetResult(nodeList.GetNodeIndex(from), startPoint, clusterPath[index].Index, true);
+                }
                 clusterIndexes.Clear();
             }
             else
             {
                 // 마지막 노드 세팅
                 clusterIndexes.Add(clusterPath[^1].Index);
-                SetResult(clusterIndexes, nodeList.GetNodeIndex(to), startPoint, Vector2Int.zero, false);
+                SetResult(nodeList.GetNodeIndex(to), startPoint, Vector2Int.zero, false);
             }
         }
+
+        PathResultRecorder.AddMemoryUsed(clusterIndexes.Count);
         return smootherClusterPath;
     }
 
@@ -44,6 +53,7 @@ public class ClusterPathSmoother
     {
         outPoint = point;
         outIndex = index;
+        PathResultRecorder.AddSearchedCount();
 
         if (index == 0)
         {
@@ -129,7 +139,7 @@ public class ClusterPathSmoother
         Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false);
     }
 
-    private void SetResult(List<Vector2Int> clusterIndexes, Vector2Int nodeIndex, Vector2Int from, Vector2Int notIncludeClusterIndex, bool useLastIncludeClusterIndex)
+    private void SetResult(Vector2Int nodeIndex, Vector2Int from, Vector2Int notIncludeClusterIndex, bool useLastIncludeClusterIndex)
     {
         Vector2Int start;
 
@@ -163,7 +173,7 @@ public class ClusterSmootherResult
         ClusterIndexes.Clear();
         for (int i = 0; i < clusters.Count; i++)
         {
-            if (useNotIncludeClusterIndex && clusters[i] == notIncludeClusterIndex) break;
+            if (useNotIncludeClusterIndex && clusters[i] == notIncludeClusterIndex) continue;
 
             ClusterIndexes.Add(clusters[i]);
         }
