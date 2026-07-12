@@ -40,5 +40,7 @@ public class LazyRefine
         {
             pathQueue.Enqueue(resultPath[i]);
         }
+        
+        Vector3ListPool.ReleaseValue(resultPath);
     }
 }

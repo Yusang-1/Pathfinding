@@ -31,6 +31,7 @@ public class SearchWithTheClusterResult
             PathResultRecorder.AddPathLength(1); // cluster이동 비용 1;
 
             resultPath.AddRange(pathInCluster);
+            Vector3ListPool.ReleaseValue(pathInCluster);
 
             for (int i = 0; i < data.ClusterIndexes.Count; i++)
             {
@@ -62,6 +63,7 @@ public class SearchWithTheClusterResult
 
             if (pathInCluster == null) continue;
             resultPath.AddRange(pathInCluster);
+            Vector3ListPool.ReleaseValue(pathInCluster);
 
             for (int i = 0; i < data.ClusterIndexes.Count; i++)
             {

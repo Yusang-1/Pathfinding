@@ -16,7 +16,6 @@ public class AStarPathfinder : AbstractPathfinder
         this.nodeList = nodeList;
         this.hPAClusterList = hPAClusterList;
         directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-        // new Vector2Int(1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(-1,1)
     }
 
     public override List<Vector3> FindPath(Vector3 from, Vector3 to)
@@ -24,12 +23,16 @@ public class AStarPathfinder : AbstractPathfinder
         List<Vector3> path = SearchAStar(from, to, GetNeighborNode);
         return path;
     }
+
+    /// <summary> 같은 cluster List내에서 경로를 찾음 </summary>
     public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, List<Vector2Int> clusters)
     {
-        this.clusters = clusters;
+        clusterListToFind = clusters;
         List<Vector3> path = SearchAStar(from, to, GetNeightborNodesInClusterList);
         return path;
     }
+
+    /// <summary> 같은 cluster내에서 경로를 찾아 길이를 반환 </summary>
     public float FindPathInClusterForPathCache(Vector2Int from, Vector2Int to)
     {
         Vector3 fromPos = new(from.x, from.y);
@@ -37,10 +40,18 @@ public class AStarPathfinder : AbstractPathfinder
 
         List<Vector3> path = SearchAStar(fromPos, toPos, GetNeighborNodesInCluster);
 
+        float pathLength;
         if (path != null)
-            return PathResultRecorder.GetPathLength();
+        {
+            pathLength = PathResultRecorder.GetPathLength();
+        }
         else
-            return 0;
+        {
+            pathLength = 0;
+        }
+
+        Vector3ListPool.ReleaseValue(path);
+        return pathLength;
     }
 
     private List<Vector3> SearchAStar(Vector3 startPosition, Vector3 destinationPosition, Func<Vector2Int, List<Vector2Int>> getNeighbors)
@@ -110,6 +121,7 @@ public class AStarPathfinder : AbstractPathfinder
                     openList.Enqueue(nodeDict[neighbor].index, nodeDict[neighbor].f);
                 }
             }
+            Vector2IntListPool.ReleaseValue(neighborList);
         }
 
         // 경로 찾지 못함
@@ -119,7 +131,7 @@ public class AStarPathfinder : AbstractPathfinder
     private readonly Vector2Int[] directions;
     protected override List<Vector2Int> GetNeighborNode(Vector2Int current)
     {
-        List<Vector2Int> neighbors = new();
+        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
 
         for (int i = 0; i < directions.Length; i++)
         {
@@ -148,7 +160,7 @@ public class AStarPathfinder : AbstractPathfinder
 
     private List<Vector2Int> GetNeighborNodesInCluster(Vector2Int current)
     {
-        List<Vector2Int> neighbors = new();
+        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
 
         for (int i = 0; i < directions.Length; i++)
         {
@@ -175,10 +187,10 @@ public class AStarPathfinder : AbstractPathfinder
         return neighbors;
     }
 
-    private List<Vector2Int> clusters;
+    private List<Vector2Int> clusterListToFind;
     private List<Vector2Int> GetNeightborNodesInClusterList(Vector2Int current)
     {
-        List<Vector2Int> neighbors = new();
+        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
 
         for (int i = 0; i < directions.Length; i++)
         {
@@ -193,7 +205,7 @@ public class AStarPathfinder : AbstractPathfinder
             }
 
             bool isNeighborInClusters = false;
-            foreach (var cluster in clusters)
+            foreach (var cluster in clusterListToFind)
             {
                 isNeighborInClusters = isNeighborInClusters || hPAClusterList.IsNodeInCluster(cluster, neighbor);
 
@@ -214,7 +226,7 @@ public class AStarPathfinder : AbstractPathfinder
 
     protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
     {
-        var path = new List<Vector2Int>();
+        var path = Vector2IntListPool.GetValue();
 
         while (current != start)
         {
@@ -227,13 +239,14 @@ public class AStarPathfinder : AbstractPathfinder
         path.Reverse();
 
         // 그리드 좌표를 월드 좌표로 변환
-        var worldPath = new List<Vector3>();
+        var worldPath = Vector3ListPool.GetValue();
         foreach (var gridPos in path)
         {
             worldPath.Add(nodeList.GridToWorld(gridPos));
 
             nodeList.SetNodeTypeInPathFinding(gridPos, NodeType.trace);
         }
+        Vector2IntListPool.ReleaseValue(path);
 
         return worldPath;
     }

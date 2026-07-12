@@ -93,6 +93,7 @@ public class ThetaStar : AbstractPathfinder
                     openList.Enqueue(nodeDict[neighborIndex].index, nodeDict[neighborIndex].f);
                 }
             }
+            Vector2IntListPool.ReleaseValue(neighborIndexes);
         }
 
         return null;
@@ -100,7 +101,7 @@ public class ThetaStar : AbstractPathfinder
 
     protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int start)
     {
-        List<Vector2Int> path = new();
+        List<Vector2Int> path = Vector2IntListPool.GetValue();
 
         while (true)
         {
@@ -112,7 +113,7 @@ public class ThetaStar : AbstractPathfinder
         }
         path.Reverse();
 
-        List<Vector3> worldPath = new();
+        List<Vector3> worldPath = Vector3ListPool.GetValue();
         for (int i = 0; i < path.Count; i++)
         {
             worldPath.Add(nodeList.GridToWorld(path[i]));
@@ -121,6 +122,8 @@ public class ThetaStar : AbstractPathfinder
                 nodeList.SetNodeTypeInPathFinding(path[i], NodeType.trace);
             }
         }
+        
+        Vector2IntListPool.ReleaseValue(path);
 
         return worldPath;
     }
@@ -239,7 +242,7 @@ public class ThetaStar : AbstractPathfinder
 
     protected override List<Vector2Int> GetNeighborNode(Vector2Int current) // 같은 cluster에 있는 이웃만
     {
-        List<Vector2Int> neighbors = new();
+        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
 
         for (int dx = -1; dx <= 1; dx++)
         {
@@ -275,7 +278,7 @@ public class ThetaStar : AbstractPathfinder
     private List<Vector2Int> neighborFindingClusters;
     private List<Vector2Int> GetNeighborNodeWithClusters(Vector2Int current) // 같은 cluster에 있는 이웃만
     {
-        List<Vector2Int> neighbors = new();
+        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
 
         for (int dx = -1; dx <= 1; dx++)
         {

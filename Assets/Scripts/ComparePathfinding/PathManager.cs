@@ -130,7 +130,8 @@ public class PathManager : MonoBehaviour
         Vector3 from = nodeList.GridToWorld(nodeList.NodeTypeDrawer.StartNodeIndex);
         Vector3 to = nodeList.GridToWorld(nodeList.NodeTypeDrawer.GoalNodeIndex);
 
-        aStarPathfinder.FindPath(from, to);
+        var path = aStarPathfinder.FindPath(from, to);
+        Vector3ListPool.ReleaseValue(path);
 
         OnAFound?.Invoke(PathResultRecorder.GetPathResult());
 

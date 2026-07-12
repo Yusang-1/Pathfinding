@@ -8,10 +8,6 @@ public class HPAPathfinder
 
     private readonly List<ClusterResult> results = new();
 
-    // 메모리 풀: List 재사용으로 GC 감소
-    private readonly Stack<List<Vector2Int>> listPool = new();
-    private const int PoolSize = 10;
-
     private readonly PriorityQueue<int, float> openSet = new();
     private readonly HashSet<int> closedSet = new();
     private readonly Dictionary<int, AbstractNode> clusterDict = new();
@@ -20,12 +16,6 @@ public class HPAPathfinder
     {
         this.clusterList = clusterList;
         this.nodeList = nodeList;
-
-        // 메모리 풀 초기화
-        for (int i = 0; i < PoolSize; i++)
-        {
-            listPool.Push(new List<Vector2Int>());
-        }
     }
 
 
@@ -88,6 +78,7 @@ public class HPAPathfinder
 
         List<Vector2Int> startEntrances = GetAllEntrances(startClusterIndex);
         if (startEntrances == null || startEntrances.Count == 0) return null;
+        Vector2IntListPool.ReleaseValue(startEntrances);
 
         AbstractNode startVirtual = new()
         {
@@ -281,6 +272,7 @@ public class HPAPathfinder
                 );
             }
         }
+        Vector2IntListPool.ReleaseValue(entranceList);
 
         // Inter-cluster edge
         List<Vector2Int> neighbors = clusterList.GetNeighborClusters(current.ClusterIndex);
@@ -298,7 +290,7 @@ public class HPAPathfinder
 
     private List<Vector2Int> GetAllEntrances(Vector2Int Index)
     {
-        List<Vector2Int> entrances = GetList();
+        List<Vector2Int> entrances = Vector2IntListPool.GetValue();
         entrances.Clear();
 
         Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
@@ -339,8 +331,6 @@ public class HPAPathfinder
 
         return dx + dy;
     }
-
-    private List<Vector2Int> GetList() => listPool.Count > 0 ? listPool.Pop() : new List<Vector2Int>();
 
     private bool IsWalkable(Vector2Int nodeIndex) => nodeList.Nodes[nodeIndex.x, nodeIndex.y].IsWalkable;
 
