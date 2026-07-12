@@ -10,10 +10,6 @@ namespace Assets.Scripts.ControllUnit
 
         private readonly List<ClusterResult> results = new();
 
-        // 메모리 풀: List 재사용으로 GC 감소
-        private readonly Stack<List<Vector2Int>> listPool = new();
-        private const int PoolSize = 10;
-
         private readonly PriorityQueue<int, float> openSet = new();
         private readonly HashSet<int> closedSet = new();
         private readonly Dictionary<int, AbstractNode> clusterDict = new();
@@ -22,12 +18,6 @@ namespace Assets.Scripts.ControllUnit
         {
             this.clusterList = clusterList;
             this.nodeList = nodeList;
-
-            // 메모리 풀 초기화
-            for (int i = 0; i < PoolSize; i++)
-            {
-                listPool.Push(new List<Vector2Int>());
-            }
         }
 
 
@@ -88,6 +78,7 @@ namespace Assets.Scripts.ControllUnit
 
             List<Vector2Int> startEntrances = GetAllEntrances(startClusterIndex, unitRadius);
             if (startEntrances == null || startEntrances.Count == 0) return null;
+            Vector2IntListPool.ReleaseValue(startEntrances);
 
             AbstractNode startVirtual = new()
             {
@@ -276,6 +267,7 @@ namespace Assets.Scripts.ControllUnit
                     );
                 }
             }
+            Vector2IntListPool.ReleaseValue(entranceList);
 
             // Inter-cluster edge
             List<Vector2Int> neighbors = clusterList.GetNeighborClusters(current.ClusterIndex);
@@ -291,12 +283,12 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
+        private readonly Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         private List<Vector2Int> GetAllEntrances(Vector2Int Index, float unitRadius)
         {
-            List<Vector2Int> entrances = GetList();
+            List<Vector2Int> entrances = Vector2IntListPool.GetValue();
             entrances.Clear();
-
-            Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+            
             foreach (Vector2Int dir in directions)
             {
                 foreach (var dirEntrance in clusterList.GetEntrances(Index, dir, unitRadius))
@@ -334,8 +326,6 @@ namespace Assets.Scripts.ControllUnit
 
             return dx + dy;
         }
-
-        private List<Vector2Int> GetList() => listPool.Count > 0 ? listPool.Pop() : new List<Vector2Int>();
 
         private bool IsWalkable(Vector2Int nodeIndex) => nodeList.Nodes[nodeIndex.x, nodeIndex.y].IsWalkable;
 

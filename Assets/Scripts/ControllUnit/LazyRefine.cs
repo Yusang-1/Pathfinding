@@ -50,6 +50,8 @@ namespace Assets.Scripts.ControllUnit
             {
                 pathQueue.Enqueue(resultPath[i]);
             }
+            
+            Vector3ListPool.ReleaseValue(resultPath);
         }
 
         public void ResetLazyRefine()

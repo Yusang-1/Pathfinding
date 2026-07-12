@@ -85,6 +85,7 @@ namespace Assets.Scripts.ControllUnit
                         openList.Enqueue(nodeDict[neighborIndex].index, nodeDict[neighborIndex].f);
                     }
                 }
+                Vector2IntListPool.ReleaseValue(neighborIndexes);
             }
 
             return null;
@@ -92,7 +93,7 @@ namespace Assets.Scripts.ControllUnit
 
         private List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int start)
         {
-            List<Vector2Int> path = new();
+            List<Vector2Int> path = Vector2IntListPool.GetValue();
 
             while (true)
             {
@@ -104,11 +105,12 @@ namespace Assets.Scripts.ControllUnit
             }
             path.Reverse();
 
-            List<Vector3> worldPath = new();
+            List<Vector3> worldPath = Vector3ListPool.GetValue();
             for (int i = 0; i < path.Count; i++)
             {
                 worldPath.Add(nodeList.GridToWorld(path[i]));
             }
+            Vector2IntListPool.ReleaseValue(path);
 
             return worldPath;
         }
@@ -227,7 +229,7 @@ namespace Assets.Scripts.ControllUnit
         private List<Vector2Int> neighborFindingClusters;
         private List<Vector2Int> GetNeighborNodeWithClusters(Vector2Int current, float unitRadius)
         {
-            List<Vector2Int> neighbors = new();
+            List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
 
             // 상하좌우
             for (int dx = -1; dx <= 1; dx++)

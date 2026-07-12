@@ -27,10 +27,18 @@ namespace Assets.Scripts.ControllUnit
 
             List<Vector3> path = SearchPath(fromPos, toPos, unitRadius, GetNeighborNodesInCluster);
 
+            float pathLength;
             if (path != null)
-                return nodeDict[to].g;
+            {
+                pathLength = nodeDict[to].g;
+            }
             else
-                return 0;
+            {
+                pathLength = 0;
+            }
+
+            Vector3ListPool.ReleaseValue(path);
+            return pathLength;
         }
 
         protected override List<Vector3> SearchPath(Vector3 startPosition, Vector3 destinationPosition, float unitRadius, Func<Vector2Int, float, List<Vector2Int>> getNeighbors)
@@ -95,16 +103,17 @@ namespace Assets.Scripts.ControllUnit
                         openList.Enqueue(nodeDict[neighbor].index, nodeDict[neighbor].f);
                     }
                 }
+                Vector2IntListPool.ReleaseValue(neighborList);
             }
 
             // 경로 찾지 못함
             return null;
         }
 
-        private readonly Vector2Int[] directions;        
+        private readonly Vector2Int[] directions;
         private List<Vector2Int> GetNeighborNodesInCluster(Vector2Int current, float unitRadius)
         {
-            List<Vector2Int> neighbors = new();
+            List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
 
             // 상하좌우
             for (int i = 0; i < directions.Length; i++)
@@ -148,7 +157,7 @@ namespace Assets.Scripts.ControllUnit
 
         private List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
         {
-            var path = new List<Vector2Int>();
+            var path = Vector2IntListPool.GetValue();
 
             while (current != start)
             {
@@ -161,11 +170,12 @@ namespace Assets.Scripts.ControllUnit
             path.Reverse();
 
             // 그리드 좌표를 월드 좌표로 변환
-            var worldPath = new List<Vector3>();
+            var worldPath = Vector3ListPool.GetValue();
             foreach (var gridPos in path)
             {
                 worldPath.Add(nodeList.GridToWorld(gridPos));
             }
+            Vector2IntListPool.ReleaseValue(path);
 
             return worldPath;
         }
