@@ -7,7 +7,7 @@ public class UIResultShower : MonoBehaviour
     [SerializeField] private TextMeshProUGUI pathLength;
     [SerializeField] private TextMeshProUGUI memoryUsed;
     
-    public void SetResult(PathResult result)
+    public void SetResult(PathResultRecorder.PathResult result)
     {
         searchedCount.text = result.SearchedCount.ToString();
         pathLength.text = result.PathLength.ToString();

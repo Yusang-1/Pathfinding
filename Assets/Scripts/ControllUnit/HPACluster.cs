@@ -77,10 +77,11 @@ namespace Assets.Scripts.ControllUnit
         private readonly List<Vector2Int> tempNodes = new();
         public void AddNodeToGraph(Vector2Int newNode, float unitRadius)
         {
-            bool value = graph.TryAddNode(newNode, Vector2Int.zero, unitRadius);
-            if (value)
+            bool isAddNodeSuccess = graph.TryAddNode(newNode, Vector2Int.zero, unitRadius);
+            if (isAddNodeSuccess)
             {
                 tempNodes.Add(newNode);
+                // cluster에 존재하는 entrance들과 추가한 node의 경로 캐싱
                 foreach (var entrance in cachedEntrances)
                 {
                     float distance = pathfinder.FindPathInClusterForPathCache(entrance, newNode, unitRadius);
@@ -92,6 +93,7 @@ namespace Assets.Scripts.ControllUnit
                 cachedEntrances.Add(newNode);
             }
         }
+        
         public void RemoveTempNodeInGraph()
         {
             foreach (var node in tempNodes)

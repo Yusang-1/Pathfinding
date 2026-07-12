@@ -71,15 +71,15 @@ public class UIRoot : MonoBehaviour
         nodeTypeSelector.ActiveSelector(index, value);
     }
 
-    public void SetAResult(PathResult result)
+    public void SetAResult(PathResultRecorder.PathResult result)
     {
         uiResultController.SetAResult(result);
     }
-    public void SetHPAResult(PathResult result)
+    public void SetHPAResult(PathResultRecorder.PathResult result)
     {
         uiResultController.SetHPAResult(result);
     }
-    public void SetHPASmoothResult(PathResult result)
+    public void SetHPASmoothResult(PathResultRecorder.PathResult result)
     {
         uiResultController.SetHPASmoothResult(result);
     }

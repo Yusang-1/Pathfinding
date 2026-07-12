@@ -15,15 +15,15 @@ public class UIResultController : MonoBehaviour
         hPAStarSmoothingResultShower.gameObject.SetActive(!value);
     }
     
-    public void SetAResult(PathResult result)
+    public void SetAResult(PathResultRecorder.PathResult result)
     {
         aStarResultShower.SetResult(result);
     }
-    public void SetHPAResult(PathResult result)
+    public void SetHPAResult(PathResultRecorder.PathResult result)
     {
         hPAStarResultShower.SetResult(result);
     }
-    public void SetHPASmoothResult(PathResult result)
+    public void SetHPASmoothResult(PathResultRecorder.PathResult result)
     {
         hPAStarSmoothingResultShower.SetResult(result);
     }

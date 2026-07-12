@@ -30,13 +30,12 @@ public class HPAPathfinder
 
 
     /// <summary> high level cluster 경로를 반환 </summary>
-    public List<ClusterResult> FindClusterPath(Vector3 from, Vector3 to, out PathResult pathResult)
+    public List<ClusterResult> FindClusterPath(Vector3 from, Vector3 to)
     {
         results.Clear();
         Vector2Int startNode = nodeList.GetNodeIndex(from);
         Vector2Int goalNode = nodeList.GetNodeIndex(to);
 
-        pathResult = new();
         if (!IsWalkable(startNode) || !IsWalkable(goalNode) || !nodeList.IsNodeAccessable(startNode, goalNode))
         {
             Debug.Log("접근 불가능한 노드입니다.");
@@ -65,25 +64,13 @@ public class HPAPathfinder
         else
         {
             // 고수준 클러스터 경로 탐색
-            clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, out PathResult result);
-            pathResult.AddResult(result);
+            clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode);
         }
 
         if (clusterPath == null || clusterPath.Count == 0)
         {
             Debug.LogWarning("cluster경로를 찾지 못함");
         }
-
-        // 시작지점과 도착지점을 clusterPath에 추가
-        // var temp = clusterPath[0];
-        // temp.enteranceNode = startNode;
-        // temp.HasEntranceAndExit = true;
-        // clusterPath[0] = temp;
-
-        // temp = clusterPath[^1];
-        // temp.exitNode = goalNode;
-        // temp.HasEntranceAndExit = true;
-        // clusterPath[^1] = temp;
 
         // start cluster, goal cluster에 추가된 노드 제거
         clusterList.GetCluster(startCluster).RemoveTempNodeInGraph();
@@ -93,13 +80,12 @@ public class HPAPathfinder
     }
 
     /// <summary> 고수준 클러스터 경로 탐색 </summary>    
-    private List<ClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode, out PathResult pathResult)
+    private List<ClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode)
     {
         openSet.Clear();
         closedSet.Clear();
         clusterDict.Clear();
 
-        pathResult = new();
         List<Vector2Int> startEntrances = GetAllEntrances(startClusterIndex);
         if (startEntrances == null || startEntrances.Count == 0) return null;
 
@@ -123,9 +109,8 @@ public class HPAPathfinder
             if (currentClusterIndex == goalClusterIndex
                 && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode))
             {
-                pathResult.MemoryUsed += openSet.Capacity;
-                pathResult.MemoryUsed += clusterDict.Count;
-                pathResult.MemoryUsed += closedSet.Count;
+                PathResultRecorder.AddMemoryUsed(openSet.Capacity + clusterDict.Count + closedSet.Count);
+
                 return ReconstructAbstractPath(clusterDict, currentClusterHash, startHash);
             }
 
@@ -138,7 +123,8 @@ public class HPAPathfinder
 
                 if (closedSet.Contains(neighborClusterHash)) continue;
 
-                pathResult.SearchedCount++;
+                PathResultRecorder.AddSearchedCount();
+                
                 float tentativeG = clusterDict[currentClusterHash].G + cost;
 
                 if (!clusterDict.ContainsKey(neighborClusterHash) || tentativeG < neighborCluster.G)
@@ -193,7 +179,7 @@ public class HPAPathfinder
         Vector2Int startClusterIndex = childCluster.ClusterIndex;
         Vector2Int startClusterExitDirection = Vector2Int.zero;
         Vector2Int startEntranceExit = Vector2Int.zero;
-        
+
         while (true)
         {
             int childHash = current;
@@ -221,7 +207,7 @@ public class HPAPathfinder
             {
                 int grandparentHash = parentCluster.ParentClusterHash;
                 AbstractNode grandparentCluster = clusterDict[grandparentHash];
-                
+
                 // grandparent -> parent -> curent -> child
                 results.Add(new ClusterResult
                 {

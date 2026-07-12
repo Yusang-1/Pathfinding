@@ -32,13 +32,12 @@ namespace Assets.Scripts.ControllUnit
 
 
         /// <summary> high level cluster 경로를 반환 </summary>
-        public List<ClusterResult> FindClusterPath(Vector3 from, Vector3 to, out PathResult pathResult, float unitRadius)
+        public List<ClusterResult> FindClusterPath(Vector3 from, Vector3 to, float unitRadius)
         {
             results.Clear();
             Vector2Int startNode = nodeList.GetNodeIndex(from);
             Vector2Int goalNode = nodeList.GetNodeIndex(to);
 
-            pathResult = new();
             if (!IsWalkable(startNode) || !IsWalkable(goalNode) || !nodeList.IsNodeAccessable(startNode, goalNode))
             {
                 Debug.Log("접근 불가능한 노드입니다.");
@@ -65,8 +64,7 @@ namespace Assets.Scripts.ControllUnit
             else
             {
                 // 고수준 클러스터 경로 탐색
-                clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, out PathResult result, unitRadius);
-                pathResult.AddResult(result);
+                clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, unitRadius);
             }
 
             if (clusterPath == null || clusterPath.Count == 0)
@@ -82,13 +80,12 @@ namespace Assets.Scripts.ControllUnit
         }
 
         /// <summary> 고수준 클러스터 경로 탐색 </summary>    
-        private List<ClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode, out PathResult pathResult, float unitRadius)
+        private List<ClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode, float unitRadius)
         {
             openSet.Clear();
             closedSet.Clear();
             clusterDict.Clear();
 
-            pathResult = new();
             List<Vector2Int> startEntrances = GetAllEntrances(startClusterIndex, unitRadius);
             if (startEntrances == null || startEntrances.Count == 0) return null;
 
@@ -110,9 +107,6 @@ namespace Assets.Scripts.ControllUnit
                 if (currentClusterIndex == goalClusterIndex
                 && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode, unitRadius))
                 {
-                    pathResult.MemoryUsed += openSet.Capacity;
-                    pathResult.MemoryUsed += clusterDict.Count;
-                    pathResult.MemoryUsed += closedSet.Count;
                     return ReconstructAbstractPath(clusterDict, currentClusterHash, startHash);
                 }
                 if (closedSet.Contains(currentClusterHash)) continue;
@@ -124,7 +118,6 @@ namespace Assets.Scripts.ControllUnit
 
                     if (closedSet.Contains(neighborClusterHash)) continue;
 
-                    pathResult.SearchedCount++;
                     float tentativeG = clusterDict[currentClusterHash].G + cost;
 
                     if (!clusterDict.ContainsKey(neighborClusterHash) || tentativeG < neighborCluster.G)
