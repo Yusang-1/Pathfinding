@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public class ObjectPool<TObject> where TObject : class, IPoolObject<TObject>
+public class ObjectPool<TObject> where TObject : class
 {
     private readonly Stack<TObject> stackNotUsed = new();
     private readonly HashSet<TObject> stackCurrentUsed = new();

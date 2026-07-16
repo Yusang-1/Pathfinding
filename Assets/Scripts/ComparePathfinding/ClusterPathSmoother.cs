@@ -3,16 +3,30 @@ using System.Collections.Generic;
 
 public class ClusterPathSmoother
 {
+    private readonly PathManager pathManager;
+    private readonly HPAClusterList clusterList;
+    private readonly NodeList nodeList;
+    
     private readonly List<Vector2Int> clusterIndexes = new();
     private readonly List<ClusterSmootherResult> smootherClusterPath = new();
-
-    public List<ClusterSmootherResult> SmoothClusterPath(Vector3 from, Vector3 to, List<HPAPathfinder.ClusterResult> clusterPath, HPAClusterList clusterList, NodeList nodeList)
+    
+    public ClusterPathSmoother(HPAClusterList clusterList, NodeList nodeList, PathManager pathManager)
+    {
+        this.clusterList = clusterList;
+        this.nodeList = nodeList;
+        this.pathManager = pathManager;
+    }
+    
+    public List<ClusterSmootherResult> SmoothClusterPath(List<HPAPathfinder.ClusterResult> clusterPath)
     {
         if (clusterPath == null || clusterPath.Count <= 1) return null;
 
         clusterIndexes.Clear();
         smootherClusterPath.Clear();
         int leftSetIndex = 0, rightSetIndex = 0;
+        
+        Vector3 from = pathManager.From;
+        Vector3 to = pathManager.To;
 
         Vector2Int startPoint = nodeList.GetNodeIndex(from);
 
@@ -83,9 +97,11 @@ public class ClusterPathSmoother
         float angle = Vector3.SignedAngle(currentLeftString, currentRightString, Vector3.forward);
         int angleSign = angle > 0 ? 1 : -1;
 
-        if (angle == 0 && currentLeftString == currentRightString)
+        if (angle == 0 && currentLeftString.normalized == currentRightString.normalized)
         {
-            outPoint = point + currentLeftString;
+            // point에 더 가까운 쪽으로 새 point를 결정
+            Vector3 addString = currentLeftString.sqrMagnitude < currentRightString.sqrMagnitude ? currentLeftString : currentRightString;
+            outPoint = point + addString;
             outIndex = index - 1;
             return;
         }
@@ -97,10 +113,11 @@ public class ClusterPathSmoother
         float newAngle = Vector3.SignedAngle(newLeftString, currentRightString, Vector3.forward);
         int newAngleSign = newAngle > 0 ? 1 : -1;
 
-        if (angleSign * newAngleSign > 0 && Mathf.Abs(newAngle) < Mathf.Abs(angle))
+        if (angleSign * newAngleSign > 0 && Mathf.Abs(newAngle) <= Mathf.Abs(angle))
         {
             // 각도가 더 줄어드는 방향이면 leftEndPoint 갱신
             currentLeft = newLeft;
+            currentLeftString = newLeftString;
             leftSetIndex = index;
             angle = newAngle;
             angleSign = newAngleSign;
@@ -119,7 +136,7 @@ public class ClusterPathSmoother
         newAngle = Vector3.SignedAngle(currentLeftString, newRightString, Vector3.forward);
         newAngleSign = newAngle > 0 ? 1 : -1;
 
-        if (angleSign * newAngleSign > 0 && Mathf.Abs(newAngle) < Mathf.Abs(angle))
+        if (angleSign * newAngleSign > 0 && Mathf.Abs(newAngle) <= Mathf.Abs(angle))
         {
             // 각도가 더 줄어드는 방향이면 rightEndPoint 갱신
             currentRight = newRight;

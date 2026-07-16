@@ -3,17 +3,21 @@ using System.Collections.Generic;
 
 public class SearchWithTheClusterResult
 {
-    private readonly List<Vector3> resultPath = new();
-
     private readonly AStarPathfinder aStarPathfinder;
     private readonly ThetaStar thetaStarPathfinder;
-    public SearchWithTheClusterResult(AStarPathfinder aStarPathfinder, ThetaStar thetaStarPathfinder)
+    private readonly HPAClusterList clusterList;
+    private readonly NodeList nodeList;
+    
+    private readonly List<Vector3> resultPath = new();
+    public SearchWithTheClusterResult(AStarPathfinder aStarPathfinder, ThetaStar thetaStarPathfinder, HPAClusterList clusterList, NodeList nodeList)
     {
         this.aStarPathfinder = aStarPathfinder;
         this.thetaStarPathfinder = thetaStarPathfinder;
+        this.clusterList = clusterList;
+        this.nodeList = nodeList;
     }
 
-    public List<Vector3> FindPath(List<ClusterSmootherResult> pathData, NodeList nodeList, HPAClusterList clusterList)
+    public List<Vector3> FindPath(List<ClusterSmootherResult> pathData)
     {
         resultPath.Clear();
         foreach (var data in pathData)
@@ -43,7 +47,7 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindPathTheta(List<ClusterSmootherResult> pathData, NodeList nodeList, HPAClusterList clusterList)
+    public List<Vector3> FindPathTheta(List<ClusterSmootherResult> pathData)
     {
         resultPath.Clear();
         
