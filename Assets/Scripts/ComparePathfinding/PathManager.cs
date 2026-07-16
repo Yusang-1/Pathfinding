@@ -19,6 +19,7 @@ public class PathManager : MonoBehaviour
     private MapdataJsonConverter mapdataJsonConverter;
     private ClusterPathSmoother clusterPathSmoother;
     private readonly PathfindingResultShower resultShower = new();
+    private readonly PathfindingChain pathfindingChain = new();
 
     [SerializeField] private UIRoot uiRoot;
     [SerializeField] private InputManager inputManager;
@@ -35,7 +36,7 @@ public class PathManager : MonoBehaviour
     private int mapSize;
     private bool isMapGenerated = false;
 
-    private List<ClusterSmootherResult> currentAbstractResults;
+    private List<ClusterResult> currentAbstractResults;
 
     private Dictionary<NodeType, List<Vector2Int>> aStarResult = new();
     private Dictionary<NodeType, List<Vector2Int>> hpaStarResult = new();
@@ -53,7 +54,7 @@ public class PathManager : MonoBehaviour
         thetaStarPathfinder = new ThetaStar(nodeList, clusterList);
         searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
         clusterPathSmoother = new ClusterPathSmoother(clusterList, nodeList, this);
-        
+
         nodeData.Initialize();
         unit.Initialize(lineDrawer);
 
@@ -100,17 +101,17 @@ public class PathManager : MonoBehaviour
 
         isMapGenerated = true;
     }
-    
+
     private Vector3 from, to;
     public Vector3 From => from;
     public Vector3 To => to;
     private void FindAllPath()
     {
         CreateCluster();
-        
+
         from = nodeList.GridToWorld(nodeList.NodeTypeDrawer.StartNodeIndex);
         to = nodeList.GridToWorld(nodeList.NodeTypeDrawer.GoalNodeIndex);
-        
+
         aStarResult = FindAStarPath();
 
         hpaStarResult = FindHPAStarPath();
@@ -148,21 +149,12 @@ public class PathManager : MonoBehaviour
     {
         clusterList.ResetClusterList();
         PathResultRecorder.ResetPathResult();
-        
-        // CreateChain createChain = new();
-        // var findHPADelegate = createChain.CreateHPAPathfindingChain(hPAPathfinder.FindClusterPath, clusterPathSmoother.SmoothClusterPath, searchWithTheClusterResult.FindPath);
-        // findHPADelegate?.Invoke((from, to));
+        ClusterResultPool.Initialize();
 
-        var clusterResult = hPAPathfinder.FindClusterPath(from, to);
-        if (clusterResult == null) return null;
+        var hpaPathfinder = pathfindingChain.GetHPAStarSmooth(hPAPathfinder, clusterPathSmoother, searchWithTheClusterResult);
+        hpaPathfinder?.Invoke((from, to));
 
-        var clusterSmoothResult = clusterPathSmoother.SmoothClusterPath(clusterResult);
-        if (clusterSmoothResult == null) return null;
-
-        currentAbstractResults = clusterSmoothResult;
-        
-        PathResultRecorder.ResetPathLength();
-        searchWithTheClusterResult.FindPath(clusterSmoothResult);
+        ClusterResultPool.ReleaseAllValue();
 
         OnHPAFound?.Invoke(PathResultRecorder.GetPathResult());
 
@@ -183,11 +175,13 @@ public class PathManager : MonoBehaviour
         if (clusterSmoothResult == null) return null;
 
         currentAbstractResults = clusterSmoothResult;
-        
+
         PathResultRecorder.ResetPathLength();
         smoothPath = searchWithTheClusterResult.FindPathTheta(clusterSmoothResult);
 
         OnHPASmoothFound?.Invoke(PathResultRecorder.GetPathResult());
+
+        ClusterResultPool.ReleaseAllValue();
 
         var result = nodeList.NodeTypeDrawer.GetNodeInfo();
         nodeList.NodeTypeDrawer.ClearDict();

@@ -17,29 +17,31 @@ public class SearchWithTheClusterResult
         this.nodeList = nodeList;
     }
 
-    public List<Vector3> FindPath(List<ClusterSmootherResult> pathData)
+    public List<Vector3> FindPath(List<ClusterResult> pathData)
     {
         resultPath.Clear();
         foreach (var data in pathData)
         {
-            for (int i = 0; i < data.ClusterIndexes.Count; i++)
+            var path = data.GetSmoothClusterPath();
+            
+            for (int i = 0; i < path.ClusterIndexes.Count; i++)
             {
-                clusterList.SetClusterActive(data.ClusterIndexes[i], true);
+                clusterList.SetClusterActive(path.ClusterIndexes[i], true);
             }
 
-            Vector3 entrancePosition = nodeList.GridToWorld(data.EnterNodeIndex);
-            Vector3 goalPosition = nodeList.GridToWorld(data.ExitNodeIndex);
+            Vector3 entrancePosition = nodeList.GridToWorld(path.EnterNodeIndex);
+            Vector3 goalPosition = nodeList.GridToWorld(path.ExitNodeIndex);
 
-            List<Vector3> pathInCluster = aStarPathfinder.FindPathInClusterList(entrancePosition, goalPosition, data.ClusterIndexes);
+            List<Vector3> pathInCluster = aStarPathfinder.FindPathInClusterList(entrancePosition, goalPosition, path.ClusterIndexes);
 
             PathResultRecorder.AddPathLength(1); // cluster이동 비용 1;
 
             resultPath.AddRange(pathInCluster);
             Vector3ListPool.ReleaseValue(pathInCluster);
 
-            for (int i = 0; i < data.ClusterIndexes.Count; i++)
+            for (int i = 0; i < path.ClusterIndexes.Count; i++)
             {
-                clusterList.SetClusterActive(data.ClusterIndexes[i], false);
+                clusterList.SetClusterActive(path.ClusterIndexes[i], false);
             }
         }
 
@@ -47,21 +49,23 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindPathTheta(List<ClusterSmootherResult> pathData)
+    public List<Vector3> FindPathTheta(List<ClusterResult> pathData)
     {
         resultPath.Clear();
         
         foreach (var data in pathData)
         {
-            for (int i = 0; i < data.ClusterIndexes.Count; i++)
+            var path = data.GetSmoothClusterPath();
+            
+            for (int i = 0; i < path.ClusterIndexes.Count; i++)
             {
-                clusterList.SetClusterActive(data.ClusterIndexes[i], true);
+                clusterList.SetClusterActive(path.ClusterIndexes[i], true);
             }
 
-            Vector3 entrancePosition = nodeList.GridToWorld(data.EnterNodeIndex);
-            Vector3 goalPosition = nodeList.GridToWorld(data.ExitNodeIndex);
+            Vector3 entrancePosition = nodeList.GridToWorld(path.EnterNodeIndex);
+            Vector3 goalPosition = nodeList.GridToWorld(path.ExitNodeIndex);
 
-            List<Vector3> pathInCluster = thetaStarPathfinder.FindPathInClusterList(entrancePosition, goalPosition, data.ClusterIndexes);
+            List<Vector3> pathInCluster = thetaStarPathfinder.FindPathInClusterList(entrancePosition, goalPosition, path.ClusterIndexes);
 
             PathResultRecorder.AddPathLength(1); // cluster이동 비용 1;
 
@@ -69,9 +73,9 @@ public class SearchWithTheClusterResult
             resultPath.AddRange(pathInCluster);
             Vector3ListPool.ReleaseValue(pathInCluster);
 
-            for (int i = 0; i < data.ClusterIndexes.Count; i++)
+            for (int i = 0; i < path.ClusterIndexes.Count; i++)
             {
-                clusterList.SetClusterActive(data.ClusterIndexes[i], false);
+                clusterList.SetClusterActive(path.ClusterIndexes[i], false);
             }
         }
 
@@ -79,21 +83,23 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindPathThetaWithClusterList(ClusterSmootherResult data, NodeList nodeList, HPAClusterList clusterList)
+    public List<Vector3> FindPathThetaWithClusterList(ClusterResult data, NodeList nodeList, HPAClusterList clusterList)
     {
-        for (int i = 0; i < data.ClusterIndexes.Count; i++)
+        var path = data.GetSmoothClusterPath();
+        
+        for (int i = 0; i < path.ClusterIndexes.Count; i++)
         {
-            clusterList.SetClusterActive(data.ClusterIndexes[i], true);
+            clusterList.SetClusterActive(path.ClusterIndexes[i], true);
         }
 
-        Vector3 entrancePosition = nodeList.GridToWorld(data.EnterNodeIndex);
-        Vector3 goalPosition = nodeList.GridToWorld(data.ExitNodeIndex);
+        Vector3 entrancePosition = nodeList.GridToWorld(path.EnterNodeIndex);
+        Vector3 goalPosition = nodeList.GridToWorld(path.ExitNodeIndex);
 
-        List<Vector3> pathInCluster = thetaStarPathfinder.FindPathInClusterList(entrancePosition, goalPosition, data.ClusterIndexes);
+        List<Vector3> pathInCluster = thetaStarPathfinder.FindPathInClusterList(entrancePosition, goalPosition, path.ClusterIndexes);
 
-        for (int i = 0; i < data.ClusterIndexes.Count; i++)
+        for (int i = 0; i < path.ClusterIndexes.Count; i++)
         {
-            clusterList.SetClusterActive(data.ClusterIndexes[i], false);
+            clusterList.SetClusterActive(path.ClusterIndexes[i], false);
         }
 
         return pathInCluster;

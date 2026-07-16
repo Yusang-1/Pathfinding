@@ -6,54 +6,56 @@ public class ClusterPathSmoother
     private readonly PathManager pathManager;
     private readonly HPAClusterList clusterList;
     private readonly NodeList nodeList;
-    
+
     private readonly List<Vector2Int> clusterIndexes = new();
-    private readonly List<ClusterSmootherResult> smootherClusterPath = new();
-    
+    private readonly List<ClusterResult> smootherClusterPath = new();
+
     public ClusterPathSmoother(HPAClusterList clusterList, NodeList nodeList, PathManager pathManager)
     {
         this.clusterList = clusterList;
         this.nodeList = nodeList;
         this.pathManager = pathManager;
     }
-    
-    public List<ClusterSmootherResult> SmoothClusterPath(List<HPAPathfinder.ClusterResult> clusterPath)
+
+    public List<ClusterResult> SmoothClusterPath(List<ClusterResult> clusterPathList)
     {
-        if (clusterPath == null || clusterPath.Count <= 1) return null;
+        if (clusterPathList == null || clusterPathList.Count <= 1) return null;
 
         clusterIndexes.Clear();
         smootherClusterPath.Clear();
         int leftSetIndex = 0, rightSetIndex = 0;
-        
+
         Vector3 from = pathManager.From;
         Vector3 to = pathManager.To;
 
         Vector2Int startPoint = nodeList.GetNodeIndex(from);
 
-        for (int index = 0; index < clusterPath.Count - 1;)
+        for (int index = 0; index < clusterPathList.Count - 1;)
         {
-            Loop(clusterList, nodeList, clusterPath, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true);
+            Loop(clusterList, nodeList, clusterPathList, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true);
             from = outPoint;
             index = outIndex + 1;
             leftSetIndex = 0;
-            rightSetIndex = 0;
+            rightSetIndex = 0;            
 
-            if (index < clusterPath.Count)
+            if (index < clusterPathList.Count)
             {
-                if (clusterIndexes.Contains(clusterPath[index].Index))
+                var clusterPath = clusterPathList[index].GetClusterResult();
+                
+                if (clusterIndexes.Contains(clusterPath.Index))
                 {
                     SetResult(nodeList.GetNodeIndex(from), startPoint, Vector2Int.zero, false);
                 }
                 else
                 {
-                    SetResult(nodeList.GetNodeIndex(from), startPoint, clusterPath[index].Index, true);
+                    SetResult(nodeList.GetNodeIndex(from), startPoint, clusterPath.Index, true);
                 }
                 clusterIndexes.Clear();
             }
             else
             {
                 // 마지막 노드 세팅
-                clusterIndexes.Add(clusterPath[^1].Index);
+                clusterIndexes.Add(clusterPathList[^1].GetClusterResult().Index);
                 SetResult(nodeList.GetNodeIndex(to), startPoint, Vector2Int.zero, false);
             }
         }
@@ -62,7 +64,7 @@ public class ClusterPathSmoother
         return smootherClusterPath;
     }
 
-    private void Loop(HPAClusterList clusterList, NodeList nodeList, List<HPAPathfinder.ClusterResult> clusterPath,
+    private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath,
         Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex, out Vector3 outPoint, out int outIndex, int index, bool isStart)
     {
         outPoint = point;
@@ -78,7 +80,7 @@ public class ClusterPathSmoother
             return;
         }
 
-        var path = clusterPath[index];
+        var path = clusterPath[index].GetClusterResult();
 
         if (isStart)
         {
@@ -164,37 +166,39 @@ public class ClusterPathSmoother
 
         if (smootherClusterPath.Count > 0)
         {
-            Vector2Int dir = clusterIndexes[0] - smootherClusterPath[^1].ClusterIndexes[^1];
-            start = smootherClusterPath[^1].ExitNodeIndex + dir;
+            var path = smootherClusterPath[^1].GetSmoothClusterPath();
+
+            Vector2Int dir = clusterIndexes[0] - path.ClusterIndexes[^1];
+            start = path.ExitNodeIndex + dir;
         }
         else
         {
             start = from;
         }
 
-        ClusterSmootherResult result = new();
-        result.SetSmootherResult(clusterIndexes, nodeIndex, start, notIncludeClusterIndex, useLastIncludeClusterIndex);
+        ClusterResult result = new();
+        result.SetSmootherPath(clusterIndexes, nodeIndex, start, notIncludeClusterIndex, useLastIncludeClusterIndex);
 
         smootherClusterPath.Add(result);
     }
 }
 
-public class ClusterSmootherResult
-{
-    public List<Vector2Int> ClusterIndexes = new();
-    public Vector2Int EnterNodeIndex;
-    public Vector2Int ExitNodeIndex;
+// public class ClusterSmootherResult
+// {
+//     public List<Vector2Int> ClusterIndexes = new();
+//     public Vector2Int EnterNodeIndex;
+//     public Vector2Int ExitNodeIndex;
 
-    public void SetSmootherResult(List<Vector2Int> clusters, Vector2Int exitIndex, Vector2Int startIndex, Vector2Int notIncludeClusterIndex, bool useNotIncludeClusterIndex)
-    {
-        ClusterIndexes.Clear();
-        for (int i = 0; i < clusters.Count; i++)
-        {
-            if (useNotIncludeClusterIndex && clusters[i] == notIncludeClusterIndex) continue;
+//     public void SetSmootherResult(List<Vector2Int> clusters, Vector2Int exitIndex, Vector2Int startIndex, Vector2Int notIncludeClusterIndex, bool useNotIncludeClusterIndex)
+//     {
+//         ClusterIndexes.Clear();
+//         for (int i = 0; i < clusters.Count; i++)
+//         {
+//             if (useNotIncludeClusterIndex && clusters[i] == notIncludeClusterIndex) continue;
 
-            ClusterIndexes.Add(clusters[i]);
-        }
-        EnterNodeIndex = startIndex;
-        ExitNodeIndex = exitIndex;
-    }
-}
+//             ClusterIndexes.Add(clusters[i]);
+//         }
+//         EnterNodeIndex = startIndex;
+//         ExitNodeIndex = exitIndex;
+//     }
+// }

@@ -11,10 +11,10 @@ public class UnitUncontrollable : MonoBehaviour
     private Vector3 direction;
     private bool HasDestination => direction != Vector3.zero;
 
-    private ClusterSmootherResult currentPath;
+    private ClusterResult.SmoothClusterPath currentPath;
     private Vector3 lazyGoal;
 
-    private List<ClusterSmootherResult> currentAbstractPath;
+    private List<ClusterResult> currentAbstractPath;
     private int pathNum;
 
     private LineDrawer lineDrawer;
@@ -61,12 +61,12 @@ public class UnitUncontrollable : MonoBehaviour
         }
     }
 
-    public void MoveWithResult(List<ClusterSmootherResult> resultNodes, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
+    public void MoveWithResult(List<ClusterResult> resultNodes, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
     {
         gameObject.SetActive(true);        
 
         pathNum = 0;
-        currentPath = resultNodes[pathNum];
+        currentPath = resultNodes[pathNum].GetSmoothClusterPath();
         lazyGoal = new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y);
         currentAbstractPath = resultNodes;
 
@@ -118,7 +118,7 @@ public class UnitUncontrollable : MonoBehaviour
                     return false;
                 }
 
-                currentPath = currentAbstractPath[pathNum++];
+                currentPath = currentAbstractPath[pathNum++].GetSmoothClusterPath();
                 lazyGoal = new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y);
                 isNextPathSet = false;
             }

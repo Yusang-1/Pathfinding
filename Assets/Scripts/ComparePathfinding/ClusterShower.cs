@@ -39,12 +39,11 @@ public class ClusterShower : MonoBehaviour
         }
     }
 
-    public void ShowActivatedClusters(List<ClusterSmootherResult> results)
+    public void ShowActivatedClusters(List<ClusterResult> results)
     {
-        ClusterSmootherResult result;
         for (int i = 0; i < results.Count; i++)
         {
-            result = results[i];
+            var result = results[i].GetSmoothClusterPath();
             for(int j = 0; j < result.ClusterIndexes.Count; j++)
             {
                 clusters[result.ClusterIndexes[j]].gameObject.SetActive(true);                
