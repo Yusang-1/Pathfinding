@@ -22,6 +22,8 @@ public class PathLine : MonoBehaviour, IPoolObject<PathLine>
         transform.SetPositionAndRotation(position, Quaternion.Euler(0, 0, angle));
         
         Vector3 headScale = lineHead.transform.localScale;
+        if(transform.localScale.y == 0) return;
+        
         headScale.y /= transform.localScale.y;
         lineHead.transform.localScale = headScale;
         lineHead.transform.SetPositionAndRotation(endPosition, Quaternion.Euler(0, 0, angle));

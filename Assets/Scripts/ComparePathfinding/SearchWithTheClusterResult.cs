@@ -51,7 +51,7 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindPathTheta(List<ClusterResult> pathData)
+    public List<Vector3> FindSmoothPathTheta(List<ClusterResult> pathData)
     {
         resultPath.Clear();
         PathResultRecorder.ResetPathLength();
@@ -80,6 +80,35 @@ public class SearchWithTheClusterResult
             {
                 clusterList.SetClusterActive(path.ClusterIndexes[i], false);
             }
+        }
+
+        PathResultRecorder.AddPathLength(-1); // 마지막 cluster에서는 이동하지 않으므로 비용 -1;
+        return resultPath;
+    }
+    
+    public List<Vector3> FindPathTheta(List<ClusterResult> pathData)
+    {
+        resultPath.Clear();
+        PathResultRecorder.ResetPathLength();
+        
+        foreach (var data in pathData)
+        {
+            var path = data.GetClusterResult();
+            
+            clusterList.SetClusterActive(path.Index, true);
+
+            Vector3 entrancePosition = nodeList.GridToWorld(path.EntranceEnter);
+            Vector3 goalPosition = nodeList.GridToWorld(path.EntranceExit);
+
+            List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition);
+
+            PathResultRecorder.AddPathLength(1); // cluster이동 비용 1;
+
+            if (pathInCluster == null) continue;
+            resultPath.AddRange(pathInCluster);
+            Vector3ListPool.ReleaseValue(pathInCluster);
+
+            clusterList.SetClusterActive(path.Index, false);        
         }
 
         PathResultRecorder.AddPathLength(-1); // 마지막 cluster에서는 이동하지 않으므로 비용 -1;

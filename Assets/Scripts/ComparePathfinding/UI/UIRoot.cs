@@ -16,6 +16,7 @@ public class UIRoot : MonoBehaviour
     // UIPathShower event
     public event Action OnShowAStarPathRequested;
     public event Action OnShowHAPStarPathRequested;
+    public event Action OnShowHPAThetaPathRequested;
     public event Action OnShowHAPStarSmoothingPathRequested;
     public event Action OnResetAllRequested;
     public event Action OnShowMoveUnitRequested;
@@ -37,6 +38,7 @@ public class UIRoot : MonoBehaviour
         
         uiPathShower.OnShowAStarPathRequested += () => OnShowAStarPathRequested?.Invoke();
         uiPathShower.OnShowHAPStarPathRequested += () => OnShowHAPStarPathRequested?.Invoke();
+        uiPathShower.OnShowHPAThetaPathRequested += () => OnShowHPAThetaPathRequested?.Invoke();
         uiPathShower.OnShowHAPStarSmoothingPathRequested += () => OnShowHAPStarSmoothingPathRequested?.Invoke();        
         uiPathShower.OnResetAllRequested += () => OnResetAllRequested?.Invoke();
         uiPathShower.OnResetAllRequested += () => ActiveResultController(false);

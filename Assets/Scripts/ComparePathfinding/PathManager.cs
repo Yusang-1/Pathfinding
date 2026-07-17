@@ -40,6 +40,7 @@ public class PathManager : MonoBehaviour
 
     private Dictionary<NodeType, List<Vector2Int>> aStarResult = new();
     private Dictionary<NodeType, List<Vector2Int>> hpaStarResult = new();
+    private Dictionary<NodeType, List<Vector2Int>> hpaThetaResult = new();
     private Dictionary<NodeType, List<Vector2Int>> hpaStarSmoothResult = new();
     private List<Vector3> smoothPath;
 
@@ -85,8 +86,9 @@ public class PathManager : MonoBehaviour
         uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
 
         uiRoot.OnShowAStarPathRequested += ShowAStarResult;
-        uiRoot.OnShowHAPStarPathRequested += ShowHPAStarResult;
-        uiRoot.OnShowHAPStarSmoothingPathRequested += ShowHPAStarSmoothingResult;
+        uiRoot.OnShowHAPStarPathRequested += ShowHPASmoothingAStarResult;
+        uiRoot.OnShowHPAThetaPathRequested += ShowHPAThetaResult;
+        uiRoot.OnShowHAPStarSmoothingPathRequested += ShowHPASmoothingThetaResult;
         uiRoot.OnResetAllRequested += ResetAll;
         uiRoot.OnShowMoveUnitRequested += MoveUnitLazyRefine;
     }
@@ -115,9 +117,11 @@ public class PathManager : MonoBehaviour
 
         aStarResult = FindAStarPath();
 
-        hpaStarResult = FindHPAStarPath();
+        hpaStarResult = FindHPA_Smoothing_AStarPath();
 
-        hpaStarSmoothResult = FindHPAStarPathSmoothing();
+        hpaThetaResult = FindHPA_ThetaPath();
+
+        hpaStarSmoothResult = FindHPA_Smoothing_ThetaPath();
 
         nodeList.NodeTypeDrawer.IsDuringNodeSetting = false;
         OnPathFound?.Invoke();
@@ -146,14 +150,14 @@ public class PathManager : MonoBehaviour
         return result;
     }
 
-    private Dictionary<NodeType, List<Vector2Int>> FindHPAStarPath()
+    private Dictionary<NodeType, List<Vector2Int>> FindHPA_Smoothing_AStarPath()
     {
         clusterList.ResetClusterList();
         PathResultRecorder.ResetPathResult();
         ClusterResultPool.Initialize();
-        
+
         currentAbstractResults = pathfindingChain.ClusterPath_StringPulling?.Invoke((from, to));
-        
+
         pathfindingChain.HPAStar_StringPulling?.Invoke((from, to));
 
         ClusterResultPool.ReleaseAllValue();
@@ -165,13 +169,32 @@ public class PathManager : MonoBehaviour
         return result;
     }
 
-    private Dictionary<NodeType, List<Vector2Int>> FindHPAStarPathSmoothing()
+    private Dictionary<NodeType, List<Vector2Int>> FindHPA_ThetaPath()
     {
         clusterList.ResetClusterList();
         PathResultRecorder.ResetPathResult();
         
-        smoothPath = pathfindingChain.HPAStar_StringPulling_Theta?.Invoke((from, to));
         
+        pathfindingChain.HPAStar_Theta?.Invoke((from, to));
+
+        ClusterResultPool.ReleaseAllValue();
+
+        OnHPAFound?.Invoke(PathResultRecorder.GetPathResult());
+
+        var result = nodeList.NodeTypeDrawer.GetNodeInfo();        
+        result[NodeType.trace].Add(nodeList.GetNodeIndex(to));
+        
+        nodeList.NodeTypeDrawer.ClearDict();
+        return result;
+    }
+
+    private Dictionary<NodeType, List<Vector2Int>> FindHPA_Smoothing_ThetaPath()
+    {
+        clusterList.ResetClusterList();
+        PathResultRecorder.ResetPathResult();
+
+        smoothPath = pathfindingChain.HPAStar_StringPulling_Theta?.Invoke((from, to));
+
         ClusterResultPool.ReleaseAllValue();
 
         OnHPASmoothFound?.Invoke(PathResultRecorder.GetPathResult());
@@ -205,14 +228,21 @@ public class PathManager : MonoBehaviour
         resultShower.DrawAStar(nodeList, aStarResult);
         lineDrawer.DrawLine(aStarResult[NodeType.trace]);
     }
-    private void ShowHPAStarResult()
+    private void ShowHPASmoothingAStarResult()
     {
         ResetPath();
         resultShower.DrawHPAStar(nodeList, hpaStarResult);
         lineDrawer.DrawLine(hpaStarResult[NodeType.trace]);
         clusterShower.ShowActivatedClusters(currentAbstractResults);
     }
-    private void ShowHPAStarSmoothingResult()
+    private void ShowHPAThetaResult()
+    {
+        ResetPath();
+        resultShower.DrawHPAStar(nodeList, hpaStarResult);
+        lineDrawer.DrawLine(hpaThetaResult[NodeType.trace]);
+        clusterShower.ShowActivatedClusters(currentAbstractResults);
+    }
+    private void ShowHPASmoothingThetaResult()
     {
         ResetPath();
         resultShower.DrawHPAStar(nodeList, hpaStarSmoothResult);

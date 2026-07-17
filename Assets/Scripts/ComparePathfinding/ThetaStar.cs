@@ -20,7 +20,11 @@ public class ThetaStar : AbstractPathfinder
 
     public override List<Vector3> FindPath(Vector3 from, Vector3 to)
     {
-        return SearchThetaStar(from, to, GetNeighborNode);
+        nodeList.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(from), NodeType.trace);
+        var result =  SearchThetaStar(from, to, GetNeighborNode);
+        nodeList.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(to), NodeType.trace);
+        
+        return result;
     }
 
     public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, List<Vector2Int> clusters)

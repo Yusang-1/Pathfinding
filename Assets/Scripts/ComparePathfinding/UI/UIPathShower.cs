@@ -5,6 +5,7 @@ public class UIPathShower : MonoBehaviour
 {
     public event Action OnShowAStarPathRequested;
     public event Action OnShowHAPStarPathRequested;
+    public event Action OnShowHPAThetaPathRequested;
     public event Action OnShowHAPStarSmoothingPathRequested;
     public event Action OnResetAllRequested;
     public event Action OnShowMoveUnitRequested;
@@ -17,6 +18,11 @@ public class UIPathShower : MonoBehaviour
     public void OnShowHAPStarPathButton()
     {
         OnShowHAPStarPathRequested?.Invoke();
+    }
+    
+    public void OnShowHPAThetaPathButton()
+    {
+        OnShowHPAThetaPathRequested?.Invoke();
     }
     
     public void OnShowHAPStarSmoothingPathButton()
