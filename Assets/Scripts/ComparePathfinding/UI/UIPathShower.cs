@@ -40,4 +40,17 @@ public class UIPathShower : MonoBehaviour
     {
         OnShowMoveUnitRequested?.Invoke();
     }
+    
+    
+    private bool beforeActiveStatus;
+    public void SetTempActiveFalse()
+    {
+        beforeActiveStatus = gameObject.activeSelf;
+        gameObject.SetActive(false);
+    }
+
+    public void ResetToBeforeActiveStatus()
+    {
+        gameObject.SetActive(beforeActiveStatus);
+    }
 }

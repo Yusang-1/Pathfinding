@@ -87,4 +87,17 @@ public class NodeTypeSelector : MonoBehaviour, IPointerEnterHandler, IPointerExi
             childrenImage[i].color = tempColor;
         }
     }
+    
+    
+    private bool beforeActiveStatus;
+    public void SetTempActiveFalse()
+    {
+        beforeActiveStatus = gameObject.activeSelf;
+        gameObject.SetActive(false);
+    }
+
+    public void ResetToBeforeActiveStatus()
+    {
+        gameObject.SetActive(beforeActiveStatus);
+    }
 }

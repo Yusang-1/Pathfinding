@@ -81,6 +81,7 @@ public class UILoadMapList : MonoBehaviour
         OnLoadMapRequested?.Invoke(currentSelected);
         OnCloseLoadMapList();
         OnLoadMapFinished?.Invoke();
+        gameObject.SetActive(false);
     }
 }
 

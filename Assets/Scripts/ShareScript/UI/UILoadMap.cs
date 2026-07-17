@@ -5,6 +5,7 @@ public class UILoadMap : MonoBehaviour
 {
     public event Func<MapData[]> OnOfficialMapListRequested;
     public event Func<MapData[]> OnPersonalMapListRequested;
+    public event Action OnOpenMapListRequested;
     private Action<MapData[], MapData[]> ShowSavedMapsAction;
 
     public void SetProviders(Action<MapData[], MapData[]> showSavedMaps)
@@ -18,6 +19,7 @@ public class UILoadMap : MonoBehaviour
         var officlaMapList = OnOfficialMapListRequested?.Invoke();
         var personalMapList = OnPersonalMapListRequested?.Invoke();
         ShowSavedMapsAction?.Invoke(officlaMapList, personalMapList);
+        OnOpenMapListRequested?.Invoke();
 
         SetActiveFalse();
     }
