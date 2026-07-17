@@ -20,6 +20,8 @@ public class SearchWithTheClusterResult
     public List<Vector3> FindPath(List<ClusterResult> pathData)
     {
         resultPath.Clear();
+        PathResultRecorder.ResetPathLength();
+        
         foreach (var data in pathData)
         {
             var path = data.GetSmoothClusterPath();
@@ -52,6 +54,7 @@ public class SearchWithTheClusterResult
     public List<Vector3> FindPathTheta(List<ClusterResult> pathData)
     {
         resultPath.Clear();
+        PathResultRecorder.ResetPathLength();
         
         foreach (var data in pathData)
         {

@@ -60,18 +60,21 @@ public class FindClusterPathChain : FluentChain<(Vector3 from, Vector3 to), List
         return new FindClusterPathChain(processor);
     }
 
-    static FindPathWithClusterPathChain CreateFindPathChain(IProcessor<(Vector3 from, Vector3 to), List<Vector3>> processor)
+    static FindAStarPathWithClusterChain CreateFindPathChain(IProcessor<(Vector3 from, Vector3 to), List<Vector3>> processor)
     {
-        return new FindPathWithClusterPathChain(processor);
+        return new FindAStarPathWithClusterChain(processor);
     }
     
-    public FindPathWithClusterPathChain Then<TProcessor>(TProcessor processor) where TProcessor : class, IProcessor<List<ClusterResult>, List<Vector3>>
-        => base.Then<List<Vector3>, FindPathWithClusterPathChain, TProcessor>(processor, CreateFindPathChain);
+    public FindAStarPathWithClusterChain Then<TProcessor>(TProcessor processor) where TProcessor : class, IProcessor<List<ClusterResult>, List<Vector3>>
+        => base.Then<List<Vector3>, FindAStarPathWithClusterChain, TProcessor>(processor, CreateFindPathChain);
 }
 
-public class FindPathWithClusterPathChain : FluentChain<(Vector3 from, Vector3 to), List<Vector3>, FindPathWithClusterPathChain>
+public class FindAStarPathWithClusterChain : FluentChain<(Vector3 from, Vector3 to), List<Vector3>, FindAStarPathWithClusterChain>
 {
-    public FindPathWithClusterPathChain(IProcessor<(Vector3 from, Vector3 to), List<Vector3>> processor) : base(processor) { }
-    
-    
+    public FindAStarPathWithClusterChain(IProcessor<(Vector3 from, Vector3 to), List<Vector3>> processor) : base(processor) { }
+}
+
+public class FindThetaPathWithClusterChain : FluentChain<(Vector3 from, Vector3 to), List<Vector3>, FindThetaPathWithClusterChain>
+{
+    public FindThetaPathWithClusterChain(IProcessor<(Vector3 from, Vector3 to), List<Vector3>> processor) : base(processor) { }
 }

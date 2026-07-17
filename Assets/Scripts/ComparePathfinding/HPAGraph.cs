@@ -264,7 +264,54 @@ public class HPAGraph
 
         public readonly bool HasEntrance(Vector2Int entrance)
         {
-            return LeftEntrance == entrance || RightEntrance == entrance;
+            if (LeftEntrance == entrance || RightEntrance == entrance) return true;
+
+            Vector2Int searchDirection;
+
+            if (LeftEntrance.x == RightEntrance.x)
+            {
+                if (LeftEntrance.y < RightEntrance.y)
+                {
+                    searchDirection = new(0, 1);
+                }
+                else
+                {
+                    searchDirection = new(0, -1);
+                }
+            }
+            else
+            {
+                if (LeftEntrance.x < RightEntrance.x)
+                {
+                    searchDirection = new(1, 0);
+                }
+                else
+                {
+                    searchDirection = new(-1, 0);
+                }
+            }
+
+            Vector2Int compareVec = LeftEntrance + searchDirection;
+            while (true)
+            {
+                if (entrance == compareVec) return true;
+
+                compareVec += searchDirection;
+
+                if (searchDirection.x == 0) // y축으로 이동
+                {
+                    if(searchDirection.y > 0 && compareVec.y >= RightEntrance.y) break;
+                    else if(compareVec.y <= RightEntrance.y) break;
+                }
+                else
+                {
+                    if(searchDirection.x > 0 && compareVec.x >= RightEntrance.x) break;
+                    else if(compareVec.x <= RightEntrance.x) break;
+                }
+                
+            }
+
+            return false;
         }
     }
 }

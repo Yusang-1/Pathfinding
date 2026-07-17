@@ -72,9 +72,9 @@ public class SearchWithClusterResultProcessor : IProcessor<List<ClusterResult>, 
 {
     private readonly Func<List<ClusterResult>, List<Vector3>> func;
     
-    public SearchWithClusterResultProcessor(SearchWithTheClusterResult searchWithTheClusterResult)
+    public SearchWithClusterResultProcessor(Func<List<ClusterResult>, List<Vector3>> func)
     {
-        this.func = searchWithTheClusterResult.FindPath;
+        this.func = func;
     }
 
     public List<Vector3> Process(List<ClusterResult> path)
