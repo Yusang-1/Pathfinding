@@ -85,13 +85,17 @@ public class UIRoot : MonoBehaviour
     {
         uiResultController.SetAResult(result);
     }
-    public void SetHPAResult(PathResultRecorder.PathResult result)
+    public void SetHPASmoothAStarResult(PathResultRecorder.PathResult result)
     {
-        uiResultController.SetHPAResult(result);
+        uiResultController.SetHPASmoothAStarResult(result);
     }
-    public void SetHPASmoothResult(PathResultRecorder.PathResult result)
+    public void SetHPAThetaResult(PathResultRecorder.PathResult result)
     {
-        uiResultController.SetHPASmoothResult(result);
+        uiResultController.SetHPAThetaResult(result);
+    }
+    public void SetHPASmoothThetaResult(PathResultRecorder.PathResult result)
+    {
+        uiResultController.SetHPASmoothThetaResult(result);
     }
 
     public void ControllMenu() => uiContainerScenes.OnControllMenu();

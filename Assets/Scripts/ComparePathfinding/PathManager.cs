@@ -6,8 +6,9 @@ public class PathManager : MonoBehaviour
 {
     public event Action OnPathFound;
     public event Action<PathResultRecorder.PathResult> OnAFound;
-    public event Action<PathResultRecorder.PathResult> OnHPAFound;
-    public event Action<PathResultRecorder.PathResult> OnHPASmoothFound;
+    public event Action<PathResultRecorder.PathResult> OnHPASmoothAStarFound;
+    public event Action<PathResultRecorder.PathResult> OnHPAThetaFound;
+    public event Action<PathResultRecorder.PathResult> OnHPASmoothThetaFound;
 
     private NodeList nodeList;
     private HPAClusterList clusterList;
@@ -64,8 +65,9 @@ public class PathManager : MonoBehaviour
 
         OnPathFound += () => uiRoot.ActiveResultController(true);
         OnAFound += uiRoot.SetAResult;
-        OnHPAFound += uiRoot.SetHPAResult;
-        OnHPASmoothFound += uiRoot.SetHPASmoothResult;
+        OnHPASmoothAStarFound += uiRoot.SetHPASmoothAStarResult;
+        OnHPAThetaFound += uiRoot.SetHPAThetaResult;
+        OnHPASmoothThetaFound += uiRoot.SetHPASmoothThetaResult;
 
         inputManager.ControllMenu += uiRoot.ControllMenu;
 
@@ -162,7 +164,7 @@ public class PathManager : MonoBehaviour
 
         ClusterResultPool.ReleaseAllValue();
 
-        OnHPAFound?.Invoke(PathResultRecorder.GetPathResult());
+        OnHPASmoothAStarFound?.Invoke(PathResultRecorder.GetPathResult());
 
         var result = nodeList.NodeTypeDrawer.GetNodeInfo();
         nodeList.NodeTypeDrawer.ClearDict();
@@ -173,13 +175,12 @@ public class PathManager : MonoBehaviour
     {
         clusterList.ResetClusterList();
         PathResultRecorder.ResetPathResult();
-        
-        
+                
         pathfindingChain.HPAStar_Theta?.Invoke((from, to));
 
         ClusterResultPool.ReleaseAllValue();
 
-        OnHPAFound?.Invoke(PathResultRecorder.GetPathResult());
+        OnHPAThetaFound?.Invoke(PathResultRecorder.GetPathResult());
 
         var result = nodeList.NodeTypeDrawer.GetNodeInfo();        
         result[NodeType.trace].Add(nodeList.GetNodeIndex(to));
@@ -197,7 +198,7 @@ public class PathManager : MonoBehaviour
 
         ClusterResultPool.ReleaseAllValue();
 
-        OnHPASmoothFound?.Invoke(PathResultRecorder.GetPathResult());
+        OnHPASmoothThetaFound?.Invoke(PathResultRecorder.GetPathResult());
 
         var result = nodeList.NodeTypeDrawer.GetNodeInfo();
         nodeList.NodeTypeDrawer.ClearDict();

@@ -3,29 +3,35 @@ using UnityEngine;
 public class UIResultController : MonoBehaviour
 {
     [SerializeField] private UIResultShower aStarResultShower;
-    [SerializeField] private UIResultShower hPAStarResultShower;
-    [SerializeField] private UIResultShower hPAStarSmoothingResultShower;
+    [SerializeField] private UIResultShower hPASmoothAStarResultShower;
+    [SerializeField] private UIResultShower hPAThetaResultShower;
+    [SerializeField] private UIResultShower hPASmoothThetaResultShower;
     
     public void ShowResult()
     {
         bool value = aStarResultShower.gameObject.activeSelf;
         
         aStarResultShower.gameObject.SetActive(!value);
-        hPAStarResultShower.gameObject.SetActive(!value);
-        hPAStarSmoothingResultShower.gameObject.SetActive(!value);
+        hPASmoothAStarResultShower.gameObject.SetActive(!value);
+        hPAThetaResultShower.gameObject.SetActive(!value);
+        hPASmoothThetaResultShower.gameObject.SetActive(!value);
     }
     
     public void SetAResult(PathResultRecorder.PathResult result)
     {
         aStarResultShower.SetResult(result);
     }
-    public void SetHPAResult(PathResultRecorder.PathResult result)
+    public void SetHPASmoothAStarResult(PathResultRecorder.PathResult result)
     {
-        hPAStarResultShower.SetResult(result);
+        hPASmoothAStarResultShower.SetResult(result);
     }
-    public void SetHPASmoothResult(PathResultRecorder.PathResult result)
+    public void SetHPAThetaResult(PathResultRecorder.PathResult result)
     {
-        hPAStarSmoothingResultShower.SetResult(result);
+        hPAThetaResultShower.SetResult(result);
+    }
+    public void SetHPASmoothThetaResult(PathResultRecorder.PathResult result)
+    {
+        hPASmoothThetaResultShower.SetResult(result);
     }
     
     
