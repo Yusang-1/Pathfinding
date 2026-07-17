@@ -128,7 +128,7 @@ public class HPAClusterList
 
                     if (!isSuccess)
                     {
-                        standardNode.x++;
+                        standardNode.y++;
                         continue;
                     }
                     tempEdgeIndexes.Clear();
