@@ -18,6 +18,7 @@ public class UILoadMapMediator : MonoBehaviour
     {
         uiLoadMapList.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
         uiLoadMapList.OnLoadMapFinished += () => OnLoadMapFinished?.Invoke();
+        uiLoadMapList.OnLoadMapFinished += SetActiveFalse;
         uiLoadMapList.OnLoadMapListClosed += uiLoadMap.SetActiveTrue;
         uiLoadMapList.OnLoadMapListClosed += () => OnLoadMapListClosedRequested?.Invoke();
         
@@ -33,4 +34,6 @@ public class UILoadMapMediator : MonoBehaviour
         gameObject.SetActive(true);
         uiLoadMap.gameObject.SetActive(true);
     }
+    
+    private void SetActiveFalse() => gameObject.SetActive(false);
 }
