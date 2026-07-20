@@ -34,7 +34,7 @@ namespace Assets.Scripts.ControllUnit
         public List<ClusterSmootherResult> GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)
         {
             var clusterPath = highLevelPathfinder.FindClusterPath(from, to, unitRadius);
-            var smootherClusterPath = clusterPathSmoother.SmoothClusterPath(from, to, clusterPath, clusterList, nodeList);
+            var smootherClusterPath = clusterPathSmoother.SmoothClusterPath(from, to, clusterPath, clusterList, nodeList, unitRadius);
             return smootherClusterPath;
         }        
     }

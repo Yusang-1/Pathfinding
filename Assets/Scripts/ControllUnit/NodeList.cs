@@ -82,6 +82,23 @@ namespace Assets.Scripts.ControllUnit
             }
             return nodesInRange;
         }
+        
+        public bool IsNodesInRangeWalkable(Vector2Int standardNode, float unitRadius)
+        {
+            if(GetNode(standardNode).IsWalkable == false) return false;
+            
+            var nodes = GetNodesInRange(standardNode, unitRadius);
+            
+            for(int i = 0; i < nodes.Count; i++)
+            {
+                if(nodes[i].IsWalkable == false)
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
 
         private int currentAreaNum;
         private readonly Dictionary<int, List<Vector2Int>> nodesByAreaNum = new();

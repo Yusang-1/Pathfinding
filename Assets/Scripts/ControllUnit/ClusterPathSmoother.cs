@@ -8,7 +8,7 @@ namespace Assets.Scripts.ControllUnit
         private readonly List<Vector2Int> clusterIndexes = new();
         private readonly List<ClusterSmootherResult> smootherClusterPath = new();
 
-        public List<ClusterSmootherResult> SmoothClusterPath(Vector3 from, Vector3 to, List<HPAPathfinder.ClusterResult> clusterPath, HPAClusterList clusterList, NodeList nodeList)
+        public List<ClusterSmootherResult> SmoothClusterPath(Vector3 from, Vector3 to, List<HPAPathfinder.ClusterResult> clusterPath, HPAClusterList clusterList, NodeList nodeList, float unitRadius)
         {
             clusterIndexes.Clear();
             smootherClusterPath.Clear();
@@ -29,7 +29,7 @@ namespace Assets.Scripts.ControllUnit
 
             for (int index = 0; index < clusterPath.Count - 1;)
             {
-                Loop(clusterList, nodeList, clusterPath, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true);
+                Loop(clusterList, nodeList, clusterPath, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true, unitRadius);
                 from = outPoint;
                 index = outIndex + 1;
                 leftSetIndex = 0;
@@ -58,7 +58,7 @@ namespace Assets.Scripts.ControllUnit
         }
 
         private void Loop(HPAClusterList clusterList, NodeList nodeList, List<HPAPathfinder.ClusterResult> clusterPath,
-            Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex, out Vector3 outPoint, out int outIndex, int index, bool isStart)
+            Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex, out Vector3 outPoint, out int outIndex, int index, bool isStart, float unitRadius)
         {
             outPoint = point;
             outIndex = index;
@@ -77,13 +77,13 @@ namespace Assets.Scripts.ControllUnit
             // loop의 첫 시작인 경우 left, right설정 후 다음 loop로
             if (isStart)
             {
-                clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right);
+                clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);
                 currentLeft = left;
                 leftSetIndex = index;
                 currentRight = right;
                 rightSetIndex = index;
                 clusterIndexes.Add(path.Index);
-                Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false);
+                Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false, unitRadius);
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace Assets.Scripts.ControllUnit
                 return;
             }
 
-            clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int newLeft, out Vector2Int newRight);
+            clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int newLeft, out Vector2Int newRight, unitRadius);
 
             // 왼쪽 endPoint 계산
             Vector3 newLeftString = (Vector3)nodeList.GridToWorld(newLeft) - point;
@@ -145,7 +145,7 @@ namespace Assets.Scripts.ControllUnit
 
             clusterIndexes.Add(path.Index);
 
-            Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false);
+            Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false, unitRadius);
         }
 
         private void SetResult(Vector2Int nodeIndex, Vector2Int from, Vector2Int notIncludeClusterIndex, bool useLastIncludeClusterIndex)

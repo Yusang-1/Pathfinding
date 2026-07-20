@@ -37,7 +37,7 @@ namespace Assets.Scripts.ControllUnit
             // graph에 entrance node 추가
             for (int i = 0; i < directions.Length; i++)
             {
-                var entrances = clusterList.SetEntrance(clusterIndex, directions[i]);
+                var entrances = clusterList.SetEntrance(clusterIndex, directions[i], unitRadius);
                 if (entrances == null || entrances.Count == 0) continue;
 
                 for (int j = 0; j < entrances.Count; j++)

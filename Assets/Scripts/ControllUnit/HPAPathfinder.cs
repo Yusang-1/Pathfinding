@@ -95,11 +95,14 @@ namespace Assets.Scripts.ControllUnit
             {
                 int currentClusterHash = openSet.Dequeue();
                 Vector2Int currentClusterIndex = clusterDict[currentClusterHash].ClusterIndex;
+                
+                // 목적지 도착
                 if (currentClusterIndex == goalClusterIndex
-                && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode, unitRadius))
+                    && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode, unitRadius))
                 {
                     return ReconstructAbstractPath(clusterDict, currentClusterHash, startHash);
                 }
+                
                 if (closedSet.Contains(currentClusterHash)) continue;
                 closedSet.Add(currentClusterHash);
 
@@ -288,7 +291,7 @@ namespace Assets.Scripts.ControllUnit
         {
             List<Vector2Int> entrances = Vector2IntListPool.GetValue();
             entrances.Clear();
-            
+
             foreach (Vector2Int dir in directions)
             {
                 foreach (var dirEntrance in clusterList.GetEntrances(Index, dir, unitRadius))

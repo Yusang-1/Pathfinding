@@ -17,5 +17,5 @@ MonoBehaviour:
   selectableType: 1
   moveSpeed: 3.1
   refineLength: 2.2
-  unitSize: 2
+  unitSize: 1
   unitsData: {fileID: 11400000, guid: d7f8efabe6051f6458897dc7dfe85e54, type: 2}

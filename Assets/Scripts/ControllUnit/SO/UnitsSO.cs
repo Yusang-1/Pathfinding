@@ -7,7 +7,7 @@ namespace Assets.Scripts.ControllUnit.SO
     public class UnitsSO : ScriptableObject
     {
         [SerializeField] private float smallUnitRadius;
-        [SerializeField] private float mediumUnitRadius;
+        // [SerializeField] private float mediumUnitRadius;
         [SerializeField] private float largeUnitRadius;
 
         public Dictionary<UnitSize, float> UnitRadius;
@@ -17,7 +17,7 @@ namespace Assets.Scripts.ControllUnit.SO
             UnitRadius = new Dictionary<UnitSize, float>
             {
                 { UnitSize.small, smallUnitRadius },
-                { UnitSize.medium, mediumUnitRadius },
+                // { UnitSize.medium, mediumUnitRadius },
                 { UnitSize.large, largeUnitRadius }
             };
         }
@@ -29,7 +29,7 @@ namespace Assets.Scripts.ControllUnit
     public enum UnitSize
     {
         small,
-        medium,
+        // medium,
         large
     }
 }

@@ -7,7 +7,7 @@ namespace Assets.Scripts.ControllUnit
     public class HPAGraph
     {
         private readonly Dictionary<float, Dictionary<Vector2Int, GraphNode>> nodesByUnitRadius = new();
-        private readonly Dictionary<Vector2Int, List<EntranceData>> entrancesDataByDirection = new();
+        private readonly Dictionary<float, Dictionary<Vector2Int, List<EntranceData>>> entrancesDataByDirectionByRadius = new();        
         private readonly Dictionary<(Vector2Int from, Vector2Int to), float> edgeCache = new();
 
         private class GraphNode
@@ -65,6 +65,13 @@ namespace Assets.Scripts.ControllUnit
 
         public bool TryAddEntranceNode(EntranceData entranceData, Vector2Int direction, float unitRadius)
         {
+            if(!entrancesDataByDirectionByRadius.ContainsKey(unitRadius))
+            {
+                entrancesDataByDirectionByRadius.Add(unitRadius, new Dictionary<Vector2Int, List<EntranceData>>());
+            }
+            var entrancesDataByDirection = entrancesDataByDirectionByRadius[unitRadius];
+            entrancesDataByDirection ??= new Dictionary<Vector2Int, List<EntranceData>>();
+            
             if (direction != Vector2Int.zero && !entrancesDataByDirection.ContainsKey(direction))
             {
                 entrancesDataByDirection[direction] = new List<EntranceData>
@@ -184,7 +191,7 @@ namespace Assets.Scripts.ControllUnit
             return nodesByUnitRadius[unitRadius][node1].Neighbors.Contains(node2) || node1 == node2;
         }
 
-        public void GetUsedEntrance(Vector2Int direction, Vector2Int entrance, out Vector2Int leftEntrance, out Vector2Int rightEntrance)
+        public void GetUsedEntrance(Vector2Int direction, Vector2Int entrance, out Vector2Int leftEntrance, out Vector2Int rightEntrance, float unitRadius)
         {
             if (direction == Vector2Int.zero)
             {
@@ -194,7 +201,7 @@ namespace Assets.Scripts.ControllUnit
                 return;
             }
 
-            List<EntranceData> datas = entrancesDataByDirection[direction];
+            List<EntranceData> datas = entrancesDataByDirectionByRadius[unitRadius][direction];
             for (int i = 0; i < datas.Count; i++)
             {
                 if (datas[i].HasEntrance(entrance))

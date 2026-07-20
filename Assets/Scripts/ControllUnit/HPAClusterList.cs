@@ -71,7 +71,7 @@ namespace Assets.Scripts.ControllUnit
 
         private List<HPAGraph.EntranceData> cachedEdgeIndexes;
         private List<Vector2Int> tempEdgeIndexes;
-        public List<HPAGraph.EntranceData> SetEntrance(Vector2Int cluster, Vector2Int direction)
+        public List<HPAGraph.EntranceData> SetEntrance(Vector2Int cluster, Vector2Int direction, float unitRadius)
         {
             if (cluster.x + direction.x < 0 || cluster.x + direction.x >= clusterCount
                 || cluster.y + direction.y < 0 || cluster.y + direction.y >= clusterCount)
@@ -90,7 +90,7 @@ namespace Assets.Scripts.ControllUnit
 
                 for (int i = 0; i < clusterSize; i++) // x축을 따라 node 수집
                 {
-                    if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
+                    if (nodeList.IsNodesInRangeWalkable(standardNode, unitRadius) && nodeList.IsNodesInRangeWalkable(standardNode + direction, unitRadius))
                     {
                         tempEdgeIndexes.Add(standardNode);
                     }
@@ -118,7 +118,7 @@ namespace Assets.Scripts.ControllUnit
 
                 for (int i = 0; i < clusterSize; i++) // y축을 따라 node 수집
                 {
-                    if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
+                    if (nodeList.IsNodesInRangeWalkable(standardNode, unitRadius) && nodeList.IsNodesInRangeWalkable(standardNode + direction, unitRadius))
                     {
                         tempEdgeIndexes.Add(standardNode);
                     }
@@ -128,7 +128,7 @@ namespace Assets.Scripts.ControllUnit
 
                         if (!isSuccess)
                         {
-                            standardNode.x++;
+                            standardNode.y++;
                             continue;
                         }
                         tempEdgeIndexes.Clear();
