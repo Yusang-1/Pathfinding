@@ -11,13 +11,15 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector3> OnHoldPreformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
-        
+        public event Action<Vector3> OnSetSpawnAreaRequested;
+
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
         [SerializeField] private PlayerControllInput playerInput;
         [SerializeField] private UnitInput unitInput;
+        [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
 
-        private InputActionMap actionMap;        
+        private InputActionMap actionMap;
 
         private IActionMapInputer currentInputer;
         private readonly Dictionary<string, IActionMapInputer> inputerDict = new();
@@ -32,20 +34,24 @@ namespace Assets.Scripts.ControllUnit
         {
             inputerDict.Add((playerInput as IActionMapInputer).GetActionMapName(), playerInput);
             inputerDict.Add((unitInput as IActionMapInputer).GetActionMapName(), unitInput);
-            
+            inputerDict.Add((spawnAreaSetterInput as IActionMapInputer).GetActionMapName(), spawnAreaSetterInput);
+
             playerInput.OnHoldStarted += (vec) => OnHoldStarted?.Invoke(vec);
             playerInput.OnHoldPreformed += (vec) => OnHoldPreformed?.Invoke(vec);
             playerInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
             playerInput.OnControllMenu += () => OnControllMenu?.Invoke();
-            
+
             unitInput.OnHoldStarted += (vec) => OnHoldStarted?.Invoke(vec);
             unitInput.OnHoldPreformed += (vec) => OnHoldPreformed?.Invoke(vec);
             unitInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
             unitInput.OnControllMenu += () => OnControllMenu?.Invoke();
-            
+
+            spawnAreaSetterInput.OnSetSpawnAreaRequested += (vec) => OnSetSpawnAreaRequested?.Invoke(vec);
+            spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
+
             ChangeActionMapDefault();
         }
-        
+
         public void Initialize(SelectableController selectableController)
         {
             selectableController.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
@@ -54,7 +60,7 @@ namespace Assets.Scripts.ControllUnit
             unitInput.Initialize(selectableController);
         }
 
-        private void ChangeActionMapSelected(string value)
+        public void ChangeActionMapSelected(string value)
         {
             playerInputComponent.SwitchCurrentActionMap(value);
 
@@ -64,7 +70,7 @@ namespace Assets.Scripts.ControllUnit
 
             currentInputer.ActionMapActivated();
         }
-        
+
         private const string DefaultActionMapName = "Player";
         private void ChangeActionMapDefault()
         {

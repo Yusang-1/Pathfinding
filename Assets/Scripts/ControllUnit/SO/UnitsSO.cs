@@ -8,7 +8,7 @@ namespace Assets.Scripts.ControllUnit.SO
     {
         [SerializeField] private float smallUnitRadius;
         [SerializeField] private float mediumUnitRadius;
-        [SerializeField] private float bigUnitRadius;
+        [SerializeField] private float largeUnitRadius;
 
         public Dictionary<UnitSize, float> UnitRadius;
 
@@ -18,7 +18,7 @@ namespace Assets.Scripts.ControllUnit.SO
             {
                 { UnitSize.small, smallUnitRadius },
                 { UnitSize.medium, mediumUnitRadius },
-                { UnitSize.big, bigUnitRadius }
+                { UnitSize.large, largeUnitRadius }
             };
         }
     }    
@@ -30,6 +30,6 @@ namespace Assets.Scripts.ControllUnit
     {
         small,
         medium,
-        big
+        large
     }
 }

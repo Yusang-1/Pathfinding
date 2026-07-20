@@ -12,7 +12,8 @@ namespace Assets.Scripts.ControllUnit.UI
         public event Func<MapData[]> OnGetPersonalMapListRequested;
 
         // UISpawnUnit event
-        public event Action OnSpawnUnitRequested;
+        public event Action<UnitSize> OnSpawnUnitRequested;
+        public event Action<Action> OnGetSpawnAreaRequested;
 
         // UIDragController event
         public Action<Vector3> OnHoldStarted;
@@ -43,7 +44,8 @@ namespace Assets.Scripts.ControllUnit.UI
             uiLoadMapMediator.OnLoadMapFinished += uiSpawnUnit.SetActiveTrue;
             uiLoadMapMediator.OnLoadMapFinished += uiUnitPanel.SetActiveTrue;
 
-            uiSpawnUnit.OnSpawnUnitRequested += () => OnSpawnUnitRequested?.Invoke();
+            uiSpawnUnit.OnSpawnUnitRequested += (unitSize) => OnSpawnUnitRequested?.Invoke(unitSize);
+            uiSpawnUnit.OnGetSpawnAreaRequested += (action) => OnGetSpawnAreaRequested?.Invoke(action);
 
             OnHoldStarted += uiDragController.DragStarted;
             OnHoldPreformed += uiDragController.DragPerformed;

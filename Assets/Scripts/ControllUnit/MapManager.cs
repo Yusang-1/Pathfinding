@@ -38,17 +38,21 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnLoadMapRequested += SetMapData;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
-            uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;            
+            uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
+            uiRoot.OnGetSpawnAreaRequested += unitSpawner.SpawnAreaSetter.StartSetSpawnArea;
+
             uiRoot.OnFindSelectableUnitInDragUI += spatialHash.GetUnitsInRange;
             uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
 
             unitSpawner.OnSelectedCallback += (selectable) => uiRoot.OnUnitSelected?.Invoke(selectable);
             unitSpawner.OnDeselectedCallback += (selectable) => uiRoot.OnUnitDeselected?.Invoke(selectable);
+            unitSpawner.SpawnAreaSetter.OnStartSetSpawnAreaRequested += inputManager.ChangeActionMapSelected;
 
             inputManager.OnHoldStarted += (vec) => uiRoot.OnHoldStarted?.Invoke(vec);
             inputManager.OnHoldPreformed += (vec) => uiRoot.OnHoldPreformed?.Invoke(vec);
             inputManager.OnHoldCanceled += () => uiRoot.OnHoldCanceled?.Invoke();
             inputManager.OnControllMenu += () => uiRoot.OnManageMenu?.Invoke();
+            inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnUnitArea;
             
             unitsSO.Initialize();
         }

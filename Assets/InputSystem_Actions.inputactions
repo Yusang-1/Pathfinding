@@ -981,6 +981,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "SpawnAreaSetter",
+            "id": "446618a6-e7fa-4ee8-9148-4768ca29f165",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "ef5f765d-2b4b-44d9-9acd-bcdc0ee08c15",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MousePosition",
+                    "type": "Value",
+                    "id": "384fb65a-47e2-4c0f-a651-4425b14d0888",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5df4d72f-2dad-4ffd-aa1e-2e46e30b7a5f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "df5b4a06-972c-484b-83e5-dc38ed99311d",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MousePosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
