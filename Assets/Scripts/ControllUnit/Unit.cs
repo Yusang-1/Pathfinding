@@ -37,6 +37,7 @@ namespace Assets.Scripts.ControllUnit
         {
             controller = new UnitController(this, spatialHash, bottomChanger.transform, unitData, FindAnyObjectByType<Pathfinder>(), steeringWeightingData.WalkConfig);
             this.bottomChanger = bottomChanger;
+            bottomChanger.SetRadius(unitData.Radius);
         }
 
         public void UnitSpawned()

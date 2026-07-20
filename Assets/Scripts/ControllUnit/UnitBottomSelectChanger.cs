@@ -19,6 +19,13 @@ namespace Assets.Scripts.ControllUnit
             OnPoolObjectFirstCreated?.Invoke(this);
             gameObject.SetActive(false);
         }
+        public void SetRadius(float unitRadius)
+        {
+            var scale = transform.localScale;
+            scale *= unitRadius * 2;
+            transform.localScale = scale;
+        }
+        
         public void Despawned()
         {
             OnPoolObjectUnused?.Invoke(this);
