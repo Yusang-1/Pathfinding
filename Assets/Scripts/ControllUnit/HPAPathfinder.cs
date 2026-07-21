@@ -100,7 +100,7 @@ namespace Assets.Scripts.ControllUnit
                 if (currentClusterIndex == goalClusterIndex
                     && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode, unitRadius))
                 {
-                    return ReconstructAbstractPath(clusterDict, currentClusterHash, startHash);
+                    return ReconstructAbstractPath(clusterDict, currentClusterHash, startHash, startNode, goalNode);
                 }
                 
                 if (closedSet.Contains(currentClusterHash)) continue;
@@ -137,7 +137,7 @@ namespace Assets.Scripts.ControllUnit
             return null; // 경로 없음
         }
 
-        private List<ClusterResult> ReconstructAbstractPath(Dictionary<int, AbstractNode> clusterDict, int current, int start)
+        private List<ClusterResult> ReconstructAbstractPath(Dictionary<int, AbstractNode> clusterDict, int current, int start, Vector2Int startNode, Vector2Int goalNode)
         {
             results.Clear();
 
@@ -162,11 +162,11 @@ namespace Assets.Scripts.ControllUnit
                 Index = childCluster.ClusterIndex,
                 EnterDirection = currentCluster.ClusterIndex - childCluster.ClusterIndex,
                 ExitDirection = Vector2Int.zero,
-                EntranceExit = Vector2Int.zero
+                EntranceExit = goalNode
             });
 
-            Vector2Int startClusterIndex = childCluster.ClusterIndex;
-            Vector2Int startClusterExitDirection = Vector2Int.zero;
+            Vector2Int startClusterIndex = currentCluster.ClusterIndex;
+            Vector2Int startClusterExitDirection = childCluster.ClusterIndex - currentCluster.ClusterIndex;
             Vector2Int startEntranceExit = Vector2Int.zero;
 
             while (true)

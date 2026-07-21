@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WalkConfig:
     SeekWeight: 1
-    SeparationWeight: 1.5
-    CohesionWeight: 0
+    SeparationWeight: 1.6
+    CohesionWeight: 0.1
     AlignmentWeight: 0.3

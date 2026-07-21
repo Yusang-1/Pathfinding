@@ -13,7 +13,7 @@ namespace Assets.Scripts.ControllUnit
 
             if (nearby == null || nearby.Count == 1) return seekVector;
 
-            var separationVector = Separation(unit, nearby, 0.8f);
+            var separationVector = Separation(unit, nearby);
             separationVector *= weighting.SeparationWeight;
 
             var cohesionVector = Cohesion(unit, nearby, maxSpeed);
@@ -31,7 +31,7 @@ namespace Assets.Scripts.ControllUnit
             return desired - velocity;
         }
 
-        private Vector3 Separation(Unit unit, List<Unit> nearby, float separationRadius)
+        private Vector3 Separation(Unit unit, List<Unit> nearby)
         {
             Vector3 steeringForce = Vector3.zero;
 
@@ -39,7 +39,10 @@ namespace Assets.Scripts.ControllUnit
             {
                 if (other == unit) continue;
                 
+                float separationRadius = (other.UnitData.Radius + unit.UnitData.Radius) * 1.2f;
+                
                 float distance = Vector3.Distance(unit.transform.position, other.transform.position);
+                
                 if (distance < separationRadius && distance > 0.01f)
                 {
                     Vector3 diff = (unit.transform.position - other.transform.position).normalized;
