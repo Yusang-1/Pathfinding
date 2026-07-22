@@ -6,6 +6,8 @@ namespace Assets.Scripts.ControllUnit
 {
     public class SelectableController
     {
+        private readonly SlotDestination slotDestination = new();
+
         private SelectableType currentSelectedType;
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
         private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();
@@ -91,7 +93,7 @@ namespace Assets.Scripts.ControllUnit
         {
             DeselectedAll();
             AddSelected(selectable);
-            currentSelectedType = selectable.GetSelectableType();            
+            currentSelectedType = selectable.GetSelectableType();
 
             if (selectable is IHaveOwnActionMap)
             {
@@ -101,8 +103,8 @@ namespace Assets.Scripts.ControllUnit
         }
         private void AddSelected(ISelectableUnit selectable)
         {
-            if(currentSelectedHash.Contains(selectable)) return;
-            
+            if (currentSelectedHash.Contains(selectable)) return;
+
             selectable.Selected();
             currentSelectedHash.Add(selectable);
         }
@@ -243,19 +245,21 @@ namespace Assets.Scripts.ControllUnit
 
             return newlyFocusedUnit;
         }
-        
+
         public void RightClickMove(Vector3 destination)
         {
-            foreach(var unit in currentSelectedHash)
+            foreach (var unit in currentSelectedHash)
             {
-                (unit as Unit).Controller.MoveTo(destination);
+                Vector3 newDestination = slotDestination.GetSlotDestination(unit as Unit, destination, currentSelectedHash.Count);
+                (unit as Unit).Controller.MoveTo(newDestination, currentSelectedHash.Count);
             }
         }
         public void ShiftRightClickMove(Vector3 destination)
         {
-            foreach(var unit in currentSelectedHash)
+            foreach (var unit in currentSelectedHash)
             {
-                (unit as Unit).Controller.MoveToReservation(destination);
+                Vector3 newDestination = slotDestination.GetSlotDestination(unit as Unit, destination, currentSelectedHash.Count);
+                (unit as Unit).Controller.MoveToReservation(newDestination, currentSelectedHash.Count);
             }
         }
     }

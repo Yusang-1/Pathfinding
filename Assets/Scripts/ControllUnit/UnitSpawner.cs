@@ -14,7 +14,8 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private Vector3 spawnPosition;
 
         private readonly SpawnAreaSetter spawnAreaSetter = new();
-
+        private readonly SteeringBehavior steeringBehavior = new();
+        
         private SpatialHash spatialHash;
         private readonly ObjectPool<Unit> smallUnitPool = new();
         private readonly ObjectPool<Unit> largeUnitPool = new();
@@ -56,7 +57,7 @@ namespace Assets.Scripts.ControllUnit
             }
             unitBottom.transform.position = spawnPosition;
 
-            unit.Initialize(spatialHash, unitBottom);
+            unit.Initialize(spatialHash, unitBottom, steeringBehavior);
             unit.UnitSpawned();
         }
 

@@ -5,16 +5,26 @@ using Assets.Scripts.ControllUnit.SO;
 namespace Assets.Scripts.ControllUnit
 {
     public class SteeringBehavior
-    {
-        public Vector3 GetSteering(Unit unit, List<Unit> nearby, float maxSpeed, Vector3 destination, SteeringConfig weighting)
+    {        
+        public Vector3 GetSteering(Unit unit, List<Unit> nearby, float maxSpeed, Vector3 destination, SteeringConfig weighting, int totalUnitCount)
         {
+            Debug.Log("steering");
+            float distToGoal = Vector3.Distance(unit.transform.position, destination);
+            float arrivalRadius = 0.5f;
+
+            if (distToGoal < arrivalRadius)
+            {
+                return Vector3.zero;
+            }
+
             var seekVector = Seek(unit.transform.position, destination, maxSpeed, unit.Controller.Velocity);
             seekVector *= weighting.SeekWeight;
 
-            if (nearby == null || nearby.Count == 1) return seekVector;
+            if (nearby == null || nearby.Count <= 1) return seekVector;
 
             var separationVector = Separation(unit, nearby);
-            separationVector *= weighting.SeparationWeight;
+            float separationScale = Mathf.Clamp01((distToGoal - arrivalRadius) / 2f);
+            separationVector *= weighting.SeparationWeight * separationScale;
 
             var cohesionVector = Cohesion(unit, nearby, maxSpeed);
             cohesionVector *= weighting.CohesionWeight;
@@ -23,7 +33,7 @@ namespace Assets.Scripts.ControllUnit
             alignmentVector *= weighting.AlignmentWeight;
 
             return seekVector + separationVector + cohesionVector + alignmentVector;
-        }
+        }        
 
         private Vector3 Seek(Vector3 position, Vector3 target, float maxSpeed, Vector3 velocity)
         {
@@ -38,11 +48,11 @@ namespace Assets.Scripts.ControllUnit
             foreach (var other in nearby)
             {
                 if (other == unit) continue;
-                
+
                 float separationRadius = (other.UnitData.Radius + unit.UnitData.Radius) * 1.2f;
-                
+
                 float distance = Vector3.Distance(unit.transform.position, other.transform.position);
-                
+
                 if (distance < separationRadius && distance > 0.01f)
                 {
                     Vector3 diff = (unit.transform.position - other.transform.position).normalized;
@@ -77,7 +87,7 @@ namespace Assets.Scripts.ControllUnit
             foreach (var other in nearby)
             {
                 if (other == unit) continue;
-                
+
                 averageVelocity += other.Controller.Velocity;
             }
             return averageVelocity /= nearby.Count;

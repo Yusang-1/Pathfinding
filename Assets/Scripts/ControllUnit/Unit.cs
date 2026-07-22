@@ -33,10 +33,9 @@ namespace Assets.Scripts.ControllUnit
             controller.ControllerLateUpdate();
         }
 
-        public void Initialize(SpatialHash spatialHash, UnitBottomSelectChanger bottomChanger)
+        public void Initialize(SpatialHash spatialHash, UnitBottomSelectChanger bottomChanger, SteeringBehavior steeringBehavior)
         {
-            controller = new UnitController(this, spatialHash, bottomChanger.transform, unitData, FindAnyObjectByType<Pathfinder>(), steeringWeightingData.WalkConfig);
-            this.bottomChanger = bottomChanger;
+            controller = new UnitController(this, spatialHash, bottomChanger.transform, unitData, FindAnyObjectByType<Pathfinder>(), steeringWeightingData.WalkConfig, steeringBehavior);            this.bottomChanger = bottomChanger;
             bottomChanger.SetRadius(unitData.Radius);
         }
 
