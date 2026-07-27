@@ -17,15 +17,17 @@ namespace Assets.Scripts.ControllUnit
         private readonly SteeringBehavior steeringBehavior = new();
         
         private SpatialHash spatialHash;
+        private Pathfinder pathfinder;
         private readonly ObjectPool<Unit> smallUnitPool = new();
         private readonly ObjectPool<Unit> largeUnitPool = new();
         private readonly ObjectPool<UnitBottomSelectChanger> unitBottomPool = new();
 
         public SpawnAreaSetter SpawnAreaSetter => spawnAreaSetter;
 
-        public void Initialize(SpatialHash spatialHash)
+        public void Initialize(SpatialHash spatialHash, Pathfinder pathfinder)
         {
             this.spatialHash = spatialHash;
+            this.pathfinder = pathfinder;
         }
 
         public void SpawnUnit(UnitSize unitSize)
@@ -57,7 +59,7 @@ namespace Assets.Scripts.ControllUnit
             }
             unitBottom.transform.position = spawnPosition;
 
-            unit.Initialize(spatialHash, unitBottom, steeringBehavior);
+            unit.Initialize(spatialHash, unitBottom, steeringBehavior, pathfinder);
             unit.UnitSpawned();
         }
 

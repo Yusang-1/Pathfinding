@@ -30,10 +30,10 @@ namespace Assets.Scripts.ControllUnit
             this.unitSpawner = unitSpawner;
         }
 
-        public void Initialize(NodeData nodeData, MapRuntimeContext mapRuntimeContext, UnitsSO unitsSO)
+        public void Initialize(NodeData nodeData, MapRuntimeContext mapRuntimeContext, UnitsSO unitsSO, Pathfinder pathfinder)
         {
             nodeData.Initialize();
-            unitSpawner.Initialize(mapRuntimeContext.SpatialHash);
+            unitSpawner.Initialize(mapRuntimeContext.SpatialHash, pathfinder);
             inputManager.Initialize(selectableController);
             
             unitsSO.Initialize();
