@@ -17,7 +17,7 @@ namespace Assets.Scripts.ControllUnit.UI
 
         // UIDragController event
         public Action<Vector3> OnHoldStarted;
-        public Action<Vector3> OnHoldPreformed;
+        public Action<Vector3> OnHoldPerformed;
         public Action OnHoldCanceled;
         public event Func<Vector3, float, float, HashSet<ISelectableUnit>> OnFindSelectableUnitInDragUI;
         public event Action<HashSet<ISelectableUnit>> OnUnitFocused;
@@ -48,7 +48,7 @@ namespace Assets.Scripts.ControllUnit.UI
             uiSpawnUnit.OnGetSpawnAreaRequested += (action) => OnGetSpawnAreaRequested?.Invoke(action);
 
             OnHoldStarted += uiDragController.DragStarted;
-            OnHoldPreformed += uiDragController.DragPerformed;
+            OnHoldPerformed += uiDragController.DragPerformed;
             OnHoldCanceled += uiDragController.DragCanceled;
 
             uiDragController.OnFindSelectableUnitInDragUI += (standard, x, y) => OnFindSelectableUnitInDragUI?.Invoke(standard, x, y);

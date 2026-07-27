@@ -11,14 +11,14 @@ namespace Assets.Scripts.ControllUnit
         private HPAPathfinder highLevelPathfinder;
         private readonly ClusterPathSmoother clusterPathSmoother = new();
 
-        public void SetNodeAndCluster(NodeList nodes, int mapSize, int clusterSize, Dictionary<UnitSize, float> unitRadiusList)
+        public void SetNodeAndCluster(NodeList nodes, in MapData mapData, Dictionary<UnitSize, float> unitRadiusList)
         {
             nodeList = nodes;
             clusterList = new HPAClusterList(nodeList);
             
             AStarPathfinder aStarPathfinder = new(nodeList, clusterList);
 
-            clusterList.Initialize(aStarPathfinder, mapSize, clusterSize, unitRadiusList);
+            clusterList.Initialize(aStarPathfinder, mapData.MapSize, mapData.ClusterSize, unitRadiusList);
             nodeList.SetNodeArea();
 
             highLevelPathfinder = new HPAPathfinder(clusterList, nodeList);

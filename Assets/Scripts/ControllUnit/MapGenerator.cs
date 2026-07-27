@@ -28,7 +28,7 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        public void GenerateMap(MapData mapData)
+        public void GenerateMap(in MapData mapData)
         {
             GenerateMap(mapData.MapSize);
 

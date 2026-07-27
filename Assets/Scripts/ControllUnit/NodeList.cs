@@ -17,12 +17,12 @@ namespace Assets.Scripts.ControllUnit
         public Node[,] Nodes => nodes;
         public int NodeSize => nodeSize;
 
-        public void Initialize(int nodeSize, int mapSize, NodeData data)
+        public void Initialize(in MapData mapData, NodeData data)
         {
             nodeTypeDrawer.Initialize(this, data);
 
-            this.nodeSize = nodeSize;
-            nodes = new Node[mapSize, mapSize];
+            nodeSize = mapData.NodeSize;
+            nodes = new Node[mapData.MapSize, mapData.MapSize];
         }
 
         public void CreateNodeArray(int mapSize)

@@ -7,67 +7,39 @@ namespace Assets.Scripts.ControllUnit
     public class MapManager : MonoBehaviour
     {
         private MapGenerator mapGenerator;
-        private MapdataJsonConverter mapdataJsonConverter;
-        private readonly NodeList nodeList = new();
-        private readonly SelectableController selectableController = new();
-        private readonly SpatialHash spatialHash = new();
+        private MapBootStrapper mapBootStrapper;
+        private readonly MapRuntimeContext mapRuntimeContext = new();
 
-        [SerializeField] private InputManager inputManager;
         [SerializeField] private Pathfinder pathfinder;
-        [SerializeField] private UnitSpawner unitSpawner;
-        [SerializeField] private ControllUnitUIRoot uiRoot;
         [SerializeField] private Node nodePrefab;
-        [SerializeField] private NodeData nodeData;
         [SerializeField] private UnitsSO unitsSO;
-        
+        [SerializeField] private NodeData nodeData;
+        [SerializeField] private ControllUnitUIRoot uiRoot;
+        [SerializeField] private InputManager inputManager;
+        [SerializeField] private UnitSpawner unitSpawner;        
 
-        [Header("Values")]
-        private int nodeSize;
-        private int mapSize;
-        private int clusterSize;
 
         private void Start()
         {
-            mapdataJsonConverter = new MapdataJsonConverter();
-            mapGenerator = new MapGenerator(nodePrefab, nodeList);
-
-            nodeData.Initialize();
-            unitSpawner.Initialize(spatialHash);
-            inputManager.Initialize(selectableController);
-
-            uiRoot.OnLoadMapRequested += SetMapData;
-            uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
-            uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
-            uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
-            uiRoot.OnGetSpawnAreaRequested += unitSpawner.SpawnAreaSetter.StartSetSpawnArea;
-
-            uiRoot.OnFindSelectableUnitInDragUI += spatialHash.GetUnitsInRange;
-            uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
-
-            unitSpawner.OnSelectedCallback += (selectable) => uiRoot.OnUnitSelected?.Invoke(selectable);
-            unitSpawner.OnDeselectedCallback += (selectable) => uiRoot.OnUnitDeselected?.Invoke(selectable);
-            unitSpawner.SpawnAreaSetter.OnStartSetSpawnAreaRequested += inputManager.ChangeActionMapSelected;
-
-            inputManager.OnHoldStarted += (vec) => uiRoot.OnHoldStarted?.Invoke(vec);
-            inputManager.OnHoldPreformed += (vec) => uiRoot.OnHoldPreformed?.Invoke(vec);
-            inputManager.OnHoldCanceled += () => uiRoot.OnHoldCanceled?.Invoke();
-            inputManager.OnControllMenu += () => uiRoot.OnManageMenu?.Invoke();
-            inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnUnitArea;
+            mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList);
+            mapBootStrapper = new MapBootStrapper(uiRoot, inputManager, unitSpawner);
             
-            unitsSO.Initialize();
+            mapBootStrapper.Initialize(nodeData, mapRuntimeContext, unitsSO);
+            mapBootStrapper.BindEvents(InitializeMapRuntime, mapRuntimeContext);
         }
 
-        private void SetMapData(MapData mapData)
+        private void OnDestroy()
         {
-            nodeSize = mapData.NodeSize;
-            mapSize = mapData.MapSize;
-            clusterSize = mapData.ClusterSize;
+            mapBootStrapper.ResetBootStrapper(InitializeMapRuntime, mapRuntimeContext);
+        }
 
-            nodeList.Initialize(nodeSize, mapSize, nodeData);
+        private void InitializeMapRuntime(MapData mapData)
+        {
+            mapRuntimeContext.NodeList.Initialize(mapData, nodeData);
 
             mapGenerator.GenerateMap(mapData);
 
-            pathfinder.SetNodeAndCluster(nodeList, mapSize, clusterSize, unitsSO.UnitRadius);
+            pathfinder.SetNodeAndCluster(mapRuntimeContext.NodeList, mapData, unitsSO.UnitRadius);
         }
     }
 }
