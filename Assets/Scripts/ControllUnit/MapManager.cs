@@ -8,7 +8,7 @@ namespace Assets.Scripts.ControllUnit
     {
         private MapGenerator mapGenerator;
         private MapBootStrapper mapBootStrapper;
-        private readonly MapRuntimeContext mapRuntimeContext = new();
+        private MapRuntimeContext mapRuntimeContext;
 
         [SerializeField] private Pathfinder pathfinder;
         [SerializeField] private Node nodePrefab;
@@ -21,10 +21,11 @@ namespace Assets.Scripts.ControllUnit
 
         private void Start()
         {
+            mapRuntimeContext = new MapRuntimeContext(pathfinder);
             mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList);
             mapBootStrapper = new MapBootStrapper(uiRoot, inputManager, unitSpawner);
             
-            mapBootStrapper.Initialize(nodeData, mapRuntimeContext, unitsSO, pathfinder);
+            mapBootStrapper.Initialize(nodeData, mapRuntimeContext, unitsSO, mapRuntimeContext.Pathfinder);
             mapBootStrapper.BindEvents(InitializeMapRuntime, mapRuntimeContext);
         }
 
@@ -39,7 +40,7 @@ namespace Assets.Scripts.ControllUnit
 
             mapGenerator.GenerateMap(mapData);
 
-            pathfinder.SetNodeAndCluster(mapRuntimeContext.NodeList, mapData, unitsSO.UnitRadius);
+            mapRuntimeContext.Pathfinder.SetNodeAndCluster(mapRuntimeContext.NodeList, mapData, unitsSO.UnitRadius);
         }
     }
 }

@@ -2,10 +2,13 @@ namespace Assets.Scripts.ControllUnit
 {
     public class MapRuntimeContext
     {
-        private readonly NodeList nodeList = new();
-        private readonly SpatialHash spatialHash = new();
+        public MapRuntimeContext(Pathfinder pathfinder)
+        {
+            Pathfinder = pathfinder;
+        }
 
-        public NodeList NodeList => nodeList;
-        public SpatialHash SpatialHash => spatialHash;
+        public NodeList NodeList { get; private set; } = new();
+        public SpatialHash SpatialHash { get; private set; } = new();
+        public Pathfinder Pathfinder { get; private set; }
     }
 }

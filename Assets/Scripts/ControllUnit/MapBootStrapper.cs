@@ -31,9 +31,9 @@ namespace Assets.Scripts.ControllUnit
         }
 
         public void Initialize(NodeData nodeData, MapRuntimeContext mapRuntimeContext, UnitsSO unitsSO, Pathfinder pathfinder)
-        {
+        {            
             nodeData.Initialize();
-            unitSpawner.Initialize(mapRuntimeContext.SpatialHash, pathfinder);
+            unitSpawner.Initialize(mapRuntimeContext, pathfinder, new UnitRuntimeContext(pathfinder, mapRuntimeContext.SpatialHash));
             inputManager.Initialize(selectableController);
             
             unitsSO.Initialize();
@@ -80,16 +80,14 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
             uiRoot.OnGetSpawnAreaRequested += unitSpawner.SpawnAreaSetter.StartSetSpawnArea;
-
             uiRoot.OnFindSelectableUnitInDragUI += mapRuntimeContext.SpatialHash.GetUnitsInRange;
             uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
         }
 
         private void AddUnitSpawnerEvent()
         {
-            unitSpawner.OnSelectedCallback += onSelectedHandler;
-            unitSpawner.OnDeselectedCallback += onDeselectedHandler;
-
+            unitSpawner.UnitFactory.OnSelectedCallback += onSelectedHandler;
+            unitSpawner.UnitFactory.OnDeselectedCallback += onDeselectedHandler;
             unitSpawner.SpawnAreaSetter.OnStartSetSpawnAreaRequested += inputManager.ChangeActionMapSelected;
         }
 
@@ -109,15 +107,14 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnGetPersonalMapListRequested -= mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested -= unitSpawner.SpawnUnit;
             uiRoot.OnGetSpawnAreaRequested -= unitSpawner.SpawnAreaSetter.StartSetSpawnArea;
-
             uiRoot.OnFindSelectableUnitInDragUI -= mapRuntimeContext.SpatialHash.GetUnitsInRange;
             uiRoot.OnUnitFocused -= selectableController.UnitFocusedList;
         }
 
         private void RemoveUnitSpawnerEvent()
         {
-            unitSpawner.OnSelectedCallback -= onSelectedHandler;
-            unitSpawner.OnDeselectedCallback -= onDeselectedHandler;
+            unitSpawner.UnitFactory.OnSelectedCallback -= onSelectedHandler;
+            unitSpawner.UnitFactory.OnDeselectedCallback -= onDeselectedHandler;
             unitSpawner.SpawnAreaSetter.OnStartSetSpawnAreaRequested -= inputManager.ChangeActionMapSelected;
         }
 

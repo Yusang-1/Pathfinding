@@ -8,6 +8,7 @@ namespace Assets.Scripts.ControllUnit
     {
         public event Action<ISelectableUnit> OnSelectedCallback;
         public event Action<ISelectableUnit> OnDeselectedCallback;
+        public event Action<ISelectableUnit> OnDespawnedCallback;
         public event Action<Unit> OnPoolObjectFirstCreated;
         public event Action<Unit> OnPoolObjectUnused;
 
@@ -19,10 +20,12 @@ namespace Assets.Scripts.ControllUnit
 
         private UnitBottomStatus bottomStatus;
         public Vector2Int CurrentKey;
-        
+
         public UnitSO UnitData => unitData;
         public UnitController Controller => controller;
-
+        
+        public bool IsEventBound;
+        
         private void Update()
         {
             controller.ControllerUpdate();
@@ -33,9 +36,9 @@ namespace Assets.Scripts.ControllUnit
             controller.ControllerLateUpdate();
         }
 
-        public void Initialize(SpatialHash spatialHash, UnitBottomSelectChanger bottomChanger, SteeringBehavior steeringBehavior, Pathfinder pathfinder)
+        public void Initialize(UnitRuntimeContext unitRuntimeContext, UnitBottomSelectChanger bottomChanger)
         {
-            controller = new UnitController(this, spatialHash, bottomChanger.transform, unitData, pathfinder, steeringWeightingData.WalkConfig, steeringBehavior);            this.bottomChanger = bottomChanger;
+            controller = new UnitController(this, unitRuntimeContext, bottomChanger.transform, steeringWeightingData.WalkConfig, unitData); this.bottomChanger = bottomChanger;
             bottomChanger.SetRadius(unitData.Radius);
         }
 
@@ -48,6 +51,7 @@ namespace Assets.Scripts.ControllUnit
 
         public void UnitDespawned()
         {
+            OnDespawnedCallback?.Invoke(this);
             OnPoolObjectUnused?.Invoke(this);
             gameObject.SetActive(false);
             bottomChanger.Despawned();

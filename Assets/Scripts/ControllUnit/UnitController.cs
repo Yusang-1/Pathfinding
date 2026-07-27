@@ -8,11 +8,9 @@ namespace Assets.Scripts.ControllUnit
     {
         private readonly Unit unit;
         private readonly UnitSO unitData;
-        private readonly Pathfinder pathfinder;
         private readonly LazyRefine lazyRefine;
-        private readonly SpatialHash spatialHash;
         private readonly Transform bottomChangerTransform;
-        private readonly SteeringBehavior steeringBehavior;
+        private readonly UnitRuntimeContext unitRuntimeContext;
         private SteeringConfig steeringConfig;
 
 
@@ -27,18 +25,16 @@ namespace Assets.Scripts.ControllUnit
 
         public Vector3 Velocity => velocity;
 
-        public UnitController(Unit unit, SpatialHash spatialHash, Transform bottomChangerTransform, UnitSO unitData, Pathfinder pathfinder, SteeringConfig steeringConfig, SteeringBehavior steeringBehavior)
+        public UnitController(Unit unit, UnitRuntimeContext unitRuntimeContext, Transform bottomChangerTransform, SteeringConfig steeringConfig, UnitSO unitData)
         {
             this.unit = unit;
-            this.spatialHash = spatialHash;
+            this.unitRuntimeContext = unitRuntimeContext;
             this.bottomChangerTransform = bottomChangerTransform;
             this.unitData = unitData;
             this.steeringConfig = steeringConfig;
-            this.pathfinder = pathfinder;
-            this.steeringBehavior = steeringBehavior;
-            lazyRefine = pathfinder.GetLazyRefine();
+            lazyRefine = unitRuntimeContext.Pathfinder.GetLazyRefine();
 
-            spatialHash.AddUnit(unit);
+            unitRuntimeContext.SpatialHash.AddUnit(unit);
         }
         
         private int totalUnitCount;
@@ -54,7 +50,7 @@ namespace Assets.Scripts.ControllUnit
             startPosition = unit.transform.position;
             finalDestination = destination;
             currentPathIndex = 0;
-            abstractPath = pathfinder.GetAbstractPath(unit.transform.position, destination, unitData.Radius);
+            abstractPath = unitRuntimeContext.Pathfinder.GetAbstractPath(unit.transform.position, destination, unitData.Radius);
             if (abstractPath == null || abstractPath.Count == 0) return;
 
             SearchLowLevelPath(abstractPath[currentPathIndex], abstractPath.Count == 1, true);
@@ -70,7 +66,7 @@ namespace Assets.Scripts.ControllUnit
             bool haveToDoLazyRefine = false;
             if (currentPathIndex + 1 == abstractPath.Count) haveToDoLazyRefine = true;
 
-            var newAbstractPath = pathfinder.GetAbstractPath(finalDestination, destination, unitData.Radius);
+            var newAbstractPath = unitRuntimeContext.Pathfinder.GetAbstractPath(finalDestination, destination, unitData.Radius);
             if (abstractPath == null || abstractPath.Count == 0) return;
 
             startPosition = finalDestination;
@@ -99,7 +95,7 @@ namespace Assets.Scripts.ControllUnit
             GetVelocity();
             unit.transform.position += velocity;
 
-            spatialHash.CheckUnitHash(unit);
+            unitRuntimeContext.SpatialHash.CheckUnitHash(unit);
 
             if (IsDistanceInCurrentDestination())
             {
@@ -166,8 +162,8 @@ namespace Assets.Scripts.ControllUnit
 
         private void GetVelocity()
         {
-            var nearbyUnits = spatialHash.GetUnitsInRange(unit.transform.position, 2.2f);
-            velocity = steeringBehavior.GetSteering(unit, nearbyUnits, unitData.MoveSpeed, shortDestination, steeringConfig, totalUnitCount);
+            var nearbyUnits = unitRuntimeContext.SpatialHash.GetUnitsInRange(unit.transform.position, 2.2f);
+            velocity = unitRuntimeContext.SteeringBehavior.GetSteering(unit, nearbyUnits, unitData.MoveSpeed, shortDestination, steeringConfig, totalUnitCount);
             velocity *= Time.deltaTime;
         }
     }
