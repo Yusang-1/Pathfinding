@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -11,8 +12,6 @@ namespace Assets.Scripts.ControllUnit
         private SelectableType currentSelectedType;
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
         private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();
-        private readonly List<ISelectableUnit> unfocusedUnits = new();
-        private readonly List<ISelectableUnit> newlyFocusedUnit = new();
 
         private Action<string> OnchangeActionMapSelected;
         private Action OnchangeActionMapDefault;
@@ -141,13 +140,28 @@ namespace Assets.Scripts.ControllUnit
             var unfocusedUnits = FindUnfocusedUnits(alreadyFocusedHash, selectables);
             var newlyFocusedUnit = FindNewlyFocusedUnits(alreadyFocusedHash, selectables);
 
-            UnitUnfocusedList(unfocusedUnits);
+            ApplyFocusedChanges(unfocusedUnits, newlyFocusedUnit);
+        }
 
-            foreach (var newlyFocused in newlyFocusedUnit)
+        private void ApplyFocusedChanges(List<ISelectableUnit> unfocused, List<ISelectableUnit> newlyFocused)
+        {
+            if (unfocused != null || unfocused.Count > 0)
             {
-                UnitFocused(newlyFocused);
+                foreach (var unit in unfocused)
+                {
+                    UnitUnfocused(unit);
+                }
+            }
+
+            if (newlyFocused != null || newlyFocused.Count > 0)
+            {
+                foreach (var unit in newlyFocused)
+                {
+                    UnitFocused(unit);
+                }
             }
         }
+
         public void UnitFocusedPoint(ISelectableUnit selectable)
         {
             if (selectable == null)
@@ -177,73 +191,66 @@ namespace Assets.Scripts.ControllUnit
             alreadyFocusedHash.Clear();
         }
 
-        private void UnitUnfocusedList(List<ISelectableUnit> selectables)
-        {
-            if (selectables == null || selectables.Count == 0) return;
-
-            foreach (var selectable in selectables)
-            {
-                UnitUnfocused(selectable);
-            }
-        }
         private void UnitUnfocused(ISelectableUnit selectable)
         {
             selectable.Unfocused();
             alreadyFocusedHash.Remove(selectable);
         }
 
-        private List<ISelectableUnit> FindUnfocusedUnits(HashSet<ISelectableUnit> alreadyFocused, HashSet<ISelectableUnit> newFocused)
+        private List<ISelectableUnit> FindUnfocusedUnits(IReadOnlyCollection<ISelectableUnit> alreadyFocused, IReadOnlyCollection<ISelectableUnit> newFocused)
         {
             if (alreadyFocused == null || alreadyFocused.Count == 0) return null;
+
+            var result = new List<ISelectableUnit>();
             if (newFocused == null || newFocused.Count == 0)
             {
                 // alreadyFocused Hash의 요소를 unfocusedUnits List에 복사해 리턴
-                unfocusedUnits.Clear();
                 foreach (var focused in alreadyFocused)
                 {
-                    unfocusedUnits.Add(focused);
+                    result.Add(focused);
                 }
-                return unfocusedUnits;
+                return result;
             }
 
-            unfocusedUnits.Clear();
+            result.Clear();
 
             foreach (var focused in alreadyFocused)
             {
                 if (!newFocused.Contains(focused))
                 {
-                    unfocusedUnits.Add(focused);
+                    result.Add(focused);
                 }
             }
 
-            return unfocusedUnits;
+            return result;
         }
 
-        private List<ISelectableUnit> FindNewlyFocusedUnits(HashSet<ISelectableUnit> alreadyFocused, HashSet<ISelectableUnit> newFocused)
+        private List<ISelectableUnit> FindNewlyFocusedUnits(IReadOnlyCollection<ISelectableUnit> alreadyFocused, IReadOnlyCollection<ISelectableUnit> newFocused)
         {
             if (newFocused == null || newFocused.Count == 0) return null;
+
+            var result = new List<ISelectableUnit>();
             if (alreadyFocused == null || alreadyFocused.Count == 0)
             {
                 // newFocused Hash의 요소를 newlyFocusedUnit List에 복사해 리턴
-                newlyFocusedUnit.Clear();
                 foreach (var focused in newFocused)
                 {
-                    newlyFocusedUnit.Add(focused);
+                    result.Add(focused);
                 }
-                return newlyFocusedUnit;
+                return result;
             }
 
-            newlyFocusedUnit.Clear();
+            result.Clear();
 
             foreach (var newFocus in newFocused)
             {
                 if (!alreadyFocused.Contains(newFocus))
                 {
-                    newlyFocusedUnit.Add(newFocus);
+                    result.Add(newFocus);
                 }
             }
 
-            return newlyFocusedUnit;
+            return result;
         }
 
         public void RightClickMove(Vector3 destination)

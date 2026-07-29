@@ -21,8 +21,7 @@ namespace Assets.Scripts.ControllUnit
         {
             nodeTypeDrawer.Initialize(this, data);
 
-            nodeSize = mapData.NodeSize;
-            nodes = new Node[mapData.MapSize, mapData.MapSize];
+            nodeSize = mapData.NodeSize;            
         }
 
         public void CreateNodeArray(int mapSize)
