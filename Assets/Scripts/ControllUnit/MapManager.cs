@@ -16,22 +16,25 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private NodeData nodeData;
         [SerializeField] private ControllUnitUIRoot uiRoot;
         [SerializeField] private InputManager inputManager;
-        [SerializeField] private UnitSpawner unitSpawner;        
+        [SerializeField] private UnitSpawner unitSpawner;
 
-
+        private void OnEnable()
+        {
+            mapBootStrapper = new MapBootStrapper(uiRoot, inputManager, unitSpawner);
+            mapBootStrapper.BindEvents(InitializeMapRuntime, mapRuntimeContext);
+        }
+        
         private void Start()
         {
             mapRuntimeContext = new MapRuntimeContext(pathfinder);
             mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList);
-            mapBootStrapper = new MapBootStrapper(uiRoot, inputManager, unitSpawner);
-            
-            mapBootStrapper.Initialize(nodeData, mapRuntimeContext, unitsSO, mapRuntimeContext.Pathfinder);
-            mapBootStrapper.BindEvents(InitializeMapRuntime, mapRuntimeContext);
+                        
+            mapBootStrapper.Initialize(nodeData, mapRuntimeContext, unitsSO, mapRuntimeContext.Pathfinder);            
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
-            mapBootStrapper.ResetBootStrapper(InitializeMapRuntime, mapRuntimeContext);
+            mapBootStrapper.UnbindEvents(InitializeMapRuntime, mapRuntimeContext);
         }
 
         private void InitializeMapRuntime(MapData mapData)

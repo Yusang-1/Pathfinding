@@ -24,7 +24,7 @@ namespace Assets.Scripts.ControllUnit.UI
 
         // UIContainerScenes event
         public Action OnManageMenu;
-        
+
         // UIUnitpanel event
         public Action<ISelectableUnit> OnUnitSelected;
         public Action<ISelectableUnit> OnUnitDeselected;
@@ -36,28 +36,101 @@ namespace Assets.Scripts.ControllUnit.UI
         [SerializeField] private UIDragController uiDragController;
         [SerializeField] private UIContainerScenes uiContainerScenes;
 
-        private void Start()
+        private bool isBound;
+
+        private void OnEnable()
         {
-            uiLoadMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
-            uiLoadMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
-            uiLoadMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
+            BindEvents();
+        }
+
+        private void OnDisable()
+        {
+            UnbindEvents();
+        }
+
+        private void BindEvents()
+        {
+            if (isBound) return; // 중복 이벤트 구독 방지
+
+            uiLoadMapMediator.OnLoadMapRequested += HandleOnLoadMap;
+            uiLoadMapMediator.OnOfficialMapListRequested += HandleOnGetOfficialMapList;
+            uiLoadMapMediator.OnPersonalMapListRequested += HandleOnGetPersonalMapList;
             uiLoadMapMediator.OnLoadMapFinished += uiSpawnUnit.SetActiveTrue;
             uiLoadMapMediator.OnLoadMapFinished += uiUnitPanel.SetActiveTrue;
 
-            uiSpawnUnit.OnSpawnUnitRequested += (unitSize) => OnSpawnUnitRequested?.Invoke(unitSize);
-            uiSpawnUnit.OnGetSpawnAreaRequested += (action) => OnGetSpawnAreaRequested?.Invoke(action);
+            uiSpawnUnit.OnSpawnUnitRequested += HandleOnSpawnUnit;
+            uiSpawnUnit.OnGetSpawnAreaRequested += HandleOnGetSpawnArea;
 
             OnHoldStarted += uiDragController.DragStarted;
             OnHoldPerformed += uiDragController.DragPerformed;
             OnHoldCanceled += uiDragController.DragCanceled;
 
-            uiDragController.OnFindSelectableUnitInDragUI += (standard, x, y) => OnFindSelectableUnitInDragUI?.Invoke(standard, x, y);
-            uiDragController.OnUnitFocused += (units) => OnUnitFocused?.Invoke(units);
-            
+            uiDragController.OnFindSelectableUnitInDragUI += HandleOnFindSelectableUnitInDragUI;
+            uiDragController.OnUnitFocused += HandleOnUnitFocused;
+
             OnManageMenu += uiContainerScenes.OnControllMenu;
-            
+
             OnUnitSelected += uiUnitPanel.UnitSelected;
             OnUnitDeselected += uiUnitPanel.UnitDeselected;
+
+            isBound = true;
+        }
+
+        private void UnbindEvents()
+        {
+            if (!isBound) return;
+
+            uiLoadMapMediator.OnLoadMapRequested -= HandleOnLoadMap;
+            uiLoadMapMediator.OnOfficialMapListRequested -= HandleOnGetOfficialMapList;
+            uiLoadMapMediator.OnPersonalMapListRequested -= HandleOnGetPersonalMapList;
+            uiLoadMapMediator.OnLoadMapFinished -= uiSpawnUnit.SetActiveTrue;
+            uiLoadMapMediator.OnLoadMapFinished -= uiUnitPanel.SetActiveTrue;
+
+            uiSpawnUnit.OnSpawnUnitRequested -= HandleOnSpawnUnit;
+            uiSpawnUnit.OnGetSpawnAreaRequested -= HandleOnGetSpawnArea;
+
+            OnHoldStarted -= uiDragController.DragStarted;
+            OnHoldPerformed -= uiDragController.DragPerformed;
+            OnHoldCanceled -= uiDragController.DragCanceled;
+
+            uiDragController.OnFindSelectableUnitInDragUI -= HandleOnFindSelectableUnitInDragUI;
+            uiDragController.OnUnitFocused -= HandleOnUnitFocused;
+
+            OnManageMenu -= uiContainerScenes.OnControllMenu;
+
+            OnUnitSelected -= uiUnitPanel.UnitSelected;
+            OnUnitDeselected -= uiUnitPanel.UnitDeselected;
+
+            isBound = false;
+        }
+
+        private void HandleOnLoadMap(MapData mapData)
+        {
+            OnLoadMapRequested?.Invoke(mapData);
+        }
+        private MapData[] HandleOnGetOfficialMapList()
+        {
+            return OnGetOfficialMapListRequested?.Invoke();
+        }
+        private MapData[] HandleOnGetPersonalMapList()
+        {
+            return OnGetPersonalMapListRequested?.Invoke();
+        }
+        private void HandleOnSpawnUnit(UnitSize size)
+        {
+            OnSpawnUnitRequested?.Invoke(size);
+        }
+        private void HandleOnGetSpawnArea(Action action)
+        {
+            OnGetSpawnAreaRequested?.Invoke(action);
+        }
+        private HashSet<ISelectableUnit> HandleOnFindSelectableUnitInDragUI(Vector3 standard, float x, float y)
+        {
+            return OnFindSelectableUnitInDragUI?.Invoke(standard, x, y);
+        }
+        private void HandleOnUnitFocused(HashSet<ISelectableUnit> units)
+        {
+            OnUnitFocused?.Invoke(units);
         }
     }
 }

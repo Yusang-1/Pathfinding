@@ -11,7 +11,7 @@ namespace Assets.Scripts.ControllUnit
     {
         public event Action<Vector2> OnDirectionChanged;
         public event Action<Vector3> OnHoldStarted;
-        public event Action<Vector3> OnHoldPreformed;
+        public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
 
@@ -48,7 +48,7 @@ namespace Assets.Scripts.ControllUnit
         {
             if (isPointerOverGameObject || !isInputActive)
             {
-                if(!(context.canceled && isDrag)) return;                
+                if (!(context.canceled && isDrag)) return;
             }
 
             if (context.started)
@@ -66,8 +66,8 @@ namespace Assets.Scripts.ControllUnit
                     HoldCanceled();
                 }
                 else
-                {                    
-                    selectableController.Selected();                    
+                {
+                    selectableController.Selected();
                 }
             }
         }
@@ -78,21 +78,21 @@ namespace Assets.Scripts.ControllUnit
         {
             while (true)
             {
-                if(startPosition != mousePosition)
+                if (startPosition != mousePosition)
                 {
                     HoldStarted();
                     break;
                 }
                 yield return null;
             }
-            
-            while(isDrag)
+
+            while (isDrag)
             {
                 HoldPerformed();
                 yield return null;
             }
         }
-        
+
         private void HoldStarted()
         {
             OnHoldStarted?.Invoke(mousePosition);
@@ -100,7 +100,7 @@ namespace Assets.Scripts.ControllUnit
         }
         private void HoldPerformed()
         {
-            OnHoldPreformed?.Invoke(mousePosition);
+            OnHoldPerformed?.Invoke(mousePosition);
         }
         private void HoldCanceled()
         {
@@ -116,18 +116,18 @@ namespace Assets.Scripts.ControllUnit
             if (context.performed)
             {
                 mousePosition = context.ReadValue<Vector2>();
-                
+
                 if (isDrag || isPointerOverGameObject) return;
-                
+
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 Vector3 origin = Camera.main.transform.position;
                 Vector3 direction = -(worldPos - origin).normalized;
-  
+
                 if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
                 {
                     if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
                     {
-                        selectableController.UnitFocusedPoint(selectable);                        
+                        selectableController.UnitFocusedPoint(selectable);
                     }
                     else
                         selectableController.UnitFocusedPoint(null);
@@ -199,12 +199,12 @@ namespace Assets.Scripts.ControllUnit
                 }
             }
         }
-        
+
         public void OnMenu(InputAction.CallbackContext context)
         {
-            if(context.started)
+            if (context.started)
             {
-                OnControllMenu?.Invoke();                
+                OnControllMenu?.Invoke();
             }
         }
 

@@ -8,14 +8,14 @@ namespace Assets.Scripts.ControllUnit
     public class InputManager : MonoBehaviour
     {
         public event Action<Vector3> OnHoldStarted;
-        public event Action<Vector3> OnHoldPreformed;
+        public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
         public event Action<Vector3> OnSetSpawnAreaRequested;
 
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
-        [SerializeField] private PlayerControllInput playerInput;
+        [SerializeField] private PlayerControllInput playerControllerInput;
         [SerializeField] private UnitInput unitInput;
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
 
@@ -30,33 +30,30 @@ namespace Assets.Scripts.ControllUnit
             actionMap.Enable();
         }
 
+        private void OnEnable()
+        {
+            BindEvents();
+        }
+
         private void Start()
         {
-            inputerDict.Add((playerInput as IActionMapInputer).GetActionMapName(), playerInput);
+            inputerDict.Add((playerControllerInput as IActionMapInputer).GetActionMapName(), playerControllerInput);
             inputerDict.Add((unitInput as IActionMapInputer).GetActionMapName(), unitInput);
             inputerDict.Add((spawnAreaSetterInput as IActionMapInputer).GetActionMapName(), spawnAreaSetterInput);
 
-            playerInput.OnHoldStarted += (vec) => OnHoldStarted?.Invoke(vec);
-            playerInput.OnHoldPreformed += (vec) => OnHoldPreformed?.Invoke(vec);
-            playerInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
-            playerInput.OnControllMenu += () => OnControllMenu?.Invoke();
-
-            unitInput.OnHoldStarted += (vec) => OnHoldStarted?.Invoke(vec);
-            unitInput.OnHoldPreformed += (vec) => OnHoldPreformed?.Invoke(vec);
-            unitInput.OnHoldCanceled += () => OnHoldCanceled?.Invoke();
-            unitInput.OnControllMenu += () => OnControllMenu?.Invoke();
-
-            spawnAreaSetterInput.OnSetSpawnAreaRequested += (vec) => OnSetSpawnAreaRequested?.Invoke(vec);
-            spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
-
             ChangeActionMapDefault();
+        }
+
+        private void OnDisable()
+        {
+            UnbindEvents();
         }
 
         public void Initialize(SelectableController selectableController)
         {
             selectableController.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
 
-            playerInput.Initialize(selectableController);
+            playerControllerInput.Initialize(selectableController);
             unitInput.Initialize(selectableController);
         }
 
@@ -75,6 +72,59 @@ namespace Assets.Scripts.ControllUnit
         private void ChangeActionMapDefault()
         {
             ChangeActionMapSelected(DefaultActionMapName);
+        }
+
+        private void BindEvents()
+        {
+            playerControllerInput.OnHoldStarted += HandlerHoldStarted;
+            playerControllerInput.OnHoldPerformed += HandlerHoldPerformed;
+            playerControllerInput.OnHoldCanceled += HandlerHoldCanceled;
+            playerControllerInput.OnControllMenu += HandlerControllMenu;
+
+            unitInput.OnHoldStarted += HandlerHoldStarted;
+            unitInput.OnHoldPerformed += HandlerHoldPerformed;
+            unitInput.OnHoldCanceled += HandlerHoldCanceled;
+            unitInput.OnControllMenu += HandlerControllMenu;
+
+            spawnAreaSetterInput.OnSetSpawnAreaRequested += HandlerSetSpawnAreaRequested;
+            spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
+        }
+
+        private void UnbindEvents()
+        {
+            playerControllerInput.OnHoldStarted -= HandlerHoldStarted;
+            playerControllerInput.OnHoldPerformed -= HandlerHoldPerformed;
+            playerControllerInput.OnHoldCanceled -= HandlerHoldCanceled;
+            playerControllerInput.OnControllMenu -= HandlerControllMenu;
+
+            unitInput.OnHoldStarted -= HandlerHoldStarted;
+            unitInput.OnHoldPerformed -= HandlerHoldPerformed;
+            unitInput.OnHoldCanceled -= HandlerHoldCanceled;
+            unitInput.OnControllMenu -= HandlerControllMenu;
+
+            spawnAreaSetterInput.OnSetSpawnAreaRequested -= HandlerSetSpawnAreaRequested;
+            spawnAreaSetterInput.OnSetSpawnAreaFinished -= ChangeActionMapDefault;
+        }
+
+        private void HandlerHoldStarted(Vector3 vec)
+        {
+            OnHoldStarted?.Invoke(vec);
+        }
+        private void HandlerHoldPerformed(Vector3 vec)
+        {
+            OnHoldPerformed?.Invoke(vec);
+        }
+        private void HandlerHoldCanceled()
+        {
+            OnHoldCanceled?.Invoke();
+        }
+        private void HandlerControllMenu()
+        {
+            OnControllMenu?.Invoke();
+        }
+        private void HandlerSetSpawnAreaRequested(Vector3 vec)
+        {
+            OnSetSpawnAreaRequested?.Invoke(vec);
         }
     }
 }

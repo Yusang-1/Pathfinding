@@ -7,13 +7,6 @@ namespace Assets.Scripts.ControllUnit
 {
     public class MapBootStrapper
     {
-        private Action<ISelectableUnit> onSelectedHandler;
-        private Action<ISelectableUnit> onDeselectedHandler;
-        private Action<Vector3> onHoldStartedHandler;
-        private Action<Vector3> onHoldPerformedHandler;
-        private Action onHoldCanceledHandler;
-        private Action onManageMenuHandler;
-
         private readonly SelectableController selectableController = new();
         private readonly MapdataJsonConverter mapdataJsonConverter = new();
 
@@ -25,7 +18,7 @@ namespace Assets.Scripts.ControllUnit
 
         public MapBootStrapper(ControllUnitUIRoot uiRoot, InputManager inputManager, UnitSpawner unitSpawner)
         {
-            this.uiRoot = uiRoot;
+            this.uiRoot = uiRoot;            
             this.inputManager = inputManager;
             this.unitSpawner = unitSpawner;
         }
@@ -33,24 +26,12 @@ namespace Assets.Scripts.ControllUnit
         public void Initialize(NodeData nodeData, MapRuntimeContext mapRuntimeContext, UnitsSO unitsSO, Pathfinder pathfinder)
         {            
             nodeData.Initialize();
-            unitSpawner.Initialize(mapRuntimeContext, pathfinder, new UnitRuntimeContext(pathfinder, mapRuntimeContext.SpatialHash));
+            unitSpawner.Initialize(new UnitRuntimeContext(pathfinder, mapRuntimeContext.SpatialHash));
             inputManager.Initialize(selectableController);
             
             unitsSO.Initialize();
-            
-            InitializeHandlers();
-        }
+        }                
         
-        private void InitializeHandlers()
-        {
-            onSelectedHandler = (selectable) => uiRoot.OnUnitSelected?.Invoke(selectable);
-            onDeselectedHandler = (selectable) => uiRoot.OnUnitDeselected?.Invoke(selectable);
-            onHoldStartedHandler = (vec) => uiRoot.OnHoldStarted?.Invoke(vec);
-            onHoldPerformedHandler = (vec) => uiRoot.OnHoldPerformed?.Invoke(vec);
-            onHoldCanceledHandler = () => uiRoot.OnHoldCanceled?.Invoke();
-            onManageMenuHandler = () => uiRoot.OnManageMenu?.Invoke();
-        }
-
         public void BindEvents(Action<MapData> InitializeMapRuntime, MapRuntimeContext mapRuntimeContext)
         {
             if (isBound) return; // 중복 이벤트 구독 방지
@@ -62,7 +43,7 @@ namespace Assets.Scripts.ControllUnit
             isBound = true;
         }
 
-        public void ResetBootStrapper(Action<MapData> InitializeMapRuntime, MapRuntimeContext mapRuntimeContext)
+        public void UnbindEvents(Action<MapData> InitializeMapRuntime, MapRuntimeContext mapRuntimeContext)
         {
             if (!isBound) return;
 
@@ -71,7 +52,7 @@ namespace Assets.Scripts.ControllUnit
             RemoveInputManagerEvent();
 
             isBound = false;
-        }
+        }                
 
         private void AddUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
         {
@@ -86,17 +67,17 @@ namespace Assets.Scripts.ControllUnit
 
         private void AddUnitSpawnerEvent()
         {
-            unitSpawner.UnitFactory.OnSelectedCallback += onSelectedHandler;
-            unitSpawner.UnitFactory.OnDeselectedCallback += onDeselectedHandler;
+            unitSpawner.UnitFactory.OnSelectedCallback += HandleUnitSelected;
+            unitSpawner.UnitFactory.OnDeselectedCallback += HandleUnitDeselected;
             unitSpawner.SpawnAreaSetter.OnStartSetSpawnAreaRequested += inputManager.ChangeActionMapSelected;
         }
 
         private void AddInputManagerEvent()
         {
-            inputManager.OnHoldStarted += onHoldStartedHandler;
-            inputManager.OnHoldPreformed += onHoldPerformedHandler;
-            inputManager.OnHoldCanceled += onHoldCanceledHandler;
-            inputManager.OnControllMenu += onManageMenuHandler;
+            inputManager.OnHoldStarted += HandleHoldStart;
+            inputManager.OnHoldPerformed += HandleHoldPerformed;
+            inputManager.OnHoldCanceled += HandleHoldCanceled;
+            inputManager.OnControllMenu += HandleManageMenu;
             inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnUnitArea;
         }
 
@@ -113,18 +94,43 @@ namespace Assets.Scripts.ControllUnit
 
         private void RemoveUnitSpawnerEvent()
         {
-            unitSpawner.UnitFactory.OnSelectedCallback -= onSelectedHandler;
-            unitSpawner.UnitFactory.OnDeselectedCallback -= onDeselectedHandler;
+            unitSpawner.UnitFactory.OnSelectedCallback -= HandleUnitSelected;
+            unitSpawner.UnitFactory.OnDeselectedCallback -= HandleUnitDeselected;
             unitSpawner.SpawnAreaSetter.OnStartSetSpawnAreaRequested -= inputManager.ChangeActionMapSelected;
         }
 
         private void RemoveInputManagerEvent()
         {
-            inputManager.OnHoldStarted -= onHoldStartedHandler;
-            inputManager.OnHoldPreformed -= onHoldPerformedHandler;
-            inputManager.OnHoldCanceled -= onHoldCanceledHandler;
-            inputManager.OnControllMenu -= onManageMenuHandler;
+            inputManager.OnHoldStarted -= HandleHoldStart;
+            inputManager.OnHoldPerformed -= HandleHoldPerformed;
+            inputManager.OnHoldCanceled -= HandleHoldCanceled;
+            inputManager.OnControllMenu -= HandleManageMenu;
             inputManager.OnSetSpawnAreaRequested -= unitSpawner.SetSpawnUnitArea;
+        }
+        
+        private void HandleUnitSelected(ISelectableUnit selectable)
+        {
+            uiRoot.OnUnitSelected?.Invoke(selectable);
+        }
+        private void HandleUnitDeselected(ISelectableUnit selectable)
+        {
+            uiRoot.OnUnitDeselected?.Invoke(selectable);
+        }
+        private void HandleHoldStart(Vector3 vec)
+        {
+            uiRoot.OnHoldStarted?.Invoke(vec);
+        }
+        private void HandleHoldPerformed(Vector3 vec)
+        {
+            uiRoot.OnHoldPerformed?.Invoke(vec);
+        }
+        private void HandleHoldCanceled()
+        {
+            uiRoot.OnHoldCanceled?.Invoke();
+        }
+        private void HandleManageMenu()
+        {
+            uiRoot.OnManageMenu?.Invoke();
         }
     }
 }

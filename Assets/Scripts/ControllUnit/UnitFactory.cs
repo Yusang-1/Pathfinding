@@ -19,7 +19,7 @@ namespace Assets.Scripts.ControllUnit
         private readonly ObjectPool<Unit> largeUnitPool = new();
         private readonly ObjectPool<UnitBottomSelectChanger> unitBottomPool = new();
 
-        public UnitFactory(Unit smallUnitPrefab, Unit largeUnitPrefab, UnitBottomSelectChanger unitBottomPrefab, Pathfinder pathfinder, UnitRuntimeContext unitRuntimeContext)
+        public UnitFactory(Unit smallUnitPrefab, Unit largeUnitPrefab, UnitBottomSelectChanger unitBottomPrefab, UnitRuntimeContext unitRuntimeContext)
         {
             this.smallUnitPrefab = smallUnitPrefab;
             this.largeUnitPrefab = largeUnitPrefab;

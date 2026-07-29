@@ -14,26 +14,78 @@ public class UILoadMapMediator : MonoBehaviour
     [SerializeField] private UILoadMap uiLoadMap;
     [SerializeField] private UILoadMapList uiLoadMapList;
 
+    private void OnEnable()
+    {
+        BindEvents();
+    }
+    
     private void Start()
     {
-        uiLoadMapList.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
-        uiLoadMapList.OnLoadMapFinished += () => OnLoadMapFinished?.Invoke();
+        uiLoadMap.SetProviders(uiLoadMapList.ShowMapList);
+    }
+
+    private void OnDisable()
+    {
+        UnbindEvents();
+    }
+
+    private void BindEvents()
+    {
+        uiLoadMapList.OnLoadMapRequested += HandleLoadMap;
+        uiLoadMapList.OnLoadMapFinished += HandleLoadMapFinished;
         uiLoadMapList.OnLoadMapFinished += SetActiveFalse;
         uiLoadMapList.OnLoadMapListClosed += uiLoadMap.SetActiveTrue;
-        uiLoadMapList.OnLoadMapListClosed += () => OnLoadMapListClosedRequested?.Invoke();
-        
-        uiLoadMap.OnOfficialMapListRequested += () => OnOfficialMapListRequested?.Invoke();
-        uiLoadMap.OnPersonalMapListRequested += () => OnPersonalMapListRequested?.Invoke();
-        uiLoadMap.OnOpenMapListRequested += () => OnOpenMapListRequested?.Invoke();
+        uiLoadMapList.OnLoadMapListClosed += HandleLoadMapListClosed;
 
-        uiLoadMap.SetProviders(uiLoadMapList.ShowMapList);        
+        uiLoadMap.OnOfficialMapListRequested += HandleGetOfficialMapList;
+        uiLoadMap.OnPersonalMapListRequested += HandleGetPersonalMapList;
+        uiLoadMap.OnOpenMapListRequested += HandleOpenMapList;
     }
+
+    private void UnbindEvents()
+    {
+        uiLoadMapList.OnLoadMapRequested -= HandleLoadMap;
+        uiLoadMapList.OnLoadMapFinished -= HandleLoadMapFinished;
+        uiLoadMapList.OnLoadMapFinished -= SetActiveFalse;
+        uiLoadMapList.OnLoadMapListClosed -= uiLoadMap.SetActiveTrue;
+        uiLoadMapList.OnLoadMapListClosed -= HandleLoadMapListClosed;
+
+        uiLoadMap.OnOfficialMapListRequested -= HandleGetOfficialMapList;
+        uiLoadMap.OnPersonalMapListRequested -= HandleGetPersonalMapList;
+        uiLoadMap.OnOpenMapListRequested -= HandleOpenMapList;
+    }
+
+    private void HandleLoadMap(MapData mapData)
+    {
+        OnLoadMapRequested?.Invoke(mapData);
+    }
+    private void HandleLoadMapFinished()
+    {
+        OnLoadMapFinished?.Invoke();
+    }
+    private void HandleLoadMapListClosed()
+    {
+        OnLoadMapListClosedRequested?.Invoke();
+    }
+    private MapData[] HandleGetOfficialMapList()
+    {
+        return OnOfficialMapListRequested?.Invoke();
+    }
+    private MapData[] HandleGetPersonalMapList()
+    {
+        return OnPersonalMapListRequested?.Invoke();
+    }
+    private void HandleOpenMapList()
+    {
+        OnOpenMapListRequested?.Invoke();
+    }
+
 
     public void ResetMediator()
     {
         gameObject.SetActive(true);
         uiLoadMap.gameObject.SetActive(true);
     }
-    
+
     private void SetActiveFalse() => gameObject.SetActive(false);
 }

@@ -11,7 +11,7 @@ namespace Assets.Scripts.ControllUnit
     {
         public event Action<Vector2> OnDirectionChanged;
         public event Action<Vector3> OnHoldStarted;
-        public event Action<Vector3> OnHoldPreformed;
+        public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
 
@@ -86,15 +86,15 @@ namespace Assets.Scripts.ControllUnit
         {
             while (true)
             {
-                if(startPosition != mousePosition)
+                if (startPosition != mousePosition)
                 {
                     HoldStarted();
                     break;
                 }
                 yield return null;
             }
-            
-            while(isDrag)
+
+            while (isDrag)
             {
                 HoldPerformed();
                 yield return null;
@@ -108,12 +108,12 @@ namespace Assets.Scripts.ControllUnit
         }
         private void HoldPerformed()
         {
-            OnHoldPreformed?.Invoke(mousePosition);
+            OnHoldPerformed?.Invoke(mousePosition);
         }
         private void HoldCanceled()
         {
             isDrag = false;
-            
+
             if (isShiftPressed)
             {
                 selectableController.ShiftSelectedList();

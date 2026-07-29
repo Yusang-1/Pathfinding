@@ -15,9 +15,9 @@ namespace Assets.Scripts.ControllUnit
         public SpawnAreaSetter SpawnAreaSetter => spawnAreaSetter;
         public UnitFactory UnitFactory => unitFactory;
 
-        public void Initialize(MapRuntimeContext mapRuntimeContext, Pathfinder pathfinder, UnitRuntimeContext unitRuntimeContext)
+        public void Initialize(UnitRuntimeContext unitRuntimeContext)
         {
-            unitFactory = new UnitFactory(smallUnitPrefab, largeUnitPrefab, unitBottomPrefab, pathfinder, unitRuntimeContext);
+            unitFactory = new UnitFactory(smallUnitPrefab, largeUnitPrefab, unitBottomPrefab, unitRuntimeContext);
         }
 
         public void SpawnUnit(UnitSize unitSize)
