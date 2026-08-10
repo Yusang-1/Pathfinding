@@ -1,5 +1,4 @@
 using UnityEngine;
-using Assets.Scripts.CrowdSimulation.SO;
 
 namespace Assets.Scripts.CrowdSimulation
 {

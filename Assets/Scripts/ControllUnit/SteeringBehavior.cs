@@ -1,12 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Assets.Scripts.ControllUnit.SO;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class SteeringBehavior
     {        
-        public Vector3 GetSteering(Unit unit, List<Unit> nearby, float maxSpeed, Vector3 destination, SteeringConfig weighting, int totalUnitCount)
+        public Vector3 GetSteering(Unit unit, List<Unit> nearby, float maxSpeed, Vector3 destination, SteeringConfig weighting)
         {
             Debug.Log("steering");
             float distToGoal = Vector3.Distance(unit.transform.position, destination);

@@ -163,7 +163,7 @@ namespace Assets.Scripts.ControllUnit
         private void GetVelocity()
         {
             var nearbyUnits = unitRuntimeContext.SpatialHash.GetUnitsInRange(unit.transform.position, 2.2f);
-            velocity = unitRuntimeContext.SteeringBehavior.GetSteering(unit, nearbyUnits, unitData.MoveSpeed, shortDestination, steeringConfig, totalUnitCount);
+            velocity = unitRuntimeContext.SteeringBehavior.GetSteering(unit, nearbyUnits, unitData.MoveSpeed, shortDestination, steeringConfig);
             velocity *= Time.deltaTime;
         }
     }

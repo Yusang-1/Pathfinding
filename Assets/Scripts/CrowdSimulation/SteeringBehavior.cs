@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Assets.Scripts.CrowdSimulation.SO;
 
 namespace Assets.Scripts.CrowdSimulation
 {
