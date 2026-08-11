@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2544272228285241603}
   - component: {fileID: 493779136749758385}
-  - component: {fileID: 6986153058406145389}
   m_Layer: 0
   m_Name: EntityCrowdUnit
   m_TagString: Untagged
@@ -88,26 +87,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6986153058406145389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 329046794885842654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d456d040fc44de4ba0db0bcdcc36d11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 5
-  HasDestination: 0
-  Destination:
-    x: 0
-    y: 0
-    z: 0
-  Velocity:
-    x: 0
-    y: 0
-    z: 0
-  SteeringWeightingData: {fileID: 11400000, guid: 33ef8a80e716a474e8cf542bc221237c, type: 2}

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Assets.Scripts.CrowdSimulation.UI;
 using Unity.Entities;
 
@@ -12,14 +11,17 @@ namespace Assets.Scripts.ECS
 
         private void Start()
         {
-            uiSpawnUnit.OnSpawnUnitRequested += SpawnUnit;
+            uiSpawnUnit.OnSpawnUnitRequested += SpawnUnit;                        
         }
 
         public void SpawnUnit()
         {
-            var unit = Instantiate<CrowdUnitAuthoring>(unitPrefab);
-            var subscene = SceneManager.GetSceneByName("Test Sub Scene");
-            SceneManager.MoveGameObjectToScene(unit.gameObject, subscene);
+            // 1. 기본 ECS 월드의 EntityManager 가져오기
+            var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+            // 2. 빈 엔티티 생성 후 요청 컴포넌트 추가 (신호 발송)
+            Entity requestEntity = entityManager.CreateEntity();
+            entityManager.AddComponentData(requestEntity, new SpawnRequestData());
         }
     }
 }

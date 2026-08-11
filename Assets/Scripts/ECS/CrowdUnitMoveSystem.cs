@@ -18,27 +18,22 @@ namespace Assets.Scripts.ECS
                 DynamicBuffer<NearbyEntityElement>>()
                 .WithAll<MoveUnitTag>()
                 .WithEntityAccess())
-            {                
+            {
                 if (!agent.ValueRO.HasDestination)
-                {                    
+                {
                     continue;
                 }
-                
+
                 float3 currentPos = transform.ValueRO.Position;
                 float3 dest = agent.ValueRO.Destination;
-                
-                // for (int i = 0; i < neighbors.Length; i++)
-                // {
-                //     Entity other = neighbors[i].Value;
-                //     // 다른 에이전트와 거리/스티어링 계산
-                // }
+
                 DynamicBuffer<NearbyEntityElement> nearby = neighbors; // spatialHash.GetUnitsInRange(thisUnit.transform.position, 1);
 
                 float3 steering = CalculateSteering(currentPos, float3.zero/*수정*/, dest, agent.ValueRO.Radius, agent.ValueRO.Speed, steeringData, entity, nearby/*수정*/);
 
                 float3 move = steering * deltaTime;
                 move = math.clamp(move, new float3(-agent.ValueRO.Speed), new float3(agent.ValueRO.Speed));
-                                
+
                 transform.ValueRW.Position += move;
                 agent.ValueRW.Velocity = move;
 

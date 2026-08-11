@@ -16,8 +16,9 @@ namespace Assets.Scripts.ECS
         {
             public override void Bake(CrowdUnitAuthoring authoring)
             {
-                Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity,
+                Entity prefabEntity = GetEntity(TransformUsageFlags.Dynamic);
+
+                AddComponent(prefabEntity,
                     new CrowdUnitData()
                     {
                         Speed = authoring.Speed,
@@ -26,18 +27,24 @@ namespace Assets.Scripts.ECS
                         Velocity = authoring.Velocity
                     }
                 );
-                AddComponent(entity,
-                    new SteeringBehaviourData()
-                    {
-                        SeekWeight = authoring.SteeringWeightingData.WalkConfig.SeekWeight,
-                        SeparationWeight = authoring.SteeringWeightingData.WalkConfig.SeparationWeight,
-                        AlignmentWeight = authoring.SteeringWeightingData.WalkConfig.AlignmentWeight,
-                        CohesionWeight = authoring.SteeringWeightingData.WalkConfig.CohesionWeight
-                    }
-                );
-                AddComponent(entity, new MoveUnitTag());
-                
-                AddBuffer<NearbyEntityElement>(entity);
+
+                var steeringConfig = authoring.SteeringWeightingData != null
+                    ? authoring.SteeringWeightingData.WalkConfig
+                    : default;
+                AddComponent(prefabEntity, new SteeringBehaviourData
+                {
+                    SeekWeight = steeringConfig.SeekWeight,
+                    SeparationWeight = steeringConfig.SeparationWeight,
+                    AlignmentWeight = steeringConfig.AlignmentWeight,
+                    CohesionWeight = steeringConfig.CohesionWeight
+                });
+
+                AddComponent(prefabEntity, new MoveUnitTag());
+
+                AddComponent(prefabEntity, new Prefab());
+                AddComponent(prefabEntity, new Disabled());
+
+                AddBuffer<NearbyEntityElement>(prefabEntity);                
             }
         }
     }
