@@ -21,11 +21,8 @@ namespace Assets.Scripts.ControllUnit.SO
                 { UnitSize.large, largeUnitRadius }
             };
         }
-    }    
-}
-
-namespace Assets.Scripts.ControllUnit
-{
+    }
+    
     public enum UnitSize
     {
         small,
