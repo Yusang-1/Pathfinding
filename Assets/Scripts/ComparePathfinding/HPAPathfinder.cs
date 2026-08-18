@@ -20,7 +20,7 @@ public class HPAPathfinder
 
 
     /// <summary> high level cluster 경로를 반환 </summary>
-    public List<ClusterResult> FindClusterPath(Vector3 from, Vector3 to)
+    public List<ClusterResult> FindClusterPath(Vector3 from, Vector3 to, float unitRadius)
     {
         results.Clear();
         Vector2Int startNode = nodeList.GetNodeIndex(from);
@@ -36,14 +36,14 @@ public class HPAPathfinder
         Vector2Int goalCluster = clusterList.GetClusterIndex(goalNode);
 
         // start cluster, goal cluster에 노드 추가
-        clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList);
-        clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList);
+        clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList, clusterList, unitRadius);
+        clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList, clusterList, unitRadius);
         nodeList.NodeTypeController.NodeTypeDrawer.ResetSearched();
         nodeList.NodeTypeController.NodeTypeDrawer.ResetTrace();
 
         List<ClusterResult> clusterPath;
         // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴
-        if (startCluster == goalCluster && clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode))
+        if (startCluster == goalCluster && clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode, unitRadius))
         {
             var result = ClusterResultPool.GetValue();
             result.SetClusterPath(startCluster, Vector2Int.zero, Vector2Int.zero, startNode, goalNode);
@@ -53,7 +53,7 @@ public class HPAPathfinder
         else
         {
             // 고수준 클러스터 경로 탐색
-            clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode);
+            clusterPath = FindAbstractClusterPath(startCluster, goalCluster, startNode, goalNode, unitRadius);
         }
 
         if (clusterPath == null || clusterPath.Count == 0)
@@ -69,13 +69,13 @@ public class HPAPathfinder
     }
 
     /// <summary> 고수준 클러스터 경로 탐색 </summary>    
-    private List<ClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode)
+    private List<ClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode, float unitRadius)
     {
         openSet.Clear();
         closedSet.Clear();
         clusterDict.Clear();
 
-        List<Vector2Int> startEntrances = GetAllEntrances(startClusterIndex);
+        List<Vector2Int> startEntrances = GetAllEntrances(startClusterIndex, unitRadius);
         if (startEntrances == null || startEntrances.Count == 0) return null;
         Vector2IntListPool.ReleaseValue(startEntrances);
 
@@ -97,7 +97,7 @@ public class HPAPathfinder
 
             // 목적지 도착
             if (currentClusterIndex == goalClusterIndex
-                && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode))
+                && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode, unitRadius))
             {
                 PathResultRecorder.AddMemoryUsed(openSet.Capacity + clusterDict.Count + closedSet.Count);
 
@@ -107,7 +107,7 @@ public class HPAPathfinder
             if (closedSet.Contains(currentClusterHash)) continue;
             closedSet.Add(currentClusterHash);
 
-            foreach (var (neighborCluster, cost) in GetAbstractNeighbors(clusterDict[currentClusterHash]))
+            foreach (var (neighborCluster, cost) in GetAbstractNeighbors(clusterDict[currentClusterHash], unitRadius))
             {
                 int neighborClusterHash = neighborCluster.GetHashCode();
 
@@ -245,17 +245,17 @@ public class HPAPathfinder
         return results;
     }
 
-    private IEnumerable<(AbstractNode index, float cost)> GetAbstractNeighbors(AbstractNode current)
+    private IEnumerable<(AbstractNode index, float cost)> GetAbstractNeighbors(AbstractNode current, float unitRadius)
     {
         var cluster = clusterList.GetCluster(current.ClusterIndex);
 
         // Intra-cluster edges
-        List<Vector2Int> entranceList = GetAllEntrances(current.ClusterIndex);
+        List<Vector2Int> entranceList = GetAllEntrances(current.ClusterIndex, unitRadius);
         foreach (var other in entranceList)
         {
             if (other == current.EntranceNodeIndex) continue;
 
-            if (cluster.TryGetIntraEdgeCost(current.EntranceNodeIndex, other, out float intraCost))
+            if (cluster.TryGetIntraEdgeCost(current.EntranceNodeIndex, other, out float intraCost, unitRadius))
             {
                 yield return (
                     new AbstractNode { ClusterIndex = current.ClusterIndex, EntranceNodeIndex = other },
@@ -269,7 +269,7 @@ public class HPAPathfinder
         List<Vector2Int> neighbors = clusterList.GetNeighborClusters(current.ClusterIndex);
         foreach (var neighborCluster in neighbors)
         {
-            Vector2Int? neighborEntrance = GetEntranceBetweenClusters(current.ClusterIndex, neighborCluster, current.EntranceNodeIndex);
+            Vector2Int? neighborEntrance = GetEntranceBetweenClusters(current.ClusterIndex, neighborCluster, current.EntranceNodeIndex, unitRadius);
             if (neighborEntrance == null) continue;
 
             yield return (
@@ -279,7 +279,7 @@ public class HPAPathfinder
         }
     }
 
-    private List<Vector2Int> GetAllEntrances(Vector2Int Index)
+    private List<Vector2Int> GetAllEntrances(Vector2Int Index, float unitRadius)
     {
         List<Vector2Int> entrances = Vector2IntListPool.GetValue();
         entrances.Clear();
@@ -287,7 +287,7 @@ public class HPAPathfinder
         Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         foreach (Vector2Int dir in directions)
         {
-            foreach (var dirEntrance in clusterList.GetEntrances(Index, dir))
+            foreach (var dirEntrance in clusterList.GetEntrances(Index, dir, unitRadius))
             {
                 if (dirEntrance != null)
                 {
@@ -298,14 +298,14 @@ public class HPAPathfinder
         return entrances;
     }
 
-    private Vector2Int? GetEntranceBetweenClusters(Vector2Int from, Vector2Int to, Vector2Int currentEntrance)
+    private Vector2Int? GetEntranceBetweenClusters(Vector2Int from, Vector2Int to, Vector2Int currentEntrance, float unitRadius)
     {
         Vector2Int direction = to - from; // direction 정규화
         if (direction.x != 0) direction.x = direction.x > 0 ? 1 : -1;
         if (direction.y != 0) direction.y = direction.y > 0 ? 1 : -1;
 
         Vector2Int correspondingPos = currentEntrance + direction;
-        List<Vector2Int> neighborEntrances = clusterList.GetEntrancesOnce(to, -direction);
+        List<Vector2Int> neighborEntrances = clusterList.GetEntrancesOnce(to, -direction, unitRadius);
 
         if (neighborEntrances != null && neighborEntrances.Contains(correspondingPos))
         {

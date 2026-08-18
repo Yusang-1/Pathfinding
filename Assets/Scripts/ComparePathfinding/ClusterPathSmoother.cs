@@ -17,7 +17,7 @@ public class ClusterPathSmoother
         this.pathManager = pathManager;
     }
 
-    public List<ClusterResult> SmoothClusterPath(List<ClusterResult> clusterPathList)
+    public List<ClusterResult> SmoothClusterPath(List<ClusterResult> clusterPathList, float unitRadius)
     {
         if (clusterPathList == null || clusterPathList.Count <= 1) return null;
 
@@ -32,7 +32,7 @@ public class ClusterPathSmoother
 
         for (int index = 0; index < clusterPathList.Count - 1;)
         {
-            Loop(clusterList, nodeList, clusterPathList, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true);
+            Loop(clusterList, nodeList, clusterPathList, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true, unitRadius);
             from = outPoint;
             index = outIndex + 1;
             leftSetIndex = 0;
@@ -65,7 +65,8 @@ public class ClusterPathSmoother
     }
 
     private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath,
-        Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex, out Vector3 outPoint, out int outIndex, int index, bool isStart)
+        Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex,
+        out Vector3 outPoint, out int outIndex, int index, bool isStart, float unitRadius)
     {
         outPoint = point;
         outIndex = index;
@@ -84,13 +85,13 @@ public class ClusterPathSmoother
 
         if (isStart)
         {
-            clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right);
+            clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);
             currentLeft = left;
             leftSetIndex = index;
             currentRight = right;
             rightSetIndex = index;
             clusterIndexes.Add(path.Index);
-            Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false);
+            Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false, unitRadius);
             return;
         }
 
@@ -108,7 +109,7 @@ public class ClusterPathSmoother
             return;
         }
 
-        clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int newLeft, out Vector2Int newRight);
+        clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int newLeft, out Vector2Int newRight, unitRadius);
 
         // 왼쪽 endPoint 계산
         Vector3 newLeftString = (Vector3)nodeList.GridToWorld(newLeft) - point;
@@ -155,7 +156,7 @@ public class ClusterPathSmoother
 
         clusterIndexes.Add(path.Index);
 
-        Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false);
+        Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false, unitRadius);
     }
 
     private void SetResult(Vector2Int nodeIndex, Vector2Int from, Vector2Int notIncludeClusterIndex, bool useLastIncludeClusterIndex)

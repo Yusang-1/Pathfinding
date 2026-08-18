@@ -16,7 +16,7 @@ public class HPAClusterList
         cachedNeighborList = new List<Vector2Int>(4); // 상하좌우 최대 4개의 이웃
     }
 
-    public void Initialize(AStarPathfinder pathfinder, int mapSize, int clusterSize)
+    public void Initialize(AStarPathfinder pathfinder, int mapSize, int clusterSize, Dictionary<UnitSize, float> unitRadiusList)
     {
         this.clusterSize = clusterSize;
         clusterCount = mapSize / clusterSize;
@@ -39,7 +39,9 @@ public class HPAClusterList
         {
             for (int j = 0; j < clusterList.GetLength(1); j++)
             {
-                clusterList[i, j].Initialize(this, nodeList);
+                clusterList[i, j].Initialize(this, nodeList, unitRadiusList);
+                
+                // ComparePathfinding이면 실행
                 nodeList.NodeTypeController.NodeTypeDrawer.ResetSearched();
                 nodeList.NodeTypeController.NodeTypeDrawer.ResetTrace();
             }
@@ -71,7 +73,7 @@ public class HPAClusterList
 
     private List<HPAGraph.EntranceData> cachedEdgeIndexes;
     private List<Vector2Int> tempEdgeIndexes;
-    public List<HPAGraph.EntranceData> SetEntrance(Vector2Int cluster, Vector2Int direction)
+    public List<HPAGraph.EntranceData> SetEntrance(Vector2Int cluster, Vector2Int direction, float unitRadius)
     {
         if (cluster.x + direction.x < 0 || cluster.x + direction.x >= clusterCount
             || cluster.y + direction.y < 0 || cluster.y + direction.y >= clusterCount)
@@ -90,7 +92,7 @@ public class HPAClusterList
 
             for (int i = 0; i < clusterSize; i++) // x축을 따라 node 수집
             {
-                if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
+                if (nodeList.IsNodesInRangeWalkable(standardNode, unitRadius) && nodeList.IsNodesInRangeWalkable(standardNode + direction, unitRadius))
                 {
                     tempEdgeIndexes.Add(standardNode);
                 }
@@ -118,7 +120,7 @@ public class HPAClusterList
 
             for (int i = 0; i < clusterSize; i++) // y축을 따라 node 수집
             {
-                if (nodeList.GetNode(standardNode).IsWalkable && nodeList.GetNode(standardNode + direction).IsWalkable)
+                if (nodeList.IsNodesInRangeWalkable(standardNode, unitRadius) && nodeList.IsNodesInRangeWalkable(standardNode + direction, unitRadius))
                 {
                     tempEdgeIndexes.Add(standardNode);
                 }
@@ -165,13 +167,13 @@ public class HPAClusterList
         else isSuccess = false;
     }
 
-    public IEnumerable<Vector2Int> GetEntrances(Vector2Int clusterIndex, Vector2Int direction)
+    public IEnumerable<Vector2Int> GetEntrances(Vector2Int clusterIndex, Vector2Int direction, float unitRadius)
     {
-        return GetCluster(clusterIndex).Graph.GetNodesByDirection(direction);
+        return GetCluster(clusterIndex).Graph.GetNodesByDirection(direction, unitRadius);
     }
-    public List<Vector2Int> GetEntrancesOnce(Vector2Int clusterIndex, Vector2Int direction)
+    public List<Vector2Int> GetEntrancesOnce(Vector2Int clusterIndex, Vector2Int direction, float unitRadius)
     {
-        return GetCluster(clusterIndex).Graph.GetNodesByDirectionOnce(direction);
+        return GetCluster(clusterIndex).Graph.GetNodesByDirectionOnce(direction, unitRadius);
     }
 
     private Vector2Int GetLeftDownNodeIndexOfCluster(Vector2Int clusterIndex) => clusterIndex * clusterSize;

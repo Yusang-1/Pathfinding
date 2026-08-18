@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class HPACluster
 {
-    private readonly HPAGraph graph = new();
+    private HPAGraph graph;
     private readonly Vector2Int clusterIndex;
     private readonly AStarPathfinder pathfinder;
 
@@ -18,24 +18,29 @@ public class HPACluster
         this.pathfinder = pathfinder;
     }
 
-    public void Initialize(HPAClusterList clusterList, NodeList nodeList)
+    public void Initialize(HPAClusterList clusterList, NodeList nodeList, Dictionary<UnitSize, float> unitRadiusDict)
     {
-        InitializeGraph(clusterList, nodeList);
+        graph = new HPAGraph(unitRadiusDict);
+
+        foreach (var radius in unitRadiusDict.Values)
+        {
+            InitializeGraph(clusterList, nodeList, radius);
+        }
     }
 
-    private void InitializeGraph(HPAClusterList clusterList, NodeList nodeList)
+    private void InitializeGraph(HPAClusterList clusterList, NodeList nodeList, float unitRadius)
     {
         var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
         // graph에 entrance node 추가
         for (int i = 0; i < directions.Length; i++)
         {
-            var entrances = clusterList.SetEntrance(clusterIndex, directions[i]);
+            var entrances = clusterList.SetEntrance(clusterIndex, directions[i], unitRadius);
             if (entrances == null || entrances.Count == 0) continue;
 
             for (int j = 0; j < entrances.Count; j++)
             {
-                if (graph.TryAddEntranceNode(entrances[j], directions[i], nodeList))
+                if (graph.TryAddEntranceNode(entrances[j], directions[i], nodeList, unitRadius))
                 {
                     if (entrances[j].LeftEntrance != entrances[j].RightEntrance)
                     {
@@ -57,29 +62,31 @@ public class HPACluster
             {
                 var entrance1 = entranceList[i];
                 var entrance2 = entranceList[j];
-
+                
+                pathfinder.SetGetNeighborPolicy(new GetNeighborNodesProvider(nodeList, clusterList));
                 float distance = pathfinder.FindPathLength(entrance1, entrance2, 0);
                 if (distance > 0)
                 {
-                    graph.AddBidirectionalEdge(entrance1, entrance2, distance);
+                    graph.AddBidirectionalEdge(entrance1, entrance2, distance, unitRadius);
                 }
             }
         }
     }
 
     private readonly List<Vector2Int> tempNodes = new();
-    public void AddNodeToGraph(Vector2Int newNode, NodeList nodeList)
+    public void AddNodeToGraph(Vector2Int newNode, NodeList nodeList, HPAClusterList clusterList, float unitRadius)
     {
-        bool value = graph.TryAddNode(newNode, Vector2Int.zero, nodeList);
+        bool value = graph.TryAddNode(newNode, Vector2Int.zero, nodeList, unitRadius);
         if (value)
         {
             tempNodes.Add(newNode);
             foreach (var entrance in cachedEntrances)
             {
+                pathfinder.SetGetNeighborPolicy(new GetNeighborNodesInSameClusterProvider(nodeList, clusterList));
                 float distance = pathfinder.FindPathLength(entrance, newNode, 0);
                 if (distance > 0)
                 {
-                    graph.AddBidirectionalEdge(entrance, newNode, distance);
+                    graph.AddBidirectionalEdge(entrance, newNode, distance, unitRadius);
                 }
             }
             cachedEntrances.Add(newNode);
@@ -95,16 +102,16 @@ public class HPACluster
         }
     }
 
-    public bool TryGetIntraEdgeCost(Vector2Int entrance1, Vector2Int entrance2, out float cost)
+    public bool TryGetIntraEdgeCost(Vector2Int entrance1, Vector2Int entrance2, out float cost, float unitRadius)
     {
-        if (graph.TryGetEdgeWeight(entrance1, entrance2, out cost)) return true;
+        if (graph.TryGetEdgeWeight(entrance1, entrance2, out cost, unitRadius)) return true;
 
-        if (graph.TryGetEdgeWeight(entrance2, entrance1, out cost)) return true;
+        if (graph.TryGetEdgeWeight(entrance2, entrance1, out cost, unitRadius)) return true;
 
         return false;
     }
 
     public void SetClusterActive(bool value) => IsActive = value;
 
-    public bool IsNodeConnected(Vector2Int node1, Vector2Int node2) => graph.IsNodeConnected(node1, node2);
+    public bool IsNodeConnected(Vector2Int node1, Vector2Int node2, float unitRadius) => graph.IsNodeConnected(node1, node2, unitRadius);
 }

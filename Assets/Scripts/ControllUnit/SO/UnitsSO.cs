@@ -22,11 +22,11 @@ namespace Assets.Scripts.ControllUnit.SO
             };
         }
     }
-    
-    public enum UnitSize
-    {
-        small,
-        // medium,
-        large
-    }
+}
+
+public enum UnitSize
+{
+    small,
+    // medium,
+    large
 }

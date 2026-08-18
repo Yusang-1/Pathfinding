@@ -4,10 +4,9 @@ using System.Linq;
 
 public class HPAGraph
 {
-    private readonly Dictionary<Vector2Int, GraphNode> nodes = new();
+    private readonly Dictionary<float, Dictionary<Vector2Int, GraphNode>> nodesByUnitRadius = new();
+    private readonly Dictionary<float, Dictionary<Vector2Int, List<EntranceData>>> entrancesDataByDirectionByRadius = new();
     private readonly Dictionary<(Vector2Int from, Vector2Int to), float> edgeCache = new();
-
-    private readonly Dictionary<Vector2Int, List<EntranceData>> entrancesDataByDirection = new();
 
     private class GraphNode
     {
@@ -25,9 +24,18 @@ public class HPAGraph
         }
     }
 
-    /// <summary> 노드(entrance) 추가 </summary>
-    public bool TryAddNode(Vector2Int entrance, Vector2Int direction, NodeList nodeList)
+    public HPAGraph(Dictionary<UnitSize, float> unitRadiusDict)
     {
+        foreach (var radius in unitRadiusDict.Values)
+        {
+            nodesByUnitRadius.Add(radius, new Dictionary<Vector2Int, GraphNode>());
+        }
+    }
+
+    /// <summary> 노드(entrance) 추가 </summary>
+    public bool TryAddNode(Vector2Int entrance, Vector2Int direction, NodeList nodeList, float unitRadius)
+    {
+        var nodes = nodesByUnitRadius[unitRadius];
         if (!nodes.ContainsKey(entrance))
         {
             nodes[entrance] = new GraphNode(entrance, direction);
@@ -42,8 +50,15 @@ public class HPAGraph
         return false;
     }
 
-    public bool TryAddEntranceNode(EntranceData entranceData, Vector2Int direction, NodeList nodeList)
+    public bool TryAddEntranceNode(EntranceData entranceData, Vector2Int direction, NodeList nodeList, float unitRadius)
     {
+        if (!entrancesDataByDirectionByRadius.ContainsKey(unitRadius))
+        {
+            entrancesDataByDirectionByRadius.Add(unitRadius, new Dictionary<Vector2Int, List<EntranceData>>());
+        }
+        var entrancesDataByDirection = entrancesDataByDirectionByRadius[unitRadius];
+        entrancesDataByDirection ??= new Dictionary<Vector2Int, List<EntranceData>>();
+
         if (direction != Vector2Int.zero && !entrancesDataByDirection.ContainsKey(direction))
         {
             entrancesDataByDirection[direction] = new List<EntranceData>
@@ -53,13 +68,13 @@ public class HPAGraph
 
             if (entranceData.LeftEntrance != entranceData.RightEntrance)
             {
-                bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList);
-                bool isRightSuccess = TryAddNode(entranceData.RightEntrance, direction, nodeList);
+                bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList, unitRadius);
+                bool isRightSuccess = TryAddNode(entranceData.RightEntrance, direction, nodeList, unitRadius);
                 return isLeftSuccess && isRightSuccess;
             }
             else
             {
-                bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList);
+                bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList, unitRadius);
                 return isLeftSuccess;
             }
         }
@@ -69,21 +84,22 @@ public class HPAGraph
 
             if (entranceData.LeftEntrance != entranceData.RightEntrance)
             {
-                bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList);
-                bool isRightSuccess = TryAddNode(entranceData.RightEntrance, direction, nodeList);
+                bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList, unitRadius);
+                bool isRightSuccess = TryAddNode(entranceData.RightEntrance, direction, nodeList, unitRadius);
                 return isLeftSuccess && isRightSuccess;
             }
             else
             {
-                bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList);
+                bool isLeftSuccess = TryAddNode(entranceData.LeftEntrance, direction, nodeList, unitRadius);
                 return isLeftSuccess;
             }
         }
         else return false;
     }
 
-    private void AddEdge(Vector2Int from, Vector2Int to, float weight)
+    private void AddEdge(Vector2Int from, Vector2Int to, float weight, float unitRadius)
     {
+        var nodes = nodesByUnitRadius[unitRadius];
         if (!nodes.ContainsKey(from) || !nodes.ContainsKey(to)) return;
 
         var key = (from, to);
@@ -95,15 +111,18 @@ public class HPAGraph
         }
     }
 
-    public void AddBidirectionalEdge(Vector2Int entrance1, Vector2Int entrance2, float weight)
+    public void AddBidirectionalEdge(Vector2Int entrance1, Vector2Int entrance2, float weight, float unitRadius)
     {
-        AddEdge(entrance1, entrance2, weight);
-        AddEdge(entrance2, entrance1, weight);
+        AddEdge(entrance1, entrance2, weight, unitRadius);
+        AddEdge(entrance2, entrance1, weight, unitRadius);
     }
 
     public void RemoveTempNode(Vector2Int tempNode)
     {
-        nodes.Remove(tempNode);
+        foreach (var nodes in nodesByUnitRadius.Values)
+        {
+            nodes.Remove(tempNode);
+        }
 
         var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode).ToList();
 
@@ -117,22 +136,24 @@ public class HPAGraph
     }
 
     /// <summary> 노드의 모든 이웃 노드 반환 </summary>
-    public IEnumerable<Vector2Int> GetNeighbors(Vector2Int node)
+    public IEnumerable<Vector2Int> GetNeighbors(Vector2Int node, float unitRadius)
     {
+        var nodes = nodesByUnitRadius[unitRadius];
         return nodes.ContainsKey(node) ? nodes[node].Neighbors : null;
     }
 
     /// <summary> 간선 가중치 조회 </summary>
-    public bool TryGetEdgeWeight(Vector2Int from, Vector2Int to, out float weight)
+    public bool TryGetEdgeWeight(Vector2Int from, Vector2Int to, out float weight, float unitRadius)
     {
+        var nodes = nodesByUnitRadius[unitRadius];
         weight = 0;
         return nodes.ContainsKey(from) && nodes[from].EdgeWeights.TryGetValue(to, out weight);
     }
 
     /// <summary> 해당 방향의 모든 노드 반환 </summary>
-    public IEnumerable<Vector2Int> GetNodesByDirection(Vector2Int direction)
+    public IEnumerable<Vector2Int> GetNodesByDirection(Vector2Int direction, float unitRadius)
     {
-        foreach (var node in nodes.Values)
+        foreach (var node in nodesByUnitRadius[unitRadius].Values)
         {
             for (int i = 0; i < node.Direction.Count; i++)
             {
@@ -143,10 +164,10 @@ public class HPAGraph
             }
         }
     }
-    public List<Vector2Int> GetNodesByDirectionOnce(Vector2Int direction)
+    public List<Vector2Int> GetNodesByDirectionOnce(Vector2Int direction, float unitRadius)
     {
         List<Vector2Int> temp = new();
-        foreach (var node in nodes.Values)
+        foreach (var node in nodesByUnitRadius[unitRadius].Values)
         {
             for (int i = 0; i < node.Direction.Count; i++)
             {
@@ -159,9 +180,12 @@ public class HPAGraph
         return temp;
     }
 
-    public bool IsNodeConnected(Vector2Int node1, Vector2Int node2) => nodes[node1].Neighbors.Contains(node2) || node1 == node2;
+    public bool IsNodeConnected(Vector2Int node1, Vector2Int node2, float unitRadius)
+    {
+        return nodesByUnitRadius[unitRadius][node1].Neighbors.Contains(node2) || node1 == node2;
+    }
 
-    public void GetUsedEntrance(Vector2Int direction, Vector2Int entrance, out Vector2Int leftEntrance, out Vector2Int rightEntrance)
+    public void GetUsedEntrance(Vector2Int direction, Vector2Int entrance, out Vector2Int leftEntrance, out Vector2Int rightEntrance, float unitRadius)
     {
         if (direction == Vector2Int.zero)
         {
@@ -171,7 +195,7 @@ public class HPAGraph
             return;
         }
 
-        List<EntranceData> datas = entrancesDataByDirection[direction];
+        List<EntranceData> datas = entrancesDataByDirectionByRadius[unitRadius][direction];
         for (int i = 0; i < datas.Count; i++)
         {
             if (datas[i].HasEntrance(entrance))
@@ -300,18 +324,29 @@ public class HPAGraph
 
                 if (searchDirection.x == 0) // y축으로 이동
                 {
-                    if(searchDirection.y > 0 && compareVec.y >= RightEntrance.y) break;
-                    else if(compareVec.y <= RightEntrance.y) break;
+                    if (searchDirection.y > 0 && compareVec.y >= RightEntrance.y) break;
+                    else if (compareVec.y <= RightEntrance.y) break;
                 }
                 else
                 {
-                    if(searchDirection.x > 0 && compareVec.x >= RightEntrance.x) break;
-                    else if(compareVec.x <= RightEntrance.x) break;
+                    if (searchDirection.x > 0 && compareVec.x >= RightEntrance.x) break;
+                    else if (compareVec.x <= RightEntrance.x) break;
                 }
-                
+
             }
 
             return false;
         }
     }
+
+    // public struct EntranceData
+    // {
+    //     public Vector2Int LeftEntrance;
+    //     public Vector2Int RightEntrance;
+
+    //     public readonly bool HasEntrance(Vector2Int entrance)
+    //     {
+    //         return LeftEntrance == entrance || RightEntrance == entrance;
+    //     }
+    // }
 }

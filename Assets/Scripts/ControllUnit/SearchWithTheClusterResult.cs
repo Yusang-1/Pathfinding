@@ -20,8 +20,10 @@ namespace Assets.Scripts.ControllUnit
 
             Vector3 entrancePosition = nodeList.GridToWorld(data.EnterNodeIndex);
             Vector3 goalPosition = nodeList.GridToWorld(data.ExitNodeIndex);
-
-            List<Vector3> pathInCluster = thetaStarPathfinder.FindThetaPathInClusterList(entrancePosition, goalPosition, data.ClusterIndexes, unitRadius);
+            
+            thetaStarPathfinder.SetGetNeighborPolicy(new GetNeighborNodesWithClusterListProvider(nodeList, clusterList));
+            (thetaStarPathfinder.GetNeighborNodesActionProvider as GetNeighborNodesWithClusterListProvider).SetClusterList(data.ClusterIndexes);
+            List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, unitRadius);
 
             for (int i = 0; i < data.ClusterIndexes.Count; i++)
             {

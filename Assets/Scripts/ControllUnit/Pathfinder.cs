@@ -17,7 +17,7 @@ namespace Assets.Scripts.ControllUnit
             nodeList = nodes;
             clusterList = new HPAClusterList(nodeList);
             
-            AStarPathfinder aStarPathfinder = new(nodeList, clusterList);
+            AStarPathfinder aStarPathfinder = new(nodeList);
 
             clusterList.Initialize(aStarPathfinder, mapData.MapSize, mapData.ClusterSize, unitRadiusList);
             nodeList.SetNodeArea();
@@ -27,7 +27,7 @@ namespace Assets.Scripts.ControllUnit
         
         public LazyRefine GetLazyRefine()
         {
-            ThetaStar thetaStarPathfinder = new(nodeList, clusterList);
+            ThetaStar thetaStarPathfinder = new(nodeList);
             
             return new LazyRefine(clusterList, nodeList, new SearchWithTheClusterResult(thetaStarPathfinder));
         }

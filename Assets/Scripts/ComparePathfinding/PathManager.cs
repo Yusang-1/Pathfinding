@@ -28,6 +28,7 @@ public class PathManager : MonoBehaviour
     [SerializeField] private NodeData nodeData;
     [SerializeField] private ClusterShower clusterShower;
     [SerializeField] private LineDrawer lineDrawer;
+    [SerializeField] private Assets.Scripts.ControllUnit.SO.UnitsSO unitsSO;
 
     [SerializeField] private UnitUncontrollable unit;
 
@@ -61,7 +62,7 @@ public class PathManager : MonoBehaviour
 
         nodeData.Initialize();
         unit.Initialize(lineDrawer);
-        pathfindingChain.Initialize(hPAPathfinder, clusterPathSmoother, searchWithTheClusterResult);
+        pathfindingChain.Initialize(hPAPathfinder, clusterPathSmoother, searchWithTheClusterResult, 0);
 
         UIRootInitialize();
 
@@ -135,7 +136,7 @@ public class PathManager : MonoBehaviour
     {
         if (!isMapGenerated) return;
 
-        clusterList.Initialize(aStarPathfinder, mapSize, clusterSize);
+        clusterList.Initialize(aStarPathfinder, mapSize, clusterSize, unitsSO.UnitRadius);
         nodeList.SetNodeArea();
     }
 

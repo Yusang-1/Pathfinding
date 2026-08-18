@@ -54,9 +54,9 @@ public class FindClusterPathChain : FluentChain<(Vector3 from, Vector3 to), List
 {
     public FindClusterPathChain(IProcessor<(Vector3 from, Vector3 to), List<ClusterResult>> processor) : base(processor) { }
 
-    public FindClusterPathChain SmoothHPAPath(ClusterPathSmoother clusterPathSmoother)
+    public FindClusterPathChain SmoothHPAPath(ClusterPathSmoother clusterPathSmoother, float unitRadius)
     {
-        processor = new Combined<(Vector3 from, Vector3 to), List<ClusterResult>, List<ClusterResult>>(processor, new SmoothClusterPathProcessor(clusterPathSmoother));
+        processor = new Combined<(Vector3 from, Vector3 to), List<ClusterResult>, List<ClusterResult>>(processor, new SmoothClusterPathProcessor(clusterPathSmoother, unitRadius));
         return new FindClusterPathChain(processor);
     }
 

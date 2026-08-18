@@ -26,7 +26,7 @@ namespace Assets.Scripts.ControllUnit
         
         private void Start()
         {
-            mapRuntimeContext = new MapRuntimeContext(pathfinder);
+            mapRuntimeContext = new MapRuntimeContext(pathfinder, nodeData);
             mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList);
                         
             mapBootStrapper.Initialize(nodeData, mapRuntimeContext, unitsSO, mapRuntimeContext.Pathfinder);            
@@ -39,7 +39,7 @@ namespace Assets.Scripts.ControllUnit
 
         private void InitializeMapRuntime(MapData mapData)
         {
-            mapRuntimeContext.NodeList.Initialize(mapData, nodeData);
+            mapRuntimeContext.NodeList.Initialize(mapData.NodeSize, mapData.MapSize);
 
             mapGenerator.GenerateMap(mapData);
 
