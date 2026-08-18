@@ -74,6 +74,31 @@ public class NodeList
 
     public Node GetNode(Vector2Int index) => nodes[index.x, index.y];
 
+    private readonly List<Node> nodesInRange = new();
+    public List<Node> GetNodesInRange(Vector2Int standard, float radius)
+    {
+        nodesInRange.Clear();
+
+        Vector2Int nodeIndex = new();
+        int range = Mathf.CeilToInt(radius / nodeSize);
+        for (int x = standard.x - range; x <= standard.x + range; x++)
+        {
+            for (int y = standard.y - range; y <= standard.y + range; y++)
+            {
+                if (x < 0 || x >= nodes.GetLength(0) || y < 0 || y >= nodes.GetLength(1)) continue;
+                nodeIndex.x = x; nodeIndex.y = y;
+
+                float squareOfDistance = Vector2.SqrMagnitude(GridToWorld(standard) - GridToWorld(nodeIndex));
+
+                if (squareOfDistance <= radius * radius)
+                {
+                    nodesInRange.Add(nodes[x, y]);
+                }
+            }
+        }
+        return nodesInRange;
+    }
+
     private int currentAreaNum;
     private readonly Dictionary<int, List<Vector2Int>> nodesByAreaNum = new();
     public void SetNodeArea()

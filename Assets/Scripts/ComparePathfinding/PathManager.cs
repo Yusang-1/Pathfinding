@@ -51,9 +51,11 @@ public class PathManager : MonoBehaviour
         nodeList = new NodeList(nodeData);
         clusterList = new HPAClusterList(nodeList);
         mapGenerator = new MapGenerator(nodePrefab, nodeList);
-        aStarPathfinder = new AStarPathfinder(nodeList, clusterList);
+                
+        aStarPathfinder = new AStarPathfinder(nodeList);
+        
         hPAPathfinder = new HPAPathfinder(clusterList, nodeList, aStarPathfinder);
-        thetaStarPathfinder = new ThetaStar(nodeList, clusterList);
+        thetaStarPathfinder = new ThetaStar(nodeList);
         searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
         clusterPathSmoother = new ClusterPathSmoother(clusterList, nodeList, this);
 
@@ -142,7 +144,7 @@ public class PathManager : MonoBehaviour
         clusterList.SetAllCLusterActive();
         PathResultRecorder.ResetPathResult();
 
-        var path = aStarPathfinder.FindPath(from, to);
+        var path = aStarPathfinder.FindPath(from, to, 0);
         Vector3ListPool.ReleaseValue(path);
 
         OnAFound?.Invoke(PathResultRecorder.GetPathResult());

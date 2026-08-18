@@ -5,35 +5,40 @@ using System.Collections.Generic;
 public class ThetaStar : AbstractPathfinder
 {
     private readonly NodeList nodeList;
-    private readonly HPAClusterList clusterList;
     private const float EPS = 1e-4f;
 
     private readonly PriorityQueue<Vector2Int, float> openList = new();
     private readonly HashSet<Vector2Int> closeList = new();
     private readonly Dictionary<Vector2Int, PathNode> nodeDict = new();
-
-    public ThetaStar(NodeList nodeList, HPAClusterList clusterList)
+    
+    public IGetNeighborNodesActionProvider GetNeighborNodesActionProvider { get; private set; }
+    
+    public ThetaStar(NodeList nodeList)
     {
         this.nodeList = nodeList;
-        this.clusterList = clusterList;
     }
 
-    public override List<Vector3> FindPath(Vector3 from, Vector3 to)
+    public override List<Vector3> FindPath(Vector3 from, Vector3 to, float unitRadius)
     {
         nodeList.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(from), NodeType.trace);
-        var result =  SearchThetaStar(from, to, GetNeighborNode);
+        var result = SearchThetaStar(from, to, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
         nodeList.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(to), NodeType.trace);
-        
+
         return result;
-    }
+    }        
 
-    public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, List<Vector2Int> clusters)
+    // public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, List<Vector2Int> clusters)
+    // {
+    //     neighborFindingClusters = clusters;
+    //     return SearchThetaStar(from, to, GetNeighborNodesActionProvider.GetNeighborNodes);
+    // }
+    
+    public void SetGetNeighborPolicy(IGetNeighborNodesActionProvider policyProvider)
     {
-        neighborFindingClusters = clusters;
-        return SearchThetaStar(from, to, GetNeighborNodeWithClusters);
+        GetNeighborNodesActionProvider = policyProvider;
     }
 
-    private List<Vector3> SearchThetaStar(Vector3 from, Vector3 to, Func<Vector2Int, List<Vector2Int>> getNeighborNodeFunc)
+    private List<Vector3> SearchThetaStar(Vector3 from, Vector3 to, float unitRadius, Func<Vector2Int, float, List<Vector2Int>> getNeighborNodeFunc)
     {
         openList.Clear();
         closeList.Clear();
@@ -63,7 +68,7 @@ public class ThetaStar : AbstractPathfinder
                 return CaculateResult(nodeDict, currentIndex, startNodeIndex);
             }
 
-            List<Vector2Int> neighborIndexes = getNeighborNodeFunc(currentIndex);
+            List<Vector2Int> neighborIndexes = getNeighborNodeFunc(currentIndex, unitRadius);
             for (int i = 0; i < neighborIndexes.Count; i++)
             {
                 Vector2Int neighborIndex = neighborIndexes[i];
@@ -126,7 +131,7 @@ public class ThetaStar : AbstractPathfinder
                 nodeList.SetNodeTypeInPathFinding(path[i], NodeType.trace);
             }
         }
-        
+
         Vector2IntListPool.ReleaseValue(path);
 
         return worldPath;
@@ -242,85 +247,5 @@ public class ThetaStar : AbstractPathfinder
         int dy = node2.y - node1.y;
 
         return Mathf.Sqrt(dx * dx + dy * dy);
-    }
-
-    protected override List<Vector2Int> GetNeighborNode(Vector2Int current) // 같은 cluster에 있는 이웃만
-    {
-        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
-
-        for (int dx = -1; dx <= 1; dx++)
-        {
-            for (int dy = -1; dy <= 1; dy++)
-            {
-                if (dx * dy != 0) continue; // 대각선 제외
-                if (dx == 0 && dy == 0) continue;  // 자신은 제외
-
-                int newX = current.x + dx;
-                int newY = current.y + dy;
-
-                if (newX < 0 || newY < 0 ||
-                    newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
-                {
-                    continue;
-                }
-
-                var neighbor = new Vector2Int(newX, newY);
-                // 워크어빌리티 맵으로 확인
-                var nodeWorldPosition = nodeList.GridToWorld(current);
-                var clusterIndex = clusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
-                if (nodeList.Nodes[newX, newY].IsWalkable && clusterList.GetCluster(clusterIndex).IsActive && clusterList.IsNodesInSameCluster(current, new Vector2Int(newX, newY)))
-                {
-                    nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
-                    neighbors.Add(neighbor);
-                }
-            }
-        }
-
-        return neighbors;
-    }
-
-    private List<Vector2Int> neighborFindingClusters;
-    private List<Vector2Int> GetNeighborNodeWithClusters(Vector2Int current) // 같은 cluster에 있는 이웃만
-    {
-        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
-
-        for (int dx = -1; dx <= 1; dx++)
-        {
-            for (int dy = -1; dy <= 1; dy++)
-            {
-                if (dx * dy != 0) continue; // 대각선 제외
-                if (dx == 0 && dy == 0) continue;  // 자신은 제외
-
-                int newX = current.x + dx;
-                int newY = current.y + dy;
-
-                if (newX < 0 || newY < 0 ||
-                    newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
-                {
-                    continue;
-                }
-
-                var neighbor = new Vector2Int(newX, newY);
-                // 워크어빌리티 맵으로 확인
-                var nodeWorldPosition = nodeList.GridToWorld(current);
-                var clusterIndex = clusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
-                if (nodeList.Nodes[newX, newY].IsWalkable && clusterList.GetCluster(clusterIndex).IsActive)
-                {
-                    bool isNeighborInClusters = false;
-                    foreach (var cluster in neighborFindingClusters)
-                    {
-                        isNeighborInClusters = isNeighborInClusters || clusterList.IsNodeInCluster(cluster, neighbor);
-
-                        if (isNeighborInClusters) break;
-                    }
-                    if (!isNeighborInClusters) continue;
-
-                    nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
-                    neighbors.Add(neighbor);
-                }
-            }
-        }
-
-        return neighbors;
     }
 }

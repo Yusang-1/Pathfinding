@@ -8,6 +8,8 @@ namespace Assets.Scripts.ControllUnit
     {
         protected abstract List<Vector3> SearchPath(Vector3 from, Vector3 to, float unitRadius, Func<Vector2Int, float, List<Vector2Int>> getNeighborNodeFunc);
         
+        protected abstract List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start);
+        
         protected abstract float CaculateHeuristic(Vector2Int from, Vector2Int to);
     }
     

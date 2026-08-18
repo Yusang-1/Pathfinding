@@ -34,7 +34,7 @@ public class FindAStarPathProcessor : IProcessor<(Vector3 from, Vector3 to), Lis
 
     public List<Vector3> Process((Vector3 from, Vector3 to) positions)
     {
-        return aStarPathfinder.FindPath(positions.from, positions.to);
+        return aStarPathfinder.FindPath(positions.from, positions.to, 0);
     }
 }
 

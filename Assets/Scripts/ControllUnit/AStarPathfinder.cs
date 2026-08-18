@@ -155,7 +155,7 @@ namespace Assets.Scripts.ControllUnit
             return result;
         }
 
-        private List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
+        protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
         {
             var path = Vector2IntListPool.GetValue();
 

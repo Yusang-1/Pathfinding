@@ -5,40 +5,36 @@ using System;
 public class AStarPathfinder : AbstractPathfinder
 {
     private readonly NodeList nodeList;
-    private readonly HPAClusterList hPAClusterList;
 
     private readonly PriorityQueue<Vector2Int, float> openList = new();
     private readonly HashSet<Vector2Int> closeList = new();
     private readonly Dictionary<Vector2Int, PathNode> nodeDict = new();
 
-    public AStarPathfinder(NodeList nodeList, HPAClusterList hPAClusterList)
+    public IGetNeighborNodesActionProvider GetNeighborNodesActionProvider { get; private set; }
+
+    public AStarPathfinder(NodeList nodeList)
     {
         this.nodeList = nodeList;
-        this.hPAClusterList = hPAClusterList;
-        directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
     }
 
-    public override List<Vector3> FindPath(Vector3 from, Vector3 to)
+    public override List<Vector3> FindPath(Vector3 start, Vector3 destination, float unitRadius)
     {
-        List<Vector3> path = SearchAStar(from, to, GetNeighborNode);
+        Vector2Int startIndex = nodeList.GetNodeIndex(start);
+        Vector2Int goalIndex = nodeList.GetNodeIndex(destination);
+
+        List<Vector3> path = SearchAStar(startIndex, goalIndex, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
         return path;
     }
 
-    /// <summary> 같은 cluster List내에서 경로를 찾음 </summary>
-    public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, List<Vector2Int> clusters)
+    public List<Vector3> FindPath(Vector2Int startNode, Vector2Int goalNode, float unitRadius)
     {
-        clusterListToFind = clusters;
-        List<Vector3> path = SearchAStar(from, to, GetNeightborNodesInClusterList);
+        List<Vector3> path = SearchAStar(startNode, goalNode, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
         return path;
     }
 
-    /// <summary> 같은 cluster내에서 경로를 찾아 길이를 반환 </summary>
-    public float FindPathInClusterForPathCache(Vector2Int from, Vector2Int to)
+    public float FindPathLength(Vector2Int startNode, Vector2Int goalNode, float unitRadius)
     {
-        Vector3 fromPos = new(from.x, from.y);
-        Vector3 toPos = new(to.x, to.y);
-
-        List<Vector3> path = SearchAStar(fromPos, toPos, GetNeighborNodesInCluster);
+        List<Vector3> path = SearchAStar(startNode, goalNode, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
 
         float pathLength;
         if (path != null)
@@ -49,19 +45,22 @@ public class AStarPathfinder : AbstractPathfinder
         {
             pathLength = 0;
         }
-
+        
         Vector3ListPool.ReleaseValue(path);
+        
         return pathLength;
     }
 
-    private List<Vector3> SearchAStar(Vector3 startPosition, Vector3 destinationPosition, Func<Vector2Int, List<Vector2Int>> getNeighbors)
+    public void SetGetNeighborPolicy(IGetNeighborNodesActionProvider policyProvider)
+    {
+        GetNeighborNodesActionProvider = policyProvider;
+    }
+
+    private List<Vector3> SearchAStar(Vector2Int startIndex, Vector2Int goalIndex, float unitRadius, Func<Vector2Int, float, List<Vector2Int>> getNeighborNodesAction)
     {
         openList.Clear();
         closeList.Clear();
         nodeDict.Clear();
-
-        Vector2Int startIndex = nodeList.GetNodeIndex(startPosition);
-        Vector2Int goalIndex = nodeList.GetNodeIndex(destinationPosition);
 
         if (!nodeList.IsNodeAccessable(startIndex, goalIndex))
         {
@@ -90,7 +89,7 @@ public class AStarPathfinder : AbstractPathfinder
 
             closeList.Add(current);
 
-            List<Vector2Int> neighborList = getNeighbors(current);
+            List<Vector2Int> neighborList = getNeighborNodesAction(current, unitRadius);
             for (int i = 0; i < neighborList.Count; i++)
             {
                 Vector2Int neighbor = neighborList[i];
@@ -128,100 +127,15 @@ public class AStarPathfinder : AbstractPathfinder
         return null;
     }
 
-    private readonly Vector2Int[] directions;
-    protected override List<Vector2Int> GetNeighborNode(Vector2Int current)
+    protected override float CaculateHeuristic(Vector2Int from, Vector2Int to)
     {
-        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
+        int dx = Mathf.Abs(to.x - from.x);
+        int dy = Mathf.Abs(to.y - from.y);
 
-        for (int i = 0; i < directions.Length; i++)
-        {
-            int newX = current.x + directions[i].x;
-            int newY = current.y + directions[i].y;
-
-            if (newX < 0 || newY < 0 ||
-                newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
-            {
-                continue;
-            }
-
-            Vector2Int neighbor = new(newX, newY);
-            // 워크어빌리티 맵으로 확인
-            var s = nodeList.GridToWorld(neighbor);
-            var c = hPAClusterList.GetClusterIndex((int)s.x, (int)s.y);
-            if (nodeList.Nodes[newX, newY].IsWalkable && hPAClusterList.GetCluster(c).IsActive)
-            {
-                nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
-                neighbors.Add(neighbor);
-            }
-        }
-
-        return neighbors;
-    }
-
-    private List<Vector2Int> GetNeighborNodesInCluster(Vector2Int current)
-    {
-        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
-
-        for (int i = 0; i < directions.Length; i++)
-        {
-            int newX = current.x + directions[i].x;
-            int newY = current.y + directions[i].y;
-
-            Vector2Int neighbor = new(newX, newY);
-
-            if (newX < 0 || newY < 0
-                || newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0)
-                || !hPAClusterList.IsNodeInCluster(hPAClusterList.GetClusterIndex(current), neighbor))
-            {
-                continue;
-            }
-
-            // 워크어빌리티 맵으로 확인      
-            if (nodeList.Nodes[newX, newY].IsWalkable)
-            {
-                nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
-                neighbors.Add(neighbor);
-            }
-        }
-
-        return neighbors;
-    }
-
-    private List<Vector2Int> clusterListToFind;
-    private List<Vector2Int> GetNeightborNodesInClusterList(Vector2Int current)
-    {
-        List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
-
-        for (int i = 0; i < directions.Length; i++)
-        {
-            int newX = current.x + directions[i].x;
-            int newY = current.y + directions[i].y;
-
-            Vector2Int neighbor = new(newX, newY);
-
-            if (newX < 0 || newY < 0 || newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
-            {
-                continue;
-            }
-
-            bool isNeighborInClusters = false;
-            foreach (var cluster in clusterListToFind)
-            {
-                isNeighborInClusters = isNeighborInClusters || hPAClusterList.IsNodeInCluster(cluster, neighbor);
-
-                if (isNeighborInClusters) break;
-            }
-            if (!isNeighborInClusters) continue;
-
-            // 워크어빌리티 맵으로 확인      
-            if (nodeList.Nodes[newX, newY].IsWalkable)
-            {
-                nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
-                neighbors.Add(neighbor);
-            }
-        }
-
-        return neighbors;
+        const float ORTHOGONAL_COST = 1f;
+        const float DIAGONAL_COST = 1.4142f;
+        // 대각선으로 이동 가능한 최대 거리 + 남은 수평/수직 거리        
+        return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
     }
 
     protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)
@@ -249,17 +163,6 @@ public class AStarPathfinder : AbstractPathfinder
         Vector2IntListPool.ReleaseValue(path);
 
         return worldPath;
-    }
-
-    protected override float CaculateHeuristic(Vector2Int from, Vector2Int to)
-    {
-        int dx = Mathf.Abs(to.x - from.x);
-        int dy = Mathf.Abs(to.y - from.y);
-
-        const float ORTHOGONAL_COST = 1f;
-        const float DIAGONAL_COST = 1.4142f;
-        // 대각선으로 이동 가능한 최대 거리 + 남은 수평/수직 거리        
-        return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
     }
 
     private float GetMoveCost(Vector2Int from, Vector2Int to) => from.GetNeighborMoveCost(to);

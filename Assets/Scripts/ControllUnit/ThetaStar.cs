@@ -91,7 +91,7 @@ namespace Assets.Scripts.ControllUnit
             return null;
         }
 
-        private List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int start)
+        protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodeDict, Vector2Int current, Vector2Int start)
         {
             List<Vector2Int> path = Vector2IntListPool.GetValue();
 
@@ -226,48 +226,43 @@ namespace Assets.Scripts.ControllUnit
             return Mathf.Sqrt(dx * dx + dy * dy);
         }
 
+        private readonly Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
         private List<Vector2Int> neighborFindingClusters;
         private List<Vector2Int> GetNeighborNodeWithClusters(Vector2Int current, float unitRadius)
         {
             List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
 
             // 상하좌우
-            for (int dx = -1; dx <= 1; dx++)
+            for (int i = 0; i < directions.Length; i++)
             {
-                for (int dy = -1; dy <= 1; dy++)
+                int newX = current.x + directions[i].x;
+                int newY = current.y + directions[i].y;
+
+                if (newX < 0 || newY < 0 ||
+                    newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
                 {
-                    if (dx * dy != 0) continue; // 대각선 제외
-                    if (dx == 0 && dy == 0) continue;  // 자신은 제외                                        
-
-                    int newX = current.x + dx;
-                    int newY = current.y + dy;
-
-                    if (newX < 0 || newY < 0 ||
-                        newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0))
-                    {
-                        continue;
-                    }
-
-                    var neighbor = new Vector2Int(newX, newY);
-                    // 워크어빌리티 맵으로 확인
-                    var nodeWorldPosition = nodeList.GridToWorld(current);
-                    var clusterIndex = clusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
-
-                    if (CanUnitFitAtNode(neighbor, unitRadius) && clusterList.GetCluster(clusterIndex).IsActive) // && clusterList.IsNodesInSameCluster(current, neighbor)
-                    {
-                        bool isNeighborInClusters = false;
-                        foreach (var cluster in neighborFindingClusters)
-                        {
-                            isNeighborInClusters = isNeighborInClusters || clusterList.IsNodeInCluster(cluster, neighbor);
-
-                            if (isNeighborInClusters) break;
-                        }
-                        if (!isNeighborInClusters) continue;
-
-                        neighbors.Add(neighbor);
-                    }
-
+                    continue;
                 }
+
+                var neighbor = new Vector2Int(newX, newY);
+                // 워크어빌리티 맵으로 확인
+                var nodeWorldPosition = nodeList.GridToWorld(current);
+                var clusterIndex = clusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
+
+                if (CanUnitFitAtNode(neighbor, unitRadius) && clusterList.GetCluster(clusterIndex).IsActive) // && clusterList.IsNodesInSameCluster(current, neighbor)
+                {
+                    bool isNeighborInClusters = false;
+                    foreach (var cluster in neighborFindingClusters)
+                    {
+                        isNeighborInClusters = isNeighborInClusters || clusterList.IsNodeInCluster(cluster, neighbor);
+
+                        if (isNeighborInClusters) break;
+                    }
+                    if (!isNeighborInClusters) continue;
+
+                    neighbors.Add(neighbor);
+                }
+
             }
 
             return neighbors;
