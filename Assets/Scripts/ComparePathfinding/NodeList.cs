@@ -22,7 +22,7 @@ public class NodeList
 
     public void Initialize(int nodeSize, int mapSize)
     {
-        nodeTypeController.Initialize(nodeData, nodes, GetNode);
+        nodeTypeController.Initialize(nodeData, GetNode);
 
         this.nodeSize = nodeSize;
         nodes = new Node[mapSize, mapSize];
@@ -177,13 +177,13 @@ public class NodeList
 
         return bigAreaNum;
     }
-    
+
     public void ResetAll()
     {
         nodeTypeController.NodeTypeDrawer.ResetAllNode();
         ResetAllNode();
     }
-    
+
     private void ResetAllNode()
     {
         foreach (var value in nodesByAreaNum.Values)
