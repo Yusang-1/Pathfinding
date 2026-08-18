@@ -158,7 +158,7 @@ public class AStarPathfinder : AbstractPathfinder
         {
             worldPath.Add(nodeList.GridToWorld(gridPos));
 
-            nodeList.SetNodeTypeInPathFinding(gridPos, NodeType.trace);
+            nodeList.NodeTypeController.SetNodeTypeInPathFinding(gridPos, NodeType.trace);
         }
         Vector2IntListPool.ReleaseValue(path);
 

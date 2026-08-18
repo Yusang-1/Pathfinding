@@ -20,9 +20,9 @@ public class ThetaStar : AbstractPathfinder
 
     public override List<Vector3> FindPath(Vector3 from, Vector3 to, float unitRadius)
     {
-        nodeList.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(from), NodeType.trace);
+        nodeList.NodeTypeController.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(from), NodeType.trace);
         var result = SearchThetaStar(from, to, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
-        nodeList.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(to), NodeType.trace);
+        nodeList.NodeTypeController.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(to), NodeType.trace);
 
         return result;
     }        
@@ -128,7 +128,7 @@ public class ThetaStar : AbstractPathfinder
             worldPath.Add(nodeList.GridToWorld(path[i]));
             if (nodeList.Nodes[path[i].x, path[i].y].GetNodeType() == NodeType.room)
             {
-                nodeList.SetNodeTypeInPathFinding(path[i], NodeType.trace);
+                nodeList.NodeTypeController.SetNodeTypeInPathFinding(path[i], NodeType.trace);
             }
         }
 

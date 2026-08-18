@@ -5,9 +5,9 @@ using System.Collections.Generic;
 public class NodeTypeDrawer
 {
     public event Action<bool> OnPathfindAvailable;
-
+    private Func<Vector2Int, Node> getNodeAction;
+    
     private readonly Dictionary<NodeType, List<Vector2Int>> nodeInfoDict = new();
-    private NodeList nodeList;
     private NodeData data;
 
     private bool isStartSet;
@@ -17,16 +17,16 @@ public class NodeTypeDrawer
     public Vector2Int StartNodeIndex { get; private set; }
     public Vector2Int GoalNodeIndex { get; private set; }
     
-    public void Initialize(NodeList nodeList, NodeData data)
+    public void Initialize(NodeData data, Func<Vector2Int, Node> getNodeAction)
     {
-        this.nodeList = nodeList;
+        this.getNodeAction = getNodeAction;
         this.data = data;
         IsDuringNodeSetting = true;
     }
 
     public void SetNodeType(Vector2Int nodeIndex, NodeType type)
     {
-        Node node = nodeList.GetNode(nodeIndex);
+        Node node = getNodeAction(nodeIndex);
         NodeType currentType = node.GetNodeType();
 
         if (currentType == NodeType.unit) isStartSet = false;
@@ -49,7 +49,7 @@ public class NodeTypeDrawer
             if (isStartSet) // 이미 start가 세팅되어 있을 경우 새로운 노드로 대체
             {
                 nodeInfoDict[type].Remove(StartNodeIndex);
-                nodeList.GetNode(StartNodeIndex).SetType(NodeType.room, data.GetSprite(NodeType.room));
+                getNodeAction(StartNodeIndex).SetType(NodeType.room, data.GetSprite(NodeType.room));
             }
             StartNodeIndex = nodeIndex;
             isStartSet = true;
@@ -59,7 +59,7 @@ public class NodeTypeDrawer
             if (isGoalSet) // 이미 goal이 세팅되어 있을 경우 새로운 노드로 대체
             {
                 nodeInfoDict[type].Remove(GoalNodeIndex);
-                nodeList.GetNode(GoalNodeIndex).SetType(NodeType.room, data.GetSprite(NodeType.room));
+                getNodeAction(GoalNodeIndex).SetType(NodeType.room, data.GetSprite(NodeType.room));
             }
             GoalNodeIndex = nodeIndex;
             isGoalSet = true;
@@ -70,7 +70,7 @@ public class NodeTypeDrawer
     }
     public void SetNodeTypeInPathFinding(Vector2Int nodeIndex, NodeType type) // 실제 sprite를 변경할 필요 없음, Dictionary에만 type을 저장
     {
-        Node node = nodeList.GetNode(nodeIndex);
+        Node node = getNodeAction(nodeIndex);
 
         if (!nodeInfoDict.ContainsKey(type))
         {
@@ -104,7 +104,7 @@ public class NodeTypeDrawer
         {
             foreach (var nodeIndex in nodes)
             {
-                node = nodeList.GetNode(nodeIndex);
+                node = getNodeAction(nodeIndex);
                 type = node.GetNodeType();
 
                 if (type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle) continue;
@@ -125,7 +125,7 @@ public class NodeTypeDrawer
         Node node;
         foreach(var nodes in nodeInfoDict[NodeType.searched])
         {
-            node = nodeList.GetNode(nodes);
+            node = getNodeAction(nodes);
             NodeType type = node.GetNodeType();
             if(type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle)
             {
@@ -143,7 +143,7 @@ public class NodeTypeDrawer
         Node node;
         foreach(var nodes in nodeInfoDict[NodeType.trace])
         {
-            node = nodeList.GetNode(nodes);
+            node = getNodeAction(nodes);
             NodeType type = node.GetNodeType();
             if(type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle)
             {

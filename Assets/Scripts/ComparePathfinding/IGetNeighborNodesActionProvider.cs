@@ -6,13 +6,13 @@ public interface IGetNeighborNodesActionProvider
     public List<Vector2Int> GetNeighborNodes(Vector2Int current, float unitRadius);
 }
 
-public class GetNeighborNodeProvider : IGetNeighborNodesActionProvider
+public class GetNeighborNodesProvider : IGetNeighborNodesActionProvider
 {
     private readonly NodeList nodeList;
     private readonly HPAClusterList hPAClusterList;
     private readonly Vector2Int[] directions;
 
-    public GetNeighborNodeProvider(NodeList nodeList, HPAClusterList hPAClusterList)
+    public GetNeighborNodesProvider(NodeList nodeList, HPAClusterList hPAClusterList)
     {
         this.nodeList = nodeList;
         this.hPAClusterList = hPAClusterList;
@@ -40,7 +40,7 @@ public class GetNeighborNodeProvider : IGetNeighborNodesActionProvider
             var c = hPAClusterList.GetClusterIndex((int)s.x, (int)s.y);
             if (nodeList.Nodes[newX, newY].IsWalkable && hPAClusterList.GetCluster(c).IsActive)
             {
-                nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
+                nodeList.NodeTypeController.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                 neighbors.Add(neighbor);
             }
         }
@@ -85,7 +85,7 @@ public class GetNeighborNodesInSameClusterProvider : IGetNeighborNodesActionProv
             {
                 if (nodeList.Nodes[newX, newY].IsWalkable)
                 {
-                    nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
+                    nodeList.NodeTypeController.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                     neighbors.Add(neighbor);
                 }
             }
@@ -169,7 +169,7 @@ public class GetNeighborNodesWithClusterListProvider : IGetNeighborNodesActionPr
                 }
                 if (!isNeighborInClusters) continue;
 
-                nodeList.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
+                nodeList.NodeTypeController.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                 neighbors.Add(neighbor);
             }
         }

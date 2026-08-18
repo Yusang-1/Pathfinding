@@ -73,7 +73,7 @@ public class PathManager : MonoBehaviour
 
         inputManager.ControllMenu += uiRoot.ControllMenu;
 
-        nodeList.NodeTypeDrawer.OnPathfindAvailable += (value) => uiRoot.ActiveFindButton(value);
+        nodeList.NodeTypeController.NodeTypeDrawer.OnPathfindAvailable += (value) => uiRoot.ActiveFindButton(value);
         nodeList.OnSelected += (node) => uiRoot.ActiveNodeTypeSelector(node, true);
         nodeList.OnDeselected += (node) => uiRoot.ActiveNodeTypeSelector(node, false);
     }
@@ -82,7 +82,7 @@ public class PathManager : MonoBehaviour
     {
         uiRoot.Initialize();
         uiRoot.OnFindAllPathRequested += FindAllPath;
-        uiRoot.OnSetNodeTypeRequested += nodeList.NodeTypeDrawer.SetNodeType;
+        uiRoot.OnSetNodeTypeRequested += nodeList.NodeTypeController.NodeTypeDrawer.SetNodeType;
         uiRoot.OnGridToWorldRequested += nodeList.GridToWorld;
         uiRoot.OnLoadMapRequested += SetMapData;
         uiRoot.OnLoadMapRequested += mapGenerator.GenerateMap;
@@ -116,8 +116,8 @@ public class PathManager : MonoBehaviour
     {
         CreateCluster();
 
-        from = nodeList.GridToWorld(nodeList.NodeTypeDrawer.StartNodeIndex);
-        to = nodeList.GridToWorld(nodeList.NodeTypeDrawer.GoalNodeIndex);
+        from = nodeList.GridToWorld(nodeList.NodeTypeController.NodeTypeDrawer.StartNodeIndex);
+        to = nodeList.GridToWorld(nodeList.NodeTypeController.NodeTypeDrawer.GoalNodeIndex);
 
         aStarResult = FindAStarPath();
 
@@ -127,7 +127,7 @@ public class PathManager : MonoBehaviour
 
         hpaStarSmoothResult = FindHPA_Smoothing_ThetaPath();
 
-        nodeList.NodeTypeDrawer.IsDuringNodeSetting = false;
+        nodeList.NodeTypeController.NodeTypeDrawer.IsDuringNodeSetting = false;
         OnPathFound?.Invoke();
     }
 
@@ -136,7 +136,7 @@ public class PathManager : MonoBehaviour
         if (!isMapGenerated) return;
 
         clusterList.Initialize(aStarPathfinder, mapSize, clusterSize);
-        nodeList.SetNodeArea();
+        nodeList.NodeTypeController.SetNodeArea();
     }
 
     private Dictionary<NodeType, List<Vector2Int>> FindAStarPath()
@@ -149,8 +149,8 @@ public class PathManager : MonoBehaviour
 
         OnAFound?.Invoke(PathResultRecorder.GetPathResult());
 
-        var result = nodeList.NodeTypeDrawer.GetNodeInfo();
-        nodeList.NodeTypeDrawer.ClearDict();
+        var result = nodeList.NodeTypeController.NodeTypeDrawer.GetNodeInfo();
+        nodeList.NodeTypeController.NodeTypeDrawer.ClearDict();
         return result;
     }
 
@@ -168,8 +168,8 @@ public class PathManager : MonoBehaviour
 
         OnHPASmoothAStarFound?.Invoke(PathResultRecorder.GetPathResult());
 
-        var result = nodeList.NodeTypeDrawer.GetNodeInfo();
-        nodeList.NodeTypeDrawer.ClearDict();
+        var result = nodeList.NodeTypeController.NodeTypeDrawer.GetNodeInfo();
+        nodeList.NodeTypeController.NodeTypeDrawer.ClearDict();
         return result;
     }
 
@@ -184,10 +184,10 @@ public class PathManager : MonoBehaviour
 
         OnHPAThetaFound?.Invoke(PathResultRecorder.GetPathResult());
 
-        var result = nodeList.NodeTypeDrawer.GetNodeInfo();        
+        var result = nodeList.NodeTypeController.NodeTypeDrawer.GetNodeInfo();        
         result[NodeType.trace].Add(nodeList.GetNodeIndex(to));
         
-        nodeList.NodeTypeDrawer.ClearDict();
+        nodeList.NodeTypeController.NodeTypeDrawer.ClearDict();
         return result;
     }
 
@@ -202,27 +202,27 @@ public class PathManager : MonoBehaviour
 
         OnHPASmoothThetaFound?.Invoke(PathResultRecorder.GetPathResult());
 
-        var result = nodeList.NodeTypeDrawer.GetNodeInfo();
-        nodeList.NodeTypeDrawer.ClearDict();
+        var result = nodeList.NodeTypeController.NodeTypeDrawer.GetNodeInfo();
+        nodeList.NodeTypeController.NodeTypeDrawer.ClearDict();
         return result;
     }
 
     private void ResetPath()
     {
-        nodeList.ResetTrace();
+        nodeList.NodeTypeController.ResetTrace();
         clusterList.ResetClusterList();
         clusterShower.ResetClusters();
         lineDrawer.ResetLineDrawer();
     }
     private void ResetAll()
     {
-        nodeList.ResetAll();
+        nodeList.NodeTypeController.ResetAll();
         clusterList.ResetClusterList();
         clusterShower.ResetAllClusters();
         lineDrawer.ResetLineDrawer();
         unit.gameObject.SetActive(false);
 
-        nodeList.NodeTypeDrawer.IsDuringNodeSetting = true;
+        nodeList.NodeTypeController.NodeTypeDrawer.IsDuringNodeSetting = true;
     }
 
     private void ShowAStarResult()

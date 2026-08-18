@@ -43,7 +43,7 @@ public class MapGenerator
 
         foreach (var index in mapData.ObstacleIndexes)
         {
-            nodeList.SetNodeType(index, NodeType.obstacle);
+            nodeList.NodeTypeController.SetNodeType(index, NodeType.obstacle);
         }
     }
 }

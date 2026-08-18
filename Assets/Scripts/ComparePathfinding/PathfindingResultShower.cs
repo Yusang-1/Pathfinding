@@ -59,7 +59,7 @@ public class PathfindingResultShower
         var indexesCopy = indexes.ToArray();
         foreach (var index in indexesCopy)
         {
-            nodeList.SetNodeType(index, type);
+            nodeList.NodeTypeController.SetNodeType(index, type);
         }
     }
 }

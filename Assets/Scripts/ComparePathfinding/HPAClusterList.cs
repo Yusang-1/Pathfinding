@@ -40,8 +40,8 @@ public class HPAClusterList
             for (int j = 0; j < clusterList.GetLength(1); j++)
             {
                 clusterList[i, j].Initialize(this, nodeList);
-                nodeList.NodeTypeDrawer.ResetSearched();
-                nodeList.NodeTypeDrawer.ResetTrace();
+                nodeList.NodeTypeController.NodeTypeDrawer.ResetSearched();
+                nodeList.NodeTypeController.NodeTypeDrawer.ResetTrace();
             }
         }
     }

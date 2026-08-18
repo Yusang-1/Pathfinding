@@ -38,8 +38,8 @@ public class HPAPathfinder
         // start cluster, goal cluster에 노드 추가
         clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList);
         clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList);
-        nodeList.NodeTypeDrawer.ResetSearched();
-        nodeList.NodeTypeDrawer.ResetTrace();
+        nodeList.NodeTypeController.NodeTypeDrawer.ResetSearched();
+        nodeList.NodeTypeController.NodeTypeDrawer.ResetTrace();
 
         List<ClusterResult> clusterPath;
         // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴
