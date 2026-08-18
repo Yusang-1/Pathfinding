@@ -136,7 +136,7 @@ public class PathManager : MonoBehaviour
         if (!isMapGenerated) return;
 
         clusterList.Initialize(aStarPathfinder, mapSize, clusterSize);
-        nodeList.NodeTypeController.SetNodeArea();
+        nodeList.SetNodeArea();
     }
 
     private Dictionary<NodeType, List<Vector2Int>> FindAStarPath()
@@ -216,7 +216,7 @@ public class PathManager : MonoBehaviour
     }
     private void ResetAll()
     {
-        nodeList.NodeTypeController.ResetAll();
+        nodeList.ResetAll();
         clusterList.ResetClusterList();
         clusterShower.ResetAllClusters();
         lineDrawer.ResetLineDrawer();
