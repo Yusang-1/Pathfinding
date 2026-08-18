@@ -28,6 +28,11 @@ public class NodeList
         nodes = new Node[mapSize, mapSize];
     }
 
+    public void CreateNodeArray(int mapSize)
+    {
+        nodes = new Node[mapSize, mapSize];
+    }
+
     public void SetNode(int x, int y, Node node)
     {
         node.OnSelectedCallback += OnSelected;
@@ -36,6 +41,7 @@ public class NodeList
         nodes[x, y] = node;
     }
 
+    /// <summary> 실제 position을 받아 Node Index를 반환   </summary>
     public Vector2Int GetNodeIndex(Vector2 position)
     {
         int x = (int)(position.x / nodeSize);
@@ -43,6 +49,7 @@ public class NodeList
         return new Vector2Int(x, y);
     }
 
+    /// <summary> Node의 실제 월드 좌표를 반환 </summary>
     public Vector2 GridToWorld(Vector2Int index)
     {
         return new Vector2(index.x * nodeSize, index.y * nodeSize);
@@ -78,6 +85,23 @@ public class NodeList
     public bool IsNodeAccessable(Vector2Int node1, Vector2Int node2)
     {
         return nodes[node1.x, node1.y].NodeArea == nodes[node2.x, node2.y].NodeArea;
+    }
+
+    public bool IsNodesInRangeWalkable(Vector2Int standardNode, float unitRadius)
+    {
+        if (GetNode(standardNode).IsWalkable == false) return false;
+
+        var nodes = GetNodesInRange(standardNode, unitRadius);
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i].IsWalkable == false)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private int currentAreaNum;
