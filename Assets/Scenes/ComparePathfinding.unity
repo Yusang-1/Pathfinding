@@ -2726,6 +2726,7 @@ MonoBehaviour:
   nodeData: {fileID: 11400000, guid: bf87c0f6c59541f4aaf61f3cc70bc84f, type: 2}
   clusterShower: {fileID: 497125301}
   lineDrawer: {fileID: 1336710742}
+  unitsSO: {fileID: 0}
   unit: {fileID: 1233999322}
 --- !u!4 &497125300
 Transform:
@@ -7251,6 +7252,7 @@ GameObject:
   - component: {fileID: 1233999324}
   - component: {fileID: 1233999323}
   - component: {fileID: 1233999322}
+  - component: {fileID: 1233999325}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -7265,7 +7267,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1233999321}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e829d7a41a0854446908e1a578c071d9, type: 3}
   m_Name: 
@@ -7342,6 +7344,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1233999325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233999321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7706979a69e7d36468be9bfe66320241, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitData: {fileID: 11400000, guid: eadadf06a63b7104ca2507b323540b74, type: 2}
+  steeringWeightingData: {fileID: 11400000, guid: 33ef8a80e716a474e8cf542bc221237c, type: 2}
+  CurrentKey: {x: 0, y: 0}
+  IsEventBound: 0
 --- !u!1 &1253569842
 GameObject:
   m_ObjectHideFlags: 0
