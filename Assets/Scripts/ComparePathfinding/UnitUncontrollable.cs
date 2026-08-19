@@ -11,10 +11,10 @@ public class UnitUncontrollable : MonoBehaviour
     private Vector3 direction;
     private bool HasDestination => direction != Vector3.zero;
 
-    private ClusterResult.SmoothClusterPath currentPath;
+    private ClusterSmootherResult currentPath;
     private Vector3 lazyGoal;
 
-    private List<ClusterResult> currentAbstractPath;
+    private ClusterResultWrapper currentAbstractPath;
     private int pathNum;
 
     private LineDrawer lineDrawer;
@@ -36,10 +36,10 @@ public class UnitUncontrollable : MonoBehaviour
 
         if (!isNextPathSet && CheckLengthOfNextRefine())
         {
-            if (pathNum < currentAbstractPath.Count)
+            if (pathNum < currentAbstractPath.ClusterSmootherResult.Count)
             {
                 // 다음 lazyRefinement시작
-                lazyRefine.DoLazyRefinement(currentAbstractPath[pathNum], lineDrawer);
+                lazyRefine.DoLazyRefinement(currentAbstractPath.ClusterSmootherResult[pathNum], lineDrawer);
                 isNextPathSet = true;
             }
         }
@@ -61,17 +61,17 @@ public class UnitUncontrollable : MonoBehaviour
         }
     }
 
-    public void MoveWithResult(List<ClusterResult> resultNodes, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
+    public void MoveWithResult(ClusterResultWrapper resultWrapper, HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
     {
-        gameObject.SetActive(true);        
-
+        gameObject.SetActive(true);
+                
         pathNum = 0;
-        currentPath = resultNodes[pathNum].GetSmoothClusterPath();
+        currentAbstractPath = resultWrapper;
+        currentPath = resultWrapper.ClusterSmootherResult[pathNum];
         lazyGoal = new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y);
-        currentAbstractPath = resultNodes;
 
         lazyRefine ??= new LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
-        lazyRefine.DoLazyRefinement(resultNodes[pathNum++], lineDrawer);
+        lazyRefine.DoLazyRefinement(resultWrapper.ClusterSmootherResult[pathNum++], lineDrawer);
 
         if (lazyRefine.TryGetPathFromQueue(out Vector3 destination))
         {
@@ -112,13 +112,13 @@ public class UnitUncontrollable : MonoBehaviour
         {
             if (curDestination == new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y))
             {
-                if (pathNum >= currentAbstractPath.Count) // 최종 도착
+                if (pathNum >= currentAbstractPath.ClusterSmootherResult.Count) // 최종 도착
                 {
                     direction = Vector3.zero;
                     return false;
                 }
 
-                currentPath = currentAbstractPath[pathNum++].GetSmoothClusterPath();
+                currentPath = currentAbstractPath.ClusterSmootherResult[pathNum++];
                 lazyGoal = new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y);
                 isNextPathSet = false;
             }

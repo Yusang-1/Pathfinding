@@ -31,7 +31,7 @@ public class ClusterShower : MonoBehaviour
                 {
                     cluster.transform.position = new Vector2((float)clusterSize / 2 - (float)nodeSize / 2 + i * clusterSize, (float)clusterSize / 2 - (float)nodeSize / 2 + j * clusterSize);
                 }
-                
+
                 cluster.transform.localScale = new Vector3(clusterSize, clusterSize, 1);
                 cluster.gameObject.SetActive(false);
                 clusters.Add(new Vector2Int(i, j), cluster);
@@ -39,14 +39,15 @@ public class ClusterShower : MonoBehaviour
         }
     }
 
-    public void ShowActivatedClusters(List<ClusterResult> results)
+    public void ShowActivatedClusters(ClusterResultWrapper resultWrapper)
     {
+        var results = resultWrapper.ClusterSmootherResult;
+
         for (int i = 0; i < results.Count; i++)
         {
-            var result = results[i].GetSmoothClusterPath();
-            for(int j = 0; j < result.ClusterIndexes.Count; j++)
+            for (int j = 0; j < results[i].ClusterIndexes.Count; j++)
             {
-                clusters[result.ClusterIndexes[j]].gameObject.SetActive(true);                
+                clusters[results[i].ClusterIndexes[j]].gameObject.SetActive(true);
             }
         }
     }
@@ -65,7 +66,7 @@ public class ClusterShower : MonoBehaviour
             cluster.gameObject.SetActive(false);
             cluster.ResetCluster();
         }
-        
+
         clusters.Clear();
     }
 }

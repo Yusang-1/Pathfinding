@@ -5,8 +5,8 @@ public class HPAPathfinder
 {
     private readonly HPAClusterList clusterList;
     private readonly NodeList nodeList;
-
-    private readonly List<ClusterResult> results = new();
+    
+    private readonly List<NewClusterResult> newResults = new();
 
     private readonly PriorityQueue<int, float> openSet = new();
     private readonly HashSet<int> closedSet = new();
@@ -17,11 +17,15 @@ public class HPAPathfinder
         this.clusterList = clusterList;
         this.nodeList = nodeList;
     }
-    
+
     /// <summary> high level cluster 경로를 반환 </summary>
-    public List<ClusterResult> FindClusterPath(Vector3 from, Vector3 to, float unitRadius)
+    public ClusterResultWrapper FindClusterPath(ClusterResultWrapper clusterResultWrapper)
     {
-        results.Clear();
+        Vector3 from = clusterResultWrapper.From;
+        Vector3 to = clusterResultWrapper.To;
+        float unitRadius = clusterResultWrapper.UnitRadius;
+
+        newResults.Clear();
         Vector2Int startNode = nodeList.GetNodeIndex(from);
         Vector2Int goalNode = nodeList.GetNodeIndex(to);
 
@@ -33,22 +37,28 @@ public class HPAPathfinder
 
         Vector2Int startCluster = clusterList.GetClusterIndex(startNode);
         Vector2Int goalCluster = clusterList.GetClusterIndex(goalNode);
-        
+
         // start cluster, goal cluster에 노드 추가
         clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList, clusterList, unitRadius);
         clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList, clusterList, unitRadius);
         nodeList.NodeTypeController.NodeTypeDrawer.ResetSearched();
         nodeList.NodeTypeController.NodeTypeDrawer.ResetTrace();
 
-        List<ClusterResult> clusterPath;
+        List<NewClusterResult> clusterPath;
         // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴
         if (startCluster == goalCluster && clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode, unitRadius))
         {
-            var result = ClusterResultPool.GetValue();
-            result.SetClusterPath(startCluster, Vector2Int.zero, Vector2Int.zero, startNode, goalNode);
-            result.SetUnitRadius(unitRadius);
-            results.Add(result);
-            return results;
+            // var result = ClusterResultPool.GetValue();
+            var result = new NewClusterResult()
+            {
+                Index = startCluster,
+                EnterDirection = Vector2Int.zero,
+                ExitDirection = Vector2Int.zero,
+                EntranceExit = goalNode,
+            };
+
+            clusterResultWrapper.SetClusterResult(result);
+            return clusterResultWrapper;
         }
         else
         {
@@ -65,11 +75,12 @@ public class HPAPathfinder
         clusterList.GetCluster(startCluster).RemoveTempNodeInGraph();
         clusterList.GetCluster(goalCluster).RemoveTempNodeInGraph();
 
-        return clusterPath;
+        clusterResultWrapper.SetClusterResult(clusterPath);
+        return clusterResultWrapper;
     }
 
     /// <summary> 고수준 클러스터 경로 탐색 </summary>    
-    private List<ClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode, float unitRadius)
+    private List<NewClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode, float unitRadius)
     {
         openSet.Clear();
         closedSet.Clear();
@@ -100,12 +111,8 @@ public class HPAPathfinder
                 && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode, unitRadius))
             {
                 PathResultRecorder.AddMemoryUsed(openSet.Capacity + clusterDict.Count + closedSet.Count);
-                
+
                 var results = ReconstructAbstractPath(clusterDict, currentClusterHash, startHash, startNode, goalNode);
-                foreach(var result in results)
-                {
-                    result.SetUnitRadius(unitRadius);
-                }
                 return results;
             }
 
@@ -143,37 +150,38 @@ public class HPAPathfinder
         return null; // 경로 없음
     }
 
-    private List<ClusterResult> ReconstructAbstractPath(Dictionary<int, AbstractNode> clusterDict, int current, int start, Vector2Int startNode, Vector2Int goalNode)
+    private List<NewClusterResult> ReconstructAbstractPath(Dictionary<int, AbstractNode> clusterDict, int current, int start, Vector2Int startNode, Vector2Int goalNode)
     {
-        results.Clear();
-        ClusterResult result;
+        newResults.Clear();
+        NewClusterResult result;
 
         if (clusterDict == null || clusterDict.Count <= 1)
         {
-            result = ClusterResultPool.GetValue();
-            result.SetClusterPath(clusterDict[current].ClusterIndex, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero, Vector2Int.zero);
-            results.Add(result);
-            return results;
+            result = new NewClusterResult()
+            {
+                Index = clusterDict[current].ClusterIndex,
+                EnterDirection = Vector2Int.zero,
+                ExitDirection = Vector2Int.zero,
+                EntranceExit = Vector2Int.zero
+            };
+            newResults.Add(result);
+            return newResults;
         }
 
         AbstractNode childCluster = clusterDict[current];
         AbstractNode currentCluster = clusterDict[childCluster.ParentClusterHash];
         AbstractNode parentCluster;
 
-        Vector2Int goalNodeEnter;
-        if (childCluster.ClusterIndex == currentCluster.ClusterIndex)
-        {
-            goalNodeEnter = currentCluster.EntranceNodeIndex;
-        }
-        else
-        {
-            goalNodeEnter = childCluster.EntranceNodeIndex;
-        }
-
         // 도착지 노드 세팅
-        result = ClusterResultPool.GetValue();
-        result.SetClusterPath(childCluster.ClusterIndex, currentCluster.ClusterIndex - childCluster.ClusterIndex, Vector2Int.zero, goalNodeEnter, goalNode);
-        results.Add(result);
+        result = new NewClusterResult()
+        {
+            Index = childCluster.ClusterIndex,
+            EnterDirection = currentCluster.ClusterIndex - childCluster.ClusterIndex,
+            ExitDirection = Vector2Int.zero,
+            EntranceExit = goalNode
+        };
+        // EntranceEnter = goalNodeEnter        
+        newResults.Add(result);
 
         Vector2Int startClusterIndex = childCluster.ClusterIndex;
         Vector2Int startClusterExitDirection = Vector2Int.zero;
@@ -208,9 +216,15 @@ public class HPAPathfinder
                 AbstractNode grandparentCluster = clusterDict[grandparentHash];
 
                 // grandparent -> parent -> curent -> child
-                result = ClusterResultPool.GetValue();
-                result.SetClusterPath(currentCluster.ClusterIndex, grandparentCluster.ClusterIndex - currentCluster.ClusterIndex, childCluster.ClusterIndex - currentCluster.ClusterIndex, parentCluster.EntranceNodeIndex, currentCluster.EntranceNodeIndex);
-                results.Add(result);
+                result = new NewClusterResult()
+                {
+                    Index = currentCluster.ClusterIndex,
+                    EnterDirection = grandparentCluster.ClusterIndex - currentCluster.ClusterIndex,
+                    ExitDirection = childCluster.ClusterIndex - currentCluster.ClusterIndex,
+                    EntranceExit = currentCluster.EntranceNodeIndex
+                };
+                // EntranceEnter = parentCluster.EntranceNodeIndex                
+                newResults.Add(result);
 
                 if (grandparentHash == start)
                 {
@@ -225,9 +239,15 @@ public class HPAPathfinder
             else // 입구에서 바로 출구로 나간 경우 (current와 parent의 ClusterIndex가 다름)
             {
                 // parent -> curent -> child
-                result = ClusterResultPool.GetValue();
-                result.SetClusterPath(currentCluster.ClusterIndex, parentCluster.ClusterIndex - currentCluster.ClusterIndex, childCluster.ClusterIndex - currentCluster.ClusterIndex, currentCluster.EntranceNodeIndex, currentCluster.EntranceNodeIndex);
-                results.Add(result);
+                result = new NewClusterResult()
+                {
+                    Index = currentCluster.ClusterIndex,
+                    EnterDirection = parentCluster.ClusterIndex - currentCluster.ClusterIndex,
+                    ExitDirection = childCluster.ClusterIndex - currentCluster.ClusterIndex,
+                    EntranceExit = currentCluster.EntranceNodeIndex
+                };
+                // EntranceEnter = currentCluster.EntranceNodeIndex                
+                newResults.Add(result);
 
                 if (parentHash == start)
                 {
@@ -242,12 +262,18 @@ public class HPAPathfinder
         }
 
         // 출발지 노드 세팅
-        result = ClusterResultPool.GetValue();
-        result.SetClusterPath(startClusterIndex, Vector2Int.zero, startClusterExitDirection, startNode, startEntranceExit);
-        results.Add(result);
+        result = new NewClusterResult()
+        {
+            Index = startClusterIndex,
+            EnterDirection = Vector2Int.zero,
+            ExitDirection = startClusterExitDirection,
+            EntranceExit = startEntranceExit
+        };
+        // EntranceEnter = startNode        
+        newResults.Add(result);
 
-        results.Reverse();
-        return results;
+        newResults.Reverse();
+        return newResults;
     }
 
     private IEnumerable<(AbstractNode index, float cost)> GetAbstractNeighbors(AbstractNode current, float unitRadius)
@@ -283,13 +309,13 @@ public class HPAPathfinder
             );
         }
     }
-
+    
+    private readonly Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
     private List<Vector2Int> GetAllEntrances(Vector2Int Index, float unitRadius)
     {
         List<Vector2Int> entrances = Vector2IntListPool.GetValue();
         entrances.Clear();
-
-        Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        
         foreach (Vector2Int dir in directions)
         {
             foreach (var dirEntrance in clusterList.GetEntrances(Index, dir, unitRadius))
@@ -352,75 +378,10 @@ public class HPAPathfinder
     }
 }
 
-public class ClusterResult : IPoolObject
+public struct NewClusterResult
 {
-    private ClusterPath clusterPath = new();
-    private readonly SmoothClusterPath smoothClusterPath = new();
-    public float UnitRadius { get; private set; }
-    
-    public void SetUnitRadius(float radius)
-    {
-        UnitRadius = radius;
-    }
-
-    public void SetClusterPath(Vector2Int index, Vector2Int enterDirection, Vector2Int exitDirection, Vector2Int entranceEnter, Vector2Int entranceExit)
-    {
-        clusterPath.SetClusterPath(index, enterDirection, exitDirection, entranceEnter, entranceExit);
-    }
-
-    public void SetSmootherPath(List<Vector2Int> clusters, Vector2Int exitIndex, Vector2Int startIndex, Vector2Int notIncludeClusterIndex, bool useNotIncludeClusterIndex)
-    {
-        smoothClusterPath.SetSmootherResult(clusters, exitIndex, startIndex, notIncludeClusterIndex, useNotIncludeClusterIndex);
-    }
-
-    public ClusterPath GetClusterResult() => clusterPath;
-    public SmoothClusterPath GetSmoothClusterPath() => smoothClusterPath;
-
-    public void Clear()
-    {
-        smoothClusterPath.Clear();
-    }
-
-    public struct ClusterPath
-    {
-        public Vector2Int Index { get; private set; }
-        public Vector2Int EnterDirection { get; private set; }
-        public Vector2Int ExitDirection { get; private set; }
-        public Vector2Int EntranceEnter { get; private set; }
-        public Vector2Int EntranceExit { get; private set; }
-
-        public void SetClusterPath(Vector2Int index, Vector2Int enterDirection, Vector2Int exitDirection, Vector2Int entranceEnter, Vector2Int entranceExit)
-        {
-            Index = index;
-            EnterDirection = enterDirection;
-            ExitDirection = exitDirection;
-            EntranceEnter = entranceEnter;
-            EntranceExit = entranceExit;
-        }
-    }
-
-    public class SmoothClusterPath
-    {
-        public List<Vector2Int> ClusterIndexes { get; private set; } = new();
-        public Vector2Int EnterNodeIndex { get; private set; }
-        public Vector2Int ExitNodeIndex { get; private set; }
-
-        public void SetSmootherResult(List<Vector2Int> clusters, Vector2Int exitIndex, Vector2Int startIndex, Vector2Int notIncludeClusterIndex, bool useNotIncludeClusterIndex)
-        {
-            ClusterIndexes.Clear();
-            for (int i = 0; i < clusters.Count; i++)
-            {
-                if (useNotIncludeClusterIndex && clusters[i] == notIncludeClusterIndex) continue;
-
-                ClusterIndexes.Add(clusters[i]);
-            }
-            EnterNodeIndex = startIndex;
-            ExitNodeIndex = exitIndex;
-        }
-
-        public void Clear()
-        {
-            ClusterIndexes.Clear();
-        }
-    }
+    public Vector2Int Index;
+    public Vector2Int EnterDirection;
+    public Vector2Int ExitDirection;
+    public Vector2Int EntranceExit;
 }

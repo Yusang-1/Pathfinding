@@ -8,11 +8,16 @@ namespace Assets.Scripts.ControllUnit
         private readonly List<Vector2Int> clusterIndexes = new();
         private readonly List<ClusterSmootherResult> smootherClusterPath = new();
 
-        public List<ClusterSmootherResult> SmoothClusterPath(Vector3 from, Vector3 to, List<HPAPathfinder.ClusterResult> clusterPath, HPAClusterList clusterList, NodeList nodeList, float unitRadius)
+        public List<ClusterSmootherResult> SmoothClusterPath(ClusterResultWrapper clusterResultWrapper, HPAClusterList clusterList, NodeList nodeList)
         {
             clusterIndexes.Clear();
             smootherClusterPath.Clear();
-
+            
+            List<NewClusterResult> clusterPath = clusterResultWrapper.NewClusterResults;
+            Vector3 from = clusterResultWrapper.From;
+            Vector3 to = clusterResultWrapper.To;
+            float unitRadius = clusterResultWrapper.UnitRadius;
+            
             if (clusterPath == null || clusterPath.Count <= 0) return null;
             else if (clusterPath.Count == 1)
             {
@@ -57,7 +62,7 @@ namespace Assets.Scripts.ControllUnit
             return smootherClusterPath;
         }
 
-        private void Loop(HPAClusterList clusterList, NodeList nodeList, List<HPAPathfinder.ClusterResult> clusterPath,
+        private void Loop(HPAClusterList clusterList, NodeList nodeList, List<NewClusterResult> clusterPath,
             Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex, out Vector3 outPoint, out int outIndex, int index, bool isStart, float unitRadius)
         {
             outPoint = point;

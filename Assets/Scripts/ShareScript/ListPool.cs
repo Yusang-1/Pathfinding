@@ -113,4 +113,4 @@ public interface IPoolObject
     void Clear();
 }
 
-public class ClusterResultPool : Pool<ClusterResult> { }
+// public class ClusterResultPool : Pool<ClusterResult> { }

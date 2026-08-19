@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cec57315148e2f4aad2d653c8782a58, type: 3}
+  m_Name: UnitNoSizeSO
+  m_EditorClassIdentifier: 
+  unitName: Marin
+  actionMapName: Unit
+  selectableType: 1
+  moveSpeed: 3.1
+  refineLength: 2.2
+  unitSize: 0
+  unitsData: {fileID: 11400000, guid: d7f8efabe6051f6458897dc7dfe85e54, type: 2}

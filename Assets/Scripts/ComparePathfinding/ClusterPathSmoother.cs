@@ -3,70 +3,79 @@ using System.Collections.Generic;
 
 public class ClusterPathSmoother
 {
-    private readonly PathManager pathManager;
-    private readonly HPAClusterList clusterList;
     private readonly NodeList nodeList;
+    private readonly HPAClusterList clusterList;
 
     private readonly List<Vector2Int> clusterIndexes = new();
-    private readonly List<ClusterResult> smootherClusterPath = new();
+    private readonly List<ClusterSmootherResult> smootherClusterPath = new();
 
-    public ClusterPathSmoother(HPAClusterList clusterList, NodeList nodeList, PathManager pathManager)
+    public ClusterPathSmoother(NodeList nodeList, HPAClusterList clusterList)
     {
-        this.clusterList = clusterList;
         this.nodeList = nodeList;
-        this.pathManager = pathManager;
+        this.clusterList = clusterList;
     }
 
-    public List<ClusterResult> SmoothClusterPath(List<ClusterResult> clusterPathList)
+    public ClusterResultWrapper SmoothClusterPath(ClusterResultWrapper clusterResultWrapper)
     {
-        if (clusterPathList == null || clusterPathList.Count <= 1) return null;
-        
-        float unitRadius = clusterPathList[0].UnitRadius;
-        
         clusterIndexes.Clear();
         smootherClusterPath.Clear();
-        int leftSetIndex = 0, rightSetIndex = 0;
 
-        Vector3 from = pathManager.From;
-        Vector3 to = pathManager.To;
+        List<NewClusterResult> clusterPath = clusterResultWrapper.NewClusterResults;
+        Vector3 from = clusterResultWrapper.From;
+        Vector3 to = clusterResultWrapper.To;
+        float unitRadius = clusterResultWrapper.UnitRadius;
+
+        if (clusterPath == null || clusterPath.Count <= 1) return null;
+        else if (clusterPath.Count == 1)
+        {
+            clusterIndexes.Add(clusterPath[0].Index);
+            var result = new ClusterSmootherResult();
+            result.SetSmootherResult(clusterIndexes, nodeList.GetNodeIndex(to), nodeList.GetNodeIndex(from), Vector2Int.zero, false);
+            smootherClusterPath.Add(result);
+
+            clusterResultWrapper.SetClusterSmootherResult(smootherClusterPath);
+            return clusterResultWrapper;
+        }
+
+        int leftSetIndex = 0, rightSetIndex = 0;
 
         Vector2Int startPoint = nodeList.GetNodeIndex(from);
 
-        for (int index = 0; index < clusterPathList.Count - 1;)
+        for (int index = 0; index < clusterPath.Count - 1;)
         {
-            Loop(clusterList, nodeList, clusterPathList, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true, unitRadius);
+            Loop(clusterList, nodeList, clusterPath, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true, unitRadius);
             from = outPoint;
             index = outIndex + 1;
             leftSetIndex = 0;
-            rightSetIndex = 0;            
+            rightSetIndex = 0;
 
-            if (index < clusterPathList.Count)
+            if (index < clusterPath.Count)
             {
-                var clusterPath = clusterPathList[index].GetClusterResult();
-                
-                if (clusterIndexes.Contains(clusterPath.Index))
+                if (clusterIndexes.Contains(clusterPath[index].Index))
                 {
                     SetResult(nodeList.GetNodeIndex(from), startPoint, Vector2Int.zero, false);
                 }
                 else
                 {
-                    SetResult(nodeList.GetNodeIndex(from), startPoint, clusterPath.Index, true);
+                    SetResult(nodeList.GetNodeIndex(from), startPoint, clusterPath[index].Index, true);
                 }
                 clusterIndexes.Clear();
             }
             else
             {
                 // 마지막 노드 세팅
-                clusterIndexes.Add(clusterPathList[^1].GetClusterResult().Index);
+                clusterIndexes.Add(clusterPath[^1].Index);
                 SetResult(nodeList.GetNodeIndex(to), startPoint, Vector2Int.zero, false);
             }
         }
 
         PathResultRecorder.AddMemoryUsed(clusterIndexes.Count);
-        return smootherClusterPath;
+
+        clusterResultWrapper.SetClusterSmootherResult(smootherClusterPath);
+        return clusterResultWrapper;
     }
 
-    private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath,
+    private void Loop(HPAClusterList clusterList, NodeList nodeList, List<NewClusterResult> clusterPath,
         Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex,
         out Vector3 outPoint, out int outIndex, int index, bool isStart, float unitRadius)
     {
@@ -83,7 +92,7 @@ public class ClusterPathSmoother
             return;
         }
 
-        var path = clusterPath[index].GetClusterResult();
+        var path = clusterPath[index];
 
         if (isStart)
         {
@@ -169,39 +178,42 @@ public class ClusterPathSmoother
 
         if (smootherClusterPath.Count > 0)
         {
-            var path = smootherClusterPath[^1].GetSmoothClusterPath();
-
-            Vector2Int dir = clusterIndexes[0] - path.ClusterIndexes[^1];
-            start = path.ExitNodeIndex + dir;
+            Vector2Int dir = clusterIndexes[0] - smootherClusterPath[^1].ClusterIndexes[^1];
+            start = smootherClusterPath[^1].ExitNodeIndex + dir;
         }
         else
         {
             start = from;
         }
 
-        ClusterResult result = new();
-        result.SetSmootherPath(clusterIndexes, nodeIndex, start, notIncludeClusterIndex, useLastIncludeClusterIndex);
+        ClusterSmootherResult result = new();
+        result.SetSmootherResult(clusterIndexes, nodeIndex, start, notIncludeClusterIndex, useLastIncludeClusterIndex);
 
         smootherClusterPath.Add(result);
     }
 }
 
-// public class ClusterSmootherResult
-// {
-//     public List<Vector2Int> ClusterIndexes = new();
-//     public Vector2Int EnterNodeIndex;
-//     public Vector2Int ExitNodeIndex;
+public class ClusterSmootherResult
+{
+    public List<Vector2Int> ClusterIndexes = new();
+    public Vector2Int EnterNodeIndex;
+    public Vector2Int ExitNodeIndex;
 
-//     public void SetSmootherResult(List<Vector2Int> clusters, Vector2Int exitIndex, Vector2Int startIndex, Vector2Int notIncludeClusterIndex, bool useNotIncludeClusterIndex)
-//     {
-//         ClusterIndexes.Clear();
-//         for (int i = 0; i < clusters.Count; i++)
-//         {
-//             if (useNotIncludeClusterIndex && clusters[i] == notIncludeClusterIndex) continue;
+    public void SetSmootherResult(List<Vector2Int> clusters, Vector2Int exitIndex, Vector2Int startIndex, Vector2Int notIncludeClusterIndex, bool useNotIncludeClusterIndex)
+    {
+        ClusterIndexes.Clear();
+        for (int i = 0; i < clusters.Count; i++)
+        {
+            if (useNotIncludeClusterIndex && clusters[i] == notIncludeClusterIndex) continue;
 
-//             ClusterIndexes.Add(clusters[i]);
-//         }
-//         EnterNodeIndex = startIndex;
-//         ExitNodeIndex = exitIndex;
-//     }
-// }
+            ClusterIndexes.Add(clusters[i]);
+        }
+        EnterNodeIndex = startIndex;
+        ExitNodeIndex = exitIndex;
+    }
+
+    public void Clear()
+    {
+        ClusterIndexes.Clear();
+    }
+}

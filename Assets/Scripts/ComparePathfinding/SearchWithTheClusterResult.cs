@@ -17,15 +17,14 @@ public class SearchWithTheClusterResult
         this.nodeList = nodeList;
     }
 
-    public List<Vector3> FindPath(List<ClusterResult> pathData)
+    public List<Vector3> FindPath(ClusterResultWrapper resultWrapper)
     {
         resultPath.Clear();
         PathResultRecorder.ResetPathLength();
 
-        foreach (var data in pathData)
+        List<ClusterSmootherResult> smoothPathData = resultWrapper.ClusterSmootherResult;
+        foreach (var path in smoothPathData)
         {
-            var path = data.GetSmoothClusterPath();
-
             for (int i = 0; i < path.ClusterIndexes.Count; i++)
             {
                 clusterList.SetClusterActive(path.ClusterIndexes[i], true);
@@ -53,15 +52,14 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindSmoothPathTheta(List<ClusterResult> pathData)
+    public List<Vector3> FindSmoothPathTheta(ClusterResultWrapper resultWrapper)
     {
         resultPath.Clear();
         PathResultRecorder.ResetPathLength();
 
-        foreach (var data in pathData)
+        List<ClusterSmootherResult> smoothPathData = resultWrapper.ClusterSmootherResult;
+        foreach (var path in smoothPathData)
         {
-            var path = data.GetSmoothClusterPath();
-
             for (int i = 0; i < path.ClusterIndexes.Count; i++)
             {
                 clusterList.SetClusterActive(path.ClusterIndexes[i], true);
@@ -90,7 +88,7 @@ public class SearchWithTheClusterResult
         return resultPath;
     }
 
-    public List<Vector3> FindPathTheta(List<ClusterResult> pathData)
+    public List<Vector3> FindPathTheta(ClusterResultWrapper resultWrapper)
     {
         resultPath.Clear();
         PathResultRecorder.ResetPathLength();
@@ -98,14 +96,16 @@ public class SearchWithTheClusterResult
         // thetaStarPathfinder에 이웃 탐색 정책 설정
         thetaStarPathfinder.SetGetNeighborPolicy(new GetNeighborNodesInSameClusterProvider(nodeList, clusterList));
 
-        foreach (var data in pathData)
+        List<ClusterSmootherResult> smoothPathData = resultWrapper.ClusterSmootherResult;
+        foreach (var path in smoothPathData)
         {
-            var path = data.GetClusterResult();
+            foreach (var index in path.ClusterIndexes)
+            {
+                clusterList.SetClusterActive(index, true);
+            }
 
-            clusterList.SetClusterActive(path.Index, true);
-
-            Vector3 entrancePosition = nodeList.GridToWorld(path.EntranceEnter);
-            Vector3 goalPosition = nodeList.GridToWorld(path.EntranceExit);
+            Vector3 entrancePosition = nodeList.GridToWorld(path.EnterNodeIndex);
+            Vector3 goalPosition = nodeList.GridToWorld(path.ExitNodeIndex);
 
             List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, 0);
 
@@ -115,32 +115,33 @@ public class SearchWithTheClusterResult
             resultPath.AddRange(pathInCluster);
             Vector3ListPool.ReleaseValue(pathInCluster);
 
-            clusterList.SetClusterActive(path.Index, false);
+            foreach (var index in path.ClusterIndexes)
+            {
+                clusterList.SetClusterActive(index, false);
+            }
         }
 
         PathResultRecorder.AddPathLength(-1); // 마지막 cluster에서는 이동하지 않으므로 비용 -1;
         return resultPath;
     }
 
-    public List<Vector3> FindPathThetaWithClusterList(ClusterResult data, NodeList nodeList, HPAClusterList clusterList)
+    public List<Vector3> FindPathThetaWithClusterList(ClusterSmootherResult smoothPath, NodeList nodeList, HPAClusterList clusterList)
     {
-        var path = data.GetSmoothClusterPath();
-
-        for (int i = 0; i < path.ClusterIndexes.Count; i++)
+        for (int i = 0; i < smoothPath.ClusterIndexes.Count; i++)
         {
-            clusterList.SetClusterActive(path.ClusterIndexes[i], true);
+            clusterList.SetClusterActive(smoothPath.ClusterIndexes[i], true);
         }
 
-        Vector3 entrancePosition = nodeList.GridToWorld(path.EnterNodeIndex);
-        Vector3 goalPosition = nodeList.GridToWorld(path.ExitNodeIndex);
+        Vector3 entrancePosition = nodeList.GridToWorld(smoothPath.EnterNodeIndex);
+        Vector3 goalPosition = nodeList.GridToWorld(smoothPath.ExitNodeIndex);
 
         thetaStarPathfinder.SetGetNeighborPolicy(new GetNeighborNodesWithClusterListProvider(nodeList, clusterList));
-        (thetaStarPathfinder.GetNeighborNodesActionProvider as GetNeighborNodesWithClusterListProvider).SetClusterList(path.ClusterIndexes);
+        (thetaStarPathfinder.GetNeighborNodesActionProvider as GetNeighborNodesWithClusterListProvider).SetClusterList(smoothPath.ClusterIndexes);
         List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, 0);
 
-        for (int i = 0; i < path.ClusterIndexes.Count; i++)
+        for (int i = 0; i < smoothPath.ClusterIndexes.Count; i++)
         {
-            clusterList.SetClusterActive(path.ClusterIndexes[i], false);
+            clusterList.SetClusterActive(smoothPath.ClusterIndexes[i], false);
         }
 
         return pathInCluster;

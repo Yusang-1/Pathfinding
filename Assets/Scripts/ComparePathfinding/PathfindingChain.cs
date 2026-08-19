@@ -4,20 +4,20 @@ using System.Collections.Generic;
 public class PathfindingChain
 {
     /// <summary> String Pulling을 적용한 ClusterPath를 반환 </summary>
-    public ProcessorDelegate<(Vector3, Vector3, float unitRadius), List<ClusterResult>> ClusterPath_StringPulling { get; private set; }
+    public ProcessorDelegate<ClusterResultWrapper, ClusterResultWrapper> ClusterPath_StringPulling { get; private set; }
 
     /// <summary> String Pulling을 적용한 ClusterPath + AStar </summary>
-    public ProcessorDelegate<(Vector3, Vector3, float unitRadius), List<Vector3>> HPAStar_StringPulling { get; private set; }
+    public ProcessorDelegate<ClusterResultWrapper, List<Vector3>> HPAStar_StringPulling { get; private set; }
 
     /// <summary> String Pulling을 적용한 ClusterPath + ThetaStar </summary>
-    public ProcessorDelegate<(Vector3, Vector3, float unitRadius), List<Vector3>> HPAStar_StringPulling_Theta { get; private set; }
+    public ProcessorDelegate<ClusterResultWrapper, List<Vector3>> HPAStar_StringPulling_Theta { get; private set; }
 
     /// <summary> ClusterPath + ThetaStar </summary>
-    public ProcessorDelegate<(Vector3, Vector3, float unitRadius), List<Vector3>> HPAStar_Theta { get; private set; }
+    public ProcessorDelegate<ClusterResultWrapper, List<Vector3>> HPAStar_Theta { get; private set; }
 
     public void Initialize(HPAPathfinder hPAFinder, ClusterPathSmoother pathSmoother, SearchWithTheClusterResult searchWithTheCluster)
     {
-        ClusterPath_StringPulling = CreateCLusterPathSmooth(hPAFinder, pathSmoother);
+        ClusterPath_StringPulling = CreateClusterPathSmooth(hPAFinder, pathSmoother);
 
         HPAStar_StringPulling = CreateHPAStarSmooth(hPAFinder, pathSmoother, searchWithTheCluster);
 
@@ -26,7 +26,7 @@ public class PathfindingChain
         HPAStar_Theta = CreateHPATheta(hPAFinder, searchWithTheCluster);
     }
 
-    private ProcessorDelegate<(Vector3, Vector3, float unitRadius), List<ClusterResult>> CreateCLusterPathSmooth(HPAPathfinder hPAFinder, ClusterPathSmoother pathSmoother)
+    private ProcessorDelegate<ClusterResultWrapper, ClusterResultWrapper> CreateClusterPathSmooth(HPAPathfinder hPAFinder, ClusterPathSmoother pathSmoother)
     {
         var clusterPathfinder = FindClusterPath(hPAFinder).SmoothHPAPath(pathSmoother)
             .Compile();
@@ -34,7 +34,7 @@ public class PathfindingChain
         return clusterPathfinder;
     }
 
-    private ProcessorDelegate<(Vector3, Vector3, float unitRadius), List<Vector3>> CreateHPAStarSmooth(HPAPathfinder hPAFinder, ClusterPathSmoother pathSmoother, SearchWithTheClusterResult searchWithTheCluster)
+    private ProcessorDelegate<ClusterResultWrapper, List<Vector3>> CreateHPAStarSmooth(HPAPathfinder hPAFinder, ClusterPathSmoother pathSmoother, SearchWithTheClusterResult searchWithTheCluster)
     {
         var hpaPathfinder = FindClusterPath(hPAFinder).SmoothHPAPath(pathSmoother)
             .Then(new SearchWithClusterResultProcessor(searchWithTheCluster.FindPath))
@@ -43,7 +43,7 @@ public class PathfindingChain
         return hpaPathfinder;
     }
 
-    private ProcessorDelegate<(Vector3, Vector3, float unitRadius), List<Vector3>> CreateHPAStarSmoothTheta(HPAPathfinder hPAFinder, ClusterPathSmoother pathSmoother, SearchWithTheClusterResult searchWithTheCluster)
+    private ProcessorDelegate<ClusterResultWrapper, List<Vector3>> CreateHPAStarSmoothTheta(HPAPathfinder hPAFinder, ClusterPathSmoother pathSmoother, SearchWithTheClusterResult searchWithTheCluster)
     {
         var hpaPathfinder = FindClusterPath(hPAFinder).SmoothHPAPath(pathSmoother)
             .Then(new SearchWithClusterResultProcessor(searchWithTheCluster.FindSmoothPathTheta))
@@ -52,7 +52,7 @@ public class PathfindingChain
         return hpaPathfinder;
     }
 
-    private ProcessorDelegate<(Vector3, Vector3, float unitRadius), List<Vector3>> CreateHPATheta(HPAPathfinder hPAFinder, SearchWithTheClusterResult searchWithTheCluster)
+    private ProcessorDelegate<ClusterResultWrapper, List<Vector3>> CreateHPATheta(HPAPathfinder hPAFinder, SearchWithTheClusterResult searchWithTheCluster)
     {
         var hpaPathfinder = FindClusterPath(hPAFinder)
             .Then(new SearchWithClusterResultProcessor(searchWithTheCluster.FindPathTheta))

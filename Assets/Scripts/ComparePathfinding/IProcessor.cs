@@ -38,46 +38,46 @@ public class FindAStarPathProcessor : IProcessor<(Vector3 from, Vector3 to), Lis
     }
 }
 
-public class FindClusterPathProcessor : IProcessor<(Vector3 from, Vector3 to, float unitRadius), List<ClusterResult>>
+public class FindClusterPathProcessor : IProcessor<ClusterResultWrapper, ClusterResultWrapper>
 {
-    private readonly Func<Vector3, Vector3, float, List<ClusterResult>> func;
+    private readonly Func<ClusterResultWrapper, ClusterResultWrapper> func;
 
     public FindClusterPathProcessor(HPAPathfinder hPAPathfinder)
     {
         this.func = hPAPathfinder.FindClusterPath;
     }
 
-    public List<ClusterResult> Process((Vector3 from, Vector3 to, float unitRadius) positions)
+    public ClusterResultWrapper Process(ClusterResultWrapper positions)
     {
-        return func?.Invoke(positions.from, positions.to, positions.unitRadius);
+        return func?.Invoke(positions);
     }
 }
 
-public class SmoothClusterPathProcessor : IProcessor<List<ClusterResult>, List<ClusterResult>>
+public class SmoothClusterPathProcessor : IProcessor<ClusterResultWrapper, ClusterResultWrapper>
 {
-    private readonly Func<List<ClusterResult>, List<ClusterResult>> func;
+    private readonly Func<ClusterResultWrapper, ClusterResultWrapper> func;
 
     public SmoothClusterPathProcessor(ClusterPathSmoother clusterPathSmoother)
     {
         this.func = clusterPathSmoother.SmoothClusterPath;
     }
 
-    public List<ClusterResult> Process(List<ClusterResult> input)
+    public ClusterResultWrapper Process(ClusterResultWrapper input)
     {
         return func?.Invoke(input);
     }
 }
 
-public class SearchWithClusterResultProcessor : IProcessor<List<ClusterResult>, List<Vector3>>
+public class SearchWithClusterResultProcessor : IProcessor<ClusterResultWrapper, List<Vector3>>
 {
-    private readonly Func<List<ClusterResult>, List<Vector3>> func;
+    private readonly Func<ClusterResultWrapper, List<Vector3>> func;
 
-    public SearchWithClusterResultProcessor(Func<List<ClusterResult>, List<Vector3>> func)
+    public SearchWithClusterResultProcessor(Func<ClusterResultWrapper, List<Vector3>> func)
     {
         this.func = func;
     }
 
-    public List<Vector3> Process(List<ClusterResult> path)
+    public List<Vector3> Process(ClusterResultWrapper path)
     {
         return func?.Invoke(path);
     }
