@@ -17,10 +17,12 @@ public class ClusterPathSmoother
         this.pathManager = pathManager;
     }
 
-    public List<ClusterResult> SmoothClusterPath(List<ClusterResult> clusterPathList, float unitRadius)
+    public List<ClusterResult> SmoothClusterPath(List<ClusterResult> clusterPathList)
     {
         if (clusterPathList == null || clusterPathList.Count <= 1) return null;
-
+        
+        float unitRadius = clusterPathList[0].UnitRadius;
+        
         clusterIndexes.Clear();
         smootherClusterPath.Clear();
         int leftSetIndex = 0, rightSetIndex = 0;

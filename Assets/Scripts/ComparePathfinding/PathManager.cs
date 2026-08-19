@@ -55,14 +55,14 @@ public class PathManager : MonoBehaviour
                 
         aStarPathfinder = new AStarPathfinder(nodeList);
         
-        hPAPathfinder = new HPAPathfinder(clusterList, nodeList, aStarPathfinder);
+        hPAPathfinder = new HPAPathfinder(clusterList, nodeList);
         thetaStarPathfinder = new ThetaStar(nodeList);
         searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
         clusterPathSmoother = new ClusterPathSmoother(clusterList, nodeList, this);
 
         nodeData.Initialize();
         unit.Initialize(lineDrawer);
-        pathfindingChain.Initialize(hPAPathfinder, clusterPathSmoother, searchWithTheClusterResult, 0);
+        pathfindingChain.Initialize(hPAPathfinder, clusterPathSmoother, searchWithTheClusterResult);
 
         UIRootInitialize();
 
@@ -154,16 +154,17 @@ public class PathManager : MonoBehaviour
         nodeList.NodeTypeController.NodeTypeDrawer.ClearDict();
         return result;
     }
-
+    
+    private readonly float tempUnitRadius = 0;
     private Dictionary<NodeType, List<Vector2Int>> FindHPA_Smoothing_AStarPath()
     {
         clusterList.ResetClusterList();
         PathResultRecorder.ResetPathResult();
         ClusterResultPool.Initialize();
 
-        currentAbstractResults = pathfindingChain.ClusterPath_StringPulling?.Invoke((from, to));
+        currentAbstractResults = pathfindingChain.ClusterPath_StringPulling?.Invoke((from, to, tempUnitRadius));
 
-        pathfindingChain.HPAStar_StringPulling?.Invoke((from, to));
+        pathfindingChain.HPAStar_StringPulling?.Invoke((from, to, tempUnitRadius));
 
         ClusterResultPool.ReleaseAllValue();
 
@@ -179,7 +180,7 @@ public class PathManager : MonoBehaviour
         clusterList.ResetClusterList();
         PathResultRecorder.ResetPathResult();
                 
-        pathfindingChain.HPAStar_Theta?.Invoke((from, to));
+        pathfindingChain.HPAStar_Theta?.Invoke((from, to, tempUnitRadius));
 
         ClusterResultPool.ReleaseAllValue();
 
@@ -197,7 +198,7 @@ public class PathManager : MonoBehaviour
         clusterList.ResetClusterList();
         PathResultRecorder.ResetPathResult();
 
-        smoothPath = pathfindingChain.HPAStar_StringPulling_Theta?.Invoke((from, to));
+        smoothPath = pathfindingChain.HPAStar_StringPulling_Theta?.Invoke((from, to, tempUnitRadius));
 
         ClusterResultPool.ReleaseAllValue();
 

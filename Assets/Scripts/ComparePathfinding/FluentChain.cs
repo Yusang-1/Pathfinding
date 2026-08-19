@@ -50,17 +50,17 @@ public class FindAStarPathChain : FluentChain<(Vector3 from, Vector3 to), List<V
     public FindAStarPathChain(IProcessor<(Vector3 from, Vector3 to), List<Vector3>> processor) : base(processor) { }
 }
 
-public class FindClusterPathChain : FluentChain<(Vector3 from, Vector3 to), List<ClusterResult>, FindClusterPathChain>
+public class FindClusterPathChain : FluentChain<(Vector3 from, Vector3 to, float unitRadius), List<ClusterResult>, FindClusterPathChain>
 {
-    public FindClusterPathChain(IProcessor<(Vector3 from, Vector3 to), List<ClusterResult>> processor) : base(processor) { }
+    public FindClusterPathChain(IProcessor<(Vector3 from, Vector3 to, float unitRadius), List<ClusterResult>> processor) : base(processor) { }
 
-    public FindClusterPathChain SmoothHPAPath(ClusterPathSmoother clusterPathSmoother, float unitRadius)
+    public FindClusterPathChain SmoothHPAPath(ClusterPathSmoother clusterPathSmoother)
     {
-        processor = new Combined<(Vector3 from, Vector3 to), List<ClusterResult>, List<ClusterResult>>(processor, new SmoothClusterPathProcessor(clusterPathSmoother, unitRadius));
+        processor = new Combined<(Vector3 from, Vector3 to, float unitRadius), List<ClusterResult>, List<ClusterResult>>(processor, new SmoothClusterPathProcessor(clusterPathSmoother));
         return new FindClusterPathChain(processor);
     }
 
-    static FindAStarPathWithClusterChain CreateFindPathChain(IProcessor<(Vector3 from, Vector3 to), List<Vector3>> processor)
+    static FindAStarPathWithClusterChain CreateFindPathChain(IProcessor<(Vector3 from, Vector3 to, float unitRadius), List<Vector3>> processor)
     {
         return new FindAStarPathWithClusterChain(processor);
     }
@@ -69,9 +69,9 @@ public class FindClusterPathChain : FluentChain<(Vector3 from, Vector3 to), List
         => base.Then<List<Vector3>, FindAStarPathWithClusterChain, TProcessor>(processor, CreateFindPathChain);
 }
 
-public class FindAStarPathWithClusterChain : FluentChain<(Vector3 from, Vector3 to), List<Vector3>, FindAStarPathWithClusterChain>
+public class FindAStarPathWithClusterChain : FluentChain<(Vector3 from, Vector3 to, float unitRadius), List<Vector3>, FindAStarPathWithClusterChain>
 {
-    public FindAStarPathWithClusterChain(IProcessor<(Vector3 from, Vector3 to), List<Vector3>> processor) : base(processor) { }
+    public FindAStarPathWithClusterChain(IProcessor<(Vector3 from, Vector3 to, float unitRadius), List<Vector3>> processor) : base(processor) { }
 }
 
 public class FindThetaPathWithClusterChain : FluentChain<(Vector3 from, Vector3 to), List<Vector3>, FindThetaPathWithClusterChain>

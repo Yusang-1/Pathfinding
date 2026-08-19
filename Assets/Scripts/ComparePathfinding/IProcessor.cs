@@ -38,37 +38,33 @@ public class FindAStarPathProcessor : IProcessor<(Vector3 from, Vector3 to), Lis
     }
 }
 
-public class FindClusterPathProcessor : IProcessor<(Vector3 from, Vector3 to), List<ClusterResult>>
+public class FindClusterPathProcessor : IProcessor<(Vector3 from, Vector3 to, float unitRadius), List<ClusterResult>>
 {
     private readonly Func<Vector3, Vector3, float, List<ClusterResult>> func;
-    private readonly float unitRadius;
 
-    public FindClusterPathProcessor(HPAPathfinder hPAPathfinder, float unitRadius)
+    public FindClusterPathProcessor(HPAPathfinder hPAPathfinder)
     {
         this.func = hPAPathfinder.FindClusterPath;
-        this.unitRadius = unitRadius;
     }
 
-    public List<ClusterResult> Process((Vector3 from, Vector3 to) positions)
+    public List<ClusterResult> Process((Vector3 from, Vector3 to, float unitRadius) positions)
     {
-        return func?.Invoke(positions.from, positions.to, unitRadius);
+        return func?.Invoke(positions.from, positions.to, positions.unitRadius);
     }
 }
 
 public class SmoothClusterPathProcessor : IProcessor<List<ClusterResult>, List<ClusterResult>>
 {
-    private readonly Func<List<ClusterResult>, float, List<ClusterResult>> func;
-    private readonly float unitRadius;
+    private readonly Func<List<ClusterResult>, List<ClusterResult>> func;
 
-    public SmoothClusterPathProcessor(ClusterPathSmoother clusterPathSmoother, float unitRadius)
+    public SmoothClusterPathProcessor(ClusterPathSmoother clusterPathSmoother)
     {
         this.func = clusterPathSmoother.SmoothClusterPath;
-        this.unitRadius = unitRadius;
     }
 
     public List<ClusterResult> Process(List<ClusterResult> input)
     {
-        return func?.Invoke(input, unitRadius);
+        return func?.Invoke(input);
     }
 }
 

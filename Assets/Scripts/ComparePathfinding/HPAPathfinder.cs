@@ -12,13 +12,12 @@ public class HPAPathfinder
     private readonly HashSet<int> closedSet = new();
     private readonly Dictionary<int, AbstractNode> clusterDict = new();
 
-    public HPAPathfinder(HPAClusterList clusterList, NodeList nodeList, AStarPathfinder lowLvPathfinder)
+    public HPAPathfinder(HPAClusterList clusterList, NodeList nodeList)
     {
         this.clusterList = clusterList;
         this.nodeList = nodeList;
     }
-
-
+    
     /// <summary> high level cluster 경로를 반환 </summary>
     public List<ClusterResult> FindClusterPath(Vector3 from, Vector3 to, float unitRadius)
     {
@@ -34,7 +33,7 @@ public class HPAPathfinder
 
         Vector2Int startCluster = clusterList.GetClusterIndex(startNode);
         Vector2Int goalCluster = clusterList.GetClusterIndex(goalNode);
-
+        
         // start cluster, goal cluster에 노드 추가
         clusterList.GetCluster(startCluster).AddNodeToGraph(startNode, nodeList, clusterList, unitRadius);
         clusterList.GetCluster(goalCluster).AddNodeToGraph(goalNode, nodeList, clusterList, unitRadius);
@@ -47,6 +46,7 @@ public class HPAPathfinder
         {
             var result = ClusterResultPool.GetValue();
             result.SetClusterPath(startCluster, Vector2Int.zero, Vector2Int.zero, startNode, goalNode);
+            result.SetUnitRadius(unitRadius);
             results.Add(result);
             return results;
         }
@@ -100,8 +100,13 @@ public class HPAPathfinder
                 && clusterList.GetCluster(currentClusterIndex).IsNodeConnected(clusterDict[currentClusterHash].EntranceNodeIndex, goalNode, unitRadius))
             {
                 PathResultRecorder.AddMemoryUsed(openSet.Capacity + clusterDict.Count + closedSet.Count);
-
-                return ReconstructAbstractPath(clusterDict, currentClusterHash, startHash, startNode, goalNode);
+                
+                var results = ReconstructAbstractPath(clusterDict, currentClusterHash, startHash, startNode, goalNode);
+                foreach(var result in results)
+                {
+                    result.SetUnitRadius(unitRadius);
+                }
+                return results;
             }
 
             if (closedSet.Contains(currentClusterHash)) continue;
@@ -351,6 +356,12 @@ public class ClusterResult : IPoolObject
 {
     private ClusterPath clusterPath = new();
     private readonly SmoothClusterPath smoothClusterPath = new();
+    public float UnitRadius { get; private set; }
+    
+    public void SetUnitRadius(float radius)
+    {
+        UnitRadius = radius;
+    }
 
     public void SetClusterPath(Vector2Int index, Vector2Int enterDirection, Vector2Int exitDirection, Vector2Int entranceEnter, Vector2Int entranceExit)
     {
