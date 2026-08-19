@@ -56,7 +56,7 @@ public class PathManager : MonoBehaviour
 
         aStarPathfinder = new AStarPathfinder(nodeList);
 
-        hPAPathfinder = new HPAPathfinder(clusterList, nodeList);
+        hPAPathfinder = new HPAPathfinder(nodeList, clusterList);
         thetaStarPathfinder = new ThetaStar(nodeList);
         searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
         clusterPathSmoother = new(nodeList, clusterList);

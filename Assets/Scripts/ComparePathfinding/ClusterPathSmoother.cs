@@ -93,7 +93,8 @@ public class ClusterPathSmoother
         }
 
         var path = clusterPath[index];
-
+        
+        // loop의 첫 시작인 경우 left, right설정 후 다음 loop로
         if (isStart)
         {
             clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);

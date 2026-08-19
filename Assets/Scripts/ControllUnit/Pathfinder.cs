@@ -9,7 +9,7 @@ namespace Assets.Scripts.ControllUnit
         private HPAClusterList clusterList;
 
         private HPAPathfinder highLevelPathfinder;
-        private readonly ClusterPathSmoother clusterPathSmoother = new();
+        private ClusterPathSmoother clusterPathSmoother;
         private readonly ClusterResultWrapper clusterResultWrapper = new();
 
         public void SetNodeAndCluster(NodeList nodes, in MapData mapData, Dictionary<UnitSize, float> unitRadiusList)
@@ -21,8 +21,9 @@ namespace Assets.Scripts.ControllUnit
 
             clusterList.Initialize(aStarPathfinder, mapData.MapSize, mapData.ClusterSize, unitRadiusList);
             nodeList.SetNodeArea();
-
-            highLevelPathfinder = new HPAPathfinder(clusterList, nodeList);
+            
+            clusterPathSmoother = new ClusterPathSmoother(nodeList, clusterList);
+            highLevelPathfinder = new HPAPathfinder(nodeList, clusterList);
         }
 
         public LazyRefine GetLazyRefine()
@@ -32,13 +33,13 @@ namespace Assets.Scripts.ControllUnit
             return new LazyRefine(clusterList, nodeList, new SearchWithTheClusterResult(thetaStarPathfinder));
         }
 
-        public List<ClusterSmootherResult> GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)
+        public ClusterResultWrapper GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)
         {
             clusterResultWrapper.Reset();
             clusterResultWrapper.SetStart(from, to, unitRadius);
 
             var clusterPath = highLevelPathfinder.FindClusterPath(clusterResultWrapper);
-            var smootherClusterPath = clusterPathSmoother.SmoothClusterPath(clusterPath, clusterList, nodeList);
+            var smootherClusterPath = clusterPathSmoother.SmoothClusterPath(clusterPath);
             return smootherClusterPath;
         }
     }

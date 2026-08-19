@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public class HPAPathfinder
 {
-    private readonly HPAClusterList clusterList;
     private readonly NodeList nodeList;
+    private readonly HPAClusterList clusterList;
     
     private readonly List<NewClusterResult> newResults = new();
 
@@ -12,10 +12,10 @@ public class HPAPathfinder
     private readonly HashSet<int> closedSet = new();
     private readonly Dictionary<int, AbstractNode> clusterDict = new();
 
-    public HPAPathfinder(HPAClusterList clusterList, NodeList nodeList)
+    public HPAPathfinder(NodeList nodeList, HPAClusterList clusterList)
     {
-        this.clusterList = clusterList;
         this.nodeList = nodeList;
+        this.clusterList = clusterList;
     }
 
     /// <summary> high level cluster 경로를 반환 </summary>

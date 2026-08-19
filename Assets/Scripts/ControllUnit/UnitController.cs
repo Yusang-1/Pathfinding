@@ -50,7 +50,8 @@ namespace Assets.Scripts.ControllUnit
             startPosition = unit.transform.position;
             finalDestination = destination;
             currentPathIndex = 0;
-            abstractPath = unitRuntimeContext.Pathfinder.GetAbstractPath(unit.transform.position, destination, unitData.Radius);
+            var clusterResultWrapper = unitRuntimeContext.Pathfinder.GetAbstractPath(unit.transform.position, destination, unitData.Radius);
+            abstractPath = clusterResultWrapper.ClusterSmootherResult;
             if (abstractPath == null || abstractPath.Count == 0) return;
 
             SearchLowLevelPath(abstractPath[currentPathIndex], abstractPath.Count == 1, true);
@@ -65,8 +66,9 @@ namespace Assets.Scripts.ControllUnit
             
             bool haveToDoLazyRefine = false;
             if (currentPathIndex + 1 == abstractPath.Count) haveToDoLazyRefine = true;
-
-            var newAbstractPath = unitRuntimeContext.Pathfinder.GetAbstractPath(finalDestination, destination, unitData.Radius);
+            
+            var clusterResultWrapper = unitRuntimeContext.Pathfinder.GetAbstractPath(finalDestination, destination, unitData.Radius);
+            var newAbstractPath = clusterResultWrapper.ClusterSmootherResult;
             if (abstractPath == null || abstractPath.Count == 0) return;
 
             startPosition = finalDestination;
