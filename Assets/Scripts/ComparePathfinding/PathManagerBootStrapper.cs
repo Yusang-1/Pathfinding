@@ -90,7 +90,7 @@ public class PathManagerBootStrapper
 
     private void AddInputManagerEvent()
     {
-        inputManager.ControllMenu += uiRoot.ControllMenu;
+        inputManager.OnControllMenu += uiRoot.ControllMenu;
     }
 
     private void RemoveUIRootEvent()
@@ -129,6 +129,6 @@ public class PathManagerBootStrapper
 
     private void RemoveInputManagerEvent()
     {
-        inputManager.ControllMenu -= uiRoot.ControllMenu;
+        inputManager.OnControllMenu -= uiRoot.ControllMenu;
     }
 }

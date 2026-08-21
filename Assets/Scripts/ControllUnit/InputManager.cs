@@ -20,9 +20,10 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
 
         private InputActionMap actionMap;
-
         private IActionMapInputer currentInputer;
         private readonly Dictionary<string, IActionMapInputer> inputerDict = new();
+        
+        private bool isEventBound;
 
         private void Awake()
         {
@@ -76,6 +77,8 @@ namespace Assets.Scripts.ControllUnit
 
         private void BindEvents()
         {
+            if(isEventBound) return;
+            
             playerControllerInput.OnHoldStarted += HandlerHoldStarted;
             playerControllerInput.OnHoldPerformed += HandlerHoldPerformed;
             playerControllerInput.OnHoldCanceled += HandlerHoldCanceled;
@@ -88,10 +91,14 @@ namespace Assets.Scripts.ControllUnit
 
             spawnAreaSetterInput.OnSetSpawnAreaRequested += HandlerSetSpawnAreaRequested;
             spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
+            
+            isEventBound = true;
         }
 
         private void UnbindEvents()
         {
+            if(!isEventBound) return;
+            
             playerControllerInput.OnHoldStarted -= HandlerHoldStarted;
             playerControllerInput.OnHoldPerformed -= HandlerHoldPerformed;
             playerControllerInput.OnHoldCanceled -= HandlerHoldCanceled;
@@ -104,6 +111,8 @@ namespace Assets.Scripts.ControllUnit
 
             spawnAreaSetterInput.OnSetSpawnAreaRequested -= HandlerSetSpawnAreaRequested;
             spawnAreaSetterInput.OnSetSpawnAreaFinished -= ChangeActionMapDefault;
+            
+            isEventBound = false;
         }
 
         private void HandlerHoldStarted(Vector3 vec)
