@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class NodeList
 {
-    public event Action<ISelectable> OnSelected;
-    public event Action<ISelectable> OnDeselected;
+    public event Action<ISelectable, bool> OnSelected;
+    public event Action<ISelectable, bool> OnDeselected;
 
     private readonly NodeData nodeData;
     private readonly NodeTypeController nodeTypeController;

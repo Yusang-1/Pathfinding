@@ -15,7 +15,7 @@ namespace Assets.Scripts.CreateMap
             currentSelectedType = type;
         }
 
-        public void SetNodeType(ISelectable selectable)
+        public void SetNodeType(ISelectable selectable, bool value)
         {
             if (currentSelectedType == default) currentSelectedType = NodeType.obstacle;
 

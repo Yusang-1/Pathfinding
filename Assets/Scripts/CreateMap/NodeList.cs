@@ -5,8 +5,8 @@ namespace Assets.Scripts.CreateMap
 {
     public class NodeList
     {
-        public event Action<ISelectable> OnSelected;
-        public event Action<ISelectable> OnDeselected;
+        public event Action<ISelectable, bool> OnSelected;
+        public event Action<ISelectable, bool> OnDeselected;
 
         private readonly NodeTypeDrawer nodeTypeDrawer;
         private Node[,] nodes;

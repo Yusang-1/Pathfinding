@@ -4,11 +4,17 @@ using System.Collections.Generic;
 
 public class Pathfinder
 {
-    public event Action OnPathFound;
+    public event Action<bool> OnPathFound;
     public event Action<PathResultRecorder.PathResult> OnAFound;
     public event Action<PathResultRecorder.PathResult> OnHPASmoothAStarFound;
     public event Action<PathResultRecorder.PathResult> OnHPAThetaFound;
     public event Action<PathResultRecorder.PathResult> OnHPASmoothThetaFound;
+
+    private Action<bool> pathFoundHandler;
+    private Action<PathResultRecorder.PathResult> aFoundHandler;
+    private Action<PathResultRecorder.PathResult> hPASmoothAStarFoundHandler;
+    private Action<PathResultRecorder.PathResult> hPAThetaFoundHandler;
+    private Action<PathResultRecorder.PathResult> hPASmoothThetaFoundHandler;
 
     private NodeList nodeList;
     private HPAClusterList clusterList;
@@ -24,7 +30,7 @@ public class Pathfinder
     private readonly ClusterResultWrapper clusterResultWrapper = new();
     private readonly PathfindingChain pathfindingChain = new();
 
-    private bool isEventSet = false;
+    private bool isEventBound = false;
 
     public void Initialize(NodeList nodes, ClusterShower clusterShower, LineDrawer lineDrawer, UnitUncontrollable unit)
     {
@@ -43,34 +49,31 @@ public class Pathfinder
         unit.Initialize(lineDrawer);
         clusterPathSmoother = new(nodeList, clusterList);
         pathfindingChain.Initialize(highLevelPathfinder, clusterPathSmoother, searchWithTheClusterResult);
-        
-        ConnectEvents();
+
+        CreateEventHandlers();
+        BindComparePathfindingEvents();
+    }
+    
+    private void CreateEventHandlers()
+    {
+        pathFoundHandler = (value) => OnPathFound?.Invoke(value);
+        aFoundHandler = (pathResult) => OnAFound?.Invoke(pathResult);
+        hPASmoothAStarFoundHandler = (pathResult) => OnHPASmoothAStarFound?.Invoke(pathResult);
+        hPAThetaFoundHandler = (pathResult) => OnHPAThetaFound?.Invoke(pathResult);
+        hPASmoothThetaFoundHandler = (pathResult) => OnHPASmoothThetaFound?.Invoke(pathResult);
     }
 
-    private void ConnectEvents()
+    private void BindComparePathfindingEvents()
     {
-        if (isEventSet) return;
+        if (isEventBound) return;
 
-        comparePathfinding.OnPathFound += () => OnPathFound?.Invoke();
-        comparePathfinding.OnAFound += (pathResult) => OnAFound?.Invoke(pathResult);
-        comparePathfinding.OnHPASmoothAStarFound += (pathResult) => OnHPASmoothAStarFound?.Invoke(pathResult);
-        comparePathfinding.OnHPAThetaFound += (pathResult) => OnHPAThetaFound?.Invoke(pathResult);
-        comparePathfinding.OnHPASmoothThetaFound += (pathResult) => OnHPASmoothThetaFound?.Invoke(pathResult);
+        comparePathfinding.OnPathFound += pathFoundHandler;
+        comparePathfinding.OnAFound += aFoundHandler;
+        comparePathfinding.OnHPASmoothAStarFound += hPASmoothAStarFoundHandler;
+        comparePathfinding.OnHPAThetaFound += hPAThetaFoundHandler;
+        comparePathfinding.OnHPASmoothThetaFound += hPASmoothThetaFoundHandler;
 
-        isEventSet = true;
-    }
-
-    private void DisconnectEvents()
-    {
-        if (!isEventSet) return;
-
-        comparePathfinding.OnPathFound -= () => OnPathFound?.Invoke();
-        comparePathfinding.OnAFound -= (pathResult) => OnAFound?.Invoke(pathResult);
-        comparePathfinding.OnHPASmoothAStarFound -= (pathResult) => OnHPASmoothAStarFound?.Invoke(pathResult);
-        comparePathfinding.OnHPAThetaFound -= (pathResult) => OnHPAThetaFound?.Invoke(pathResult);
-        comparePathfinding.OnHPASmoothThetaFound -= (pathResult) => OnHPASmoothThetaFound?.Invoke(pathResult);
-
-        isEventSet = false;
+        isEventBound = true;
     }
 
     public void SetNodeAndCluster(in MapData mapData, Dictionary<UnitSize, float> unitRadiusList)
@@ -80,7 +83,7 @@ public class Pathfinder
         nodeList.SetNodeArea();
     }
 
-    public void ComparePathfinding()
+    private void DoComparePathfinding()
     {
         Vector3 from = nodeList.GridToWorld(nodeList.NodeTypeController.NodeTypeDrawer.StartNodeIndex);
         Vector3 to = nodeList.GridToWorld(nodeList.NodeTypeController.NodeTypeDrawer.GoalNodeIndex);
@@ -122,5 +125,10 @@ public class Pathfinder
         unit.gameObject.SetActive(false);
 
         nodeList.NodeTypeController.NodeTypeDrawer.IsDuringNodeSetting = true;
+    }
+
+    public void FindAllPath()
+    {
+        DoComparePathfinding();
     }
 }

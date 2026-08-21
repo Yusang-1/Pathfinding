@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class ComparePathfinding
 {
-    public event Action OnPathFound;
+    public event Action<bool> OnPathFound;
     public event Action<PathResultRecorder.PathResult> OnAFound;
     public event Action<PathResultRecorder.PathResult> OnHPASmoothAStarFound;
     public event Action<PathResultRecorder.PathResult> OnHPAThetaFound;
@@ -49,7 +49,7 @@ public class ComparePathfinding
         HpaStarSmoothResult = FindHPA_Smoothing_ThetaPath();
 
         nodeList.NodeTypeController.NodeTypeDrawer.IsDuringNodeSetting = false;
-        OnPathFound?.Invoke();
+        OnPathFound?.Invoke(true);
     }
 
     private Dictionary<NodeType, List<Vector2Int>> FindAStarPath()

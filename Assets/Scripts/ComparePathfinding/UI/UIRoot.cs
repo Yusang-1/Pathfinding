@@ -27,9 +27,13 @@ public class UIRoot : MonoBehaviour
     [SerializeField] private UIPathShower uiPathShower;
     [SerializeField] private UIResultController uiResultController;
     [SerializeField] private UIContainerScenes uiContainerScenes;
-
+    
+    private bool isInitialized;
+    
     public void Initialize()
     {
+        if (isInitialized) return;
+        
         uiLoadMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
         uiLoadMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
         uiLoadMapMediator.OnPersonalMapListRequested += () => OnGetPersonalMapListRequested?.Invoke();
@@ -57,8 +61,8 @@ public class UIRoot : MonoBehaviour
         nodeTypeSelector.OnSetNodeType += (index, type) => OnSetNodeTypeRequested?.Invoke(index, type);
 
         uiFindAllPath.OnFindAllPathEvent += ActiveUIPathShower;
-
-
+        
+        isInitialized = true;
     }
 
     private void ActiveUIPathShower()

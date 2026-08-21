@@ -4,8 +4,8 @@ using System;
 public class Node : MonoBehaviour, ISelectable, IPoolObject<Node>
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
-    public event Action<ISelectable> OnSelectedCallback;
-    public event Action<ISelectable> OnDeselectedCallback;
+    public event Action<ISelectable, bool> OnSelectedCallback;
+    public event Action<ISelectable, bool> OnDeselectedCallback;
     public virtual event Action<Node> OnPoolObjectUnused;
     public virtual event Action<Node> OnPoolObjectFirstCreated;
 
@@ -34,12 +34,12 @@ public class Node : MonoBehaviour, ISelectable, IPoolObject<Node>
 
     public void Selected()
     {
-        OnSelectedCallback?.Invoke(this);
+        OnSelectedCallback?.Invoke(this, true);
         if (IsAreaSet) Debug.Log($"areaNum : {NodeArea}");
     }
     public void Deselected()
     {
-        OnDeselectedCallback?.Invoke(this);
+        OnDeselectedCallback?.Invoke(this, true);
     }
 
     public void SetType(NodeType type, Sprite sprite)
