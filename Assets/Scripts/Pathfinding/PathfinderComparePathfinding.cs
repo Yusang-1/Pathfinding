@@ -1,8 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Pathfinding;
 
-public class Pathfinder
+public class PathfinderComparePathfinding
 {
     public event Action<bool> OnPathFound;
     public event Action<PathResultRecorder.PathResult> OnAFound;

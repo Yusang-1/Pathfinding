@@ -1,13 +1,15 @@
 using UnityEngine;
+using Assets.Scripts.ControllUnit;
 using System.Collections.Generic;
 
-namespace Assets.Scripts.ControllUnit
+namespace Assets.Scripts.Pathfinding
 {
-    public class Pathfinder : MonoBehaviour
+    public class PathfinderControllUnit : MonoBehaviour
     {
         private NodeList nodeList;
         private HPAClusterList clusterList;
-
+        
+        private AStarPathfinder aStarPathfinder;
         private HPAPathfinder highLevelPathfinder;
         private ClusterPathSmoother clusterPathSmoother;
         private readonly ClusterResultWrapper clusterResultWrapper = new();
@@ -17,7 +19,7 @@ namespace Assets.Scripts.ControllUnit
             nodeList = nodes;
             clusterList = new HPAClusterList(nodeList);
 
-            AStarPathfinder aStarPathfinder = new(nodeList);
+            aStarPathfinder = new(nodeList);
 
             clusterList.Initialize(aStarPathfinder, mapData.MapSize, mapData.ClusterSize, unitRadiusList);
             nodeList.SetNodeArea();
@@ -26,11 +28,12 @@ namespace Assets.Scripts.ControllUnit
             highLevelPathfinder = new HPAPathfinder(nodeList, clusterList);
         }
 
-        public LazyRefine GetLazyRefine()
+        public Assets.Scripts.ControllUnit.LazyRefine GetLazyRefine()
         {
             ThetaStar thetaStarPathfinder = new(nodeList);
-
-            return new LazyRefine(clusterList, nodeList, new SearchWithTheClusterResult(thetaStarPathfinder));
+            
+            var searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
+            return new Assets.Scripts.ControllUnit.LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
         }
 
         public ClusterResultWrapper GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)

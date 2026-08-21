@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections.Generic;
+using Assets.Scripts.Pathfinding;
 
 public class UnitUncontrollable : MonoBehaviour
 {

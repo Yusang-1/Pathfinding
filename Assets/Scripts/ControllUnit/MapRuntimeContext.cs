@@ -1,8 +1,10 @@
+using Assets.Scripts.Pathfinding;
+
 namespace Assets.Scripts.ControllUnit
 {
     public class MapRuntimeContext
     {
-        public MapRuntimeContext(Pathfinder pathfinder, NodeData nodeData)
+        public MapRuntimeContext(PathfinderControllUnit pathfinder, NodeData nodeData)
         {
             Pathfinder = pathfinder;
             NodeList = new NodeList(nodeData);
@@ -10,6 +12,6 @@ namespace Assets.Scripts.ControllUnit
 
         public NodeList NodeList { get; private set; }
         public SpatialHash SpatialHash { get; private set; } = new();
-        public Pathfinder Pathfinder { get; private set; }
+        public PathfinderControllUnit Pathfinder { get; private set; }
     }
 }

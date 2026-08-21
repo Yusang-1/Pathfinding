@@ -12,11 +12,11 @@ public class PathManagerBootStrapper
     private readonly MapdataJsonConverter mapdataJsonConverter = new();
     private readonly UIRoot uiRoot;
     private readonly InputManager inputManager;
-    private readonly Pathfinder pathfinder;
+    private readonly PathfinderComparePathfinding pathfinder;
 
     private bool isEventBound;
 
-    public PathManagerBootStrapper(Node nodePrefab, NodeList nodeList, UIRoot uiRoot, InputManager inputManager, Pathfinder pathfinder, Action<MapData> setMapData)
+    public PathManagerBootStrapper(Node nodePrefab, NodeList nodeList, UIRoot uiRoot, InputManager inputManager, PathfinderComparePathfinding pathfinder, Action<MapData> setMapData)
     {
         this.nodeList = nodeList;
         this.uiRoot = uiRoot;

@@ -1,5 +1,4 @@
 using UnityEngine;
-using Assets.Scripts.ControllUnit.SO;
 
 namespace Assets.Scripts.ControllUnit
 {

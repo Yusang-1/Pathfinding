@@ -3,7 +3,7 @@ using UnityEngine;
 public class PathManager : MonoBehaviour
 {
     private NodeList nodeList;    
-    private readonly Pathfinder pathfinder = new();
+    private readonly PathfinderComparePathfinding pathfinder = new();
     private PathManagerBootStrapper pathManagerBootStrapper;
 
     [SerializeField] private UIRoot uiRoot;

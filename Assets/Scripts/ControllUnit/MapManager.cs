@@ -1,6 +1,7 @@
 using UnityEngine;
 using Assets.Scripts.ControllUnit.UI;
 using Assets.Scripts.ControllUnit.SO;
+using Assets.Scripts.Pathfinding;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -10,7 +11,7 @@ namespace Assets.Scripts.ControllUnit
         private MapBootStrapper mapBootStrapper;
         private MapRuntimeContext mapRuntimeContext;
 
-        [SerializeField] private Pathfinder pathfinder;
+        [SerializeField] private PathfinderControllUnit pathfinder;
         [SerializeField] private Node nodePrefab;
         [SerializeField] private UnitsSO unitsSO;
         [SerializeField] private NodeData nodeData;

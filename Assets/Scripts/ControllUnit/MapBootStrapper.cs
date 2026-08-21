@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using Assets.Scripts.ControllUnit.UI;
 using Assets.Scripts.ControllUnit.SO;
+using Assets.Scripts.Pathfinding;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -23,7 +24,7 @@ namespace Assets.Scripts.ControllUnit
             this.unitSpawner = unitSpawner;
         }
 
-        public void Initialize(NodeData nodeData, MapRuntimeContext mapRuntimeContext, UnitsSO unitsSO, Pathfinder pathfinder)
+        public void Initialize(NodeData nodeData, MapRuntimeContext mapRuntimeContext, UnitsSO unitsSO, PathfinderControllUnit pathfinder)
         {            
             nodeData.Initialize();
             unitSpawner.Initialize(new UnitRuntimeContext(pathfinder, mapRuntimeContext.SpatialHash));

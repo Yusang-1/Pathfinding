@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Assets.Scripts.ControllUnit.SO;
+using Assets.Scripts.Pathfinding;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -8,7 +9,7 @@ namespace Assets.Scripts.ControllUnit
     {
         private readonly Unit unit;
         private readonly UnitSO unitData;
-        private readonly LazyRefine lazyRefine;
+        private readonly Assets.Scripts.ControllUnit.LazyRefine lazyRefine;
         private readonly Transform bottomChangerTransform;
         private readonly UnitRuntimeContext unitRuntimeContext;
         private SteeringConfig steeringConfig;

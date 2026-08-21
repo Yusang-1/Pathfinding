@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Assets.Scripts.Pathfinding;
 
 public class LazyRefine
 {
@@ -32,7 +33,8 @@ public class LazyRefine
 
     public void DoLazyRefinement(ClusterSmootherResult smoothPath, LineDrawer lineDrawer)
     {
-        List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(smoothPath, nodeList, clusterList);
+        float tempUnitRadius = 0;
+        List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(smoothPath, nodeList, clusterList, tempUnitRadius);
 
         lineDrawer.DrawLine(resultPath);
 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Pathfinding;
 
 public class FluentChain<TIn, TOut, TDerived> where TDerived : FluentChain<TIn, TOut, TDerived>
 {
@@ -56,7 +57,7 @@ public class FindClusterPathChain : FluentChain<ClusterResultWrapper, ClusterRes
 
     public FindClusterPathChain SmoothHPAPath(ClusterPathSmoother clusterPathSmoother)
     {
-        processor = new Combined<ClusterResultWrapper, ClusterResultWrapper, ClusterResultWrapper>(processor, new SmoothClusterPathProcessor(clusterPathSmoother));
+        processor = new Combined<ClusterResultWrapper, ClusterResultWrapper, ClusterResultWrapper>(processor, new ProcessorSmoothClusterPath(clusterPathSmoother));
         return new FindClusterPathChain(processor);
     }
 
