@@ -9,7 +9,7 @@ namespace Assets.Scripts.ControllUnit
     {
         private readonly Unit unit;
         private readonly UnitSO unitData;
-        private readonly Assets.Scripts.ControllUnit.LazyRefine lazyRefine;
+        private readonly LazyRefine lazyRefine;
         private readonly Transform bottomChangerTransform;
         private readonly UnitRuntimeContext unitRuntimeContext;
         private SteeringConfig steeringConfig;

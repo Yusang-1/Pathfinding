@@ -1,5 +1,4 @@
 using UnityEngine;
-using Assets.Scripts.ControllUnit;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.Pathfinding
@@ -28,12 +27,12 @@ namespace Assets.Scripts.Pathfinding
             highLevelPathfinder = new HPAPathfinder(nodeList, clusterList);
         }
 
-        public Assets.Scripts.ControllUnit.LazyRefine GetLazyRefine()
+        public LazyRefine GetLazyRefine()
         {
             ThetaStar thetaStarPathfinder = new(nodeList);
             
             var searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
-            return new Assets.Scripts.ControllUnit.LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
+            return new LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
         }
 
         public ClusterResultWrapper GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)
