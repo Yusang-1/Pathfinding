@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.ControllUnit
 {
-    public class UnitSpawner : MonoBehaviour
+    public class UnitSpawner : AbstractSpawner
     {
         [SerializeField] private Unit smallUnitPrefab;
         [SerializeField] private Unit largeUnitPrefab;
@@ -20,12 +20,12 @@ namespace Assets.Scripts.ControllUnit
             unitFactory = new UnitFactory(smallUnitPrefab, largeUnitPrefab, unitBottomPrefab, unitRuntimeContext);
         }
 
-        public void SpawnUnit(UnitSize unitSize)
+        public override void SpawnUnit(UnitSize unitSize)
         {
             unitFactory.SpawnUnit(unitSize, spawnPosition);
         }
 
-        public void SetSpawnUnitArea(Vector3 position)
+        public override void SetSpawnArea(Vector3 position)
         {
             spawnPosition = position;
             spawnAreaSetter.SetFinishAction?.Invoke();

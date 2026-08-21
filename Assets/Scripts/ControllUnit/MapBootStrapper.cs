@@ -79,7 +79,7 @@ namespace Assets.Scripts.ControllUnit
             inputManager.OnHoldPerformed += HandleHoldPerformed;
             inputManager.OnHoldCanceled += HandleHoldCanceled;
             inputManager.OnControllMenu += HandleManageMenu;
-            inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnUnitArea;
+            inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnArea;
         }
 
         private void RemoveUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
@@ -106,7 +106,7 @@ namespace Assets.Scripts.ControllUnit
             inputManager.OnHoldPerformed -= HandleHoldPerformed;
             inputManager.OnHoldCanceled -= HandleHoldCanceled;
             inputManager.OnControllMenu -= HandleManageMenu;
-            inputManager.OnSetSpawnAreaRequested -= unitSpawner.SetSpawnUnitArea;
+            inputManager.OnSetSpawnAreaRequested -= unitSpawner.SetSpawnArea;
         }
         
         private void HandleUnitSelected(ISelectableUnit selectable)
