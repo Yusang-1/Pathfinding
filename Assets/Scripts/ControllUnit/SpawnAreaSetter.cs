@@ -5,12 +5,18 @@ namespace Assets.Scripts.ControllUnit
     public class SpawnAreaSetter
     {
         public event Action<string> OnStartSetSpawnAreaRequested;
-        public Action SetFinishAction;
+        private Action setFinishAction;
 
         public void StartSetSpawnArea(Action finishAction)
         {
-            SetFinishAction = finishAction;
+            setFinishAction = finishAction;
             OnStartSetSpawnAreaRequested?.Invoke("SpawnAreaSetter");
+        }
+
+        public void FinishSetSpawnArea()
+        {
+            setFinishAction?.Invoke();
+            setFinishAction = null;
         }
     }
 }

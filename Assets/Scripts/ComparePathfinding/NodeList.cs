@@ -8,7 +8,7 @@ public class NodeList
     public event Action<ISelectable, bool> OnDeselected;
 
     private readonly NodeData nodeData;
-    private readonly NodeTypeController nodeTypeController;
+    private readonly NodeTypeController nodeTypeController = new();
     private Node[,] nodes;
 
     public NodeTypeController NodeTypeController => nodeTypeController;
