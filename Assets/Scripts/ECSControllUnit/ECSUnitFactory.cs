@@ -29,7 +29,7 @@ namespace Assets.Scripts.ECSControllUnit
 
         public void SpawnUnit(UnitSize unitSize, Vector3 spawnPosition)
         {
-            Entity requestEntity = GetUnitInstance(unitSize);
+            Entity requestEntity = GetUnitInstance(unitSize, spawnPosition);
 
             // Unit unit = GetUnitInstance(unitSize);
             // unit.transform.position = spawnPosition;
@@ -43,7 +43,7 @@ namespace Assets.Scripts.ECSControllUnit
             // unit.UnitSpawned();
         }
 
-        private Entity GetUnitInstance(UnitSize unitSize)
+        private Entity GetUnitInstance(UnitSize unitSize, Vector3 spawnPosition)
         {
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
@@ -53,7 +53,8 @@ namespace Assets.Scripts.ECSControllUnit
                 requestEntity,
                 new UnitSpawnRequestComponent()
                 { 
-                    UnitSize = unitSize
+                    UnitSize = unitSize,
+                    Position = spawnPosition
                 }
             );
 

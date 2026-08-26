@@ -23,11 +23,12 @@ namespace Assets.Scripts.ECSControllUnit
                     Name = authoring.unitName,
                     Radius = authoring.radius
                 });
-
                 AddComponent(entity, new MovableComponent
                 {
                     MoveSpeed = authoring.moveSpeed
                 });
+                AddComponent(entity, new SelectableUnitTag());
+                AddComponent(entity, new SpatialHashCell());
 
                 AddComponent(entity, new Prefab());
                 AddComponent(entity, new Disabled());

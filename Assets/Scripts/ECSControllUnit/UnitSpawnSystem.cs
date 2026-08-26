@@ -1,4 +1,6 @@
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -52,6 +54,9 @@ namespace Assets.Scripts.ECSControllUnit
                 
                 Entity newEntity = ecb.Instantiate(prefab);
                 ecb.RemoveComponent<Disabled>(newEntity);
+                
+                // spawn위치 지정
+                ecb.SetComponent(newEntity, LocalTransform.FromPosition(spawnRequest.Position));
 
                 // 한 번 처리한 요청 신호는 다음 프레임에 또 수행되지 않도록 삭제
                 ecb.DestroyEntity(spawnRequestEntity);
@@ -65,5 +70,6 @@ namespace Assets.Scripts.ECSControllUnit
     public struct UnitSpawnRequestComponent : IComponentData
     {
         public UnitSize UnitSize;
+        public float3 Position;
     }
 }
