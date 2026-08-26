@@ -5,6 +5,8 @@ using Unity.Transforms;
 
 namespace Assets.Scripts.ECSControllUnit
 {
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateAfter(typeof(UnitMoveSystem))]    
     public partial struct UnitSpatialHashSystem : ISystem
     {
         private NativeParallelMultiHashMap<int, Entity> cells;
@@ -41,7 +43,7 @@ namespace Assets.Scripts.ECSControllUnit
                 Entity entityRegistered = pair.Key;
                 int cellRegistered = pair.Value;
 
-                if (!state.EntityManager.Exists(entityRegistered))
+                if (!state.EntityManager.Exists(entityRegistered) || state.EntityManager.HasComponent<Disabled>(entityRegistered))
                 {
                     removedEntities.Add((entityRegistered, cellRegistered));                    
                 }
@@ -106,11 +108,6 @@ namespace Assets.Scripts.ECSControllUnit
         {
             cells.Remove(cell, entity);
             registeredEntities.Remove(entity);
-        }
-
-        public void Clear()
-        {
-            cells.Clear();
         }
 
         public NativeParallelMultiHashMap<int, Entity>.Enumerator GetCellEntities(int2 cell)

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.ECSControllUnit
 {
+    [UpdateAfter(typeof(UnitSpatialHashSystem))]
     public partial struct UnitSelectionSystem : ISystem
     {
         public void OnUpdate(ref SystemState state)
