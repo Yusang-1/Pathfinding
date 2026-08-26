@@ -103,7 +103,9 @@ namespace Assets.Scripts.ECSControllUnit
                 float closestDistanceSq = float.MaxValue;
                 foreach (Entity entity in values)
                 {
-                    if (!state.EntityManager.Exists(entity) || state.EntityManager.HasComponent<Disabled>(entity))
+                    if (!state.EntityManager.Exists(entity)
+                        || state.EntityManager.HasComponent<Disabled>(entity)
+                        || !state.EntityManager.HasComponent<SelectableUnitTag>(entity))
                     {
                         continue;
                     }
@@ -112,19 +114,57 @@ namespace Assets.Scripts.ECSControllUnit
 
                     if (distanceSq <= closestDistanceSq)
                     {
+                        closestDistanceSq = distanceSq;
                         selectEntity = entity;
                     }
                 }
 
                 if (selectEntity != Entity.Null)
-                {
-                    ecb.AddComponent(selectEntity, typeof(SelectedUnitTag));
+                {                                                            
+                    if(request.IsAdditive)
+                    {
+                        // IsAdditive && 이미 선택중 ecb.RemoveComponent(selectEntity, typeof(SelectedUnitTag));
+                        if(registeredEntities.ContainsKey(selectEntity))
+                        {
+                            UnselectEntity(selectEntity, ecb);
+                        }
+                        else // IsAdditive && 선택중X ecb.AddComponent(selectEntity, typeof(SelectedUnitTag));
+                        {
+                            SelectEntity(selectEntity, ecb);  
+                        }
+                    }
+                    else // !IsAdditive / 기존 SelectedUnitTag가진 엔티티들 해제, selectedEntity select
+                    {
+                        var registered = registeredEntities.GetKeyArray(Allocator.Temp);
+                        UnselectAllEntities(registered, ecb);
+                        registered.Dispose();
+                        
+                        SelectEntity(selectEntity, ecb);                        
+                    }                                                            
                 }
                 ecb.DestroyEntity(requestEntity);
             }
 
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
+        }
+        
+        private void SelectEntity(Entity entity, EntityCommandBuffer ecb)
+        {
+            ecb.AddComponent(entity, typeof(SelectedUnitTag));
+        }
+        
+        private void UnselectEntity(Entity entity, EntityCommandBuffer ecb)
+        {
+            ecb.RemoveComponent(entity, typeof(SelectedUnitTag));
+        }
+        
+        private void UnselectAllEntities(NativeArray<Entity> registeredEntities, EntityCommandBuffer ecb)
+        {
+            foreach(Entity entity in registeredEntities)
+            {
+                UnselectEntity(entity, ecb);
+            }
         }
 
         public void Register(Entity entity, out int newCell, float3 position)
