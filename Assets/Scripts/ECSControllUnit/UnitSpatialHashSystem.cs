@@ -6,7 +6,7 @@ using Unity.Transforms;
 namespace Assets.Scripts.ECSControllUnit
 {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(UnitMoveSystem))]    
+    [UpdateAfter(typeof(UnitMoveSystem))]
     public partial struct UnitSpatialHashSystem : ISystem
     {
         private NativeParallelMultiHashMap<int, Entity> cells;
@@ -37,7 +37,7 @@ namespace Assets.Scripts.ECSControllUnit
         {
             // 제거된 entity SpatialHash에서 제거
             var removedEntities = new NativeList<(Entity entity, int cell)>(Allocator.Temp);
-            
+
             foreach (var pair in registeredEntities)
             {
                 Entity entityRegistered = pair.Key;
@@ -45,17 +45,17 @@ namespace Assets.Scripts.ECSControllUnit
 
                 if (!state.EntityManager.Exists(entityRegistered) || state.EntityManager.HasComponent<Disabled>(entityRegistered))
                 {
-                    removedEntities.Add((entityRegistered, cellRegistered));                    
+                    removedEntities.Add((entityRegistered, cellRegistered));
                 }
             }
-            
-            foreach(var (entity, cell) in removedEntities)
+
+            foreach (var (entity, cell) in removedEntities)
             {
                 Remove(entity, cell);
             }
-            
+
             removedEntities.Dispose();
-            
+
             // 움직인 entity의 cell 갱신
             foreach (var (transform, cell, entity) in
                 SystemAPI.Query<RefRO<LocalTransform>, RefRW<SpatialHashCell>>()
@@ -79,6 +79,52 @@ namespace Assets.Scripts.ECSControllUnit
                     cell.ValueRW.Value = newCell;
                 }
             }
+
+            // 선택 요청이 있는지 확인
+            bool hasRequest = false;
+            foreach (var a in SystemAPI.Query<UnitSelectionRequest>())
+            {
+                hasRequest = true;
+                break;
+            }
+            if (!hasRequest)
+            {
+                return;
+            }
+
+            var ecb = new EntityCommandBuffer(Allocator.Temp);
+            // 점 선택
+            foreach (var (request, requestEntity) in SystemAPI.Query<UnitSelectionRequest>().WithEntityAccess())
+            {
+                int hash = SpatialHashUtility.GetHash(request.WorldPosition);
+                var values = cells.GetValuesForKey(hash);
+
+                Entity selectEntity = Entity.Null;
+                float closestDistanceSq = float.MaxValue;
+                foreach (Entity entity in values)
+                {
+                    if (!state.EntityManager.Exists(entity) || state.EntityManager.HasComponent<Disabled>(entity))
+                    {
+                        continue;
+                    }
+                    var entityTransfrom = state.EntityManager.GetComponentData<LocalTransform>(entity);
+                    float distanceSq = math.distancesq(request.WorldPosition, entityTransfrom.Position);
+
+                    if (distanceSq <= closestDistanceSq)
+                    {
+                        selectEntity = entity;
+                    }
+                }
+
+                if (selectEntity != Entity.Null)
+                {
+                    ecb.AddComponent(selectEntity, typeof(SelectedUnitTag));
+                }
+                ecb.DestroyEntity(requestEntity);
+            }
+
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
 
         public void Register(Entity entity, out int newCell, float3 position)
@@ -121,4 +167,16 @@ namespace Assets.Scripts.ECSControllUnit
         public int Value;
         public byte IsRegistered;
     }
+
+    public struct SelectedUnitTag : IComponentData { }
+
+    public struct UnitSelectionRequest : IComponentData
+    {
+        public float3 WorldPosition;
+
+        /// <summary> Shift Click 여부 </summary>
+        public bool IsAdditive;
+    }
+
+    public struct SelectableUnitTag : IComponentData { }
 }
