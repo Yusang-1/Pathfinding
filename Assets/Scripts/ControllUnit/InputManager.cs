@@ -21,7 +21,8 @@ namespace Assets.Scripts.ControllUnit
 
         private InputActionMap actionMap;
         private IActionMapInputer currentInputer;
-        private readonly Dictionary<string, IActionMapInputer> inputerDict = new();
+        private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
+        private readonly Dictionary<ActionMaps, IActionMapInputer> inputerDict = new();
         
         private bool isEventBound;
 
@@ -38,9 +39,13 @@ namespace Assets.Scripts.ControllUnit
 
         private void Start()
         {
-            inputerDict.Add((playerControllerInput as IActionMapInputer).GetActionMapName(), playerControllerInput);
-            inputerDict.Add((unitInput as IActionMapInputer).GetActionMapName(), unitInput);
-            inputerDict.Add((spawnAreaSetterInput as IActionMapInputer).GetActionMapName(), spawnAreaSetterInput);
+            actionMapNameDict.Add(ActionMaps.Player, "Player");
+            actionMapNameDict.Add(ActionMaps.Unit, "Unit");
+            actionMapNameDict.Add(ActionMaps.SpawnAreaSetter, "SpawnAreaSetter");
+            
+            inputerDict.Add((playerControllerInput as IActionMapInputer).GetActionMap(), playerControllerInput);
+            inputerDict.Add((unitInput as IActionMapInputer).GetActionMap(), unitInput);
+            inputerDict.Add((spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput);
 
             ChangeActionMapDefault();
         }
@@ -58,21 +63,23 @@ namespace Assets.Scripts.ControllUnit
             unitInput.Initialize(selectableController);
         }
 
-        public void ChangeActionMapSelected(string value)
+        public void ChangeActionMapSelected(ActionMaps actionMap)
         {
-            playerInputComponent.SwitchCurrentActionMap(value);
+            string actionMapName = actionMapNameDict[actionMap];
+            
+            playerInputComponent.SwitchCurrentActionMap(actionMapName);
 
             currentInputer?.ActionMapDeactivated();
 
-            currentInputer = inputerDict[value];
+            currentInputer = inputerDict[actionMap];
 
             currentInputer.ActionMapActivated();
         }
 
-        private const string DefaultActionMapName = "Player";
+        private const ActionMaps DefaultActionMap = ActionMaps.Player;
         private void ChangeActionMapDefault()
         {
-            ChangeActionMapSelected(DefaultActionMapName);
+            ChangeActionMapSelected(DefaultActionMap);
         }
 
         private void BindEvents()
@@ -140,7 +147,7 @@ namespace Assets.Scripts.ControllUnit
 
 public interface IActionMapInputer
 {
-    public string GetActionMapName();
+    public ActionMaps GetActionMap();
     public void ActionMapActivated();
     public void ActionMapDeactivated();
 }

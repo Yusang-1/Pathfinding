@@ -7,16 +7,16 @@ namespace Assets.Scripts.ControllUnit
 {
     public class SelectableController
     {
+        private Action<ActionMaps> OnchangeActionMapSelected;
+        private Action OnchangeActionMapDefault;
+        
         private readonly SlotDestination slotDestination = new();
 
         private SelectableType currentSelectedType;
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
-        private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();
+        private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();        
 
-        private Action<string> OnchangeActionMapSelected;
-        private Action OnchangeActionMapDefault;
-
-        public void GetActions(Action<string> changeActionMapSelected, Action changeActionMapDefault)
+        public void GetActions(Action<ActionMaps> changeActionMapSelected, Action changeActionMapDefault)
         {
             OnchangeActionMapSelected = changeActionMapSelected;
             OnchangeActionMapDefault = changeActionMapDefault;

@@ -14,7 +14,7 @@ namespace Assets.Scripts.ControllUnit.SO
         [SerializeField] private UnitsSO unitsData;
         
         public string UnitName => unitName;
-        public string ActionMapName => actionMapName;
+        public ActionMaps ActionMap => ActionMap;
         public SelectableType SelectableType => selectableType;
         public float MoveSpeed => moveSpeed;
         public float RefineLength => refineLength;

@@ -7,7 +7,7 @@ namespace Assets.Scripts.ControllUnit
     {
         public event Action<ISelectableUnit> OnUnitSelected;
         public event Action<ISelectableUnit> OnUnitDeselected;
-        public event Action<string> OnSpawnAreaSettingStarted;
+        public event Action<ActionMaps> OnSpawnAreaSettingStarted;
 
         [SerializeField] private Unit smallUnitPrefab;
         [SerializeField] private Unit largeUnitPrefab;
@@ -42,9 +42,9 @@ namespace Assets.Scripts.ControllUnit
             OnUnitDeselected?.Invoke(unit);
         }
 
-        private void HandleSpawnAreaSettingStarted(string actionMapName)
+        private void HandleSpawnAreaSettingStarted(ActionMaps actionMap)
         {
-            OnSpawnAreaSettingStarted?.Invoke(actionMapName);
+            OnSpawnAreaSettingStarted?.Invoke(actionMap);
         }
 
         public void StartSetSpawnArea(Action finishAction)

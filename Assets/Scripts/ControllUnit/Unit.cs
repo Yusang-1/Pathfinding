@@ -92,11 +92,11 @@ namespace Assets.Scripts.ControllUnit
             bottomChanger.StatusChanged(bottomStatus);
         }
 
-        public string GetActionMapName() => unitData.ActionMapName;
+        public ActionMaps GetActionMapName() => unitData.ActionMap;
     }
 }
 
 public interface IHaveOwnActionMap
 {
-    public string GetActionMapName();
+    public ActionMaps GetActionMapName();
 }

@@ -19,7 +19,7 @@ namespace Assets.Scripts.ControllUnit
 
         private readonly Dictionary<int, Vector2> directionDict = new();
 
-        [SerializeField] private string actionMapName;
+        [SerializeField] private ActionMaps actionMap;
         private Vector2 sumOfDirection;
         private Vector2 mousePosition;
         private bool isPointerOverGameObject;
@@ -208,7 +208,7 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        public string GetActionMapName() => actionMapName;
+        public ActionMaps GetActionMap() => actionMap;
         public void ActionMapActivated() => isInputActive = true;
         public void ActionMapDeactivated() => isInputActive = false;
     }

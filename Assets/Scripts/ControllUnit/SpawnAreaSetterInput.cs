@@ -8,7 +8,7 @@ public class SpawnAreaSetterInput : MonoBehaviour, IActionMapInputer
     public event Action<Vector3> OnSetSpawnAreaRequested;
     public event Action OnSetSpawnAreaFinished;
 
-    [SerializeField] private string actionMapName;
+    [SerializeField] private ActionMaps actionMap;
 
     private Vector2 mousePosition;
     private bool isPointerOverGameObject;
@@ -54,5 +54,5 @@ public class SpawnAreaSetterInput : MonoBehaviour, IActionMapInputer
 
     public void ActionMapDeactivated() => isInputActive = false;
 
-    public string GetActionMapName() => actionMapName;
+    public ActionMaps GetActionMap() => actionMap;
 }

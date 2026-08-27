@@ -1731,7 +1731,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiRoot: {fileID: 1037418382}
-  inputManager: {fileID: 481101078}
+  inputManager: {fileID: 481101082}
   unitSpawner: {fileID: 690995782}
   nodeData: {fileID: 11400000, guid: bf87c0f6c59541f4aaf61f3cc70bc84f, type: 2}
   pathfinder: {fileID: 1208014188}
@@ -1823,9 +1823,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 481101079}
-  - component: {fileID: 481101078}
-  - component: {fileID: 481101077}
-  - component: {fileID: 481101076}
+  - component: {fileID: 481101082}
+  - component: {fileID: 481101081}
+  - component: {fileID: 481101080}
   - component: {fileID: 481101075}
   - component: {fileID: 481101074}
   m_Layer: 0
@@ -1862,8 +1862,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101077}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 481101081}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
           Assembly-CSharp
         m_MethodName: OnLeftClick
         m_Mode: 0
@@ -1879,8 +1879,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Clock[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101077}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 481101081}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
           Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
@@ -1936,8 +1936,8 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101077}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 481101081}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
           Assembly-CSharp
         m_MethodName: OnMoveRight
         m_Mode: 0
@@ -1953,8 +1953,8 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveD[/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101077}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 481101081}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
           Assembly-CSharp
         m_MethodName: OnMoveBackward
         m_Mode: 0
@@ -1970,8 +1970,8 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveS[/Keyboard/s]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101077}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 481101081}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
           Assembly-CSharp
         m_MethodName: OnMoveLeft
         m_Mode: 0
@@ -1987,8 +1987,8 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveA[/Keyboard/a]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101077}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 481101081}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
           Assembly-CSharp
         m_MethodName: OnMoveForward
         m_Mode: 0
@@ -2004,8 +2004,8 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveW[/Keyboard/w]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101077}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 481101081}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
           Assembly-CSharp
         m_MethodName: OnZoomCamera
         m_Mode: 0
@@ -2021,8 +2021,8 @@ MonoBehaviour:
     m_ActionName: 'Player/ZoomCamera[/Mouse/scroll/y]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnLeftClick
         m_Mode: 0
         m_Arguments:
@@ -2037,8 +2037,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/ClickLeft[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnRightClick
         m_Mode: 0
         m_Arguments:
@@ -2053,8 +2053,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/ClickRight[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
         m_Arguments:
@@ -2069,8 +2069,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MousePosition[/Mouse/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnMoveForward
         m_Mode: 0
         m_Arguments:
@@ -2085,8 +2085,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveW[/Keyboard/w]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnMoveLeft
         m_Mode: 0
         m_Arguments:
@@ -2101,8 +2101,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveA[/Keyboard/a]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnMoveBackward
         m_Mode: 0
         m_Arguments:
@@ -2117,8 +2117,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveS[/Keyboard/s]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnMoveRight
         m_Mode: 0
         m_Arguments:
@@ -2133,8 +2133,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveD[/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnZoomCamera
         m_Mode: 0
         m_Arguments:
@@ -2149,8 +2149,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/ZoomCamera[/Mouse/scroll/y]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnPressShift
         m_Mode: 0
         m_Arguments:
@@ -2165,8 +2165,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/Shift[/Keyboard/leftShift]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101077}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 481101081}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
           Assembly-CSharp
         m_MethodName: OnMenu
         m_Mode: 0
@@ -2182,8 +2182,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Menu[/Keyboard/escape]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101076}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101080}
+        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
         m_MethodName: OnMenu
         m_Mode: 0
         m_Arguments:
@@ -2245,50 +2245,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32bb5b660e67b1458fdd69fff2a45b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionMapName: SpawnAreaSetter
---- !u!114 &481101076
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 481101073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9ca8cd523579d343a25f08a5e0c3fa4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionMapName: Unit
---- !u!114 &481101077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 481101073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2bc7be07296277e4d8502c5aa247a2cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionMapName: Player
---- !u!114 &481101078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 481101073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 266147ec9f2ceba4e81aef5ce3720e9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  playerInputComponent: {fileID: 481101074}
-  playerControllerInput: {fileID: 481101077}
-  unitInput: {fileID: 481101076}
-  spawnAreaSetterInput: {fileID: 481101075}
+  actionMap: 2
 --- !u!4 &481101079
 Transform:
   m_ObjectHideFlags: 0
@@ -2304,6 +2261,49 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &481101080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481101073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12213895fcb117d42b77cfaee37ee6cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 1
+--- !u!114 &481101081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481101073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9b8610afc694634a8e25832e55cef80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 0
+--- !u!114 &481101082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481101073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46a874f65233cd5498f38c2725e1673d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  playerInputComponent: {fileID: 481101074}
+  playerControllInput: {fileID: 481101081}
+  unitInput: {fileID: 481101080}
+  spawnAreaSetterInput: {fileID: 481101075}
 --- !u!1 &487304336
 GameObject:
   m_ObjectHideFlags: 0
@@ -9146,7 +9146,7 @@ GameObject:
   - component: {fileID: 1787571096}
   - component: {fileID: 1787571095}
   - component: {fileID: 1787571094}
-  - component: {fileID: 1787571093}
+  - component: {fileID: 1787571098}
   m_Layer: 0
   m_Name: Main Camera_Player
   m_TagString: MainCamera
@@ -9154,19 +9154,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1787571093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1787571092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22c1ce0d5d96d4644a6c7b8ee7730b9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 8
 --- !u!114 &1787571094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9285,6 +9272,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1787571098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1787571092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 626cf0cb9de483a4d90d990bb092d19f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 8
 --- !u!1 &1812042570
 GameObject:
   m_ObjectHideFlags: 0
@@ -10419,8 +10419,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 1380460993}
   - {fileID: 1787571097}
-  - {fileID: 481101079}
   - {fileID: 402021789}
+  - {fileID: 481101079}
   - {fileID: 1208014189}
   - {fileID: 690995781}
   - {fileID: 1037418383}
