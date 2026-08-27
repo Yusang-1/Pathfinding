@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.ECSControllUnit
 {
-    public class ECSPlayerControllInput : MonoBehaviour, IActionMapInputer
+    public class ECSUnitInput : MonoBehaviour, IActionMapInputer
     {
         public event Action<Vector2> OnDirectionChanged;
         public event Action<Vector3> OnHoldStarted;
@@ -23,6 +23,7 @@ namespace Assets.Scripts.ECSControllUnit
         private Vector2 sumOfDirection;
         private Vector2 mousePosition;
         private bool isPointerOverGameObject;
+        private bool isShiftPressed;
         private bool isInputActive;
 
         private void Update()
@@ -60,14 +61,14 @@ namespace Assets.Scripts.ECSControllUnit
             if (context.canceled)
             {
                 StopCoroutine(WaitDragCoroutine);
-                
+
                 if (isDrag)
                 {
                     HoldCanceled();
                 }
                 else
                 {
-                    selectableController.MakeSelectionRequest(mouseWorldPosition, false);
+                    selectableController.MakeSelectionRequest(mouseWorldPosition, isShiftPressed);
                 }
             }
         }
@@ -105,8 +106,38 @@ namespace Assets.Scripts.ECSControllUnit
         private void HoldCanceled()
         {
             isDrag = false;
-            selectableController.MakeAreaSelectionRequest();
+
+            // if (isShiftPressed)
+            // {
+            //     selectableController.ShiftSelectedList();
+            // }
+            // else
+            // {
+            //     selectableController.Selected();
+            // }
             OnHoldCanceled?.Invoke();
+        }
+
+        // public event Action<Vector3> OnRightClickRequested;        
+        public void OnRightClick(InputAction.CallbackContext context)
+        {
+            if (isPointerOverGameObject || !isInputActive) return;
+
+            if (context.canceled)
+            {
+                Debug.Log("Right Click");
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
+                
+                selectableController.MakeMoveCommand(mouseWorldPosition, isShiftPressed);
+                // if (isShiftPressed)
+                // {
+                //     selectableController.ShiftRightClickMove(worldPos);
+                // }
+                // else
+                // {
+                //     selectableController.RightClickMove(worldPos);
+                // }
+            }
         }
         
         private Vector3 mouseWorldPosition;
@@ -119,16 +150,15 @@ namespace Assets.Scripts.ECSControllUnit
                 mousePosition = context.ReadValue<Vector2>();
 
                 if (isDrag || isPointerOverGameObject) return;
-
-                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-                mouseWorldPosition = worldPos;
                 
+                mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
+                // Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 // Vector3 origin = Camera.main.transform.position;
                 // Vector3 direction = -(worldPos - origin).normalized;
 
                 // if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
                 // {
-                //     if (hit.collider.TryGetComponent<Assets.Scripts.ControllUnit.ISelectableUnit>(out Assets.Scripts.ControllUnit.ISelectableUnit selectable))
+                //     if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
                 //     {
                 //         selectableController.UnitFocusedPoint(selectable);
                 //     }
@@ -183,7 +213,24 @@ namespace Assets.Scripts.ECSControllUnit
         private void SetDirection(Vector2 dir)
         {
             sumOfDirection += dir;
-            OnDirectionChanged(sumOfDirection.normalized);
+            OnDirectionChanged?.Invoke(sumOfDirection.normalized);
+        }
+
+        public void OnPressShift(InputAction.CallbackContext context)
+        {
+            if (!isInputActive) return;
+
+            if (context.started)
+            {
+                isShiftPressed = true;
+
+            }
+
+            if (context.canceled)
+            {
+                isShiftPressed = false;
+
+            }
         }
 
         public void OnZoomCamera(InputAction.CallbackContext context)
@@ -216,4 +263,3 @@ namespace Assets.Scripts.ECSControllUnit
         public void ActionMapDeactivated() => isInputActive = false;
     }
 }
-

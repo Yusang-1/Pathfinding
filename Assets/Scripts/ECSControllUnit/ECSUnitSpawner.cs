@@ -8,7 +8,7 @@ namespace Assets.Scripts.ECSControllUnit
     {
         public event Action<ISelectableUnit> OnUnitSelected;
         public event Action<ISelectableUnit> OnUnitDeselected;
-        public event Action<string> OnSpawnAreaSettingStarted;
+        public event Action<ActionMaps> OnSpawnAreaSettingStarted;
         
         [SerializeField] private Vector3 spawnPosition;
         
@@ -57,9 +57,9 @@ namespace Assets.Scripts.ECSControllUnit
             OnUnitDeselected?.Invoke(unit);
         }
         
-        private void HandleSpawnAreaSettingStarted(string actionMapName)
+        private void HandleSpawnAreaSettingStarted(ActionMaps actionMap)
         {
-            OnSpawnAreaSettingStarted?.Invoke(actionMapName);
+            OnSpawnAreaSettingStarted?.Invoke(actionMap);
         }
     }
 }

@@ -36,6 +36,7 @@ namespace Assets.Scripts.ECSControllUnit
     public struct UnitMoveCommandComponent : IComponentData
     {
         public float3 Destination;
+        public bool IsAdditive;
     }
 }
 

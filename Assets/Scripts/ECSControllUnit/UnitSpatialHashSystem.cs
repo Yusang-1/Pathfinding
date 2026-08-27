@@ -69,14 +69,14 @@ namespace Assets.Scripts.ECSControllUnit
 
                 if (isRegistered == 0)
                 {
-                    Register(entity, out int newCell, position);
+                    Register(entity, out int newCellHash, position);
                     cell.ValueRW.IsRegistered = 1;
-                    cell.ValueRW.Value = newCell;
+                    cell.ValueRW.Value = newCellHash;
                 }
                 else
                 {
-                    Update(entity, prevCell, out int newCell, position);
-                    cell.ValueRW.Value = newCell;
+                    Update(entity, prevCell, out int newCellHash, position);
+                    cell.ValueRW.Value = newCellHash;
                 }
             }
 
@@ -120,51 +120,91 @@ namespace Assets.Scripts.ECSControllUnit
                 }
 
                 if (selectEntity != Entity.Null)
-                {                                                            
-                    if(request.IsAdditive)
+                {
+                    if (request.IsAdditive)
                     {
                         // IsAdditive && 이미 선택중 ecb.RemoveComponent(selectEntity, typeof(SelectedUnitTag));
-                        if(registeredEntities.ContainsKey(selectEntity))
+                        if (state.EntityManager.HasComponent<SelectedUnitTag>(selectEntity))
                         {
-                            UnselectEntity(selectEntity, ecb);
+                            UnselectEntity(ref state, selectEntity, ecb);
                         }
                         else // IsAdditive && 선택중X ecb.AddComponent(selectEntity, typeof(SelectedUnitTag));
                         {
-                            SelectEntity(selectEntity, ecb);  
+                            SelectEntity(selectEntity, ecb);
                         }
                     }
                     else // !IsAdditive / 기존 SelectedUnitTag가진 엔티티들 해제, selectedEntity select
                     {
-                        var registered = registeredEntities.GetKeyArray(Allocator.Temp);
-                        UnselectAllEntities(registered, ecb);
-                        registered.Dispose();
-                        
-                        SelectEntity(selectEntity, ecb);                        
-                    }                                                            
+                        UnselectAllEntities(ref state, ecb);
+
+                        SelectEntity(selectEntity, ecb);
+                    }
                 }
+                else
+                {
+                    UnselectAllEntities(ref state, ecb);
+                }
+
                 ecb.DestroyEntity(requestEntity);
             }
 
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
-        
+
         private void SelectEntity(Entity entity, EntityCommandBuffer ecb)
         {
             ecb.AddComponent(entity, typeof(SelectedUnitTag));
+
+            // select후 actionMap 변경
+            CreateActionMapRequest(ecb, ActionMaps.Unit);
         }
-        
-        private void UnselectEntity(Entity entity, EntityCommandBuffer ecb)
+
+        private void UnselectEntity(ref SystemState state, Entity entity, EntityCommandBuffer ecb)
         {
             ecb.RemoveComponent(entity, typeof(SelectedUnitTag));
-        }
-        
-        private void UnselectAllEntities(NativeArray<Entity> registeredEntities, EntityCommandBuffer ecb)
-        {
-            foreach(Entity entity in registeredEntities)
+
+            // SelectedUnitTag를 가진 엔티티가 없다면 actionMap변경
+            bool hasOtherSelectedEntity = false;
+
+            foreach (var (tag, selectedEntity) in SystemAPI.Query<RefRO<SelectedUnitTag>>().WithEntityAccess())
             {
-                UnselectEntity(entity, ecb);
+                if (selectedEntity != entity)
+                {
+                    hasOtherSelectedEntity = true;
+                    break;
+                }
             }
+
+            if (!hasOtherSelectedEntity)
+            {
+                CreateActionMapRequest(ecb, ActionMaps.Player);
+            }
+        }
+
+        private void UnselectAllEntities(ref SystemState state, EntityCommandBuffer ecb)
+        {
+            var registered = registeredEntities.GetKeyArray(Allocator.Temp);
+
+            foreach (var (tag, entity) in SystemAPI.Query<RefRO<SelectedUnitTag>>().WithEntityAccess())
+            {
+                UnselectEntity(ref state, entity, ecb);
+            }
+
+            registered.Dispose();
+        }
+
+        private void CreateActionMapRequest(EntityCommandBuffer ecb, ActionMaps actionMap)
+        {
+            Entity requestEntity = ecb.CreateEntity();
+
+            ecb.AddComponent(
+                requestEntity,
+                new ChangeActionMapRequest
+                {
+                    TargetMap = actionMap
+                }
+            );
         }
 
         public void Register(Entity entity, out int newCell, float3 position)
@@ -219,4 +259,9 @@ namespace Assets.Scripts.ECSControllUnit
     }
 
     public struct SelectableUnitTag : IComponentData { }
+
+    public struct ChangeActionMapRequest : IComponentData
+    {
+        public ActionMaps TargetMap;
+    }
 }

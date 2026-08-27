@@ -4,13 +4,17 @@ namespace Assets.Scripts.ECSControllUnit
 {
     public static class SpatialHashUtility
     {
+        private const float GRID_SIZE = 1;
         private const float Cell_SIZE = 2;
         private const int HASH_KEY_X = 73856093;
         private const int HASH_KEY_Y = 19349663;
 
         public static int2 GetCell(float3 position)
         {
-            return (int2)math.floor(position.xz / Cell_SIZE);
+            position.x += GRID_SIZE / 2;
+            position.y += GRID_SIZE / 2;
+
+            return (int2)math.floor(position.xy / Cell_SIZE);
         }
 
         public static int GetHash(int2 cell)

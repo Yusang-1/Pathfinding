@@ -8,7 +8,7 @@ namespace Assets.Scripts.ECSControllUnit
     public class ECSMapManager : MonoBehaviour
     {
         [SerializeField] private ControllUnitUIRoot uiRoot;
-        [SerializeField] private Assets.Scripts.ControllUnit.InputManager inputManager;
+        [SerializeField] private ECSInputManager inputManager;
         [SerializeField] private ECSUnitSpawner unitSpawner;
         [SerializeField] private NodeData nodeData;
         [SerializeField] private PathfinderControllUnit pathfinder;

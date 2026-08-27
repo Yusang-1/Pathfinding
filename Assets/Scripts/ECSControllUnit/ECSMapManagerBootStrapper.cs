@@ -12,14 +12,14 @@ namespace Assets.Scripts.ECSControllUnit
         private readonly Action<MapData> initializeMapRuntime;
         
         private readonly ControllUnitUIRoot uiRoot;
-        private readonly Assets.Scripts.ControllUnit.InputManager inputManager;
+        private readonly ECSInputManager inputManager;
         private readonly ECSUnitSpawner unitSpawner;
-        private readonly Assets.Scripts.ControllUnit.SelectableController selectableController = new();
+        private readonly ECSSelectableController selectableController = new();
         private readonly MapdataJsonConverter mapdataJsonConverter = new();
         private readonly MapRuntimeContext mapRuntimeContext;
         
         private bool isEventBound;
-        public ECSMapManagerBootStrapper(ControllUnitUIRoot uiRoot, Assets.Scripts.ControllUnit.InputManager inputManager, ECSUnitSpawner unitSpawner, Action<MapData> initializeMapRuntime, MapRuntimeContext mapRuntimeContext)
+        public ECSMapManagerBootStrapper(ControllUnitUIRoot uiRoot, ECSInputManager inputManager, ECSUnitSpawner unitSpawner, Action<MapData> initializeMapRuntime, MapRuntimeContext mapRuntimeContext)
         {
             this.uiRoot = uiRoot;
             this.inputManager = inputManager;
@@ -69,7 +69,7 @@ namespace Assets.Scripts.ECSControllUnit
             uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
             uiRoot.OnGetSpawnAreaRequested += unitSpawner.StartSetSpawnArea;
             uiRoot.OnFindSelectableUnitInDragUI += mapRuntimeContext.SpatialHash.GetUnitsInRange;
-            uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
+            // uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
         }
 
         private void AddUnitSpawnerEvent()
@@ -101,7 +101,7 @@ namespace Assets.Scripts.ECSControllUnit
             uiRoot.OnSpawnUnitRequested -= unitSpawner.SpawnUnit;
             uiRoot.OnGetSpawnAreaRequested -= unitSpawner.StartSetSpawnArea;
             uiRoot.OnFindSelectableUnitInDragUI -= mapRuntimeContext.SpatialHash.GetUnitsInRange;
-            uiRoot.OnUnitFocused -= selectableController.UnitFocusedList;
+            // uiRoot.OnUnitFocused -= selectableController.UnitFocusedList;
         }
 
         private void RemoveUnitSpawnerEvent()
