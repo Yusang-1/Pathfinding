@@ -40,8 +40,9 @@ public class HPAClusterList
         {
             for (int j = 0; j < clusterList.GetLength(1); j++)
             {
+                clusterList[i, j].SetClusterActive(true);
                 clusterList[i, j].Initialize(this, nodeList, unitRadiusList);
-                
+                clusterList[i, j].SetClusterActive(false);
                 // ComparePathfinding이면 실행
                 nodeList.NodeTypeController.NodeTypeDrawer.ResetSearched();
                 nodeList.NodeTypeController.NodeTypeDrawer.ResetTrace();

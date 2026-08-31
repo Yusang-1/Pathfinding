@@ -127,23 +127,33 @@ namespace Assets.Scripts.Pathfinding
             return resultPath;
         }
 
-        public List<Vector3> FindPathThetaWithClusterList(ClusterSmootherResult smoothPath, NodeList nodeList, HPAClusterList clusterList, float unitRadius)
+        public List<Vector3> FindPathThetaWithClusterList(ClusterSmootherResult smoothPath, float unitRadius)
+        {                        
+            return Find(smoothPath.ClusterIndexes, smoothPath.EnterNodeIndex, smoothPath.ExitNodeIndex, unitRadius);
+        }
+        
+        public List<Vector3> FindPathThetaWithClusterList(List<Vector2Int> clusterIndexes, Vector2Int enterNode, Vector2Int exitNode, float unitRadius)
         {
-            for (int i = 0; i < smoothPath.ClusterIndexes.Count; i++)
+            return Find(clusterIndexes, enterNode, exitNode, unitRadius);
+        }
+        
+        private List<Vector3> Find(List<Vector2Int> clusterIndexes, Vector2Int enterNode, Vector2Int exitNode, float unitRadius)
+        {
+            for (int i = 0; i < clusterIndexes.Count; i++)
             {
-                clusterList.SetClusterActive(smoothPath.ClusterIndexes[i], true);
+                clusterList.SetClusterActive(clusterIndexes[i], true);
             }
 
-            Vector3 entrancePosition = nodeList.GridToWorld(smoothPath.EnterNodeIndex);
-            Vector3 goalPosition = nodeList.GridToWorld(smoothPath.ExitNodeIndex);
+            Vector3 entrancePosition = nodeList.GridToWorld(enterNode);
+            Vector3 goalPosition = nodeList.GridToWorld(exitNode);
 
             thetaStarPathfinder.SetGetNeighborPolicy(new GetNeighborNodesWithClusterListProvider(nodeList, clusterList));
-            (thetaStarPathfinder.GetNeighborNodesActionProvider as GetNeighborNodesWithClusterListProvider).SetClusterList(smoothPath.ClusterIndexes);
+            (thetaStarPathfinder.GetNeighborNodesActionProvider as GetNeighborNodesWithClusterListProvider).SetClusterList(clusterIndexes);
             List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, unitRadius);
 
-            for (int i = 0; i < smoothPath.ClusterIndexes.Count; i++)
+            for (int i = 0; i < clusterIndexes.Count; i++)
             {
-                clusterList.SetClusterActive(smoothPath.ClusterIndexes[i], false);
+                clusterList.SetClusterActive(clusterIndexes[i], false);
             }
 
             return pathInCluster;

@@ -38,11 +38,8 @@ namespace Assets.Scripts.ControllUnit
             unitRuntimeContext.SpatialHash.AddUnit(unit);
         }
         
-        private int totalUnitCount;
-        public void MoveTo(Vector3 destination, int totalUnitCount)
+        public void MoveTo(Vector3 destination)
         {
-            this.totalUnitCount = totalUnitCount;
-            
             if (isMoving)
             {
                 lazyRefine.ResetLazyRefine();
@@ -61,10 +58,8 @@ namespace Assets.Scripts.ControllUnit
             isMoving = true;
         }
 
-        public void MoveToReservation(Vector3 destination, int totalUnitCount)
+        public void MoveToReservation(Vector3 destination)
         {
-            this.totalUnitCount = totalUnitCount;
-            
             bool haveToDoLazyRefine = false;
             if (currentPathIndex + 1 == abstractPath.Count) haveToDoLazyRefine = true;
             

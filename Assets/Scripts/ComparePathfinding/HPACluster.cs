@@ -62,10 +62,10 @@ public class HPACluster
             for (int j = i + 1; j < entranceList.Count; j++)
             {
                 var entrance1 = entranceList[i];
-                var entrance2 = entranceList[j];
+                var entrance2 = entranceList[j];                
                 
-                pathfinder.SetGetNeighborPolicy(new GetNeighborNodesProvider(nodeList, clusterList));
-                float distance = pathfinder.FindPathLength(entrance1, entrance2, 0);
+                pathfinder.SetGetNeighborPolicy(new GetNeighborNodesInSameClusterProvider(nodeList, clusterList));
+                float distance = pathfinder.FindPathLength(entrance1, entrance2, unitRadius);
                 if (distance > 0)
                 {
                     graph.AddBidirectionalEdge(entrance1, entrance2, distance, unitRadius);

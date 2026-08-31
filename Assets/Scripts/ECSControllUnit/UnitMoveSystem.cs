@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -9,27 +10,56 @@ namespace Assets.Scripts.ECSControllUnit
     {
         public void OnUpdate(ref SystemState state)
         {
-            Entity commandEntity;
-            // 이동 요청이 있는지 확인
-            if (SystemAPI.TryGetSingleton(out UnitMoveCommandComponent moveCommand))
+            foreach (var (moveState, transform, movableComponent, entity)
+                in SystemAPI.Query<RefRW<UnitMoveState>, RefRW<LocalTransform>, RefRW<MovableComponent>>().WithEntityAccess())
             {
-                if (SystemAPI.TryGetSingletonEntity<UnitMoveCommandComponent>(out commandEntity)) { }
-                else return;
-            }
-            else
-            {
-                return;
-            }
+                if (!moveState.ValueRO.IsMoving) continue;
 
-            foreach (var (unitComponent, transfrom) in
-                SystemAPI.Query<ECSUnitComponent, RefRW<LocalTransform>>().WithAll<SelectedUnitTag>())
-            {
+                // 목적지 받음
+                var waypointBuffer = state.EntityManager.GetBuffer<LowLevelWaypoint>(entity);
 
-                // 테스트, 즉시 이동
-                transfrom.ValueRW.Position = moveCommand.Destination;
+                float3 destination = waypointBuffer[moveState.ValueRO.LowLevelPathIndex].Position;
+
+                // 받은 목적지가 버퍼의 마지막 요소였다면 lazy refine 요청
+                if (moveState.ValueRO.LowLevelPathIndex == waypointBuffer.Length - 1 && !moveState.ValueRW.IsNeedLazyRefine)
+                {
+                    moveState.ValueRW.IsNeedLazyRefine = true;
+                }
+
+                // 이동
+                float3 direction;
+                if (Equals(destination, transform.ValueRO.Position))
+                {
+                    direction = float3.zero;
+                }
+                else
+                {
+                    direction = math.normalize(destination - transform.ValueRO.Position);
+                }
+                float3 velocity = movableComponent.ValueRO.MoveSpeed * Time.deltaTime * direction;
+
+                movableComponent.ValueRW.Direction = direction;
+                movableComponent.ValueRW.Velocity = velocity;
+
+                transform.ValueRW.Position += velocity;
+
+                // 목적지까지의 거리가 일정 이하일 경우 다음 update에서는 다음 목적지를 받아옴
+                float arrivaDistance = movableComponent.ValueRO.ArriveDistance;
+
+                if (math.distancesq(transform.ValueRO.Position, destination) <= arrivaDistance * arrivaDistance)
+                {
+                    moveState.ValueRW.LowLevelPathIndex++;
+
+                    transform.ValueRW.Position = destination;
+
+                    // 도착지가 버퍼의 마지막 요소였다면 종료
+                    if (moveState.ValueRO.LowLevelPathIndex == waypointBuffer.Length)
+                    {
+                        moveState.ValueRW.IsMoving = false;
+                        moveState.ValueRW.IsNeedLazyRefine = false;
+                    }
+                }
             }
-
-            state.EntityManager.DestroyEntity(commandEntity);
         }
     }
 

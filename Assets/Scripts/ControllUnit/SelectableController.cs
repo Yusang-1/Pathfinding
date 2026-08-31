@@ -258,7 +258,7 @@ namespace Assets.Scripts.ControllUnit
             foreach (var unit in currentSelectedHash)
             {
                 Vector3 newDestination = slotDestination.GetSlotDestination(unit as Unit, destination, currentSelectedHash.Count);
-                (unit as Unit).Controller.MoveTo(newDestination, currentSelectedHash.Count);
+                (unit as Unit).Controller.MoveTo(newDestination);
             }
         }
         public void ShiftRightClickMove(Vector3 destination)
@@ -266,7 +266,7 @@ namespace Assets.Scripts.ControllUnit
             foreach (var unit in currentSelectedHash)
             {
                 Vector3 newDestination = slotDestination.GetSlotDestination(unit as Unit, destination, currentSelectedHash.Count);
-                (unit as Unit).Controller.MoveToReservation(newDestination, currentSelectedHash.Count);
+                (unit as Unit).Controller.MoveToReservation(newDestination);
             }
         }
     }

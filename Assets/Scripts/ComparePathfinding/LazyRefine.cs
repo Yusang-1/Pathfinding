@@ -34,7 +34,7 @@ public class LazyRefine
     public void DoLazyRefinement(ClusterSmootherResult smoothPath, LineDrawer lineDrawer)
     {
         float tempUnitRadius = 0;
-        List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(smoothPath, nodeList, clusterList, tempUnitRadius);
+        List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(smoothPath, tempUnitRadius);
 
         lineDrawer.DrawLine(resultPath);
 
@@ -49,7 +49,7 @@ public class LazyRefine
     /// <summary> 하나의 cluster ResultNode의 경로를 PathQueue에 담는다. </summary>
     public void DoLazyRefinement(ClusterSmootherResult result, bool isEnd, Vector3 finalDestination, bool isFirst, Vector3 startPosition, float unitRadius)
     {
-        List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(result, nodeList, clusterList, unitRadius);
+        List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(result, unitRadius);
         if (resultPath == null) return;
 
         if (isFirst)

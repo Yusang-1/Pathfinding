@@ -10,24 +10,27 @@ namespace Assets.Scripts.ECSControllUnit
     public class ECSMapManagerBootStrapper
     {
         private readonly Action<MapData> initializeMapRuntime;
-        
+
         private readonly ControllUnitUIRoot uiRoot;
         private readonly ECSInputManager inputManager;
         private readonly ECSUnitSpawner unitSpawner;
         private readonly ECSSelectableController selectableController = new();
         private readonly MapdataJsonConverter mapdataJsonConverter = new();
         private readonly MapRuntimeContext mapRuntimeContext;
-        
+        private readonly ECSPathfindingBridge pathfindingBridge;
+
         private bool isEventBound;
-        public ECSMapManagerBootStrapper(ControllUnitUIRoot uiRoot, ECSInputManager inputManager, ECSUnitSpawner unitSpawner, Action<MapData> initializeMapRuntime, MapRuntimeContext mapRuntimeContext)
+        public ECSMapManagerBootStrapper(ControllUnitUIRoot uiRoot, ECSInputManager inputManager, ECSUnitSpawner unitSpawner,
+            Action<MapData> initializeMapRuntime, MapRuntimeContext mapRuntimeContext, ECSPathfindingBridge pathfindingBridge)
         {
             this.uiRoot = uiRoot;
             this.inputManager = inputManager;
             this.unitSpawner = unitSpawner;
-            this.initializeMapRuntime= initializeMapRuntime;
-            this.mapRuntimeContext = mapRuntimeContext;                        
+            this.initializeMapRuntime = initializeMapRuntime;
+            this.mapRuntimeContext = mapRuntimeContext;
+            this.pathfindingBridge = pathfindingBridge;
         }
-        
+
         public void Initialize(NodeData nodeData, UnitsSO unitsSO, PathfinderControllUnit pathfinder)
         {
             nodeData.Initialize();
@@ -36,31 +39,33 @@ namespace Assets.Scripts.ECSControllUnit
 
             unitsSO.Initialize();
         }
-        
+
         public void BindEvents()
         {
-            if(isEventBound) return;
-            
+            if (isEventBound) return;
+
             AddUIRootEvent(initializeMapRuntime, mapRuntimeContext);
             AddUnitSpawnerEvent();
             AddInputManagerEvent();
             AddNodeListEvent();
-            
+            AddSelectableControllerEvent();
+
             isEventBound = true;
         }
-        
+
         public void UnbindEvents()
         {
-            if(!isEventBound) return;
-            
+            if (!isEventBound) return;
+
             RemoveUIRootEvent(initializeMapRuntime, mapRuntimeContext);
             RemoveUnitSpawnerEvent();
             RemoveInputManagerEvent();
             RemoveNodeListEvent();
-            
+            RemoveSelectableControllerEvent();
+
             isEventBound = false;
         }
-        
+
         private void AddUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
         {
             uiRoot.OnLoadMapRequested += SetMapData;
@@ -87,10 +92,16 @@ namespace Assets.Scripts.ECSControllUnit
             inputManager.OnControllMenu += HandleManageMenu;
             inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnArea;
         }
-        
+
         private void AddNodeListEvent()
         {
             mapRuntimeContext.NodeList.NodeTypeController.NodeTypeDrawer.OnPathfindAvailable += HandlePathfindAvailable;
+        }
+        
+        private void AddSelectableControllerEvent()
+        {
+            selectableController.OnMove += pathfindingBridge.Move;
+            selectableController.OnMoveAdditive += pathfindingBridge.MoveAdditive;
         }
 
         private void RemoveUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
@@ -119,12 +130,18 @@ namespace Assets.Scripts.ECSControllUnit
             inputManager.OnControllMenu -= HandleManageMenu;
             inputManager.OnSetSpawnAreaRequested -= unitSpawner.SetSpawnArea;
         }
-        
+
         private void RemoveNodeListEvent()
         {
             mapRuntimeContext.NodeList.NodeTypeController.NodeTypeDrawer.OnPathfindAvailable -= HandlePathfindAvailable;
         }
         
+        private void RemoveSelectableControllerEvent()
+        {
+            selectableController.OnMove -= pathfindingBridge.Move;
+            selectableController.OnMoveAdditive -= pathfindingBridge.MoveAdditive;
+        }
+
         private void HandleUnitSelected(ISelectableUnit selectable)
         {
             uiRoot.OnUnitSelected?.Invoke(selectable);
@@ -150,7 +167,7 @@ namespace Assets.Scripts.ECSControllUnit
             uiRoot.OnManageMenu?.Invoke();
         }
         private void HandlePathfindAvailable(bool value)
-        {            
+        {
             return;
         }
     }

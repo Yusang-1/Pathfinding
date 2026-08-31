@@ -27,7 +27,7 @@ namespace Assets.Scripts.Pathfinding
             Vector3 to = clusterResultWrapper.To;
             float unitRadius = clusterResultWrapper.UnitRadius;
 
-            if (clusterPath == null || clusterPath.Count <= 1) return null;
+            if (clusterPath == null || clusterPath.Count < 1) return null;
             else if (clusterPath.Count == 1)
             {
                 clusterIndexes.Add(clusterPath[0].Index);

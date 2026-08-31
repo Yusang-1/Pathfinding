@@ -25,13 +25,19 @@ namespace Assets.Scripts.ECSControllUnit
                 });
                 AddComponent(entity, new MovableComponent
                 {
-                    MoveSpeed = authoring.moveSpeed
+                    MoveSpeed = authoring.moveSpeed,
+                    ArriveDistance = 0.15f
                 });
+                AddComponent(entity, new UnitMoveState());
                 AddComponent(entity, new SelectableUnitTag());
                 AddComponent(entity, new SpatialHashCell());
 
                 AddComponent(entity, new Prefab());
                 AddComponent(entity, new Disabled());
+                
+                AddBuffer<HighLevelClusterPath>(entity);
+                AddBuffer<HighLevelWaypoint>(entity);
+                AddBuffer<LowLevelWaypoint>(entity);
             }
         }
     }
@@ -46,7 +52,9 @@ namespace Assets.Scripts.ECSControllUnit
     public struct MovableComponent : IComponentData
     {
         public float MoveSpeed;
-        public float3 Direction;
+        public float3 Direction;    
         public float3 Velocity;
+
+        public float ArriveDistance;
     }
 }

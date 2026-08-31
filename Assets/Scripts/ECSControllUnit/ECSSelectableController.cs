@@ -8,42 +8,43 @@ namespace Assets.Scripts.ECSControllUnit
     {
         private Action<ActionMaps> OnchangeActionMapSelected;
         private Action OnchangeActionMapDefault;
-        
+
+        public event Action<Vector3> OnMove;
+        public event Action<Vector3> OnMoveAdditive;
+
         public void MakeSelectionRequest(Vector3 position, bool isAdditive)
         {
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             Entity selectionRequest = entityManager.CreateEntity();
-            
+
             entityManager.AddComponentData(
                 selectionRequest,
                 new UnitSelectionRequest()
                 {
-                    WorldPosition = position, IsAdditive = isAdditive
+                    WorldPosition = position,
+                    IsAdditive = isAdditive
                 }
             );
         }
-        
+
         public void MakeAreaSelectionRequest()
         {
-            
+
         }
-        
+
         public void MakeMoveCommand(Vector3 destination, bool isAdditive)
         {
-            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-            Entity moveCommand = entityManager.CreateEntity();
-            
-            entityManager.AddComponentData(
-                moveCommand,
-                new UnitMoveCommandComponent()
-                {
-                    Destination = destination, IsAdditive = isAdditive
-                }
-            );
+            if (isAdditive)
+            {
+                OnMoveAdditive?.Invoke(destination);
+            }
+            else
+            {
+                OnMove?.Invoke(destination);
+            }
         }
-        
+
         public void GetActions(Action<ActionMaps> changeActionMapSelected, Action changeActionMapDefault)
         {
             OnchangeActionMapSelected = changeActionMapSelected;

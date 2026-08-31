@@ -14,21 +14,24 @@ namespace Assets.Scripts.ECSControllUnit
         [SerializeField] private PathfinderControllUnit pathfinder;
         [SerializeField] private UnitsSO unitsSO;
         [SerializeField] private Node nodePrefab;
-        
+        [SerializeField] private ECSPathfindingBridge pathfindingBridge;
+
         private Assets.Scripts.ControllUnit.MapRuntimeContext mapRuntimeContext;
         private MapGenerator mapGenerator;
-        
+
         private ECSMapManagerBootStrapper bootStrapper;
 
         private void Awake()
         {
             mapRuntimeContext = new Assets.Scripts.ControllUnit.MapRuntimeContext(pathfinder, nodeData);
             mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList);
-            bootStrapper = new ECSMapManagerBootStrapper(uiRoot, inputManager, unitSpawner, InitializeMapRuntime, mapRuntimeContext);
+            bootStrapper = new ECSMapManagerBootStrapper(uiRoot, inputManager, unitSpawner, InitializeMapRuntime,
+                mapRuntimeContext, pathfindingBridge
+            );
         }
-        
+
         private void OnEnable()
-        {            
+        {
             bootStrapper.BindEvents();
         }
 
@@ -41,14 +44,14 @@ namespace Assets.Scripts.ECSControllUnit
         {
             bootStrapper.UnbindEvents();
         }
-        
+
         private void InitializeMapRuntime(MapData mapData)
         {
             mapRuntimeContext.NodeList.Initialize(mapData.NodeSize, mapData.MapSize);
 
             mapGenerator.GenerateMap(mapData);
 
-            mapRuntimeContext.Pathfinder.SetNodeAndCluster(mapRuntimeContext.NodeList, mapData, unitsSO.UnitRadius);
+            pathfindingBridge.SetNodeAndCluster(mapRuntimeContext.NodeList, mapData, unitsSO.UnitRadius);
         }
     }
 }
