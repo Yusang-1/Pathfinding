@@ -167,6 +167,7 @@ namespace Assets.Scripts.ECSControllUnit
             highLevelClusterPathBuffer.Clear();
             
             // abstractPath는 입구,출구 노드 인덱스, 입구에서 출구까지 경로에 포함되는 Cluster 인덱스를 가짐
+            // high level path 버퍼 삽입
             int firstClusterIndex = 0;
             foreach (var abstractPath in abstractPaths)
             {

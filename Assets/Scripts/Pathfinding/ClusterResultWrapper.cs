@@ -10,7 +10,7 @@ namespace Assets.Scripts.Pathfinding
         public float UnitRadius { get; private set; }
 
         public List<ClusterSmootherResult> ClusterSmootherResult { get; private set; } = new();
-        public List<ClusterResult> NewClusterResults { get; private set; } = new();
+        public List<ClusterResult> ClusterResults { get; private set; } = new();
 
         public void SetStart(Vector3 from, Vector3 to, float unitRadius)
         {
@@ -26,11 +26,11 @@ namespace Assets.Scripts.Pathfinding
 
         public void SetClusterResult(List<ClusterResult> results)
         {
-            NewClusterResults = results;
+            ClusterResults = results;
         }
         public void SetClusterResult(ClusterResult result)
         {
-            NewClusterResults.Add(result);
+            ClusterResults.Add(result);
         }
 
         public void SetClusterSmootherResult(List<ClusterSmootherResult> smootherResults)

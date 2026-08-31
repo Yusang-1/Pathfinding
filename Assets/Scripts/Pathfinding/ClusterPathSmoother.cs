@@ -22,7 +22,7 @@ namespace Assets.Scripts.Pathfinding
             clusterIndexes.Clear();
             smootherClusterPath.Clear();
 
-            List<ClusterResult> clusterPath = clusterResultWrapper.NewClusterResults;
+            List<ClusterResult> clusterPath = clusterResultWrapper.ClusterResults;
             Vector3 from = clusterResultWrapper.From;
             Vector3 to = clusterResultWrapper.To;
             float unitRadius = clusterResultWrapper.UnitRadius;
