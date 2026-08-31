@@ -22,7 +22,7 @@ namespace Assets.Scripts.Pathfinding
             clusterIndexes.Clear();
             smootherClusterPath.Clear();
 
-            List<NewClusterResult> clusterPath = clusterResultWrapper.NewClusterResults;
+            List<ClusterResult> clusterPath = clusterResultWrapper.NewClusterResults;
             Vector3 from = clusterResultWrapper.From;
             Vector3 to = clusterResultWrapper.To;
             float unitRadius = clusterResultWrapper.UnitRadius;
@@ -77,7 +77,7 @@ namespace Assets.Scripts.Pathfinding
             return clusterResultWrapper;
         }
 
-        private void Loop(HPAClusterList clusterList, NodeList nodeList, List<NewClusterResult> clusterPath,
+        private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath,
             Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex,
             out Vector3 outPoint, out int outIndex, int index, bool isStart, float unitRadius)
         {
@@ -194,30 +194,5 @@ namespace Assets.Scripts.Pathfinding
 
             smootherClusterPath.Add(result);
         }
-    }
-
-    public class ClusterSmootherResult
-    {
-        public List<Vector2Int> ClusterIndexes = new();
-        public Vector2Int EnterNodeIndex;
-        public Vector2Int ExitNodeIndex;
-
-        public void SetSmootherResult(List<Vector2Int> clusters, Vector2Int exitIndex, Vector2Int startIndex, Vector2Int notIncludeClusterIndex, bool useNotIncludeClusterIndex)
-        {
-            ClusterIndexes.Clear();
-            for (int i = 0; i < clusters.Count; i++)
-            {
-                if (useNotIncludeClusterIndex && clusters[i] == notIncludeClusterIndex) continue;
-
-                ClusterIndexes.Add(clusters[i]);
-            }
-            EnterNodeIndex = startIndex;
-            ExitNodeIndex = exitIndex;
-        }
-
-        public void Clear()
-        {
-            ClusterIndexes.Clear();
-        }
-    }
+    }    
 }

@@ -8,7 +8,7 @@ namespace Assets.Scripts.Pathfinding
         private readonly NodeList nodeList;
         private readonly HPAClusterList clusterList;
 
-        private readonly List<NewClusterResult> newResults = new();
+        private readonly List<ClusterResult> newResults = new();
 
         private readonly PriorityQueue<int, float> openSet = new();
         private readonly HashSet<int> closedSet = new();
@@ -46,12 +46,12 @@ namespace Assets.Scripts.Pathfinding
             nodeList.NodeTypeController.NodeTypeDrawer.ResetSearched();
             nodeList.NodeTypeController.NodeTypeDrawer.ResetTrace();
 
-            List<NewClusterResult> clusterPath;
+            List<ClusterResult> clusterPath;
             // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴
             if (startCluster == goalCluster && clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode, unitRadius))
             {
                 // var result = ClusterResultPool.GetValue();
-                var result = new NewClusterResult()
+                var result = new ClusterResult()
                 {
                     Index = startCluster,
                     EnterDirection = Vector2Int.zero,
@@ -82,7 +82,7 @@ namespace Assets.Scripts.Pathfinding
         }
 
         /// <summary> 고수준 클러스터 경로 탐색 </summary>    
-        private List<NewClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode, float unitRadius)
+        private List<ClusterResult> FindAbstractClusterPath(Vector2Int startClusterIndex, Vector2Int goalClusterIndex, Vector2Int startNode, Vector2Int goalNode, float unitRadius)
         {
             openSet.Clear();
             closedSet.Clear();
@@ -152,14 +152,14 @@ namespace Assets.Scripts.Pathfinding
             return null; // 경로 없음
         }
 
-        private List<NewClusterResult> ReconstructAbstractPath(Dictionary<int, AbstractNode> clusterDict, int current, int start, Vector2Int startNode, Vector2Int goalNode)
+        private List<ClusterResult> ReconstructAbstractPath(Dictionary<int, AbstractNode> clusterDict, int current, int start, Vector2Int startNode, Vector2Int goalNode)
         {
             newResults.Clear();
-            NewClusterResult result;
+            ClusterResult result;
 
             if (clusterDict == null || clusterDict.Count <= 1)
             {
-                result = new NewClusterResult()
+                result = new ClusterResult()
                 {
                     Index = clusterDict[current].ClusterIndex,
                     EnterDirection = Vector2Int.zero,
@@ -175,7 +175,7 @@ namespace Assets.Scripts.Pathfinding
             AbstractNode parentCluster;
 
             // 도착지 노드 세팅
-            result = new NewClusterResult()
+            result = new ClusterResult()
             {
                 Index = childCluster.ClusterIndex,
                 EnterDirection = currentCluster.ClusterIndex - childCluster.ClusterIndex,
@@ -218,7 +218,7 @@ namespace Assets.Scripts.Pathfinding
                     AbstractNode grandparentCluster = clusterDict[grandparentHash];
 
                     // grandparent -> parent -> curent -> child
-                    result = new NewClusterResult()
+                    result = new ClusterResult()
                     {
                         Index = currentCluster.ClusterIndex,
                         EnterDirection = grandparentCluster.ClusterIndex - currentCluster.ClusterIndex,
@@ -241,7 +241,7 @@ namespace Assets.Scripts.Pathfinding
                 else // 입구에서 바로 출구로 나간 경우 (current와 parent의 ClusterIndex가 다름)
                 {
                     // parent -> curent -> child
-                    result = new NewClusterResult()
+                    result = new ClusterResult()
                     {
                         Index = currentCluster.ClusterIndex,
                         EnterDirection = parentCluster.ClusterIndex - currentCluster.ClusterIndex,
@@ -264,7 +264,7 @@ namespace Assets.Scripts.Pathfinding
             }
 
             // 출발지 노드 세팅
-            result = new NewClusterResult()
+            result = new ClusterResult()
             {
                 Index = startClusterIndex,
                 EnterDirection = Vector2Int.zero,
@@ -378,13 +378,5 @@ namespace Assets.Scripts.Pathfinding
                 return ClusterIndex.GetHashCode() ^ EntranceNodeIndex.GetHashCode();
             }
         }
-    }
-
-    public struct NewClusterResult
-    {
-        public Vector2Int Index;
-        public Vector2Int EnterDirection;
-        public Vector2Int ExitDirection;
-        public Vector2Int EntranceExit;
-    }
+    }    
 }
