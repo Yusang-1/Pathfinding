@@ -8,7 +8,6 @@ public class PathManagerBootStrapper
     private readonly Action<MapData> setMapData;
 
     private readonly NodeList nodeList;
-    private readonly MapGenerator mapGenerator;
     private readonly MapdataJsonConverter mapdataJsonConverter = new();
     private readonly UIRoot uiRoot;
     private readonly InputManager inputManager;
@@ -23,7 +22,6 @@ public class PathManagerBootStrapper
         this.inputManager = inputManager;
         this.pathfinder = pathfinder;
         this.setMapData = setMapData;
-        mapGenerator = new MapGenerator(nodePrefab, nodeList);
     }
 
     public void BindEvents()
@@ -60,7 +58,6 @@ public class PathManagerBootStrapper
         uiRoot.OnSetNodeTypeRequested += nodeList.NodeTypeController.NodeTypeDrawer.SetNodeType;
         uiRoot.OnGridToWorldRequested += nodeList.GridToWorld;
         uiRoot.OnLoadMapRequested += setMapData;
-        uiRoot.OnLoadMapRequested += mapGenerator.GenerateMap;
         uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
         uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
 
@@ -99,7 +96,6 @@ public class PathManagerBootStrapper
         uiRoot.OnSetNodeTypeRequested -= nodeList.NodeTypeController.NodeTypeDrawer.SetNodeType;
         uiRoot.OnGridToWorldRequested -= nodeList.GridToWorld;
         uiRoot.OnLoadMapRequested -= setMapData;
-        uiRoot.OnLoadMapRequested -= mapGenerator.GenerateMap;
         uiRoot.OnGetPersonalMapListRequested -= mapdataJsonConverter.GetPersonalSavedMaps;
         uiRoot.OnGetOfficialMapListRequested -= mapdataJsonConverter.GetOfficialSavedMaps;
 

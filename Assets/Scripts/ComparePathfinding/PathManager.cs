@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class PathManager : MonoBehaviour
 {
-    private NodeList nodeList;    
+    private NodeList nodeList;
     private readonly PathfinderComparePathfinding pathfinder = new();
     private PathManagerBootStrapper pathManagerBootStrapper;
+    private MapGenerator mapGenerator;
 
     [SerializeField] private UIRoot uiRoot;
     [SerializeField] private InputManager inputManager;
@@ -15,26 +16,23 @@ public class PathManager : MonoBehaviour
     [SerializeField] private Assets.Scripts.ControllUnit.SO.UnitsSO unitsSO;
     [SerializeField] private UnitUncontrollable unit;
 
-    [Header("Values")]
-    private int nodeSize;
-    private int clusterSize;
-    private int mapSize;
-    
     private void Awake()
     {
         nodeList = new NodeList(nodeData);
-        pathfinder.Initialize(nodeList, clusterShower, lineDrawer, unit);         
+        pathfinder.Initialize(nodeList, clusterShower, lineDrawer, unit);
+        unitsSO.Initialize();
+        mapGenerator = new MapGenerator(nodePrefab, nodeList);
         pathManagerBootStrapper = new PathManagerBootStrapper(nodePrefab, nodeList, uiRoot, inputManager, pathfinder, SetMapData);
     }
-    
+
     private void OnEnable()
-    {        
+    {
         pathManagerBootStrapper.BindEvents();
     }
 
     private void Start()
     {
-        nodeData.Initialize();        
+        nodeData.Initialize();
         uiRoot.Initialize();
     }
 
@@ -45,11 +43,13 @@ public class PathManager : MonoBehaviour
 
     private void SetMapData(MapData mapData)
     {
-        nodeSize = mapData.NodeSize;
-        mapSize = mapData.MapSize;
-        clusterSize = mapData.ClusterSize;
+        int nodeSize = mapData.NodeSize;
+        int mapSize = mapData.MapSize;
+        int clusterSize = mapData.ClusterSize;
 
         nodeList.Initialize(nodeSize, mapSize);
+                
+        mapGenerator.GenerateMap(mapData);
         clusterShower.Initialize(mapSize / clusterSize, clusterSize, nodeSize);
 
         pathfinder.SetNodeAndCluster(mapData, unitsSO.UnitRadius);

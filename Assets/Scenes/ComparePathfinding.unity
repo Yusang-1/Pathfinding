@@ -2726,7 +2726,7 @@ MonoBehaviour:
   nodeData: {fileID: 11400000, guid: bf87c0f6c59541f4aaf61f3cc70bc84f, type: 2}
   clusterShower: {fileID: 497125301}
   lineDrawer: {fileID: 1336710742}
-  unitsSO: {fileID: 0}
+  unitsSO: {fileID: 11400000, guid: d7f8efabe6051f6458897dc7dfe85e54, type: 2}
   unit: {fileID: 1233999322}
 --- !u!4 &497125300
 Transform:

@@ -25,7 +25,7 @@ public class InputManager : MonoBehaviour
 
     private void Start()
     {
-        playerControllInput = GetComponent<PlayerControllInput>();
+        playerControllInput ??= GetComponent<PlayerControllInput>();
     }
 
     private void OnDisable()
@@ -37,6 +37,7 @@ public class InputManager : MonoBehaviour
     {
         if(isEventBound) return;
         
+        playerControllInput ??= GetComponent<PlayerControllInput>();
         playerControllInput.ControllMenu += HandlerControllMenu;
         
         isEventBound = true;
