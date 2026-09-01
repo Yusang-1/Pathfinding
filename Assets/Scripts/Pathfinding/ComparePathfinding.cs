@@ -56,7 +56,7 @@ namespace Assets.Scripts.Pathfinding
 
         private Dictionary<NodeType, List<Vector2Int>> FindAStarPath()
         {
-            clusterList.SetAllCLusterActive();
+            clusterList.SetAllCLusterActive(true);
             PathResultRecorder.ResetPathResult();
 
             var path = aStarPathfinder.FindPath(from, to, 0);

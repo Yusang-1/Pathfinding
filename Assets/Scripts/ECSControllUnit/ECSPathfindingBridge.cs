@@ -14,7 +14,7 @@ namespace Assets.Scripts.ECSControllUnit
         private HPAClusterList clusterList;
 
         private AStarPathfinder aStarPathfinder;
-        private HPAPathfinder highLevelPathfinder;        
+        private HPAPathfinder highLevelPathfinder;
         private ClusterPathSmoother clusterPathSmoother;
         private SearchWithTheClusterResult searchWithTheClusterResult;
         private readonly ClusterResultWrapper clusterResultWrapper = new();
@@ -27,14 +27,14 @@ namespace Assets.Scripts.ECSControllUnit
 
         private void Start()
         {
-            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;            
+            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         }
 
         private void Update()
         {
             HandleLazyRefine();
         }
-        
+
         private void HandleLazyRefine()
         {
             EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(UnitMoveState));
@@ -56,13 +56,13 @@ namespace Assets.Scripts.ECSControllUnit
 
                     highLevelWaypointBuffer = entityManager.GetBuffer<HighLevelWaypoint>(entity);
                     highLevelClusterPathBuffer = entityManager.GetBuffer<HighLevelClusterPath>(entity);
-                    
+
                     // 버퍼에 다음 path가 없으면 continue
-                    if(nextHighLevelPathIndex >= highLevelWaypointBuffer.Length)
+                    if (nextHighLevelPathIndex >= highLevelWaypointBuffer.Length)
                     {
                         continue;
                     }
-                    
+
                     var path = highLevelWaypointBuffer[nextHighLevelPathIndex];
 
                     clusterIndexes.Clear();
@@ -82,6 +82,10 @@ namespace Assets.Scripts.ECSControllUnit
                     Vector2Int enterNode = new(path.EnterNodeIndex.x, path.EnterNodeIndex.y);
                     Vector2Int exitNode = new(path.ExitNodeIndex.x, path.ExitNodeIndex.y);
                     List<Vector3> nextPath = searchWithTheClusterResult.FindPathThetaWithClusterList(clusterIndexes, enterNode, exitNode, unitRadius);
+                    if (nextPath == null || nextPath.Count == 0)
+                    {
+                        continue;
+                    }
 
                     // low level 경로를 버퍼에 추가
                     lowLevelWaypointBuffer = entityManager.GetBuffer<LowLevelWaypoint>(entity);
@@ -113,8 +117,8 @@ namespace Assets.Scripts.ECSControllUnit
             ThetaStar thetaStarPathfinder = new(nodeList);
 
             clusterList.Initialize(aStarPathfinder, mapData.MapSize, mapData.ClusterSize, unitRadiusList);
-            nodeList.SetNodeArea();            
-            
+            nodeList.SetNodeArea();
+
             clusterPathSmoother = new ClusterPathSmoother(nodeList, clusterList);
             highLevelPathfinder = new HPAPathfinder(nodeList, clusterList);
             searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
@@ -132,16 +136,30 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 transform = entityManager.GetComponentData<LocalTransform>(entity);
                 unitComponent = entityManager.GetComponentData<ECSUnitComponent>(entity);
+
                 Pathfinding(transform.Position, to, unitComponent.Radius, entity);
             }
         }
 
         public void MoveAdditive(Vector3 to)
         {
+            EntityQuery entityQuery = entityManager.CreateEntityQuery(ComponentType.ReadOnly<SelectedUnitTag>());
+            using NativeArray<Entity> entities = entityQuery.ToEntityArray(Allocator.TempJob);
 
+            ECSUnitComponent unitComponent;
+
+            foreach (var entity in entities)
+            {
+                unitComponent = entityManager.GetComponentData<ECSUnitComponent>(entity);
+                float3 destination = entityManager.GetBuffer<LowLevelWaypoint>(entity, true)[^1].Position;
+
+                Pathfinding(destination, to, unitComponent.Radius, entity, true);
+            }
+
+            // 추가로 경로를 버퍼에 넣었을 때 lazy Refine필요한지 검사해야되나
         }
 
-        private void Pathfinding(Vector3 from, Vector3 to, float unitRadius, Entity entity)
+        private void Pathfinding(Vector3 from, Vector3 to, float unitRadius, Entity entity, bool isAdditive = false)
         {
             // high level 경로 탐색
             var clusterResultWrapper = GetAbstractPath(from, to, unitRadius);
@@ -162,10 +180,13 @@ namespace Assets.Scripts.ECSControllUnit
             // 엔티티에 버퍼 값 추가
             DynamicBuffer<HighLevelWaypoint> highLevelWaypointBuffer = entityManager.GetBuffer<HighLevelWaypoint>(entity);
             DynamicBuffer<HighLevelClusterPath> highLevelClusterPathBuffer = entityManager.GetBuffer<HighLevelClusterPath>(entity);
-            
-            highLevelWaypointBuffer.Clear();
-            highLevelClusterPathBuffer.Clear();
-            
+
+            if (!isAdditive)
+            {
+                highLevelWaypointBuffer.Clear();
+                highLevelClusterPathBuffer.Clear();
+            }
+
             // abstractPath는 입구,출구 노드 인덱스, 입구에서 출구까지 경로에 포함되는 Cluster 인덱스를 가짐
             // high level path 버퍼 삽입
             int firstClusterIndex = 0;
@@ -201,23 +222,41 @@ namespace Assets.Scripts.ECSControllUnit
 
             // 첫 구간에 대한 low level 버퍼 삽입
             DynamicBuffer<LowLevelWaypoint> LowLevelWaypointBuffer = entityManager.GetBuffer<LowLevelWaypoint>(entity);
-            LowLevelWaypointBuffer.Clear();
-            
+
+            if (!isAdditive)
+            {
+                LowLevelWaypointBuffer.Clear();
+            }
+
             foreach (var position in resultPath)
             {
                 LowLevelWaypointBuffer.Add(new LowLevelWaypoint { Position = position });
             }
-
-            entityManager.SetComponentData(entity,
-                new UnitMoveState()
+            
+            UnitMoveState newMoveState;
+            if (!isAdditive)
+            {
+                newMoveState = new UnitMoveState()
                 {
                     IsMoving = true,
                     IsNeedLazyRefine = false,
                     HighLevelPathIndex = 0,
                     LowLevelPathIndex = 0
-                }
-            );
-
+                };
+            }
+            else
+            {
+                UnitMoveState moveState = entityManager.GetComponentData<UnitMoveState>(entity);
+                
+                newMoveState = new UnitMoveState()
+                {
+                    IsMoving = true,
+                    IsNeedLazyRefine = false,
+                    HighLevelPathIndex = moveState.HighLevelPathIndex,
+                    LowLevelPathIndex = moveState.LowLevelPathIndex
+                };
+            }
+            entityManager.SetComponentData(entity, newMoveState);
         }
 
         private ClusterResultWrapper GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)

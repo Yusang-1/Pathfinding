@@ -27,11 +27,6 @@ namespace Assets.Scripts.Pathfinding
             List<ClusterSmootherResult> smoothPathData = resultWrapper.ClusterSmootherResult;
             foreach (var path in smoothPathData)
             {
-                for (int i = 0; i < path.ClusterIndexes.Count; i++)
-                {
-                    clusterList.SetClusterActive(path.ClusterIndexes[i], true);
-                }
-
                 Vector3 entrancePosition = nodeList.GridToWorld(path.EnterNodeIndex);
                 Vector3 goalPosition = nodeList.GridToWorld(path.ExitNodeIndex);
 
@@ -43,11 +38,6 @@ namespace Assets.Scripts.Pathfinding
 
                 resultPath.AddRange(pathInCluster);
                 Vector3ListPool.ReleaseValue(pathInCluster);
-
-                for (int i = 0; i < path.ClusterIndexes.Count; i++)
-                {
-                    clusterList.SetClusterActive(path.ClusterIndexes[i], false);
-                }
             }
 
             PathResultRecorder.AddPathLength(-1); // 마지막 cluster에서는 이동하지 않으므로 비용 -1;
@@ -62,11 +52,6 @@ namespace Assets.Scripts.Pathfinding
             List<ClusterSmootherResult> smoothPathData = resultWrapper.ClusterSmootherResult;
             foreach (var path in smoothPathData)
             {
-                for (int i = 0; i < path.ClusterIndexes.Count; i++)
-                {
-                    clusterList.SetClusterActive(path.ClusterIndexes[i], true);
-                }
-
                 Vector3 entrancePosition = nodeList.GridToWorld(path.EnterNodeIndex);
                 Vector3 goalPosition = nodeList.GridToWorld(path.ExitNodeIndex);
 
@@ -79,11 +64,6 @@ namespace Assets.Scripts.Pathfinding
                 if (pathInCluster == null) continue;
                 resultPath.AddRange(pathInCluster);
                 Vector3ListPool.ReleaseValue(pathInCluster);
-
-                for (int i = 0; i < path.ClusterIndexes.Count; i++)
-                {
-                    clusterList.SetClusterActive(path.ClusterIndexes[i], false);
-                }
             }
 
             PathResultRecorder.AddPathLength(-1); // 마지막 cluster에서는 이동하지 않으므로 비용 -1;
@@ -139,22 +119,12 @@ namespace Assets.Scripts.Pathfinding
         
         private List<Vector3> Find(List<Vector2Int> clusterIndexes, Vector2Int enterNode, Vector2Int exitNode, float unitRadius)
         {
-            for (int i = 0; i < clusterIndexes.Count; i++)
-            {
-                clusterList.SetClusterActive(clusterIndexes[i], true);
-            }
-
             Vector3 entrancePosition = nodeList.GridToWorld(enterNode);
             Vector3 goalPosition = nodeList.GridToWorld(exitNode);
 
             thetaStarPathfinder.SetGetNeighborPolicy(new GetNeighborNodesWithClusterListProvider(nodeList, clusterList));
             (thetaStarPathfinder.GetNeighborNodesActionProvider as GetNeighborNodesWithClusterListProvider).SetClusterList(clusterIndexes);
             List<Vector3> pathInCluster = thetaStarPathfinder.FindPath(entrancePosition, goalPosition, unitRadius);
-
-            for (int i = 0; i < clusterIndexes.Count; i++)
-            {
-                clusterList.SetClusterActive(clusterIndexes[i], false);
-            }
 
             return pathInCluster;
         }

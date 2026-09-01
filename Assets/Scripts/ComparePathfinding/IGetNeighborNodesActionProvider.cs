@@ -9,20 +9,22 @@ public interface IGetNeighborNodesActionProvider
 public class GetNeighborNodesProvider : IGetNeighborNodesActionProvider
 {
     private readonly NodeList nodeList;
-    private readonly HPAClusterList hPAClusterList;
+    private readonly HPAClusterList clusterList;
     private readonly Vector2Int[] directions;
 
-    public GetNeighborNodesProvider(NodeList nodeList, HPAClusterList hPAClusterList)
+    public GetNeighborNodesProvider(NodeList nodeList, HPAClusterList clusterList)
     {
         this.nodeList = nodeList;
-        this.hPAClusterList = hPAClusterList;
+        this.clusterList = clusterList;
         directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
     }
 
     public List<Vector2Int> GetNeighborNodes(Vector2Int current, float unitRadius)
     {
         List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
-
+        
+        clusterList.SetAllCLusterActive(true);
+        
         for (int i = 0; i < directions.Length; i++)
         {
             int newX = current.x + directions[i].x;
@@ -37,13 +39,15 @@ public class GetNeighborNodesProvider : IGetNeighborNodesActionProvider
             Vector2Int neighbor = new(newX, newY);
             // 워크어빌리티 맵으로 확인
             var s = nodeList.GridToWorld(neighbor);
-            var c = hPAClusterList.GetClusterIndex((int)s.x, (int)s.y);
-            if (nodeList.Nodes[newX, newY].IsWalkable && hPAClusterList.GetCluster(c).IsActive)
+            var c = clusterList.GetClusterIndex((int)s.x, (int)s.y);
+            if (nodeList.Nodes[newX, newY].IsWalkable && clusterList.GetCluster(c).IsActive)
             {
                 nodeList.NodeTypeController.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                 neighbors.Add(neighbor);
             }
         }
+        
+        clusterList.SetAllCLusterActive(false);
 
         return neighbors;
     }
@@ -52,20 +56,22 @@ public class GetNeighborNodesProvider : IGetNeighborNodesActionProvider
 public class GetNeighborNodesInSameClusterProvider : IGetNeighborNodesActionProvider
 {
     private readonly NodeList nodeList;
-    private readonly HPAClusterList hPAClusterList;
+    private readonly HPAClusterList clusterList;
     private readonly Vector2Int[] directions;
 
-    public GetNeighborNodesInSameClusterProvider(NodeList nodeList, HPAClusterList hPAClusterList)
+    public GetNeighborNodesInSameClusterProvider(NodeList nodeList, HPAClusterList clusterList)
     {
         this.nodeList = nodeList;
-        this.hPAClusterList = hPAClusterList;
+        this.clusterList = clusterList;
         directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
     }
 
     public List<Vector2Int> GetNeighborNodes(Vector2Int current, float unitRadius)
     {
         List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
-
+                
+        clusterList.GetCluster(clusterList.GetClusterIndex(current)).SetClusterActive(true);
+        
         for (int i = 0; i < directions.Length; i++)
         {
             int newX = current.x + directions[i].x;
@@ -75,7 +81,7 @@ public class GetNeighborNodesInSameClusterProvider : IGetNeighborNodesActionProv
 
             if (newX < 0 || newY < 0
                 || newX >= nodeList.Nodes.GetLength(0) || newY >= nodeList.Nodes.GetLength(0)
-                || !hPAClusterList.IsNodeInCluster(hPAClusterList.GetClusterIndex(current), neighbor))
+                || !clusterList.IsNodeInCluster(clusterList.GetClusterIndex(current), neighbor))
             {
                 continue;
             }
@@ -97,6 +103,8 @@ public class GetNeighborNodesInSameClusterProvider : IGetNeighborNodesActionProv
                 }
             }
         }
+        
+        clusterList.GetCluster(clusterList.GetClusterIndex(current)).SetClusterActive(false);
 
         return neighbors;
     }
@@ -120,14 +128,14 @@ public class GetNeighborNodesInSameClusterProvider : IGetNeighborNodesActionProv
 public class GetNeighborNodesWithClusterListProvider : IGetNeighborNodesActionProvider
 {
     private readonly NodeList nodeList;
-    private readonly HPAClusterList hPAClusterList;
+    private readonly HPAClusterList clusterList;
     private readonly Vector2Int[] directions;
     private List<Vector2Int> clusterListToFind;
 
-    public GetNeighborNodesWithClusterListProvider(NodeList nodeList, HPAClusterList hPAClusterList)
+    public GetNeighborNodesWithClusterListProvider(NodeList nodeList, HPAClusterList clusterList)
     {
         this.nodeList = nodeList;
-        this.hPAClusterList = hPAClusterList;
+        this.clusterList = clusterList;
         directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
     }
 
@@ -139,6 +147,11 @@ public class GetNeighborNodesWithClusterListProvider : IGetNeighborNodesActionPr
     public List<Vector2Int> GetNeighborNodes(Vector2Int current, float unitRadius)
     {
         List<Vector2Int> neighbors = Vector2IntListPool.GetValue();
+
+        for (int i = 0; i < clusterListToFind.Count; i++)
+        {
+            clusterList.SetClusterActive(clusterListToFind[i], true);
+        }
 
         for (int i = 0; i < directions.Length; i++)
         {
@@ -153,17 +166,17 @@ public class GetNeighborNodesWithClusterListProvider : IGetNeighborNodesActionPr
             }
 
             var nodeWorldPosition = nodeList.GridToWorld(current);
-            var clusterIndex = hPAClusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
-            
+            var clusterIndex = clusterList.GetClusterIndex((int)nodeWorldPosition.x, (int)nodeWorldPosition.y);
+
             bool walkableCheck = unitRadius == 0 ? nodeList.Nodes[newX, newY].IsWalkable : CanUnitFitAtNode(neighbor, unitRadius);
             
             // 워크어빌리티 맵으로 확인
-            if (walkableCheck && hPAClusterList.GetCluster(clusterIndex).IsActive)
+            if (walkableCheck && clusterList.GetCluster(clusterIndex).IsActive)
             {
                 bool isNeighborInClusters = false;
                 foreach (var cluster in clusterListToFind)
                 {
-                    isNeighborInClusters = isNeighborInClusters || hPAClusterList.IsNodeInCluster(cluster, neighbor);
+                    isNeighborInClusters = isNeighborInClusters || clusterList.IsNodeInCluster(cluster, neighbor);
 
                     if (isNeighborInClusters) break;
                 }
@@ -172,6 +185,11 @@ public class GetNeighborNodesWithClusterListProvider : IGetNeighborNodesActionPr
                 nodeList.NodeTypeController.SetNodeTypeInPathFinding(neighbor, NodeType.searched);
                 neighbors.Add(neighbor);
             }
+        }
+
+        for (int i = 0; i < clusterListToFind.Count; i++)
+        {
+            clusterList.SetClusterActive(clusterListToFind[i], false);
         }
 
         return neighbors;

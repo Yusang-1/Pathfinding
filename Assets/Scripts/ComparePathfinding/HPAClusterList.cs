@@ -179,8 +179,13 @@ public class HPAClusterList
     }
 
     private Vector2Int GetLeftDownNodeIndexOfCluster(Vector2Int clusterIndex) => clusterIndex * clusterSize;
+    
+    /// <summary> cluster index를 받아 cluster 반환 </summary>
     public HPACluster GetCluster(Vector2Int index) => clusterList[index.x, index.y];
+    
     public Vector2Int GetClusterIndex(int x, int y) => new(x / clusterSize, y / clusterSize);
+    
+    /// <summary> node index를 받아 cluster index 반환 </summary>
     public Vector2Int GetClusterIndex(Vector2Int index) => new(index.x / clusterSize, index.y / clusterSize);
 
     public bool IsNodeInCluster(Vector2Int clusterIndex, Vector2Int nodeIndex)
@@ -214,13 +219,13 @@ public class HPAClusterList
         }
     }
 
-    public void SetAllCLusterActive()
+    public void SetAllCLusterActive(bool value)
     {
         for (int i = 0; i < clusterList.GetLength(0); i++)
         {
             for (int j = 0; j < clusterList.GetLength(1); j++)
             {
-                SetClusterActive(new Vector2Int(i, j), true);
+                SetClusterActive(new Vector2Int(i, j), value);
             }
         }
     }
