@@ -11,7 +11,7 @@ namespace Assets.Scripts.ECSControllUnit
     {
         public event Action<Vector2> OnDirectionChanged;
         public event Action<Vector3> OnHoldStarted;
-        public event Action<Vector3> OnHoldPerformed;
+        public event Func<Vector3, Vector3?> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
 
@@ -94,6 +94,7 @@ namespace Assets.Scripts.ECSControllUnit
             }
         }
 
+        private Vector3? holdCanceledWorldPosition;
         private void HoldStarted()
         {
             OnHoldStarted?.Invoke(mousePosition);
@@ -101,20 +102,16 @@ namespace Assets.Scripts.ECSControllUnit
         }
         private void HoldPerformed()
         {
-            OnHoldPerformed?.Invoke(mousePosition);
+            holdCanceledWorldPosition = OnHoldPerformed?.Invoke(mousePosition);
         }
+
         private void HoldCanceled()
         {
             isDrag = false;
+            if (holdCanceledWorldPosition == null) return;
 
-            // if (isShiftPressed)
-            // {
-            //     selectableController.ShiftSelectedList();
-            // }
-            // else
-            // {
-            //     selectableController.Selected();
-            // }
+            Vector3 position = (Vector3)holdCanceledWorldPosition;
+            selectableController.MakeAreaSelectionRequest(mouseWorldPosition, position, isShiftPressed);
             OnHoldCanceled?.Invoke();
         }
 
@@ -127,7 +124,7 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 Debug.Log("Right Click");
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-                
+
                 selectableController.MakeMoveCommand(mouseWorldPosition, isShiftPressed);
                 // if (isShiftPressed)
                 // {
@@ -139,7 +136,7 @@ namespace Assets.Scripts.ECSControllUnit
                 // }
             }
         }
-        
+
         private Vector3 mouseWorldPosition;
         public void OnTrackMousePosition(InputAction.CallbackContext context)
         {
@@ -150,7 +147,7 @@ namespace Assets.Scripts.ECSControllUnit
                 mousePosition = context.ReadValue<Vector2>();
 
                 if (isDrag || isPointerOverGameObject) return;
-                
+
                 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
                 // Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
                 // Vector3 origin = Camera.main.transform.position;

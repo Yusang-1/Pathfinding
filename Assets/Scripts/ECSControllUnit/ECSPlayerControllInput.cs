@@ -11,7 +11,7 @@ namespace Assets.Scripts.ECSControllUnit
     {
         public event Action<Vector2> OnDirectionChanged;
         public event Action<Vector3> OnHoldStarted;
-        public event Action<Vector3> OnHoldPerformed;
+        public event Func<Vector3, Vector3?> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
 
@@ -60,7 +60,7 @@ namespace Assets.Scripts.ECSControllUnit
             if (context.canceled)
             {
                 StopCoroutine(WaitDragCoroutine);
-                
+
                 if (isDrag)
                 {
                     HoldCanceled();
@@ -93,6 +93,7 @@ namespace Assets.Scripts.ECSControllUnit
             }
         }
 
+        private Vector3? holdCanceledWorldPosition;
         private void HoldStarted()
         {
             OnHoldStarted?.Invoke(mousePosition);
@@ -100,15 +101,18 @@ namespace Assets.Scripts.ECSControllUnit
         }
         private void HoldPerformed()
         {
-            OnHoldPerformed?.Invoke(mousePosition);
+            holdCanceledWorldPosition = OnHoldPerformed?.Invoke(mousePosition);
         }
         private void HoldCanceled()
         {
             isDrag = false;
-            selectableController.MakeAreaSelectionRequest();
+            if (holdCanceledWorldPosition == null) return;
+
+            Vector3 position = (Vector3)holdCanceledWorldPosition;
+            selectableController.MakeAreaSelectionRequest(mouseWorldPosition, position, false);
             OnHoldCanceled?.Invoke();
         }
-        
+
         private Vector3 mouseWorldPosition;
         public void OnTrackMousePosition(InputAction.CallbackContext context)
         {
@@ -122,7 +126,7 @@ namespace Assets.Scripts.ECSControllUnit
 
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
                 mouseWorldPosition = worldPos;
-                
+
                 // Vector3 origin = Camera.main.transform.position;
                 // Vector3 direction = -(worldPos - origin).normalized;
 

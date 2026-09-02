@@ -10,9 +10,9 @@ namespace Assets.Scripts.ControllUnit.UI
         public event Action<HashSet<ISelectableUnit>> OnUnitFocused;
 
         [SerializeField] private GameObject dragUI;
-        
+
         private HashSet<ISelectableUnit> focusedUnits;
-        
+
         private RectTransform dragUIRect;
 
         private Vector3 standardPosition;
@@ -38,6 +38,27 @@ namespace Assets.Scripts.ControllUnit.UI
             dragUISizeDelta.y = standardPosition.y - position.y;
             compareSizeDelta = dragUISizeDelta;
 
+            DrawDragUI(position);
+
+            focusedUnits = OnFindSelectableUnitInDragUI?.Invoke(standardPosition, compareSizeDelta.x, compareSizeDelta.y);
+            OnUnitFocused?.Invoke(focusedUnits);
+        }
+        public Vector3 ECSDragPerformed(Vector3 position)
+        {
+            Camera cam = Camera.main;
+            float depth = cam.orthographic ? 0f : Mathf.Abs(cam.transform.position.z);
+            Vector3 worldPosition = cam.ScreenToWorldPoint(new Vector3(position.x, position.y, depth));            
+
+            dragUISizeDelta.x = standardPosition.x - position.x;
+            dragUISizeDelta.y = standardPosition.y - position.y;
+
+            DrawDragUI(position);
+
+            return worldPosition;
+        }
+
+        private void DrawDragUI(Vector3 position)
+        {
             int x = standardPosition.x < position.x ? 1 : -1;
             int y = standardPosition.y < position.y ? 1 : -1;
 
@@ -67,10 +88,8 @@ namespace Assets.Scripts.ControllUnit.UI
             }
 
             dragUIRect.sizeDelta = new Vector2(Mathf.Abs(dragUISizeDelta.x), Mathf.Abs(dragUISizeDelta.y));
-            
-            focusedUnits  = OnFindSelectableUnitInDragUI?.Invoke(standardPosition, compareSizeDelta.x, compareSizeDelta.y);            
-            OnUnitFocused?.Invoke(focusedUnits);
         }
+
         public void DragCanceled()
         {
             dragUI.SetActive(false);

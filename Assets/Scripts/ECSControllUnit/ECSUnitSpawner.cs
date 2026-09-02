@@ -10,17 +10,14 @@ namespace Assets.Scripts.ECSControllUnit
 
         [SerializeField] private Vector3 spawnPosition;
 
-        private ECSUnitFactory unitFactory;        
-
+        private readonly ECSUnitFactory unitFactory = new();
         private readonly SpawnAreaSetter spawnAreaSetter = new();
 
         private bool isInitialized;
 
-        public void Initialize(UnitRuntimeContext unitRuntimeContext)
+        public void Initialize()
         {
             if (isInitialized) return;
-
-            unitFactory = new ECSUnitFactory(unitRuntimeContext);
 
             spawnAreaSetter.OnStartSetSpawnAreaRequested += HandleSpawnAreaSettingStarted;
 

@@ -10,7 +10,7 @@ namespace Assets.Scripts.ECSControllUnit
     public partial struct UnitSpatialHashSystem : ISystem
     {
         private EntityManager entityManager;
-        
+
         private NativeParallelMultiHashMap<int, Entity> cells;
         private NativeParallelHashMap<Entity, int> registeredEntities;
 
@@ -88,76 +88,128 @@ namespace Assets.Scripts.ECSControllUnit
 
         private void ManageSelect(ref SystemState state)
         {
-            // 선택 요청이 있는지 확인
-            bool hasRequest = false;
-            foreach (var a in SystemAPI.Query<UnitSelectionRequest>())
-            {
-                hasRequest = true;
-                break;
-            }
-            if (!hasRequest)
-            {
-                return;
-            }
-
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            // 점 선택
-            foreach (var (request, requestEntity) in SystemAPI.Query<UnitSelectionRequest>().WithEntityAccess())
-            {
-                int hash = SpatialHashUtility.GetHash(request.WorldPosition);
-                var values = cells.GetValuesForKey(hash);
 
-                Entity selectEntity = Entity.Null;
-                float closestDistanceSq = float.MaxValue;
-                foreach (Entity entity in values)
-                {
-                    if (!state.EntityManager.Exists(entity)
-                        || state.EntityManager.HasComponent<Disabled>(entity)
-                        || !state.EntityManager.HasComponent<SelectableUnitTag>(entity))
-                    {
-                        continue;
-                    }
-                    var entityTransfrom = state.EntityManager.GetComponentData<LocalTransform>(entity);
-                    float distanceSq = math.distancesq(request.WorldPosition, entityTransfrom.Position);
+            OnePointSelect(ref state, ecb);
 
-                    if (distanceSq <= closestDistanceSq)
-                    {
-                        closestDistanceSq = distanceSq;
-                        selectEntity = entity;
-                    }
-                }
-
-                if (selectEntity != Entity.Null)
-                {
-                    if (request.IsAdditive)
-                    {
-                        // IsAdditive && 이미 선택중 ecb.RemoveComponent(selectEntity, typeof(SelectedUnitTag));
-                        if (state.EntityManager.HasComponent<SelectedUnitTag>(selectEntity))
-                        {
-                            UnselectEntity(ref state, selectEntity, ecb);
-                        }
-                        else // IsAdditive && 선택중X ecb.AddComponent(selectEntity, typeof(SelectedUnitTag));
-                        {
-                            SelectEntity(selectEntity, ecb);
-                        }
-                    }
-                    else // !IsAdditive / 기존 SelectedUnitTag가진 엔티티들 해제, selectedEntity select
-                    {
-                        UnselectAllEntities(ref state, ecb);
-
-                        SelectEntity(selectEntity, ecb);
-                    }
-                }
-                else
-                {
-                    UnselectAllEntities(ref state, ecb);
-                }
-
-                ecb.DestroyEntity(requestEntity);
-            }
+            AreaSelect(ref state, ecb);
 
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
+        }
+
+        private void OnePointSelect(ref SystemState state, EntityCommandBuffer ecb)
+        {
+            if (SystemAPI.TryGetSingleton<UnitSelectionRequest>(out var request))
+            {
+                if (SystemAPI.TryGetSingletonEntity<UnitSelectionRequest>(out Entity requestEntity))
+                {
+                    int hash = SpatialHashUtility.GetHash(request.WorldPosition);
+                    var values = cells.GetValuesForKey(hash);
+
+                    Entity selectEntity = Entity.Null;
+                    float closestDistanceSq = float.MaxValue;
+                    foreach (Entity entity in values)
+                    {
+                        if (!state.EntityManager.Exists(entity)
+                            || state.EntityManager.HasComponent<Disabled>(entity)
+                            || !state.EntityManager.HasComponent<SelectableUnitTag>(entity))
+                        {
+                            continue;
+                        }
+                        var entityTransfrom = state.EntityManager.GetComponentData<LocalTransform>(entity);
+                        float distanceSq = math.distancesq(request.WorldPosition, entityTransfrom.Position);
+
+                        if (distanceSq <= closestDistanceSq)
+                        {
+                            closestDistanceSq = distanceSq;
+                            selectEntity = entity;
+                        }
+                    }
+
+                    if (selectEntity != Entity.Null)
+                    {
+                        if (request.IsAdditive)
+                        {
+                            // IsAdditive && 이미 선택중 ecb.RemoveComponent(selectEntity, typeof(SelectedUnitTag));
+                            if (state.EntityManager.HasComponent<SelectedUnitTag>(selectEntity))
+                            {
+                                UnselectEntity(ref state, selectEntity, ecb);
+                            }
+                            else // IsAdditive && 선택중X ecb.AddComponent(selectEntity, typeof(SelectedUnitTag));
+                            {
+                                SelectEntity(selectEntity, ecb);
+                            }
+                        }
+                        else // !IsAdditive / 기존 SelectedUnitTag가진 엔티티들 해제, selectedEntity select
+                        {
+                            UnselectAllEntities(ref state, ecb);
+
+                            SelectEntity(selectEntity, ecb);
+                        }
+                    }
+                    else
+                    {
+                        UnselectAllEntities(ref state, ecb);
+                    }
+
+                    ecb.DestroyEntity(requestEntity);
+                }
+            }
+        }
+
+        private void AreaSelect(ref SystemState state, EntityCommandBuffer ecb)
+        {
+            if (SystemAPI.TryGetSingleton<UnitAreaSelectionRequest>(out var request))
+            {
+                if (SystemAPI.TryGetSingletonEntity<UnitAreaSelectionRequest>(out Entity requestEntity))
+                {
+                    if (request.IsAdditive)
+                    {
+                        UnselectAllEntities(ref state, ecb);
+                    }
+
+                    float3 standard = request.StandardPosition;
+                    float width = request.Width;
+                    float height = request.Height;
+
+                    float xMin = math.min(standard.x, standard.x + width);
+                    float yMin = math.min(standard.y, standard.y + height);
+                    float xMax = xMin + math.abs(width);
+                    float yMax = yMin + math.abs(height);
+
+                    int2 minCell = SpatialHashUtility.GetCell(new float3 { x = xMin, y = yMin, z = standard.z });
+                    int2 maxCell = SpatialHashUtility.GetCell(new float3 { x = xMax, y = yMax, z = standard.z });
+
+                    int hash;
+                    NativeParallelMultiHashMap<int, Entity>.Enumerator entities;
+
+                    for (int x = minCell.x; x <= maxCell.x; x++)
+                    {
+                        if (x < 0) continue;
+                        for (int y = minCell.y; y <= maxCell.y; y++)
+                        {
+                            if (y < 0) continue;
+                            hash = SpatialHashUtility.GetHash(new int2 { x = x, y = y });
+                            entities = cells.GetValuesForKey(hash);
+
+                            foreach (Entity entity in entities)
+                            {
+                                if (!state.EntityManager.HasComponent<LocalTransform>(entity)) continue;
+
+                                float3 position = state.EntityManager.GetComponentData<LocalTransform>(entity).Position;
+
+                                if (position.x >= xMin && position.x <= xMax && position.y >= yMin && position.y <= yMax)
+                                {
+                                    SelectEntity(entity, ecb);
+                                }
+                            }
+                        }
+                    }
+
+                    ecb.DestroyEntity(requestEntity);
+                }
+            }
         }
 
         private void SelectEntity(Entity entity, EntityCommandBuffer ecb)
@@ -168,9 +220,9 @@ namespace Assets.Scripts.ECSControllUnit
             CreateActionMapRequest(ecb, ActionMaps.Unit);
 
             // select후 ui 처리
-            var select = ecb.CreateEntity();            
+            var select = ecb.CreateEntity();
             var name = entityManager.GetComponentData<ECSUnitComponent>(entity).UnitName;
-            ecb.AddComponent(select, new UnitSelectedData(){Entity = entity, EntityName = name});
+            ecb.AddComponent(select, new UnitSelectedData() { Entity = entity, EntityName = name });
         }
 
         private void UnselectEntity(ref SystemState state, Entity entity, EntityCommandBuffer ecb)
@@ -196,7 +248,7 @@ namespace Assets.Scripts.ECSControllUnit
 
             // unselect후 ui 처리
             var select = ecb.CreateEntity();
-            ecb.AddComponent(select, new UnitDeselectedData(){Entity = entity});
+            ecb.AddComponent(select, new UnitDeselectedData() { Entity = entity });
         }
 
         private void UnselectAllEntities(ref SystemState state, EntityCommandBuffer ecb)
@@ -274,13 +326,21 @@ namespace Assets.Scripts.ECSControllUnit
         /// <summary> Shift Click 여부 </summary>
         public bool IsAdditive;
     }
-    
+
+    public struct UnitAreaSelectionRequest : IComponentData
+    {
+        public float3 StandardPosition;
+        public float Width;
+        public float Height;
+        public bool IsAdditive;
+    }
+
     public struct UnitSelectedData : IComponentData
     {
         public FixedString32Bytes EntityName;
         public Entity Entity;
     }
-    
+
     public struct UnitDeselectedData : IComponentData
     {
         public Entity Entity;

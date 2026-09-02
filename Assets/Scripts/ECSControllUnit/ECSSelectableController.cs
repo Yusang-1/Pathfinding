@@ -19,7 +19,7 @@ namespace Assets.Scripts.ECSControllUnit
         private EntityManager entityManager;
         private EntityQuery SelectedQuery;
         private EntityQuery DeselectedQuery;
-        
+
         public void Initialize()
         {
             entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -41,9 +41,20 @@ namespace Assets.Scripts.ECSControllUnit
             );
         }
 
-        public void MakeAreaSelectionRequest()
+        public void MakeAreaSelectionRequest(Vector3 position, Vector3 holdEndPosition, bool isAdditive)
         {
+            Entity selectionRequest = entityManager.CreateEntity();
 
+            entityManager.AddComponentData(
+                selectionRequest,
+                new UnitAreaSelectionRequest()
+                {
+                    StandardPosition = position,
+                    Width = holdEndPosition.x - position.x,
+                    Height = holdEndPosition.y - position.y,
+                    IsAdditive = isAdditive
+                }
+            );
         }
 
         public void MakeMoveCommand(Vector3 destination, bool isAdditive)
@@ -61,56 +72,56 @@ namespace Assets.Scripts.ECSControllUnit
         public void SelectedUpdate()
         {
             ManageSelected();
-            
-            ManageDeselected();            
+
+            ManageDeselected();
         }
-        
+
         private void ManageSelected()
         {
-            using NativeArray<UnitSelectedData> datas = SelectedQuery.ToComponentDataArray<UnitSelectedData>(Allocator.Temp);            
-            
-            if(datas == null || datas.Length == 0)
+            using NativeArray<UnitSelectedData> datas = SelectedQuery.ToComponentDataArray<UnitSelectedData>(Allocator.Temp);
+
+            if (datas == null || datas.Length == 0)
             {
                 return;
             }
-            
+
             using NativeArray<Entity> entities = SelectedQuery.ToEntityArray(Allocator.Temp);
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
-            
+
             int count = 0;
-            foreach(UnitSelectedData data in datas)
+            foreach (UnitSelectedData data in datas)
             {
                 string name = data.EntityName.ToString(); // 가비지 줄이기 위해 수정해야할듯
                 OnSelectedCallback?.Invoke(name, data.Entity);
-                
+
                 ecb.DestroyEntity(entities[count]);
                 count++;
             }
-            
+
             ecb.Playback(entityManager);
         }
-        
+
         private void ManageDeselected()
         {
-            using NativeArray<UnitDeselectedData> datas = DeselectedQuery.ToComponentDataArray<UnitDeselectedData>(Allocator.Temp);            
-            
-            if(datas == null || datas.Length == 0)
+            using NativeArray<UnitDeselectedData> datas = DeselectedQuery.ToComponentDataArray<UnitDeselectedData>(Allocator.Temp);
+
+            if (datas == null || datas.Length == 0)
             {
                 return;
             }
-            
+
             using NativeArray<Entity> entities = DeselectedQuery.ToEntityArray(Allocator.Temp);
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
-            
+
             int count = 0;
-            foreach(UnitDeselectedData data in datas)
+            foreach (UnitDeselectedData data in datas)
             {
                 OnDeselectedCallback?.Invoke(data.Entity);
-                
+
                 ecb.DestroyEntity(entities[count]);
                 count++;
             }
-            
+
             ecb.Playback(entityManager);
         }
 

@@ -10,7 +10,7 @@ namespace Assets.Scripts.ECSControllUnit
     public class ECSInputManager : MonoBehaviour
     {
         public event Action<Vector3> OnHoldStarted;
-        public event Action<Vector3> OnHoldPerformed;
+        public event Func<Vector3,Vector3?> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
         public event Action<Vector3> OnSetSpawnAreaRequested;
@@ -151,9 +151,9 @@ namespace Assets.Scripts.ECSControllUnit
         {
             OnHoldStarted?.Invoke(vec);
         }
-        private void HandlerHoldPerformed(Vector3 vec)
+        private Vector3? HandlerHoldPerformed(Vector3 vec)
         {
-            OnHoldPerformed?.Invoke(vec);
+            return OnHoldPerformed?.Invoke(vec);
         }
         private void HandlerHoldCanceled()
         {

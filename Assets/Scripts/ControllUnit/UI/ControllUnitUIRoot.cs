@@ -20,6 +20,7 @@ namespace Assets.Scripts.ControllUnit.UI
         public Action<Vector3> OnHoldStarted;
         public Action<Vector3> OnHoldPerformed;
         public Action OnHoldCanceled;
+        public Func<Vector3, Vector3> OnECSHoldPerformed;
         public event Func<Vector3, float, float, HashSet<ISelectableUnit>> OnFindSelectableUnitInDragUI;
         public event Action<HashSet<ISelectableUnit>> OnUnitFocused;
 
@@ -67,6 +68,7 @@ namespace Assets.Scripts.ControllUnit.UI
             OnHoldStarted += uiDragController.DragStarted;
             OnHoldPerformed += uiDragController.DragPerformed;
             OnHoldCanceled += uiDragController.DragCanceled;
+            OnECSHoldPerformed += uiDragController.ECSDragPerformed;
 
             uiDragController.OnFindSelectableUnitInDragUI += HandleOnFindSelectableUnitInDragUI;
             uiDragController.OnUnitFocused += HandleOnUnitFocused;
@@ -97,6 +99,7 @@ namespace Assets.Scripts.ControllUnit.UI
             OnHoldStarted -= uiDragController.DragStarted;
             OnHoldPerformed -= uiDragController.DragPerformed;
             OnHoldCanceled -= uiDragController.DragCanceled;
+            OnECSHoldPerformed -= uiDragController.ECSDragPerformed;
 
             uiDragController.OnFindSelectableUnitInDragUI -= HandleOnFindSelectableUnitInDragUI;
             uiDragController.OnUnitFocused -= HandleOnUnitFocused;

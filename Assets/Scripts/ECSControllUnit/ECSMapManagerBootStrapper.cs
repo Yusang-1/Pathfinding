@@ -1,10 +1,10 @@
 using UnityEngine;
+using Unity.Entities;
 using System;
 using Assets.Scripts.ControllUnit;
 using Assets.Scripts.ControllUnit.UI;
 using Assets.Scripts.ControllUnit.SO;
 using Assets.Scripts.Pathfinding;
-using Unity.Entities;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -37,7 +37,7 @@ namespace Assets.Scripts.ECSControllUnit
         {
             selectableController.Initialize();
             nodeData.Initialize();
-            unitSpawner.Initialize(new UnitRuntimeContext(pathfinder, mapRuntimeContext.SpatialHash));
+            unitSpawner.Initialize();
             inputManager.Initialize(selectableController);
 
             unitsSO.Initialize();
@@ -76,7 +76,7 @@ namespace Assets.Scripts.ECSControllUnit
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
             uiRoot.OnGetSpawnAreaRequested += unitSpawner.StartSetSpawnArea;
-            uiRoot.OnFindSelectableUnitInDragUI += mapRuntimeContext.SpatialHash.GetUnitsInRange;
+            // uiRoot.OnFindSelectableUnitInDragUI += mapRuntimeContext.SpatialHash.GetUnitsInRange;
             // uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
         }
 
@@ -115,7 +115,7 @@ namespace Assets.Scripts.ECSControllUnit
             uiRoot.OnGetPersonalMapListRequested -= mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested -= unitSpawner.SpawnUnit;
             uiRoot.OnGetSpawnAreaRequested -= unitSpawner.StartSetSpawnArea;
-            uiRoot.OnFindSelectableUnitInDragUI -= mapRuntimeContext.SpatialHash.GetUnitsInRange;
+            // uiRoot.OnFindSelectableUnitInDragUI -= mapRuntimeContext.SpatialHash.GetUnitsInRange;
             // uiRoot.OnUnitFocused -= selectableController.UnitFocusedList;
         }
 
@@ -159,9 +159,9 @@ namespace Assets.Scripts.ECSControllUnit
         {
             uiRoot.OnHoldStarted?.Invoke(vec);
         }
-        private void HandleHoldPerformed(Vector3 vec)
+        private Vector3? HandleHoldPerformed(Vector3 vec)
         {
-            uiRoot.OnHoldPerformed?.Invoke(vec);
+            return uiRoot.OnECSHoldPerformed?.Invoke(vec);
         }
         private void HandleHoldCanceled()
         {
