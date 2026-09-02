@@ -13,5 +13,6 @@ namespace Assets.Scripts.ControllUnit
         public PathfinderControllUnit Pathfinder { get; private set; }
         public SteeringBehavior SteeringBehavior { get; private set; } = new();
         public SpatialHash SpatialHash { get; private set; }
+        // public ECSUnitDataContainer DataContainer { get; private set; } = new();
     }
 }

@@ -1,3 +1,4 @@
+using Unity.Entities;
 using UnityEngine;
 
 namespace Assets.Scripts.ControllUnit.UI
@@ -13,6 +14,16 @@ namespace Assets.Scripts.ControllUnit.UI
         public void UnitDeselected(ISelectableUnit unit)
         {
             uiSelectedUnits.DeSelectedUnit(unit);
+        }
+        
+        public void ECSUnitSelected(string name, Entity entity)
+        {
+            uiSelectedUnits.SetSelectedECSUnitInfo(name, entity);
+        }
+        
+        public void ECSUnitDeSelected(Entity entity)
+        {
+            uiSelectedUnits.DeselectedECSUnit(entity);
         }
         
         public void SetActiveTrue() => gameObject.SetActive(true);

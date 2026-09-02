@@ -18,6 +18,7 @@ namespace Assets.Scripts.ECSControllUnit
 
         private Assets.Scripts.ControllUnit.MapRuntimeContext mapRuntimeContext;
         private MapGenerator mapGenerator;
+        private readonly ECSSelectableController selectableController = new();
 
         private ECSMapManagerBootStrapper bootStrapper;
 
@@ -26,7 +27,7 @@ namespace Assets.Scripts.ECSControllUnit
             mapRuntimeContext = new Assets.Scripts.ControllUnit.MapRuntimeContext(pathfinder, nodeData);
             mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList);
             bootStrapper = new ECSMapManagerBootStrapper(uiRoot, inputManager, unitSpawner, InitializeMapRuntime,
-                mapRuntimeContext, pathfindingBridge
+                mapRuntimeContext, pathfindingBridge, selectableController
             );
         }
 
@@ -37,9 +38,14 @@ namespace Assets.Scripts.ECSControllUnit
 
         private void Start()
         {
-            bootStrapper.Initialize(nodeData, unitsSO, mapRuntimeContext.Pathfinder);
+            bootStrapper.Initialize(nodeData, unitsSO, mapRuntimeContext.Pathfinder);            
         }
 
+        private void Update()
+        {
+            selectableController.SelectedUpdate();
+        }
+        
         private void OnDisable()
         {
             bootStrapper.UnbindEvents();

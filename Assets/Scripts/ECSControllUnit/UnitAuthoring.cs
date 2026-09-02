@@ -2,15 +2,14 @@ using UnityEngine;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Assets.Scripts.ControllUnit.SO;
 
 namespace Assets.Scripts.ECSControllUnit
 {
     public class UnitAuthoring : MonoBehaviour
     {
-        [SerializeField] private string unitName;
-        [SerializeField] private float radius;
-
-        [SerializeField] private float moveSpeed;
+        [SerializeField] private UnitSO unitData;
+        [SerializeField] private float unitRadius;
 
         public class Baker : Baker<UnitAuthoring>
         {
@@ -20,12 +19,13 @@ namespace Assets.Scripts.ECSControllUnit
 
                 AddComponent(entity, new ECSUnitComponent
                 {
-                    Name = authoring.unitName,
-                    Radius = authoring.radius
+                    UnitName = authoring.unitData.UnitName,
+                    Radius = authoring.unitRadius
+                    // IconName = authoring.unitData.UnitIcon.name
                 });
                 AddComponent(entity, new MovableComponent
                 {
-                    MoveSpeed = authoring.moveSpeed,
+                    MoveSpeed = authoring.unitData.MoveSpeed,
                     ArriveDistance = 0.15f
                 });
                 AddComponent(entity, new UnitMoveState());
@@ -34,7 +34,7 @@ namespace Assets.Scripts.ECSControllUnit
 
                 AddComponent(entity, new Prefab());
                 AddComponent(entity, new Disabled());
-                
+
                 AddBuffer<HighLevelClusterPath>(entity);
                 AddBuffer<HighLevelWaypoint>(entity);
                 AddBuffer<LowLevelWaypoint>(entity);
@@ -44,15 +44,15 @@ namespace Assets.Scripts.ECSControllUnit
 
     public struct ECSUnitComponent : IComponentData
     {
-        public FixedString32Bytes Name;
+        public FixedString32Bytes UnitName;
+        public FixedString64Bytes IconName;        
         public float Radius;
-
     }
 
     public struct MovableComponent : IComponentData
     {
         public float MoveSpeed;
-        public float3 Direction;    
+        public float3 Direction;
         public float3 Velocity;
 
         public float ArriveDistance;

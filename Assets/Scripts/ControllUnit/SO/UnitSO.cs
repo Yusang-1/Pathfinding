@@ -12,6 +12,7 @@ namespace Assets.Scripts.ControllUnit.SO
         [SerializeField] private float refineLength = 2.2f;
         [SerializeField] private UnitSize unitSize;
         [SerializeField] private UnitsSO unitsData;
+        [SerializeField] private Sprite unitIcon;
         
         public string UnitName => unitName;
         public ActionMaps ActionMap => ActionMap;
@@ -19,5 +20,6 @@ namespace Assets.Scripts.ControllUnit.SO
         public float MoveSpeed => moveSpeed;
         public float RefineLength => refineLength;
         public float Radius => unitsData.UnitRadius[unitSize];
+        public Sprite UnitIcon => unitIcon;
     }
 }

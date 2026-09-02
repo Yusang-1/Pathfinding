@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Assets.Scripts.ControllUnit.SO;
+using Unity.Entities;
 
 namespace Assets.Scripts.ControllUnit.UI
 {
@@ -29,6 +29,8 @@ namespace Assets.Scripts.ControllUnit.UI
         // UIUnitpanel event
         public Action<ISelectableUnit> OnUnitSelected;
         public Action<ISelectableUnit> OnUnitDeselected;
+        public Action<string, Entity> OnECSUnitSelected;
+        public Action<Entity> OnECSUnitDeselected;
 
         [SerializeField] private UILoadMapMediator uiLoadMapMediator;
         [SerializeField] private UIResultController uiResultController;
@@ -73,6 +75,8 @@ namespace Assets.Scripts.ControllUnit.UI
 
             OnUnitSelected += uiUnitPanel.UnitSelected;
             OnUnitDeselected += uiUnitPanel.UnitDeselected;
+            OnECSUnitSelected += uiUnitPanel.ECSUnitSelected;
+            OnECSUnitDeselected += uiUnitPanel.ECSUnitDeSelected;
 
             isBound = true;
         }
@@ -101,6 +105,8 @@ namespace Assets.Scripts.ControllUnit.UI
 
             OnUnitSelected -= uiUnitPanel.UnitSelected;
             OnUnitDeselected -= uiUnitPanel.UnitDeselected;
+            OnECSUnitSelected -= uiUnitPanel.ECSUnitSelected;
+            OnECSUnitDeselected -= uiUnitPanel.ECSUnitDeSelected;
 
             isBound = false;
         }

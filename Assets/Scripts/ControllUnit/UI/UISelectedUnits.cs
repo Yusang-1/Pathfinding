@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Entities;
 
 namespace Assets.Scripts.ControllUnit.UI
 {
@@ -11,6 +12,9 @@ namespace Assets.Scripts.ControllUnit.UI
         private UISelectedUnit[] uis;
         private readonly Dictionary<ISelectableUnit, int> uiIndexDict = new();
         private readonly PriorityQueue<UISelectedUnit, int> UnusedUI = new();
+        
+        private readonly Dictionary<Entity, int> uiIndexHashDict = new();
+        private readonly PriorityQueue<UISelectedUnit, int> UnusedUIHashDict = new();
 
         [SerializeField] private float uiMargin;
         [SerializeField] private int uiRow;
@@ -49,9 +53,11 @@ namespace Assets.Scripts.ControllUnit.UI
                     uis[index] = ui;
                     
                     UnusedUI.Enqueue(uis[index], index);
+                    
+                    UnusedUIHashDict.Enqueue(uis[index], index); // ecs unit용 나중에 ecs용 코드는 클래스 이동
                 }
             }
-        }
+        }                
 
         public void SetSelectedUnitInfo(ISelectableUnit unit)
         {
@@ -61,10 +67,10 @@ namespace Assets.Scripts.ControllUnit.UI
                 return;
             }
             
-            var ii = UnusedUI.Dequeue();
-            ii.GetUnitInfo((unit as Unit).name);
+            UISelectedUnit unitUI = UnusedUI.Dequeue();
+            unitUI.GetUnitInfo((unit as Unit).name);
             
-            uiIndexDict.Add(unit, ii.Index);           
+            uiIndexDict.Add(unit, unitUI.Index);
         }
         public void DeSelectedUnit(ISelectableUnit unit)
         {
@@ -74,11 +80,40 @@ namespace Assets.Scripts.ControllUnit.UI
                 return;
             }
             
-            var ii = uis[uiIndexDict[unit]];
-            ii.DeSelect();
+            UISelectedUnit unitUI = uis[uiIndexDict[unit]];
+            unitUI.DeSelect();
             uiIndexDict.Remove(unit);
             
-            UnusedUI.Enqueue(ii, ii.Index);
+            UnusedUI.Enqueue(unitUI, unitUI.Index);
+        }
+        
+        public void SetSelectedECSUnitInfo(string name, Entity entity)
+        {
+            if (uiIndexHashDict.ContainsKey(entity))
+            {
+                Debug.LogWarning("이미 select한 unit을 select 시도");
+                return;
+            }
+            
+            UISelectedUnit unitUI = UnusedUIHashDict.Dequeue();
+            unitUI.GetUnitInfo(name);
+            
+            uiIndexHashDict.Add(entity, unitUI.Index);
+        }
+        
+        public void DeselectedECSUnit(Entity entity)
+        {
+            if (!uiIndexHashDict.ContainsKey(entity))
+            {
+                Debug.LogWarning("select되지 않은 unit을 deselect 시도");
+                return;
+            }
+            
+            UISelectedUnit unitUI = uis[uiIndexHashDict[entity]];
+            unitUI.DeSelect();
+            uiIndexHashDict.Remove(entity);
+            
+            UnusedUIHashDict.Enqueue(unitUI, unitUI.Index);
         }
     }
 }

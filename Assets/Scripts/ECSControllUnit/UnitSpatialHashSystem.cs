@@ -9,6 +9,8 @@ namespace Assets.Scripts.ECSControllUnit
     [UpdateAfter(typeof(UnitMoveSystem))]
     public partial struct UnitSpatialHashSystem : ISystem
     {
+        private EntityManager entityManager;
+        
         private NativeParallelMultiHashMap<int, Entity> cells;
         private NativeParallelHashMap<Entity, int> registeredEntities;
 
@@ -16,6 +18,7 @@ namespace Assets.Scripts.ECSControllUnit
 
         public void OnCreate(ref SystemState state)
         {
+            entityManager = state.EntityManager;
             cells = new NativeParallelMultiHashMap<int, Entity>(CAPACITY, Allocator.Persistent);
             registeredEntities = new NativeParallelHashMap<Entity, int>(CAPACITY, Allocator.Persistent);
         }
@@ -80,6 +83,11 @@ namespace Assets.Scripts.ECSControllUnit
                 }
             }
 
+            ManageSelect(ref state);
+        }
+
+        private void ManageSelect(ref SystemState state)
+        {
             // 선택 요청이 있는지 확인
             bool hasRequest = false;
             foreach (var a in SystemAPI.Query<UnitSelectionRequest>())
@@ -158,6 +166,11 @@ namespace Assets.Scripts.ECSControllUnit
 
             // select후 actionMap 변경
             CreateActionMapRequest(ecb, ActionMaps.Unit);
+
+            // select후 ui 처리
+            var select = ecb.CreateEntity();            
+            var name = entityManager.GetComponentData<ECSUnitComponent>(entity).UnitName;
+            ecb.AddComponent(select, new UnitSelectedData(){Entity = entity, EntityName = name});
         }
 
         private void UnselectEntity(ref SystemState state, Entity entity, EntityCommandBuffer ecb)
@@ -180,6 +193,10 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 CreateActionMapRequest(ecb, ActionMaps.Player);
             }
+
+            // unselect후 ui 처리
+            var select = ecb.CreateEntity();
+            ecb.AddComponent(select, new UnitDeselectedData(){Entity = entity});
         }
 
         private void UnselectAllEntities(ref SystemState state, EntityCommandBuffer ecb)
@@ -256,6 +273,17 @@ namespace Assets.Scripts.ECSControllUnit
 
         /// <summary> Shift Click 여부 </summary>
         public bool IsAdditive;
+    }
+    
+    public struct UnitSelectedData : IComponentData
+    {
+        public FixedString32Bytes EntityName;
+        public Entity Entity;
+    }
+    
+    public struct UnitDeselectedData : IComponentData
+    {
+        public Entity Entity;
     }
 
     public struct SelectableUnitTag : IComponentData { }

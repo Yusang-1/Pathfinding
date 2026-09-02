@@ -25,7 +25,7 @@ namespace Assets.Scripts.ECSControllUnit
         private IActionMapInputer currentInputer;
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ActionMaps, IActionMapInputer> inputerDict = new();
-        
+
         private EntityQuery changeActionMapQuery;
 
         private bool isEventBound;
@@ -44,7 +44,7 @@ namespace Assets.Scripts.ECSControllUnit
         private void Start()
         {
             changeActionMapQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(ChangeActionMapRequest));
-            
+
             actionMapNameDict.Add(ActionMaps.Player, "Player");
             actionMapNameDict.Add(ActionMaps.Unit, "Unit");
             actionMapNameDict.Add(ActionMaps.SpawnAreaSetter, "SpawnAreaSetter");
@@ -55,16 +55,20 @@ namespace Assets.Scripts.ECSControllUnit
 
             ChangeActionMapDefault();
         }
-        
+
         private void Update()
         {
             var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            
+
             using var requests = changeActionMapQuery.ToComponentDataArray<ChangeActionMapRequest>(Allocator.Temp);
-            
-            using var entities = changeActionMapQuery.ToEntityArray(Allocator.Temp);
-            
-            for(int i = 0; i < requests.Length; i++)
+            if (requests == null || requests.Length == 0)
+            {
+                return;
+            }
+
+            using var entities = changeActionMapQuery.ToEntityArray(Allocator.Temp);            
+
+            for (int i = 0; i < requests.Length; i++)
             {
                 ChangeActionMapSelected(requests[i].TargetMap);
                 entityManager.DestroyEntity(entities[i]);

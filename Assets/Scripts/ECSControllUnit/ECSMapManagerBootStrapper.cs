@@ -4,6 +4,7 @@ using Assets.Scripts.ControllUnit;
 using Assets.Scripts.ControllUnit.UI;
 using Assets.Scripts.ControllUnit.SO;
 using Assets.Scripts.Pathfinding;
+using Unity.Entities;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -14,14 +15,14 @@ namespace Assets.Scripts.ECSControllUnit
         private readonly ControllUnitUIRoot uiRoot;
         private readonly ECSInputManager inputManager;
         private readonly ECSUnitSpawner unitSpawner;
-        private readonly ECSSelectableController selectableController = new();
+        private readonly ECSSelectableController selectableController;
         private readonly MapdataJsonConverter mapdataJsonConverter = new();
         private readonly MapRuntimeContext mapRuntimeContext;
         private readonly ECSPathfindingBridge pathfindingBridge;
 
         private bool isEventBound;
         public ECSMapManagerBootStrapper(ControllUnitUIRoot uiRoot, ECSInputManager inputManager, ECSUnitSpawner unitSpawner,
-            Action<MapData> initializeMapRuntime, MapRuntimeContext mapRuntimeContext, ECSPathfindingBridge pathfindingBridge)
+            Action<MapData> initializeMapRuntime, MapRuntimeContext mapRuntimeContext, ECSPathfindingBridge pathfindingBridge, ECSSelectableController selectableController)
         {
             this.uiRoot = uiRoot;
             this.inputManager = inputManager;
@@ -29,10 +30,12 @@ namespace Assets.Scripts.ECSControllUnit
             this.initializeMapRuntime = initializeMapRuntime;
             this.mapRuntimeContext = mapRuntimeContext;
             this.pathfindingBridge = pathfindingBridge;
+            this.selectableController = selectableController;
         }
 
         public void Initialize(NodeData nodeData, UnitsSO unitsSO, PathfinderControllUnit pathfinder)
         {
+            selectableController.Initialize();
             nodeData.Initialize();
             unitSpawner.Initialize(new UnitRuntimeContext(pathfinder, mapRuntimeContext.SpatialHash));
             inputManager.Initialize(selectableController);
@@ -79,8 +82,6 @@ namespace Assets.Scripts.ECSControllUnit
 
         private void AddUnitSpawnerEvent()
         {
-            unitSpawner.OnUnitSelected += HandleUnitSelected;
-            unitSpawner.OnUnitDeselected += HandleUnitDeselected;
             unitSpawner.OnSpawnAreaSettingStarted += inputManager.ChangeActionMapSelected;
         }
 
@@ -102,6 +103,9 @@ namespace Assets.Scripts.ECSControllUnit
         {
             selectableController.OnMove += pathfindingBridge.Move;
             selectableController.OnMoveAdditive += pathfindingBridge.MoveAdditive;
+            
+            selectableController.OnSelectedCallback += HandleUnitSelected;
+            selectableController.OnDeselectedCallback += HandleUnitDeselected;
         }
 
         private void RemoveUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
@@ -117,8 +121,6 @@ namespace Assets.Scripts.ECSControllUnit
 
         private void RemoveUnitSpawnerEvent()
         {
-            unitSpawner.OnUnitSelected -= HandleUnitSelected;
-            unitSpawner.OnUnitDeselected -= HandleUnitDeselected;
             unitSpawner.OnSpawnAreaSettingStarted -= inputManager.ChangeActionMapSelected;
         }
 
@@ -140,15 +142,18 @@ namespace Assets.Scripts.ECSControllUnit
         {
             selectableController.OnMove -= pathfindingBridge.Move;
             selectableController.OnMoveAdditive -= pathfindingBridge.MoveAdditive;
+            
+            selectableController.OnSelectedCallback -= HandleUnitSelected;
+            selectableController.OnDeselectedCallback -= HandleUnitDeselected;
         }
 
-        private void HandleUnitSelected(ISelectableUnit selectable)
+        private void HandleUnitSelected(string name, Entity entity)
         {
-            uiRoot.OnUnitSelected?.Invoke(selectable);
+            uiRoot.OnECSUnitSelected?.Invoke(name, entity);
         }
-        private void HandleUnitDeselected(ISelectableUnit selectable)
+        private void HandleUnitDeselected(Entity entity)
         {
-            uiRoot.OnUnitDeselected?.Invoke(selectable);
+            uiRoot.OnECSUnitDeselected?.Invoke(entity);
         }
         private void HandleHoldStart(Vector3 vec)
         {
