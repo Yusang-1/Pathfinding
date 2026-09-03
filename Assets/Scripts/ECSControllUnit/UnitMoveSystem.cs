@@ -10,8 +10,8 @@ namespace Assets.Scripts.ECSControllUnit
     {
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (moveState, transform, movableComponent, entity)
-                in SystemAPI.Query<RefRW<UnitMoveState>, RefRW<LocalTransform>, RefRW<MovableComponent>>().WithEntityAccess())
+            foreach (var (moveState, transform, movableComponent, unitComponent, entity)
+                in SystemAPI.Query<RefRW<UnitMoveState>, RefRW<LocalTransform>, RefRW<MovableComponent>, RefRO<ECSUnitComponent>>().WithEntityAccess())
             {
                 if (!moveState.ValueRO.IsMoving) continue;
 
@@ -58,6 +58,17 @@ namespace Assets.Scripts.ECSControllUnit
                         moveState.ValueRW.IsMoving = false;
                         moveState.ValueRW.IsNeedLazyRefine = false;
                     }
+                }
+
+                Entity buttomEntity = unitComponent.ValueRO.BottomCircle;
+
+                if (buttomEntity != Entity.Null && state.EntityManager.HasComponent<LocalTransform>(buttomEntity))
+                {
+                    LocalTransform bottomTransform = state.EntityManager.GetComponentData<LocalTransform>(buttomEntity);
+                    
+                    bottomTransform.Position = transform.ValueRO.Position;
+                    
+                    state.EntityManager.SetComponentData(buttomEntity, bottomTransform);
                 }
             }
         }
