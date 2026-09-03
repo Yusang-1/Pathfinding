@@ -94,7 +94,7 @@ namespace Assets.Scripts.ECSControllUnit
             }
         }
 
-        private Vector3? holdCanceledWorldPosition;
+        private Vector3? holdPerformedWorldPosition;
         private void HoldStarted()
         {
             OnHoldStarted?.Invoke(mousePosition);
@@ -102,16 +102,20 @@ namespace Assets.Scripts.ECSControllUnit
         }
         private void HoldPerformed()
         {
-            holdCanceledWorldPosition = OnHoldPerformed?.Invoke(mousePosition);
+            holdPerformedWorldPosition = OnHoldPerformed?.Invoke(mousePosition);
+            if (holdPerformedWorldPosition == null) return;
+
+            Vector3 position = (Vector3)holdPerformedWorldPosition;
+            selectableController.CheckUnitsInArea(mouseWorldPosition, position);
         }
 
         private void HoldCanceled()
         {
             isDrag = false;
-            if (holdCanceledWorldPosition == null) return;
+            if (holdPerformedWorldPosition == null) return;
 
-            Vector3 position = (Vector3)holdCanceledWorldPosition;
-            selectableController.MakeAreaSelectionRequest(mouseWorldPosition, position, isShiftPressed);
+            Vector3 position = (Vector3)holdPerformedWorldPosition;
+            selectableController.MakeSelectionRequest(mouseWorldPosition, isShiftPressed);
             OnHoldCanceled?.Invoke();
         }
 
@@ -126,14 +130,6 @@ namespace Assets.Scripts.ECSControllUnit
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
 
                 selectableController.MakeMoveCommand(mouseWorldPosition, isShiftPressed);
-                // if (isShiftPressed)
-                // {
-                //     selectableController.ShiftRightClickMove(worldPos);
-                // }
-                // else
-                // {
-                //     selectableController.RightClickMove(worldPos);
-                // }
             }
         }
 
@@ -149,23 +145,9 @@ namespace Assets.Scripts.ECSControllUnit
                 if (isDrag || isPointerOverGameObject) return;
 
                 mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-                // Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
-                // Vector3 origin = Camera.main.transform.position;
-                // Vector3 direction = -(worldPos - origin).normalized;
-
-                // if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
-                // {
-                //     if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
-                //     {
-                //         selectableController.UnitFocusedPoint(selectable);
-                //     }
-                //     else
-                //         selectableController.UnitFocusedPoint(null);
-                // }
-                // else
-                // {
-                //     selectableController.UnitFocusedPoint(null);
-                // }
+                
+                // 마우스 커서 아래 유닛이 있는지 확인
+                selectableController.CheckUnitIsBelowMouse(mouseWorldPosition);
             }
         }
 

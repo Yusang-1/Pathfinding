@@ -93,7 +93,7 @@ namespace Assets.Scripts.ECSControllUnit
             }
         }
 
-        private Vector3? holdCanceledWorldPosition;
+        private Vector3? holdPerformedWorldPosition;
         private void HoldStarted()
         {
             OnHoldStarted?.Invoke(mousePosition);
@@ -101,15 +101,20 @@ namespace Assets.Scripts.ECSControllUnit
         }
         private void HoldPerformed()
         {
-            holdCanceledWorldPosition = OnHoldPerformed?.Invoke(mousePosition);
+            holdPerformedWorldPosition = OnHoldPerformed?.Invoke(mousePosition);
+            if (holdPerformedWorldPosition == null) return;
+
+            Vector3 position = (Vector3)holdPerformedWorldPosition;
+            selectableController.CheckUnitsInArea(mouseWorldPosition, position);
         }
         private void HoldCanceled()
         {
             isDrag = false;
-            if (holdCanceledWorldPosition == null) return;
+            if (holdPerformedWorldPosition == null) return;
 
-            Vector3 position = (Vector3)holdCanceledWorldPosition;
-            selectableController.MakeAreaSelectionRequest(mouseWorldPosition, position, false);
+            Vector3 position = (Vector3)holdPerformedWorldPosition;
+
+            selectableController.MakeSelectionRequest(mouseWorldPosition, false);
             OnHoldCanceled?.Invoke();
         }
 
@@ -124,25 +129,10 @@ namespace Assets.Scripts.ECSControllUnit
 
                 if (isDrag || isPointerOverGameObject) return;
 
-                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-                mouseWorldPosition = worldPos;
-
-                // Vector3 origin = Camera.main.transform.position;
-                // Vector3 direction = -(worldPos - origin).normalized;
-
-                // if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
-                // {
-                //     if (hit.collider.TryGetComponent<Assets.Scripts.ControllUnit.ISelectableUnit>(out Assets.Scripts.ControllUnit.ISelectableUnit selectable))
-                //     {
-                //         selectableController.UnitFocusedPoint(selectable);
-                //     }
-                //     else
-                //         selectableController.UnitFocusedPoint(null);
-                // }
-                // else
-                // {
-                //     selectableController.UnitFocusedPoint(null);
-                // }
+                mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
+                
+                // 마우스 커서 아래 유닛이 있는지 확인
+                selectableController.CheckUnitIsBelowMouse(mouseWorldPosition);
             }
         }
 

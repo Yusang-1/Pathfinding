@@ -20,15 +20,35 @@ namespace Assets.Scripts.ECSControllUnit
         private EntityQuery SelectedQuery;
         private EntityQuery DeselectedQuery;
 
+        private EntityQuery unitSelectionRequestQuery;
+        private EntityQuery focusedRequestQuery;
+        private EntityQuery areaFocusedRequestQuery;
+
         public void Initialize()
         {
             entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
             SelectedQuery = entityManager.CreateEntityQuery(ComponentType.ReadOnly<UnitSelectedData>());
             DeselectedQuery = entityManager.CreateEntityQuery(ComponentType.ReadOnly<UnitDeselectedData>());
+
+            unitSelectionRequestQuery = entityManager.CreateEntityQuery(ComponentType.ReadOnly<UnitSelectionRequest>());
+            focusedRequestQuery = entityManager.CreateEntityQuery(ComponentType.ReadOnly<CheckUnitFocusedRequest>());
+            areaFocusedRequestQuery = entityManager.CreateEntityQuery(ComponentType.ReadOnly<CheckUnitAreaFocusedRequest>());
         }
 
         public void MakeSelectionRequest(Vector3 position, bool isAdditive)
         {
+            NativeArray<Entity> requests = new NativeArray<Entity>();
+            
+            bool hasRequests = TryGetRequestQuery(unitSelectionRequestQuery, out requests);
+            if(hasRequests)
+            {
+                foreach(var request in requests)
+                {
+                    entityManager.DestroyEntity(request);
+                }
+            }
+            requests.Dispose();                                    
+            
             Entity selectionRequest = entityManager.CreateEntity();
 
             entityManager.AddComponentData(
@@ -41,20 +61,67 @@ namespace Assets.Scripts.ECSControllUnit
             );
         }
 
-        public void MakeAreaSelectionRequest(Vector3 position, Vector3 holdEndPosition, bool isAdditive)
+        public void CheckUnitIsBelowMouse(Vector3 position)
         {
-            Entity selectionRequest = entityManager.CreateEntity();
+            NativeArray<Entity> requests = new NativeArray<Entity>();
+            
+            bool hasRequests = TryGetRequestQuery(focusedRequestQuery, out requests);
+            if(hasRequests)
+            {
+                foreach(var request in requests)
+                {
+                    entityManager.DestroyEntity(request);
+                }
+            }
+            requests.Dispose();
+            
+            Entity CheckFocusedEntityRequest = entityManager.CreateEntity();
 
             entityManager.AddComponentData(
-                selectionRequest,
-                new UnitAreaSelectionRequest()
+                CheckFocusedEntityRequest,
+                new CheckUnitFocusedRequest()
+                {
+                    WorldPosition = position
+                }
+            );
+        }
+
+        public void CheckUnitsInArea(Vector3 position, Vector3 holdEndPosition)
+        {
+            NativeArray<Entity> requests = new NativeArray<Entity>();
+            
+            bool hasRequests = TryGetRequestQuery(areaFocusedRequestQuery, out requests);
+            if(hasRequests)
+            {
+                foreach(var request in requests)
+                {
+                    entityManager.DestroyEntity(request);
+                }
+            }
+            requests.Dispose();
+            
+            Entity CheckFocusedEntitiesRequest = entityManager.CreateEntity();
+
+            entityManager.AddComponentData(
+                CheckFocusedEntitiesRequest,
+                new CheckUnitAreaFocusedRequest()
                 {
                     StandardPosition = position,
                     Width = holdEndPosition.x - position.x,
                     Height = holdEndPosition.y - position.y,
-                    IsAdditive = isAdditive
                 }
             );
+        }
+        
+        private bool TryGetRequestQuery(EntityQuery query, out NativeArray<Entity> entities)
+        {
+            entities = query.ToEntityArray(Allocator.Temp);
+            
+            if(entities.Length == 0)
+            {
+                return false;
+            }
+            else return true;
         }
 
         public void MakeMoveCommand(Vector3 destination, bool isAdditive)
