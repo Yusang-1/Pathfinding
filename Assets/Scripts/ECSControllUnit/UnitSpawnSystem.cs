@@ -7,12 +7,17 @@ namespace Assets.Scripts.ECSControllUnit
     public partial struct UnitSpawnSystem : ISystem
     {
         public void OnUpdate(ref SystemState state)
-        {            
+        {
             if (!SystemAPI.TryGetSingletonBuffer<UnitBySizeDynamicBuffer>(out var prefabBuffer, true))
             {
                 return;
             }
-            if(prefabBuffer.IsEmpty)
+            if (prefabBuffer.IsEmpty)
+            {
+                return;
+            }
+
+            if (!SystemAPI.TryGetSingleton<UnitBottomContainer>(out var bottomContainer))
             {
                 return;
             }
@@ -36,27 +41,42 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 // 원하는 실제 엔티티 생성 (복제)
                 Entity prefab = Entity.Null;
-                
-                foreach(var prefabData in prefabBuffer)
+
+                foreach (var prefabData in prefabBuffer)
                 {
-                    if(prefabData.Key == spawnRequest.UnitSize)
+                    if (prefabData.Key == spawnRequest.UnitSize)
                     {
                         prefab = prefabData.Value;
                         break;
                     }
                 }
-                
-                if(prefab == Entity.Null)
+
+                if (prefab == Entity.Null)
                 {
                     ecb.DestroyEntity(spawnRequestEntity);
                     continue;
                 }
-                
+
                 Entity newEntity = ecb.Instantiate(prefab);
+                Entity newBottomPrefab = ecb.Instantiate(bottomContainer.Prefab);
+
+
+                // Entity 컴포넌트 설정
                 ecb.RemoveComponent<Disabled>(newEntity);
-                
-                // spawn위치 지정
                 ecb.SetComponent(newEntity, LocalTransform.FromPosition(spawnRequest.Position));
+                ECSUnitComponent defaultComponent = state.EntityManager.GetComponentData<ECSUnitComponent>(prefab);
+                ecb.SetComponent(newEntity,
+                    new ECSUnitComponent
+                    {
+                        UnitName = defaultComponent.UnitName,
+                        Radius = defaultComponent.Radius,
+                        BottomCircle = newBottomPrefab
+                        // IconName = authoring.unitData.UnitIcon.name
+                    }
+                );
+
+                // Bottom 컴포넌트 설정
+                ecb.SetComponent(newBottomPrefab, LocalTransform.FromPosition(spawnRequest.Position));
 
                 // 한 번 처리한 요청 신호는 다음 프레임에 또 수행되지 않도록 삭제
                 ecb.DestroyEntity(spawnRequestEntity);

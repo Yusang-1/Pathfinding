@@ -129,23 +129,25 @@ namespace Assets.Scripts.ECSControllUnit
 
                     if (selectEntity != Entity.Null)
                     {
+                        LocalTransform transform = entityManager.GetComponentData<LocalTransform>(selectEntity);
+                        
                         if (request.IsAdditive)
                         {
                             // IsAdditive && 이미 선택중 ecb.RemoveComponent(selectEntity, typeof(SelectedUnitTag));
-                            if (state.EntityManager.HasComponent<SelectedUnitTag>(selectEntity))
+                            if (entityManager.HasComponent<SelectedUnitTag>(selectEntity))
                             {
                                 UnselectEntity(ref state, selectEntity, ecb);
                             }
                             else // IsAdditive && 선택중X ecb.AddComponent(selectEntity, typeof(SelectedUnitTag));
                             {
-                                SelectEntity(selectEntity, ecb);
+                                SelectEntity(selectEntity, ecb, transform);
                             }
                         }
                         else // !IsAdditive / 기존 SelectedUnitTag가진 엔티티들 해제, selectedEntity select
                         {
                             UnselectAllEntities(ref state, ecb);
 
-                            SelectEntity(selectEntity, ecb);
+                            SelectEntity(selectEntity, ecb, transform);
                         }
                     }
                     else
@@ -196,12 +198,13 @@ namespace Assets.Scripts.ECSControllUnit
                             foreach (Entity entity in entities)
                             {
                                 if (!state.EntityManager.HasComponent<LocalTransform>(entity)) continue;
-
-                                float3 position = state.EntityManager.GetComponentData<LocalTransform>(entity).Position;
+                                
+                                LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(entity);
+                                float3 position = localTransform.Position;
 
                                 if (position.x >= xMin && position.x <= xMax && position.y >= yMin && position.y <= yMax)
                                 {
-                                    SelectEntity(entity, ecb);
+                                    SelectEntity(entity, ecb, localTransform);
                                 }
                             }
                         }
@@ -212,7 +215,7 @@ namespace Assets.Scripts.ECSControllUnit
             }
         }
 
-        private void SelectEntity(Entity entity, EntityCommandBuffer ecb)
+        private void SelectEntity(Entity entity, EntityCommandBuffer ecb, LocalTransform localTransform)
         {
             ecb.AddComponent(entity, typeof(SelectedUnitTag));
 
@@ -221,8 +224,11 @@ namespace Assets.Scripts.ECSControllUnit
 
             // select후 ui 처리
             var select = ecb.CreateEntity();
-            var name = entityManager.GetComponentData<ECSUnitComponent>(entity).UnitName;
+            var component = entityManager.GetComponentData<ECSUnitComponent>(entity);
+            var name = component.UnitName;
             ecb.AddComponent(select, new UnitSelectedData() { Entity = entity, EntityName = name });
+
+            ActiveUnitBottom(ecb, component, localTransform);
         }
 
         private void UnselectEntity(ref SystemState state, Entity entity, EntityCommandBuffer ecb)
@@ -249,6 +255,9 @@ namespace Assets.Scripts.ECSControllUnit
             // unselect후 ui 처리
             var select = ecb.CreateEntity();
             ecb.AddComponent(select, new UnitDeselectedData() { Entity = entity });
+            
+            var component = entityManager.GetComponentData<ECSUnitComponent>(entity);
+            DeactiveUnitBottom(component, ecb);
         }
 
         private void UnselectAllEntities(ref SystemState state, EntityCommandBuffer ecb)
@@ -261,6 +270,22 @@ namespace Assets.Scripts.ECSControllUnit
             }
 
             registered.Dispose();
+        }
+
+        /// <summary> 유닛 하단 표시를 활성화하고 위치 지정 </summary>
+        private void ActiveUnitBottom(EntityCommandBuffer ecb, ECSUnitComponent component, LocalTransform entityTransform)
+        {
+            var bottomEntity = component.BottomCircle;
+
+            ecb.RemoveComponent(bottomEntity, typeof(Disabled));
+            ecb.SetComponent<LocalTransform>(bottomEntity, LocalTransform.FromPosition(entityTransform.Position));
+        }
+
+        private void DeactiveUnitBottom(ECSUnitComponent component, EntityCommandBuffer ecb)
+        {
+            var bottomEntity = component.BottomCircle;
+            
+            ecb.AddComponent(bottomEntity, typeof(Disabled));
         }
 
         private void CreateActionMapRequest(EntityCommandBuffer ecb, ActionMaps actionMap)

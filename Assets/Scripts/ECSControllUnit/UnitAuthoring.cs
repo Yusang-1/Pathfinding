@@ -20,7 +20,7 @@ namespace Assets.Scripts.ECSControllUnit
                 AddComponent(entity, new ECSUnitComponent
                 {
                     UnitName = authoring.unitData.UnitName,
-                    Radius = authoring.unitRadius
+                    Radius = authoring.unitRadius                    
                     // IconName = authoring.unitData.UnitIcon.name
                 });
                 AddComponent(entity, new MovableComponent
@@ -47,6 +47,7 @@ namespace Assets.Scripts.ECSControllUnit
         public FixedString32Bytes UnitName;
         public FixedString64Bytes IconName;        
         public float Radius;
+        public Entity BottomCircle;
     }
 
     public struct MovableComponent : IComponentData
