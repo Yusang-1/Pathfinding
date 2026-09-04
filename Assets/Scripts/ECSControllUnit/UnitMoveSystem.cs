@@ -60,15 +60,26 @@ namespace Assets.Scripts.ECSControllUnit
                     }
                 }
 
-                Entity buttomEntity = unitComponent.ValueRO.BottomCircle;
-
-                if (buttomEntity != Entity.Null && state.EntityManager.HasComponent<LocalTransform>(buttomEntity))
+                Entity bottomEntity;
+                Entity bottomEntitySelected = unitComponent.ValueRO.BottomCircleSelected;
+                Entity bottomEnttiyFocused = unitComponent.ValueRO.BottomCircleFocused;
+                if (!state.EntityManager.HasComponent(bottomEntitySelected, typeof(Disabled)))
                 {
-                    LocalTransform bottomTransform = state.EntityManager.GetComponentData<LocalTransform>(buttomEntity);
-                    
+                    bottomEntity = bottomEntitySelected;
+                }
+                else if(!state.EntityManager.HasComponent(bottomEnttiyFocused, typeof(Disabled)))
+                {
+                    bottomEntity = bottomEntitySelected;
+                }
+                else continue;
+
+                if (bottomEntity != Entity.Null && state.EntityManager.HasComponent<LocalTransform>(bottomEntity))
+                {
+                    LocalTransform bottomTransform = state.EntityManager.GetComponentData<LocalTransform>(bottomEntity);
+
                     bottomTransform.Position = transform.ValueRO.Position;
-                    
-                    state.EntityManager.SetComponentData(buttomEntity, bottomTransform);
+
+                    state.EntityManager.SetComponentData(bottomEntity, bottomTransform);
                 }
             }
         }

@@ -7,7 +7,8 @@ namespace Assets.Scripts.ECSControllUnit
     {
         public UnitAuthoring unitPrefab;
         public UnitAuthoring unitLargePrefab;
-        public UnitBottomAuthoring unitBottomAuthoring;
+        public UnitBottomAuthoring unitBottomSelectAuthoring;
+        public UnitBottomAuthoring unitBottomFocusAuthoring;
 
         public class Baker : Baker<UnitPrefabMaker>
         {
@@ -26,8 +27,16 @@ namespace Assets.Scripts.ECSControllUnit
                 GetUnitBySizeBuffer(entityBySizeBuffer, UnitSize.small, prefabEntity);
                 GetUnitBySizeBuffer(entityBySizeBuffer, UnitSize.large, prefabEntityLarge);
 
-                Entity bottomEntity = GetEntity(authoring.unitBottomAuthoring, TransformUsageFlags.Dynamic);
-                AddComponent(spawnerDataEntity, new UnitBottomContainer { Prefab = bottomEntity });
+                Entity selectBottomEntity = GetEntity(authoring.unitBottomSelectAuthoring, TransformUsageFlags.Dynamic);
+                Entity focusBottomEntity = GetEntity(authoring.unitBottomFocusAuthoring, TransformUsageFlags.Dynamic);
+
+                AddComponent(spawnerDataEntity,
+                    new UnitBottomContainer
+                    {
+                        SelectPrefab = selectBottomEntity,
+                        FocusPrefab = focusBottomEntity
+                    }
+                );
             }
 
             private void GetUnitBySizeBuffer(DynamicBuffer<UnitBySizeDynamicBuffer> entityBySizeBuffer, UnitSize unitSize, Entity entity)
@@ -53,7 +62,8 @@ namespace Assets.Scripts.ECSControllUnit
 
     public struct UnitBottomContainer : IComponentData
     {
-        public Entity Prefab;
+        public Entity SelectPrefab;
+        public Entity FocusPrefab;
     }
 }
 

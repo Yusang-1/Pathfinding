@@ -47,7 +47,8 @@ namespace Assets.Scripts.ECSControllUnit
         public FixedString32Bytes UnitName;
         public FixedString64Bytes IconName;        
         public float Radius;
-        public Entity BottomCircle;
+        public Entity BottomCircleSelected;
+        public Entity BottomCircleFocused;
     }
 
     public struct MovableComponent : IComponentData

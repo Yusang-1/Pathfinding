@@ -2,6 +2,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Assets.Scripts.ControllUnit;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -320,7 +321,7 @@ namespace Assets.Scripts.ECSControllUnit
             focusedEntities.Add(entity);
 
             var component = entityManager.GetComponentData<ECSUnitComponent>(entity);
-            ActiveUnitBottom(ecb, component, localTransform);
+            ActiveUnitBottom(ecb, component, localTransform, UnitBottomStatus.Focused);
         }
 
         private void UnfocusEntity(Entity entity, EntityCommandBuffer ecb)
@@ -338,7 +339,7 @@ namespace Assets.Scripts.ECSControllUnit
 
             // 유닛 하단 표시 엔티티 해제
             var component = entityManager.GetComponentData<ECSUnitComponent>(entity);
-            DeactiveUnitBottom(component, ecb);
+            DeactiveUnitBottom(component, ecb, UnitBottomStatus.Focused);
         }
 
         /// <summary> focused와 focused in this frame을 비교해 focus, unfocus한다. </summary>        
@@ -383,7 +384,7 @@ namespace Assets.Scripts.ECSControllUnit
             var name = component.UnitName;
             ecb.AddComponent(select, new UnitSelectedData() { Entity = entity, EntityName = name });
 
-            ActiveUnitBottom(ecb, component, localTransform);
+            ActiveUnitBottom(ecb, component, localTransform, UnitBottomStatus.Selected);
         }
 
         private void UnselectEntity(ref SystemState state, Entity entity, EntityCommandBuffer ecb)
@@ -411,7 +412,7 @@ namespace Assets.Scripts.ECSControllUnit
             ecb.AddComponent(select, new UnitDeselectedData() { Entity = entity });
 
             var component = entityManager.GetComponentData<ECSUnitComponent>(entity);
-            DeactiveUnitBottom(component, ecb);
+            DeactiveUnitBottom(component, ecb, UnitBottomStatus.Selected);
         }
 
         private void UnselectAllEntities(ref SystemState state, EntityCommandBuffer ecb)
@@ -427,17 +428,35 @@ namespace Assets.Scripts.ECSControllUnit
         }
 
         /// <summary> 유닛 하단 표시를 활성화하고 위치 지정 </summary>
-        private void ActiveUnitBottom(EntityCommandBuffer ecb, ECSUnitComponent component, LocalTransform entityTransform) // 스프라이트를 지정할수 있도록 해야함
+        private void ActiveUnitBottom(EntityCommandBuffer ecb, ECSUnitComponent component, LocalTransform entityTransform, UnitBottomStatus status)
         {
-            var bottomEntity = component.BottomCircle;
+            Entity bottomEntity;
+            if (status == UnitBottomStatus.Selected)
+            {
+                bottomEntity = component.BottomCircleSelected;
+            }
+            else if (status == UnitBottomStatus.Focused)
+            {
+                bottomEntity = component.BottomCircleFocused;
+            }
+            else return;
 
             ecb.RemoveComponent(bottomEntity, typeof(Disabled));
             ecb.SetComponent<LocalTransform>(bottomEntity, LocalTransform.FromPosition(entityTransform.Position));
         }
 
-        private void DeactiveUnitBottom(ECSUnitComponent component, EntityCommandBuffer ecb)
+        private void DeactiveUnitBottom(ECSUnitComponent component, EntityCommandBuffer ecb, UnitBottomStatus status)
         {
-            var bottomEntity = component.BottomCircle;
+            Entity bottomEntity;
+            if (status == UnitBottomStatus.Selected)
+            {
+                bottomEntity = component.BottomCircleSelected;
+            }
+            else if (status == UnitBottomStatus.Focused)
+            {
+                bottomEntity = component.BottomCircleFocused;
+            }
+            else return;
 
             ecb.AddComponent(bottomEntity, typeof(Disabled));
         }

@@ -58,8 +58,8 @@ namespace Assets.Scripts.ECSControllUnit
                 }
 
                 Entity newEntity = ecb.Instantiate(prefab);
-                Entity newBottomPrefab = ecb.Instantiate(bottomContainer.Prefab);
-
+                Entity newBottomPrefabSelected = ecb.Instantiate(bottomContainer.SelectPrefab);
+                Entity newBottomPrefabFocused = ecb.Instantiate(bottomContainer.FocusPrefab);
 
                 // Entity 컴포넌트 설정
                 ecb.RemoveComponent<Disabled>(newEntity);
@@ -70,13 +70,15 @@ namespace Assets.Scripts.ECSControllUnit
                     {
                         UnitName = defaultComponent.UnitName,
                         Radius = defaultComponent.Radius,
-                        BottomCircle = newBottomPrefab
+                        BottomCircleSelected = newBottomPrefabSelected,
+                        BottomCircleFocused = newBottomPrefabFocused
                         // IconName = authoring.unitData.UnitIcon.name
                     }
                 );
 
                 // Bottom 컴포넌트 설정
-                ecb.SetComponent(newBottomPrefab, LocalTransform.FromPosition(spawnRequest.Position));
+                ecb.SetComponent(newBottomPrefabSelected, LocalTransform.FromPosition(spawnRequest.Position));
+                ecb.SetComponent(newBottomPrefabFocused, LocalTransform.FromPosition(spawnRequest.Position));
 
                 // 한 번 처리한 요청 신호는 다음 프레임에 또 수행되지 않도록 삭제
                 ecb.DestroyEntity(spawnRequestEntity);
