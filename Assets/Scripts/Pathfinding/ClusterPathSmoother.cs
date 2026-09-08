@@ -99,6 +99,10 @@ namespace Assets.Scripts.Pathfinding
             // loop의 첫 시작인 경우 left, right설정 후 다음 loop로
             if (isStart)
             {
+                if (path.ExitDirection == Vector2Int.zero)
+                {
+                    Debug.Log(path);
+                }
                 clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);
                 currentLeft = left;
                 leftSetIndex = index;
@@ -123,6 +127,10 @@ namespace Assets.Scripts.Pathfinding
                 return;
             }
 
+            if (path.ExitDirection == Vector2Int.zero)
+            {
+                Debug.Log(path);
+            }
             clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int newLeft, out Vector2Int newRight, unitRadius);
 
             // 왼쪽 endPoint 계산
@@ -194,5 +202,5 @@ namespace Assets.Scripts.Pathfinding
 
             smootherClusterPath.Add(result);
         }
-    }    
+    }
 }

@@ -75,7 +75,7 @@ namespace Assets.Scripts.Pathfinding
             clusterList.ResetClusterList();
             PathResultRecorder.ResetPathResult();
 
-            clusterResultWrapper.Reset();
+            clusterResultWrapper.ResetAll();
             clusterResultWrapper.SetStart(from, to, tempUnitRadius);
 
             CurrentAbstractResults = pathfindingChain.ClusterPath_StringPulling?.Invoke(clusterResultWrapper);
@@ -94,7 +94,7 @@ namespace Assets.Scripts.Pathfinding
             clusterList.ResetClusterList();
             PathResultRecorder.ResetPathResult();
 
-            clusterResultWrapper.Reset();
+            clusterResultWrapper.ResetAll();
             clusterResultWrapper.SetStart(from, to, tempUnitRadius);
 
             pathfindingChain.HPAStar_Theta?.Invoke(clusterResultWrapper);
@@ -113,7 +113,7 @@ namespace Assets.Scripts.Pathfinding
             clusterList.ResetClusterList();
             PathResultRecorder.ResetPathResult();
 
-            clusterResultWrapper.Reset();
+            clusterResultWrapper.ResetAll();
             clusterResultWrapper.SetStart(from, to, tempUnitRadius);
 
             SmoothPath = pathfindingChain.HPAStar_StringPulling_Theta?.Invoke(clusterResultWrapper);

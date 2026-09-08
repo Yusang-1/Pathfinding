@@ -18,10 +18,21 @@ namespace Assets.Scripts.Pathfinding
             this.To = to;
             this.UnitRadius = unitRadius;
         }
-
-        public void Reset()
+        
+        public void ResetAll()
         {
-
+            ResetClusterResult();
+            ResetSmootherClusterResult();
+        }
+        
+        public void ResetClusterResult()
+        {
+            ClusterResults.Clear();
+        }
+        
+        public void ResetSmootherClusterResult()
+        {
+            ClusterSmootherResult.Clear();
         }
 
         public void SetClusterResult(List<ClusterResult> results)

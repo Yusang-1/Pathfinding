@@ -37,7 +37,7 @@ namespace Assets.Scripts.Pathfinding
 
         public ClusterResultWrapper GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)
         {
-            clusterResultWrapper.Reset();
+            clusterResultWrapper.ResetClusterResult();
             clusterResultWrapper.SetStart(from, to, unitRadius);
 
             var clusterPath = highLevelPathfinder.FindClusterPath(clusterResultWrapper);
