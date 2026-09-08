@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Assets.Scripts.ECS.UnitMovement;
 
 namespace Assets.Scripts.ECS
 {

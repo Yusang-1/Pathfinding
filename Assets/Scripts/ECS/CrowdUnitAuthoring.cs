@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Entities;
 using Unity.Mathematics;
+using Assets.Scripts.ECS.UnitMovement;
 
 namespace Assets.Scripts.ECS
 {
@@ -44,7 +45,7 @@ namespace Assets.Scripts.ECS
                 AddComponent(prefabEntity, new Prefab());
                 AddComponent(prefabEntity, new Disabled());
 
-                AddBuffer<NearbyEntityElement>(prefabEntity);                
+                AddBuffer<NearbyEntityElement>(prefabEntity);
             }
         }
     }
