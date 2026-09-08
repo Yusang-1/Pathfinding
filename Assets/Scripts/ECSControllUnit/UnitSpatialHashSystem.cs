@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Assets.Scripts.ControllUnit;
+using Assets.Scripts.ECS.UnitMovement;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -14,7 +15,6 @@ namespace Assets.Scripts.ECSControllUnit
 
         private NativeParallelMultiHashMap<int, Entity> cells;
         private NativeParallelHashMap<Entity, int> registeredEntities;
-        // private NativeList<Entity> focusedEntities;
         private NativeHashSet<Entity> focusedEntities;
         private NativeHashSet<Entity> focusedEntitiesInThisFrame;
 
@@ -80,8 +80,8 @@ namespace Assets.Scripts.ECSControllUnit
             removedEntities.Dispose();
 
             // 움직인 entity의 cell 갱신
-            foreach (var (transform, cell, entity) in
-                SystemAPI.Query<RefRO<LocalTransform>, RefRW<SpatialHashCell>>()
+            foreach (var (transform, cell, nearEntitiesBuffer, entity) in
+                SystemAPI.Query<RefRO<LocalTransform>, RefRW<SpatialHashCell>, DynamicBuffer<NearbyEntityElement>>()
                     .WithAll<ECSUnitComponent>()
                     .WithEntityAccess())
             {
@@ -101,8 +101,21 @@ namespace Assets.Scripts.ECSControllUnit
                     Update(entity, prevCell, out int newCellHash, position);
                     cell.ValueRW.Value = newCellHash;
                 }
+
+                // 근처 entity들 찾기 수행
+                nearEntitiesBuffer.Clear();
+                var nearby = new NativeList<Entity>(Allocator.Temp);
+                CollectNeighbors(entity, cells, transform.ValueRO.Position, nearby);
+
+                for (int i = 0; i < nearby.Length; i++)
+                {
+                    nearEntitiesBuffer.Add(new NearbyEntityElement { Value = nearby[i] });
+                }
+
+                nearby.Dispose();
             }
 
+            // 선택 판별 수행
             var ecb = new EntityCommandBuffer(Allocator.Temp);
 
             CheckFocused(ecb);
@@ -111,6 +124,30 @@ namespace Assets.Scripts.ECSControllUnit
 
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
+        }
+
+        private void CollectNeighbors(Entity thisEntity, NativeParallelMultiHashMap<int, Entity> cellMap,
+            float3 position, NativeList<Entity> nearby)
+        {
+            int2 centerCell = SpatialHashUtility.GetCell(position);
+            int range = 1;
+
+            for (int x = -range; x <= range; x++)
+            {
+                for (int y = -range; y <= range; y++)
+                {
+                    int2 neighborCell = centerCell + new int2(x, y);
+                    int neighborKey = SpatialHashUtility.GetHash(neighborCell);
+
+                    var iterator = cellMap.GetValuesForKey(neighborKey);
+                    while (iterator.MoveNext())
+                    {
+                        if (iterator.Current == thisEntity) continue;
+
+                        nearby.Add(iterator.Current);
+                    }
+                }
+            }
         }
 
         private void CheckFocused(EntityCommandBuffer ecb)
@@ -477,6 +514,7 @@ namespace Assets.Scripts.ECSControllUnit
         public void Register(Entity entity, out int newCell, float3 position)
         {
             newCell = SpatialHashUtility.GetHash(position);
+            UnityEngine.Debug.Log($"Register Entity : {SpatialHashUtility.GetCell(position)}");
 
             cells.Add(newCell, entity);
             registeredEntities.Add(entity, newCell);
@@ -491,9 +529,11 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 return;
             }
+            UnityEngine.Debug.Log($"Update Entity : {SpatialHashUtility.GetCell(position)}");
 
             cells.Remove(prevCell, entity);
             cells.Add(newCell, entity);
+
             registeredEntities[entity] = newCell;
         }
 

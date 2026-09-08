@@ -53,7 +53,8 @@ namespace Assets.Scripts.ECSControllUnit
     }
 
     // public struct UnitPrefabComponent : IComponentData { }
-
+    
+    [InternalBufferCapacity(2)]
     public struct UnitBySizeDynamicBuffer : IBufferElementData
     {
         public UnitSize Key;

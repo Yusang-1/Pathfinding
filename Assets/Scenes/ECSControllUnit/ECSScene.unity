@@ -251,6 +251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitData: {fileID: 11400000, guid: 73becbac25ec9154a89430133cde2ca0, type: 2}
+  steeringWeightingData: {fileID: 11400000, guid: 33ef8a80e716a474e8cf542bc221237c, type: 2}
   unitRadius: 1
 --- !u!23 &2114510158
 MeshRenderer:
@@ -433,6 +434,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitData: {fileID: 11400000, guid: eadadf06a63b7104ca2507b323540b74, type: 2}
+  steeringWeightingData: {fileID: 11400000, guid: 33ef8a80e716a474e8cf542bc221237c, type: 2}
   unitRadius: 0.5
 --- !u!33 &4708875108758028012
 MeshFilter:

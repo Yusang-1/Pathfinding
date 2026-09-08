@@ -3,12 +3,15 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Assets.Scripts.ControllUnit.SO;
+using Assets.Scripts.ECS.UnitMovement;
 
 namespace Assets.Scripts.ECSControllUnit
 {
     public class UnitAuthoring : MonoBehaviour
     {
         [SerializeField] private UnitSO unitData;
+        [SerializeField] private SteeringWeightingSO steeringWeightingData;
+
         [SerializeField] private float unitRadius;
 
         public class Baker : Baker<UnitAuthoring>
@@ -20,7 +23,7 @@ namespace Assets.Scripts.ECSControllUnit
                 AddComponent(entity, new ECSUnitComponent
                 {
                     UnitName = authoring.unitData.UnitName,
-                    Radius = authoring.unitRadius                    
+                    Radius = authoring.unitRadius
                     // IconName = authoring.unitData.UnitIcon.name
                 });
                 AddComponent(entity, new MovableComponent
@@ -32,12 +35,24 @@ namespace Assets.Scripts.ECSControllUnit
                 AddComponent(entity, new SelectableUnitTag());
                 AddComponent(entity, new SpatialHashCell());
 
+                var steeringConfig = authoring.steeringWeightingData != null
+                    ? authoring.steeringWeightingData.WalkConfig
+                    : default;
+                AddComponent(entity, new SteeringBehaviourData
+                {
+                    SeekWeight = steeringConfig.SeekWeight,
+                    SeparationWeight = steeringConfig.SeparationWeight,
+                    AlignmentWeight = steeringConfig.AlignmentWeight,
+                    CohesionWeight = steeringConfig.CohesionWeight
+                });
+
                 AddComponent(entity, new Prefab());
                 AddComponent(entity, new Disabled());
 
                 AddBuffer<HighLevelClusterPath>(entity);
                 AddBuffer<HighLevelWaypoint>(entity);
                 AddBuffer<LowLevelWaypoint>(entity);
+                AddBuffer<NearbyEntityElement>(entity);
             }
         }
     }
@@ -45,7 +60,7 @@ namespace Assets.Scripts.ECSControllUnit
     public struct ECSUnitComponent : IComponentData
     {
         public FixedString32Bytes UnitName;
-        public FixedString64Bytes IconName;        
+        public FixedString64Bytes IconName;
         public float Radius;
         public Entity BottomCircleSelected;
         public Entity BottomCircleFocused;
