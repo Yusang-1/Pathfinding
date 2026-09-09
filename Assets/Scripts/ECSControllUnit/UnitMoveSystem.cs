@@ -101,7 +101,6 @@ namespace Assets.Scripts.ECSControllUnit
 
             if (nearby.IsEmpty)
             {
-                Debug.Log($"seek : {seekVector}");
                 return seekVector;
             }
 

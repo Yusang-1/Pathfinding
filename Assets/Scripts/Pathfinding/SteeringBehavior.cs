@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Assets.Scripts.ControllUnit;
 
-namespace Assets.Scripts.ControllUnit
+namespace Assets.Scripts.Pathfinding
 {
     public class SteeringBehavior
     {        

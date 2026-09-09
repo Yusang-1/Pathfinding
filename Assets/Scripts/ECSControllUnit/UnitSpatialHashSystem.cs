@@ -514,7 +514,6 @@ namespace Assets.Scripts.ECSControllUnit
         public void Register(Entity entity, out int newCell, float3 position)
         {
             newCell = SpatialHashUtility.GetHash(position);
-            UnityEngine.Debug.Log($"Register Entity : {SpatialHashUtility.GetCell(position)}");
 
             cells.Add(newCell, entity);
             registeredEntities.Add(entity, newCell);
@@ -529,7 +528,6 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 return;
             }
-            UnityEngine.Debug.Log($"Update Entity : {SpatialHashUtility.GetCell(position)}");
 
             cells.Remove(prevCell, entity);
             cells.Add(newCell, entity);

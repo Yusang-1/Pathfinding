@@ -18,6 +18,7 @@ namespace Assets.Scripts.ECSControllUnit
         private ClusterPathSmoother clusterPathSmoother;
         private SearchWithTheClusterResult searchWithTheClusterResult;
         private readonly ClusterResultWrapper clusterResultWrapper = new();
+        private readonly SlotDestination slotDestination = new();
 
         private EntityManager entityManager;
 
@@ -131,13 +132,16 @@ namespace Assets.Scripts.ECSControllUnit
 
             LocalTransform transform;
             ECSUnitComponent unitComponent;
+            Debug.Log($"destination : {to}");
 
             foreach (var entity in entities)
             {
                 transform = entityManager.GetComponentData<LocalTransform>(entity);
                 unitComponent = entityManager.GetComponentData<ECSUnitComponent>(entity);
 
-                Pathfinding(transform.Position, to, unitComponent.Radius, entity);
+                float3 newDestination = slotDestination.GetSlotDestination(entity, to, entities.Length, unitComponent.Radius);                
+
+                Pathfinding(transform.Position, newDestination, unitComponent.Radius, entity);
             }
         }
 
@@ -153,7 +157,9 @@ namespace Assets.Scripts.ECSControllUnit
                 unitComponent = entityManager.GetComponentData<ECSUnitComponent>(entity);
                 float3 destination = entityManager.GetBuffer<LowLevelWaypoint>(entity, true)[^1].Position;
 
-                Pathfinding(destination, to, unitComponent.Radius, entity, true);
+                float3 newDestination = slotDestination.GetSlotDestination(entity, to, entities.Length, unitComponent.Radius);
+
+                Pathfinding(destination, newDestination, unitComponent.Radius, entity, true);
             }
 
             // 추가로 경로를 버퍼에 넣었을 때 lazy Refine필요한지 검사해야되나
@@ -232,7 +238,7 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 LowLevelWaypointBuffer.Add(new LowLevelWaypoint { Position = position });
             }
-            
+
             UnitMoveState newMoveState;
             if (!isAdditive)
             {
@@ -247,7 +253,7 @@ namespace Assets.Scripts.ECSControllUnit
             else
             {
                 UnitMoveState moveState = entityManager.GetComponentData<UnitMoveState>(entity);
-                
+
                 newMoveState = new UnitMoveState()
                 {
                     IsMoving = true,
