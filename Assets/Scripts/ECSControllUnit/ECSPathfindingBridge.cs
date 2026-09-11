@@ -19,6 +19,7 @@ namespace Assets.Scripts.ECSControllUnit
         private SearchWithTheClusterResult searchWithTheClusterResult;
         private readonly ClusterResultWrapper clusterResultWrapper = new();
         private readonly SlotDestination slotDestination = new();
+        private readonly PathCacheContainer pathCacheContainer = new();
 
         private EntityManager entityManager;
 
@@ -50,62 +51,76 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 var moveState = entityManager.GetComponentData<UnitMoveState>(entity);
 
-                if (moveState.IsMoving && moveState.IsNeedLazyRefine)
+                if (!moveState.IsMoving || !moveState.IsNeedLazyRefine) continue;
+
+                // 다음 high level path 찾음
+                int nextHighLevelPathIndex = moveState.HighLevelPathIndex + 1;
+
+                highLevelWaypointBuffer = entityManager.GetBuffer<HighLevelWaypoint>(entity);
+                highLevelClusterPathBuffer = entityManager.GetBuffer<HighLevelClusterPath>(entity);
+
+                // 버퍼에 다음 path가 없으면 continue
+                if (nextHighLevelPathIndex >= highLevelWaypointBuffer.Length)
                 {
-                    // 다음 high level path 찾음
-                    int nextHighLevelPathIndex = moveState.HighLevelPathIndex + 1;
-
-                    highLevelWaypointBuffer = entityManager.GetBuffer<HighLevelWaypoint>(entity);
-                    highLevelClusterPathBuffer = entityManager.GetBuffer<HighLevelClusterPath>(entity);
-
-                    // 버퍼에 다음 path가 없으면 continue
-                    if (nextHighLevelPathIndex >= highLevelWaypointBuffer.Length)
-                    {
-                        continue;
-                    }
-
-                    var path = highLevelWaypointBuffer[nextHighLevelPathIndex];
-
-                    clusterIndexes.Clear();
-                    int first = path.FirstClusterIndex;
-                    int last = first + path.ClusterCount - 1;
-
-                    for (int i = first; i <= last; i++)
-                    {
-                        int2 index = highLevelClusterPathBuffer[i].ClusterIndex;
-
-                        clusterIndexes.Add(new Vector2Int(index.x, index.y));
-                    }
-
-                    // low level경로 탐색
-                    float unitRadius = entityManager.GetComponentData<ECSUnitComponent>(entity).Radius;
-
-                    Vector2Int enterNode = new(path.EnterNodeIndex.x, path.EnterNodeIndex.y);
-                    Vector2Int exitNode = new(path.ExitNodeIndex.x, path.ExitNodeIndex.y);
-                    List<Vector3> nextPath = searchWithTheClusterResult.FindPathThetaWithClusterList(clusterIndexes, enterNode, exitNode, unitRadius);
-                    if (nextPath == null || nextPath.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    // low level 경로를 버퍼에 추가
-                    lowLevelWaypointBuffer = entityManager.GetBuffer<LowLevelWaypoint>(entity);
-                    lowLevelWaypointBuffer.RemoveRange(0, lowLevelWaypointBuffer.Length - 1); // 마지막 요소만 남기고 삭제
-                    foreach (Vector3 point in nextPath)
-                    {
-                        lowLevelWaypointBuffer.Add(new LowLevelWaypoint { Position = point });
-                    }
-
-                    entityManager.SetComponentData(entity,
-                        new UnitMoveState()
-                        {
-                            IsMoving = true,
-                            IsNeedLazyRefine = false,
-                            HighLevelPathIndex = nextHighLevelPathIndex,
-                            LowLevelPathIndex = 0
-                        }
-                    );
+                    continue;
                 }
+
+                var path = highLevelWaypointBuffer[nextHighLevelPathIndex];
+
+                clusterIndexes.Clear();
+                int first = path.FirstClusterIndex;
+                int last = first + path.ClusterCount - 1;
+
+                for (int i = first; i <= last; i++)
+                {
+                    int2 index = highLevelClusterPathBuffer[i].ClusterIndex;
+
+                    clusterIndexes.Add(new Vector2Int(index.x, index.y));
+                }
+
+                // low level경로 탐색
+                float unitRadius = entityManager.GetComponentData<ECSUnitComponent>(entity).Radius;
+
+                Vector2Int enterNode = new(path.EnterNodeIndex.x, path.EnterNodeIndex.y);
+                Vector2Int exitNode = new(path.ExitNodeIndex.x, path.ExitNodeIndex.y);
+                
+                ClusterSmootherResult smootherResult = new();
+                smootherResult.SetData(clusterIndexes, exitNode, enterNode);
+                
+                if (!pathCacheContainer.TryGetCachedPath(smootherResult, out List<Vector3> nextPath))
+                {
+                    nextPath = Vector3ListPool.GetValue();
+
+                    List<Vector3> result = searchWithTheClusterResult.FindPathThetaWithClusterList(smootherResult, unitRadius);
+                    nextPath.AddRange(result);
+                    pathCacheContainer.SetCachedPath(smootherResult, result);
+                    Vector3ListPool.ReleaseValue(result);
+                }
+
+                if (nextPath == null || nextPath.Count == 0)
+                {
+                    continue;
+                }
+
+                // low level 경로를 버퍼에 추가
+                lowLevelWaypointBuffer = entityManager.GetBuffer<LowLevelWaypoint>(entity);
+                lowLevelWaypointBuffer.RemoveRange(0, lowLevelWaypointBuffer.Length - 1); // 마지막 요소만 남기고 삭제
+                foreach (Vector3 point in nextPath)
+                {
+                    lowLevelWaypointBuffer.Add(new LowLevelWaypoint { Position = point });
+                }
+                Vector3ListPool.ReleaseValue(nextPath);
+
+                entityManager.SetComponentData(entity,
+                    new UnitMoveState()
+                    {
+                        IsMoving = true,
+                        IsNeedLazyRefine = false,
+                        HighLevelPathIndex = nextHighLevelPathIndex,
+                        LowLevelPathIndex = 0
+                    }
+                );
+
             }
         }
 
@@ -132,14 +147,15 @@ namespace Assets.Scripts.ECSControllUnit
 
             LocalTransform transform;
             ECSUnitComponent unitComponent;
-            Debug.Log($"destination : {to}");
+
+            pathCacheContainer.Clear();
 
             foreach (var entity in entities)
             {
                 transform = entityManager.GetComponentData<LocalTransform>(entity);
                 unitComponent = entityManager.GetComponentData<ECSUnitComponent>(entity);
 
-                float3 newDestination = slotDestination.GetSlotDestination(entity, to, entities.Length, unitComponent.Radius);                
+                float3 newDestination = slotDestination.GetSlotDestination(entity, to, entities.Length, unitComponent.Radius);
 
                 Pathfinding(transform.Position, newDestination, unitComponent.Radius, entity);
             }
@@ -151,6 +167,8 @@ namespace Assets.Scripts.ECSControllUnit
             using NativeArray<Entity> entities = entityQuery.ToEntityArray(Allocator.TempJob);
 
             ECSUnitComponent unitComponent;
+
+            pathCacheContainer.Clear();
 
             foreach (var entity in entities)
             {
@@ -177,7 +195,16 @@ namespace Assets.Scripts.ECSControllUnit
             }
 
             // 첫 구간에 대한 low level 경로 탐색
-            List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(abstractPaths[0], unitRadius);
+            if (!pathCacheContainer.TryGetCachedPath(abstractPaths[0], out List<Vector3> resultPath))
+            {
+                resultPath = Vector3ListPool.GetValue();
+
+                List<Vector3> result = searchWithTheClusterResult.FindPathThetaWithClusterList(abstractPaths[0], unitRadius);
+                resultPath.AddRange(result);
+                pathCacheContainer.SetCachedPath(abstractPaths[0], result);
+                Vector3ListPool.ReleaseValue(result);
+            }
+
             if (resultPath == null || resultPath.Count == 0)
             {
                 return;
@@ -238,6 +265,7 @@ namespace Assets.Scripts.ECSControllUnit
             {
                 LowLevelWaypointBuffer.Add(new LowLevelWaypoint { Position = position });
             }
+            Vector3ListPool.ReleaseValue(resultPath);
 
             UnitMoveState newMoveState;
             if (!isAdditive)
