@@ -46,7 +46,7 @@ namespace Assets.Scripts.Pathfinding
             float slotRadius = unitRadius * 2f + 0.3f;
             float3 offset = new float3(math.cos(angle), 0f, math.sin(angle)) * slotRadius;
 
-            Debug.Log($"{entity} {slotIndex} {count} {center + offset}");
+            // Debug.Log($"{entity} {slotIndex} {count} {center + offset}");
             return center + offset;
         }
     }

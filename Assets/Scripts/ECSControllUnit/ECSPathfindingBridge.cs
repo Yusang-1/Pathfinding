@@ -84,8 +84,7 @@ namespace Assets.Scripts.ECSControllUnit
                 Vector2Int enterNode = new(path.EnterNodeIndex.x, path.EnterNodeIndex.y);
                 Vector2Int exitNode = new(path.ExitNodeIndex.x, path.ExitNodeIndex.y);
                 
-                ClusterSmootherResult smootherResult = new();
-                smootherResult.SetData(clusterIndexes, exitNode, enterNode);
+                ClusterSmootherResult smootherResult = ClusterSmootherResultPool.GetValue(clusterIndexes, exitNode, enterNode);
                 
                 if (!pathCacheContainer.TryGetCachedPath(smootherResult, out List<Vector3> nextPath))
                 {
@@ -96,6 +95,7 @@ namespace Assets.Scripts.ECSControllUnit
                     pathCacheContainer.SetCachedPath(smootherResult, result);
                     Vector3ListPool.ReleaseValue(result);
                 }
+                ClusterSmootherResultPool.ReleaseValue(smootherResult);
 
                 if (nextPath == null || nextPath.Count == 0)
                 {

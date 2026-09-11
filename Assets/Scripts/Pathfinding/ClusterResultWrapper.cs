@@ -56,7 +56,7 @@ namespace Assets.Scripts.Pathfinding
         }
     }
 
-    public class ClusterSmootherResult : IEquatable<ClusterSmootherResult>
+    public class ClusterSmootherResult : IEquatable<ClusterSmootherResult>, IPoolObject
     {
         public List<Vector2Int> ClusterIndexes = new();
         public Vector2Int EnterNodeIndex;
