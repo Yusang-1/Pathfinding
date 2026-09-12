@@ -6,6 +6,8 @@ namespace Assets.Scripts.CreateMap
     {
         private readonly Node nodePrefab;
         private readonly NodeList nodeList;
+        
+        private readonly ObjectPool<Node> nodePool = new();
 
         public MapGenerator(Node prefab, NodeList list)
         {
@@ -15,14 +17,24 @@ namespace Assets.Scripts.CreateMap
 
         public void GenerateMap(int mapSize)
         {
-            nodeList.CreateNodeArray(mapSize);
-
-            Node node;
+            // nodeList.CreateNodeArray(mapSize);
+            
             for (int i = 0; i < mapSize; i++)
             {
                 for (int j = 0; j < mapSize; j++)
                 {
-                    node = Node.Instantiate(nodePrefab, new Vector3(i, j, 0), Quaternion.identity);
+                    if (!nodePool.TryGetObject(out Node node))
+                    {
+                        // nodePool에서 가져올게 없다면
+                        node = Node.Instantiate(nodePrefab, new Vector3(i, j, 0), Quaternion.identity);
+                        node.OnPoolObjectFirstCreated += nodePool.PoolObjectFirstCreated;
+                        node.OnPoolObjectUnused += nodePool.PoolObjectUnused;
+                    }
+                    else
+                    {
+                        node.transform.position = new Vector3(i, j, 0);
+                    }
+
                     nodeList.SetNode(i, j, node);
                 }
             }
@@ -34,13 +46,8 @@ namespace Assets.Scripts.CreateMap
 
             foreach (var index in mapData.ObstacleIndexes)
             {
-                nodeList.SetNodeType(index, NodeType.obstacle);
+                nodeList.NodeTypeController.SetNodeType(index, NodeType.obstacle);
             }
-        }
-
-        public void DestroyMap()
-        {
-
         }
     }
 }

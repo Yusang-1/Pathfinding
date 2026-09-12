@@ -5,8 +5,8 @@ namespace Assets.Scripts.CreateMap.UI
 {
     public class UILoadMapList : MonoBehaviour
     {
-        public event Action OnLoadMapClosed;
-        public event Action OnLoadMapEnd;
+        public event Action OnLoadMapFinished;
+        public event Action OnLoadMapListClosed;
         public event Action<MapData> OnLoadMapRequested;
 
         [SerializeField] private Transform officialMapContainer;
@@ -73,8 +73,8 @@ namespace Assets.Scripts.CreateMap.UI
         /// <summary> button에 할당 </summary>
         public void OnCloseLoadMapList()
         {
-            OnLoadMapClosed?.Invoke();
             gameObject.SetActive(false);
+            OnLoadMapListClosed?.Invoke();
         }
 
         /// <summary> button에 할당 </summary>
@@ -82,7 +82,8 @@ namespace Assets.Scripts.CreateMap.UI
         {
             OnLoadMapRequested?.Invoke(currentSelected);
             OnCloseLoadMapList();
-            OnLoadMapEnd?.Invoke();
+            OnLoadMapFinished?.Invoke();
+            gameObject.SetActive(false);
         }
     }
 }

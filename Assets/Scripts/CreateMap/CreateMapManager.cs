@@ -13,7 +13,6 @@ namespace Assets.Scripts.CreateMap
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
-        private readonly NodeTypeController nodeTypeController = new();
 
         [SerializeField] private int nodeSize;
         private int mapSize;
@@ -24,16 +23,16 @@ namespace Assets.Scripts.CreateMap
             nodeData.Initialize();
 
             nodeList = new NodeList(nodeData);
-            nodeList.OnSelected += nodeTypeController.SetNodeType;
+            nodeList.OnSelected += nodeList.NodeTypeController.SetNodeType;
 
             mapdataJsonConverter = new MapdataJsonConverter();
             mapGenerator = new MapGenerator(nodePrefab, nodeList);
 
             uiRoot.OnGenerateMapRequested += CreateEmptyMap;
-            uiRoot.OnTileSelectorRequested += nodeTypeController.SetCurrentSelected;
+            uiRoot.OnTileSelectorRequested += nodeList.NodeTypeController.SetCurrentSelected;
             uiRoot.OnExportMapRequested += ExportMap;
-            uiRoot.OnClearMapRequested += nodeList.NodeTypeDrawer.ResetAllNodes;
-            uiRoot.OnRemoveMapRequested += nodeList.NodeTypeDrawer.ResetAllNodes;
+            uiRoot.OnClearMapRequested += nodeList.NodeTypeController.NodeTypeDrawer.ResetAllNodes;
+            uiRoot.OnRemoveMapRequested += nodeList.NodeTypeController.NodeTypeDrawer.ResetAllNodes;
             uiRoot.OnRemoveMapRequested += nodeList.DestroyNodes;
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
@@ -41,8 +40,6 @@ namespace Assets.Scripts.CreateMap
             uiRoot.Initialize();
             
             inputManager.OnControllMenu += () => uiRoot.OnControllMenu?.Invoke();
-            
-            nodeTypeController.Initialize(nodeList);
         }
 
         private void CreateEmptyMap(int sizeOfMap, int sizeOfCluster)
@@ -82,7 +79,7 @@ namespace Assets.Scripts.CreateMap
 
         public void ExportMap(string mapName)
         {
-            Vector2Int[] obstacleIndexes = nodeList.NodeTypeDrawer.GetNodeInfo();
+            Vector2Int[] obstacleIndexes = nodeList.NodeTypeController.NodeTypeDrawer.GetNodeInfo()[NodeType.obstacle].ToArray();
 
             MapData mapData = new()
             {

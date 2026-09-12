@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Assets.Scripts.CreateMap;
 
 public class UIMapInfo : MonoBehaviour
 {

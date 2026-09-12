@@ -22,9 +22,9 @@ namespace Assets.Scripts.CreateMap.UI
         public void Initialize()
         {
             OnGenerateMapUI += SetActiveFalse;
-            uiLoadMapList.OnLoadMapClosed += SetActiveGenerateUIs;
+            uiLoadMapList.OnLoadMapListClosed += SetActiveGenerateUIs;
             uiLoadMapList.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
-            uiLoadMapList.OnLoadMapEnd += () => OnGenerateMapUI?.Invoke();
+            uiLoadMapList.OnLoadMapFinished += () => OnGenerateMapUI?.Invoke();
 
             uiGenerateMap.OnGenerateMapRequested += (mapSize, clusterSize) => OnGenerateMapRequested(mapSize, clusterSize);
             uiGenerateMap.OnOfficialMapListRequested += () => OnOfficialMapListRequested?.Invoke();

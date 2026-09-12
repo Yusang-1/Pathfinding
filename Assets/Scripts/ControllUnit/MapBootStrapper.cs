@@ -3,6 +3,7 @@ using System;
 using Assets.Scripts.ControllUnit.UI;
 using Assets.Scripts.ControllUnit.SO;
 using Assets.Scripts.Pathfinding;
+using Assets.Scripts.CreateMap;
 
 namespace Assets.Scripts.ControllUnit
 {

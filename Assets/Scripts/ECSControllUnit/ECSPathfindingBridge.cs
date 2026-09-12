@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using System.Collections.Generic;
 using Assets.Scripts.Pathfinding;
+using Assets.Scripts.CreateMap;
 
 namespace Assets.Scripts.ECSControllUnit
 {

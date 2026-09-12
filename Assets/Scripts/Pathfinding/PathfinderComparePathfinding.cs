@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.Pathfinding;
+using Assets.Scripts.CreateMap;
 
 public class PathfinderComparePathfinding
 {

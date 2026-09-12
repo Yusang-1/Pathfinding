@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
+using Assets.Scripts.CreateMap;
+using Assets.Scripts.CreateMap.UI;
 
 namespace Assets.Scripts.ControllUnit.UI
 {

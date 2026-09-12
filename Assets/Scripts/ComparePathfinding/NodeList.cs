@@ -204,7 +204,7 @@ public class NodeList
 
     public void ResetAll()
     {
-        nodeTypeController.NodeTypeDrawer.ResetAllNode();
+        nodeTypeController.NodeTypeDrawer.ResetAllNodes();
         ResetAllNode();
     }
 
@@ -221,6 +221,17 @@ public class NodeList
                 nodes[i, j].ResetNode();
                 nodes[i, j].OnSelectedCallback -= OnSelected;
                 nodes[i, j].OnDeselectedCallback -= OnDeselected;
+            }
+        }
+    }
+
+    public void DestroyNodes()
+    {
+        for (int i = 0; i < nodes.GetLength(0); i++)
+        {
+            for (int j = 0; j < nodes.GetLength(1); j++)
+            {
+                GameObject.Destroy(nodes[i, j].gameObject);
             }
         }
     }

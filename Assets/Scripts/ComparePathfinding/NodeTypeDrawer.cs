@@ -6,7 +6,7 @@ public class NodeTypeDrawer
 {
     public event Action<bool> OnPathfindAvailable;
     private Func<Vector2Int, Node> getNodeAction;
-    
+
     private readonly Dictionary<NodeType, List<Vector2Int>> nodeInfoDict = new();
     private NodeData data;
 
@@ -16,7 +16,7 @@ public class NodeTypeDrawer
 
     public Vector2Int StartNodeIndex { get; private set; }
     public Vector2Int GoalNodeIndex { get; private set; }
-    
+
     public void Initialize(NodeData data, Func<Vector2Int, Node> getNodeAction)
     {
         this.getNodeAction = getNodeAction;
@@ -79,14 +79,14 @@ public class NodeTypeDrawer
         nodeInfoDict[type].Add(nodeIndex);
     }
 
-    public void ResetAllNode()
+    public void ResetAllNodes()
     {
         Vector2Int[] nodesCopy;
         foreach (var nodes in nodeInfoDict.Values)
         {
             nodesCopy = nodes.ToArray();
             foreach (var nodeIndex in nodesCopy)
-            {          
+            {
                 SetNodeType(nodeIndex, NodeType.room);
             }
         }
@@ -120,36 +120,36 @@ public class NodeTypeDrawer
     }
     public void ResetSearched()
     {
-        if(!nodeInfoDict.ContainsKey(NodeType.searched)) return;
-        
+        if (!nodeInfoDict.ContainsKey(NodeType.searched)) return;
+
         Node node;
-        foreach(var nodes in nodeInfoDict[NodeType.searched])
+        foreach (var nodes in nodeInfoDict[NodeType.searched])
         {
             node = getNodeAction(nodes);
             NodeType type = node.GetNodeType();
-            if(type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle)
+            if (type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle)
             {
                 continue;
             }
-            
+
             node.SetType(NodeType.room, data.GetSprite(NodeType.room));
         }
         nodeInfoDict[NodeType.searched].Clear();
     }
     public void ResetTrace()
     {
-        if(!nodeInfoDict.ContainsKey(NodeType.trace)) return;
-        
+        if (!nodeInfoDict.ContainsKey(NodeType.trace)) return;
+
         Node node;
-        foreach(var nodes in nodeInfoDict[NodeType.trace])
+        foreach (var nodes in nodeInfoDict[NodeType.trace])
         {
             node = getNodeAction(nodes);
             NodeType type = node.GetNodeType();
-            if(type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle)
+            if (type == NodeType.unit || type == NodeType.destination || type == NodeType.obstacle)
             {
                 continue;
             }
-            
+
             node.SetType(NodeType.room, data.GetSprite(NodeType.room));
         }
         nodeInfoDict[NodeType.trace].Clear();

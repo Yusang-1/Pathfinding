@@ -7,6 +7,8 @@ public class NodeTypeController
 
     public NodeTypeDrawer NodeTypeDrawer => nodeTypeDrawer;
 
+    private NodeType currentSelectedType;
+
     public void Initialize(NodeData nodeData, Func<Vector2Int, Node> getNodeAction)
     {
         nodeTypeDrawer.Initialize(nodeData, getNodeAction);
@@ -25,5 +27,16 @@ public class NodeTypeController
     public void SetNodeTypeInPathFinding(Vector2Int index, NodeType type)
     {
         nodeTypeDrawer.SetNodeTypeInPathFinding(index, type);
+    }
+
+    public void SetCurrentSelected(NodeType type)
+    {
+        currentSelectedType = type;
+    }
+
+    public void SetNodeType(ISelectable selectable, bool value)
+    {
+        if (currentSelectedType == default) currentSelectedType = NodeType.obstacle;
+        SetNodeType((selectable as Node).Index, currentSelectedType);
     }
 }
