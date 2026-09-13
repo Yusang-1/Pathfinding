@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UnitLargeSO
   m_EditorClassIdentifier: 
   unitCode: 102
-  unitName: Marin
+  unitName: Tank
   actionMapName: Unit
   selectableType: 1
   moveSpeed: 3.1

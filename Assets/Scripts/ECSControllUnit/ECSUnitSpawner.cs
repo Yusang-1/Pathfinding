@@ -24,7 +24,7 @@ namespace Assets.Scripts.ECSControllUnit
             isInitialized = true;
         }
 
-        public override void SpawnUnit(int unitCode) // UnitSize unitSize
+        public override void SpawnUnit(int unitCode)
         {
             unitFactory.MakeUnitSpawnRequest(unitCode, spawnPosition);
         }

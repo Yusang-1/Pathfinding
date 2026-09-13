@@ -58,13 +58,27 @@ namespace Assets.Scripts.ECSControllUnit
                 }
 
                 Entity newEntity = ecb.Instantiate(prefab);
-                Entity newBottomPrefabSelected = ecb.Instantiate(bottomContainer.SelectPrefab);
-                Entity newBottomPrefabFocused = ecb.Instantiate(bottomContainer.FocusPrefab);
+                Entity newBottomPrefabSelected = state.EntityManager.Instantiate(bottomContainer.SelectPrefab);
+                Entity newBottomPrefabFocused = state.EntityManager.Instantiate(bottomContainer.FocusPrefab);
+
+                ECSUnitComponent defaultComponent = state.EntityManager.GetComponentData<ECSUnitComponent>(prefab);
+
+                // Bottom 컴포넌트 설정
+                LocalTransform selectedBottomTransform = state.EntityManager.GetComponentData<LocalTransform>(newBottomPrefabSelected);
+                selectedBottomTransform.Position = spawnRequest.Position;
+                selectedBottomTransform.Scale = defaultComponent.Radius * 2f;
+                ecb.SetComponent(newBottomPrefabSelected, selectedBottomTransform);
+
+                LocalTransform focusedBottomTransform = state.EntityManager.GetComponentData<LocalTransform>(newBottomPrefabFocused);
+                focusedBottomTransform.Position = spawnRequest.Position;
+                focusedBottomTransform.Scale = defaultComponent.Radius * 2f;
+                ecb.SetComponent(newBottomPrefabFocused, focusedBottomTransform);
 
                 // Entity 컴포넌트 설정
                 ecb.RemoveComponent<Disabled>(newEntity);
-                ecb.SetComponent(newEntity, LocalTransform.FromPosition(spawnRequest.Position));
-                ECSUnitComponent defaultComponent = state.EntityManager.GetComponentData<ECSUnitComponent>(prefab);
+                LocalTransform unitTransform = state.EntityManager.GetComponentData<LocalTransform>(prefab);
+                unitTransform.Position = spawnRequest.Position;
+                ecb.SetComponent(newEntity, unitTransform);
                 ecb.SetComponent(newEntity,
                     new ECSUnitComponent
                     {
@@ -75,10 +89,6 @@ namespace Assets.Scripts.ECSControllUnit
                         // IconName = authoring.unitData.UnitIcon.name
                     }
                 );
-
-                // Bottom 컴포넌트 설정
-                ecb.SetComponent(newBottomPrefabSelected, LocalTransform.FromPosition(spawnRequest.Position));
-                ecb.SetComponent(newBottomPrefabFocused, LocalTransform.FromPosition(spawnRequest.Position));
 
                 // 한 번 처리한 요청 신호는 다음 프레임에 또 수행되지 않도록 삭제
                 ecb.DestroyEntity(spawnRequestEntity);

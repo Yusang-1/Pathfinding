@@ -479,7 +479,10 @@ namespace Assets.Scripts.ECSControllUnit
             else return;
 
             ecb.RemoveComponent(bottomEntity, typeof(Disabled));
-            ecb.SetComponent<LocalTransform>(bottomEntity, LocalTransform.FromPosition(entityTransform.Position));
+            
+            LocalTransform bottomTransform = entityManager.GetComponentData<LocalTransform>(bottomEntity);    
+            bottomTransform.Position = entityTransform.Position;
+            ecb.SetComponent(bottomEntity, bottomTransform);
         }
 
         private void DeactiveUnitBottom(ECSUnitComponent component, EntityCommandBuffer ecb, UnitBottomStatus status)
