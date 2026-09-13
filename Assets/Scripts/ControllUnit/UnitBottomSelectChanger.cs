@@ -28,8 +28,8 @@ namespace Assets.Scripts.ControllUnit
         
         public void Despawned()
         {
-            OnPoolObjectUnused?.Invoke(this);
             gameObject.SetActive(false);
+            OnPoolObjectUnused?.Invoke(this);
         }
         
         public void StatusChanged(UnitBottomStatus status)

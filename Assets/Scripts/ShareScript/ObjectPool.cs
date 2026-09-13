@@ -1,23 +1,23 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class ObjectPool<TObject> where TObject : class
+public class ObjectPool<TObject> where TObject : MonoBehaviour
 {
     private readonly Stack<TObject> stackNotUsed = new();
-    private readonly HashSet<TObject> stackCurrentUsed = new();
+    
+    private const int MAX_POOL_SIZE = 32;
     
     public void PoolObjectUnused(TObject tObject)
     {
-        if(stackCurrentUsed.Contains(tObject))
+        if(stackNotUsed.Count < MAX_POOL_SIZE)
         {
-            stackNotUsed.Push(tObject);
-            stackCurrentUsed.Remove(tObject);
+            stackNotUsed.Push(tObject);            
         }
-    }
-    
-    public void PoolObjectFirstCreated(TObject tObject)
-    {
-        stackCurrentUsed.Add(tObject);
+        else
+        {
+            GameObject.Destroy(tObject);
+        }
     }
         
     public bool TryGetObject(out TObject tObject)
@@ -25,7 +25,6 @@ public class ObjectPool<TObject> where TObject : class
         if (stackNotUsed.Count > 0)
         {
             tObject = stackNotUsed.Pop();
-            stackCurrentUsed.Add(tObject);
             return true;
         }
         else
@@ -38,6 +37,5 @@ public class ObjectPool<TObject> where TObject : class
 
 public interface IPoolObject<TObject> where TObject : IPoolObject<TObject>
 {
-    public event Action<TObject> OnPoolObjectFirstCreated;
     public event Action<TObject> OnPoolObjectUnused;
 }

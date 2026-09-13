@@ -27,7 +27,6 @@ namespace Assets.Scripts.CreateMap
                     {
                         // nodePool에서 가져올게 없다면
                         node = Node.Instantiate(nodePrefab, new Vector3(i, j, 0), Quaternion.identity);
-                        node.OnPoolObjectFirstCreated += nodePool.PoolObjectFirstCreated;
                         node.OnPoolObjectUnused += nodePool.PoolObjectUnused;
                     }
                     else

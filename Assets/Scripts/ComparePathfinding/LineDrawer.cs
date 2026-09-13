@@ -34,7 +34,6 @@ public class LineDrawer : MonoBehaviour
         {
             line = Instantiate(linePrefab);
 
-            line.OnPoolObjectFirstCreated += linePool.PoolObjectFirstCreated;
             line.OnPoolObjectUnused += linePool.PoolObjectUnused;
 
             line.Initialize();

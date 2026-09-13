@@ -24,7 +24,6 @@ public class ClusterShower : MonoBehaviour
                 {
                     // pool에서 찾지 못한 경우
                     cluster = Instantiate(clusterPrefab, new Vector2((float)clusterSize / 2 - (float)nodeSize / 2 + i * clusterSize, (float)clusterSize / 2 - (float)nodeSize / 2 + j * clusterSize), Quaternion.identity);
-                    cluster.OnPoolObjectFirstCreated += clusterPool.PoolObjectFirstCreated;
                     cluster.OnPoolObjectUnused += clusterPool.PoolObjectUnused;
                     cluster.Initialize();
                 }

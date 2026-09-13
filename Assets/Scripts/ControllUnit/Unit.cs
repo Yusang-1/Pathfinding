@@ -9,7 +9,6 @@ namespace Assets.Scripts.ControllUnit
         public event Action<ISelectableUnit> OnSelectedCallback;
         public event Action<ISelectableUnit> OnDeselectedCallback;
         public event Action<ISelectableUnit> OnDespawnedCallback;
-        public event Action<Unit> OnPoolObjectFirstCreated;
         public event Action<Unit> OnPoolObjectUnused;
 
         [SerializeField] private UnitSO unitData;
@@ -44,7 +43,6 @@ namespace Assets.Scripts.ControllUnit
 
         public void UnitSpawned()
         {
-            OnPoolObjectFirstCreated?.Invoke(this);
             bottomChanger.Initialize();
             gameObject.SetActive(true);
         }
@@ -52,10 +50,10 @@ namespace Assets.Scripts.ControllUnit
         public void UnitDespawned()
         {
             OnDespawnedCallback?.Invoke(this);
-            OnPoolObjectUnused?.Invoke(this);
             gameObject.SetActive(false);
             bottomChanger.Despawned();
             ChangeBottomStatus(UnitBottomStatus.None);
+            OnPoolObjectUnused?.Invoke(this);
         }
 
         public void Selected()
