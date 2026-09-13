@@ -8,7 +8,7 @@ namespace Assets.Scripts.ECSControllUnit
     {
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingletonBuffer<UnitBySizeDynamicBuffer>(out var prefabBuffer, true))
+            if (!SystemAPI.TryGetSingletonBuffer<UnitByCodeDynamicBuffer>(out var prefabBuffer, true))
             {
                 return;
             }
@@ -44,7 +44,7 @@ namespace Assets.Scripts.ECSControllUnit
 
                 foreach (var prefabData in prefabBuffer)
                 {
-                    if (prefabData.Key == spawnRequest.UnitSize)
+                    if (prefabData.Code == spawnRequest.UnitCode)
                     {
                         prefab = prefabData.Value;
                         break;
@@ -91,7 +91,7 @@ namespace Assets.Scripts.ECSControllUnit
 
     public struct UnitSpawnRequestComponent : IComponentData
     {
-        public UnitSize UnitSize;
+        public int UnitCode;
         public float3 Position;
     }
 }

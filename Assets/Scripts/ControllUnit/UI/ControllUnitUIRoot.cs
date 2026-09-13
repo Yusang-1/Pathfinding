@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using Assets.Scripts.CreateMap;
 using Assets.Scripts.CreateMap.UI;
+using Unity.Entities.UniversalDelegates;
 
 namespace Assets.Scripts.ControllUnit.UI
 {
@@ -15,7 +16,7 @@ namespace Assets.Scripts.ControllUnit.UI
         public event Func<MapData[]> OnGetPersonalMapListRequested;
 
         // UISpawnUnit event
-        public event Action<UnitSize> OnSpawnUnitRequested;
+        public event Action<int> OnSpawnUnitRequested;
         public event Action<Action> OnGetSpawnAreaRequested;
 
         // UIDragController event
@@ -128,9 +129,9 @@ namespace Assets.Scripts.ControllUnit.UI
         {
             return OnGetPersonalMapListRequested?.Invoke();
         }
-        private void HandleOnSpawnUnit(UnitSize size)
+        private void HandleOnSpawnUnit(int unitCode)
         {
-            OnSpawnUnitRequested?.Invoke(size);
+            OnSpawnUnitRequested?.Invoke(unitCode);
         }
         private void HandleOnGetSpawnArea(Action action)
         {

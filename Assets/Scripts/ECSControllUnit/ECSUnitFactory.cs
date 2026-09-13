@@ -1,31 +1,11 @@
 using UnityEngine;
 using Unity.Entities;
-using Assets.Scripts.ControllUnit;
 
 namespace Assets.Scripts.ECSControllUnit
 {
     public class ECSUnitFactory
     {
-        public void SpawnUnit(UnitSize unitSize, Vector3 spawnPosition)
-        {
-            Entity requestEntity = GetUnitInstance(unitSize, spawnPosition);
-
-            // var name = entityManager.GetComponentData<ECSUnitComponent>(requestEntity).UnitName;
-            // unitRuntimeContext.DataContainer.Register(requestEntity, name);
-
-            // Unit unit = GetUnitInstance(unitSize);
-            // unit.transform.position = spawnPosition;
-
-            // BoundUnitEvent(unit);
-
-            // var unitBottom = GetUnitBottomInstance();
-            // unitBottom.transform.position = spawnPosition;
-
-            // unit.Initialize(unitRuntimeContext, unitBottom);
-            // unit.UnitSpawned();
-        }
-
-        private Entity GetUnitInstance(UnitSize unitSize, Vector3 spawnPosition)
+        public void MakeUnitSpawnRequest(int unitCode, Vector3 spawnPosition)
         {
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
             Entity requestEntity = entityManager.CreateEntity();
@@ -34,17 +14,10 @@ namespace Assets.Scripts.ECSControllUnit
                 requestEntity,
                 new UnitSpawnRequestComponent()
                 {
-                    UnitSize = unitSize,
+                    UnitCode = unitCode,
                     Position = spawnPosition
                 }
             );
-
-            return requestEntity;
-        }
-
-        private UnitBottomSelectChanger GetUnitBottomInstance()
-        {
-            return null;
         }
     }
 }

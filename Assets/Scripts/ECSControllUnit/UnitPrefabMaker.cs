@@ -19,13 +19,10 @@ namespace Assets.Scripts.ECSControllUnit
                 Entity prefabEntity = GetEntity(authoring.unitPrefab, TransformUsageFlags.Dynamic);
                 Entity prefabEntityLarge = GetEntity(authoring.unitLargePrefab, TransformUsageFlags.Dynamic);
 
-                // var UnitPrefabComponent = new UnitPrefabComponent();
-                // AddComponent(spawnerDataEntity, UnitPrefabComponent);
+                var entityBySizeBuffer = AddBuffer<UnitByCodeDynamicBuffer>(spawnerDataEntity);
 
-                var entityBySizeBuffer = AddBuffer<UnitBySizeDynamicBuffer>(spawnerDataEntity);
-
-                GetUnitBySizeBuffer(entityBySizeBuffer, UnitSize.small, prefabEntity);
-                GetUnitBySizeBuffer(entityBySizeBuffer, UnitSize.large, prefabEntityLarge);
+                GetUnitBySizeBuffer(entityBySizeBuffer, authoring.unitPrefab.UnitData.UnitCode, prefabEntity);
+                GetUnitBySizeBuffer(entityBySizeBuffer, authoring.unitLargePrefab.UnitData.UnitCode, prefabEntityLarge);
 
                 Entity selectBottomEntity = GetEntity(authoring.unitBottomSelectAuthoring, TransformUsageFlags.Dynamic);
                 Entity focusBottomEntity = GetEntity(authoring.unitBottomFocusAuthoring, TransformUsageFlags.Dynamic);
@@ -39,12 +36,12 @@ namespace Assets.Scripts.ECSControllUnit
                 );
             }
 
-            private void GetUnitBySizeBuffer(DynamicBuffer<UnitBySizeDynamicBuffer> entityBySizeBuffer, UnitSize unitSize, Entity entity)
+            private void GetUnitBySizeBuffer(DynamicBuffer<UnitByCodeDynamicBuffer> entityBySizeBuffer, int code, Entity entity)
             {
                 entityBySizeBuffer.Add(
-                    new UnitBySizeDynamicBuffer
+                    new UnitByCodeDynamicBuffer
                     {
-                        Key = unitSize,
+                        Code = code,
                         Value = entity
                     }
                 );
@@ -53,11 +50,11 @@ namespace Assets.Scripts.ECSControllUnit
     }
 
     // public struct UnitPrefabComponent : IComponentData { }
-    
+
     [InternalBufferCapacity(2)]
-    public struct UnitBySizeDynamicBuffer : IBufferElementData
+    public struct UnitByCodeDynamicBuffer : IBufferElementData
     {
-        public UnitSize Key;
+        public int Code;
         public Entity Value;
     }
 

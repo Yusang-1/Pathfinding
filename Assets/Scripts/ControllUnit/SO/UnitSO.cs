@@ -5,6 +5,7 @@ namespace Assets.Scripts.ControllUnit.SO
     [CreateAssetMenu(fileName = "UnitSO", menuName = "Scriptable Objects/UnitSO")]
     public class UnitSO : ScriptableObject
     {
+        [SerializeField] private int unitCode;
         [SerializeField] private string unitName;
         [SerializeField] private string actionMapName;
         [SerializeField] private SelectableType selectableType;
@@ -14,6 +15,7 @@ namespace Assets.Scripts.ControllUnit.SO
         [SerializeField] private UnitsSO unitsData;
         [SerializeField] private Sprite unitIcon;
         
+        public int UnitCode => unitCode;
         public string UnitName => unitName;
         public ActionMaps ActionMap => ActionMap;
         public SelectableType SelectableType => selectableType;

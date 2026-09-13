@@ -14,6 +14,8 @@ namespace Assets.Scripts.ECSControllUnit
 
         [SerializeField] private float unitRadius;
 
+        public UnitSO UnitData => unitData;
+
         public class Baker : Baker<UnitAuthoring>
         {
             public override void Bake(UnitAuthoring authoring)

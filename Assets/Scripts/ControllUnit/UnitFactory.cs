@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Assets.Scripts.ControllUnit.SO;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -10,21 +11,19 @@ namespace Assets.Scripts.ControllUnit
         private Action<ISelectableUnit> onSelectedCallbackHandler;
         private Action<ISelectableUnit> onDeselectedCallbackHandler;
 
-        private readonly Unit smallUnitPrefab;
-        private readonly Unit largeUnitPrefab;
-        private readonly UnitBottomSelectChanger unitBottomPrefab;
-
         private readonly UnitRuntimeContext unitRuntimeContext;
-        private readonly ObjectPool<Unit> smallUnitPool = new();
-        private readonly ObjectPool<Unit> largeUnitPool = new();
+        private readonly UnitContainerSO unitContainerSO;
+        
+        private readonly UnitBottomSelectChanger unitBottomPrefab;
+        
         private readonly ObjectPool<UnitBottomSelectChanger> unitBottomPool = new();
 
-        public UnitFactory(Unit smallUnitPrefab, Unit largeUnitPrefab, UnitBottomSelectChanger unitBottomPrefab, UnitRuntimeContext unitRuntimeContext)
+        public UnitFactory(UnitBottomSelectChanger unitBottomPrefab,UnitRuntimeContext unitRuntimeContext,
+            UnitContainerSO unitContainerSO)
         {
-            this.smallUnitPrefab = smallUnitPrefab;
-            this.largeUnitPrefab = largeUnitPrefab;
             this.unitBottomPrefab = unitBottomPrefab;
             this.unitRuntimeContext = unitRuntimeContext;
+            this.unitContainerSO = unitContainerSO;
 
             InitializeHandlers();
         }
@@ -35,9 +34,9 @@ namespace Assets.Scripts.ControllUnit
             onDeselectedCallbackHandler = (s) => OnDeselectedCallback?.Invoke(s);
         }
 
-        public void SpawnUnit(UnitSize unitSize, Vector3 spawnPosition)
+        public void SpawnUnit(int unitCode, Vector3 spawnPosition)
         {
-            Unit unit = GetUnitInstance(unitSize);
+            Unit unit = GetUnitInstance(unitCode);
             unit.transform.position = spawnPosition;
 
             BoundUnitEvent(unit);
@@ -49,20 +48,17 @@ namespace Assets.Scripts.ControllUnit
             unit.UnitSpawned();
         }
 
-        private Unit GetUnitInstance(UnitSize unitSize)
+        private Unit GetUnitInstance(int unitCode)
         {
-            var unitPool = unitSize == UnitSize.small ? smallUnitPool : largeUnitPool;
-            var unitPrefab = unitSize == UnitSize.small ? smallUnitPrefab : largeUnitPrefab;
-
-            if (!unitPool.TryGetObject(out Unit unit))
+            if(unitContainerSO.TryGetUnit(unitCode, out Unit unit))
             {
-                // 유닛을 가져오지 못한 경우
-                unit = Unit.Instantiate(unitPrefab);
-                unit.OnPoolObjectFirstCreated += unitPool.PoolObjectFirstCreated;
-                unit.OnPoolObjectUnused += unitPool.PoolObjectUnused;
+                return unit;
             }
-
-            return unit;
+            else
+            {
+                Debug.LogWarning("Unit Instance를 가져오지 못함");
+                return null;
+            }            
         }
 
         private UnitBottomSelectChanger GetUnitBottomInstance()
@@ -71,7 +67,6 @@ namespace Assets.Scripts.ControllUnit
             {
                 // 유닛을 가져오지 못한 경우
                 unitBottom = UnitBottomSelectChanger.Instantiate(unitBottomPrefab);
-                unitBottom.OnPoolObjectFirstCreated += unitBottomPool.PoolObjectFirstCreated;
                 unitBottom.OnPoolObjectUnused += unitBottomPool.PoolObjectUnused;
             }
 

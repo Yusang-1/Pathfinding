@@ -5,25 +5,25 @@ namespace Assets.Scripts.ControllUnit.UI
 {
     public class UISpawnUnit : MonoBehaviour
     {
-        public event Action<UnitSize> OnSpawnUnitRequested;
+        public event Action<int> OnSpawnUnitRequested;
         public event Action<Action> OnGetSpawnAreaRequested;
         public Action OnGetSpawnAreaFinished;
         
-        private UnitSize unitSize;
+        private int unitCode;
         
         public void OnSpawnUnit()
         {
-            OnSpawnUnitRequested?.Invoke(unitSize);
+            OnSpawnUnitRequested?.Invoke(unitCode);
         }
         
         public void OnSetSpawnTypeSmall()
         {
-            unitSize = UnitSize.small;
+            unitCode = 101;
         }
         
         public void OnSetSpawnTypeLarge()
         {
-            unitSize = UnitSize.large;
+            unitCode = 102;
         }
 
         public void OnSetSpawnArea()

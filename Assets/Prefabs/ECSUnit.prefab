@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 7928332895613425952}
   - component: {fileID: 4287700815595450922}
   - component: {fileID: 7363356796979461122}
-  - component: {fileID: -4981316781041985735}
   m_Layer: 0
   m_Name: ECSUnit
   m_TagString: Untagged
@@ -126,19 +125,3 @@ MonoBehaviour:
   steeringWeightingData: {fileID: 11400000, guid: 33ef8a80e716a474e8cf542bc221237c, type: 2}
   CurrentKey: {x: 0, y: 0}
   IsEventBound: 0
---- !u!114 &-4981316781041985735
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1175087261922308678}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddb37c74cb9ca9e47b11ddf26401d2c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unitName: zergling
-  unitSize: 0
-  unitsData: {fileID: 11400000, guid: d7f8efabe6051f6458897dc7dfe85e54, type: 2}
-  moveSpeed: 5

@@ -1,4 +1,5 @@
 using System;
+using Assets.Scripts.ControllUnit.SO;
 using UnityEngine;
 
 namespace Assets.Scripts.ControllUnit
@@ -9,10 +10,11 @@ namespace Assets.Scripts.ControllUnit
         public event Action<ISelectableUnit> OnUnitDeselected;
         public event Action<ActionMaps> OnSpawnAreaSettingStarted;
 
+        [SerializeField] private UnitContainerSO unitContainerSO;
         [SerializeField] private Unit smallUnitPrefab;
         [SerializeField] private Unit largeUnitPrefab;
         [SerializeField] private UnitBottomSelectChanger unitBottomPrefab;
-        [SerializeField] private Vector3 spawnPosition;
+        [SerializeField] private Vector3 spawnPosition;        
 
         private UnitFactory unitFactory;
         private readonly SpawnAreaSetter spawnAreaSetter = new();
@@ -23,7 +25,8 @@ namespace Assets.Scripts.ControllUnit
         {
             if(isInitialized) return;
             
-            unitFactory = new UnitFactory(smallUnitPrefab, largeUnitPrefab, unitBottomPrefab, unitRuntimeContext);
+            unitContainerSO.Initialize();
+            unitFactory = new UnitFactory(unitBottomPrefab, unitRuntimeContext, unitContainerSO);
 
             unitFactory.OnSelectedCallback += HandleUnitSelected;
             unitFactory.OnDeselectedCallback += HandleUnitDeselected;
@@ -52,9 +55,9 @@ namespace Assets.Scripts.ControllUnit
             spawnAreaSetter.StartSetSpawnArea(finishAction);
         }
 
-        public override void SpawnUnit(UnitSize unitSize)
+        public override void SpawnUnit(int unitCode)
         {
-            unitFactory.SpawnUnit(unitSize, spawnPosition);
+            unitFactory.SpawnUnit(unitCode, spawnPosition);
         }
 
         public override void SetSpawnArea(Vector3 position)
