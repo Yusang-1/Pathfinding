@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitCode: 100
   unitName: UnitNoSize
-  actionMapName: Unit
+  actionMap: 0
   selectableType: 1
   moveSpeed: 1.9
   refineLength: 1.2

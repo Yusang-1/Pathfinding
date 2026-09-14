@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitCode: 102
   unitName: Tank
-  actionMapName: Unit
+  actionMap: 1
   selectableType: 1
   moveSpeed: 3.1
   refineLength: 2.2
