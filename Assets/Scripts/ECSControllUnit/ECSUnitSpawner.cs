@@ -28,6 +28,11 @@ namespace Assets.Scripts.ECSControllUnit
         {
             unitFactory.MakeUnitSpawnRequest(unitCode, spawnPosition);
         }
+        
+        public override void SpawnUnit(int unitCode, Vector3 position)
+        {
+            unitFactory.MakeUnitSpawnRequest(unitCode, position);
+        }
 
         public void StartSetSpawnArea(Action finishAction)
         {

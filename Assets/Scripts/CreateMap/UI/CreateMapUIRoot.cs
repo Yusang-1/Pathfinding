@@ -12,8 +12,9 @@ namespace Assets.Scripts.CreateMap.UI
         public event Action OnRemoveMapRequested;
         public event Func<MapData[]> OnGetOfficialMapListRequested;
         public event Func<MapData[]> OnGetPersonalMapListRequested;
-        public event Action<MapData> OnLoadMapRequested;
+        public event Action<int> OnLoadMapRequested;
         public Action OnControllMenu;
+
 
         [SerializeField] private UIGenerateMapMediator uiGenerateMapMediator;
         [SerializeField] private UIModifyMapMediator uiModifyMapMediator;

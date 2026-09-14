@@ -3,6 +3,7 @@ using Assets.Scripts.ControllUnit.UI;
 using Assets.Scripts.ControllUnit.SO;
 using Assets.Scripts.Pathfinding;
 using Assets.Scripts.CreateMap;
+using Assets.Scripts.ControllUnit;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -17,19 +18,19 @@ namespace Assets.Scripts.ECSControllUnit
         [SerializeField] private Node nodePrefab;
         [SerializeField] private ECSPathfindingBridge pathfindingBridge;
 
-        private Assets.Scripts.ControllUnit.MapRuntimeContext mapRuntimeContext;
+        private MapRuntimeContext mapRuntimeContext;
         private MapGenerator mapGenerator;
-        private readonly ECSSelectableController selectableController = new();
+        private readonly ECSSelectableController selectableController = new();                
 
         private ECSMapManagerBootStrapper bootStrapper;
 
         private void Awake()
         {
-            mapRuntimeContext = new Assets.Scripts.ControllUnit.MapRuntimeContext(pathfinder, nodeData);
-            mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList);
+            mapRuntimeContext = new MapRuntimeContext(pathfinder, nodeData);
+            mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList, unitSpawner);
             bootStrapper = new ECSMapManagerBootStrapper(uiRoot, inputManager, unitSpawner, InitializeMapRuntime,
                 mapRuntimeContext, pathfindingBridge, selectableController
-            );
+            );            
         }
 
         private void OnEnable()
@@ -52,13 +53,19 @@ namespace Assets.Scripts.ECSControllUnit
             bootStrapper.UnbindEvents();
         }
 
-        private void InitializeMapRuntime(MapData mapData)
+        private void InitializeMapRuntime(int mapCode)
         {
-            mapRuntimeContext.NodeList.Initialize(mapData.NodeSize, mapData.MapSize);
+            if (!mapRuntimeContext.LoadedMapData.TryGetMapData(mapCode, out MapData mapData))
+            {
+                return;
+            }
+            
+            int mapSize = mapData.InfoData.MapSize;
+            mapRuntimeContext.NodeList.Initialize(MapRuntimeContext.NODE_SIZE, mapSize);
 
-            mapGenerator.GenerateMap(mapData);
+            mapGenerator.GenerateMap(mapSize, mapData.TerrainData);
 
-            pathfindingBridge.SetNodeAndCluster(mapRuntimeContext.NodeList, mapData, unitsSO.UnitRadius);
+            pathfindingBridge.SetNodeAndCluster(mapRuntimeContext.NodeList, mapSize, unitsSO.UnitRadius);
         }
     }
 }

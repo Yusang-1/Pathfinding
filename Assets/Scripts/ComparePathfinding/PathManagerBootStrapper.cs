@@ -1,4 +1,5 @@
 using System;
+using Assets.Scripts.ControllUnit;
 using Assets.Scripts.CreateMap;
 
 public class PathManagerBootStrapper
@@ -6,23 +7,28 @@ public class PathManagerBootStrapper
     private Action<bool> pathfindAvailableHandler;
     private Action<ISelectable, bool> selectedHandler;
     private Action<ISelectable, bool> deselectedHandler;
-    private readonly Action<MapData> setMapData;
+    private readonly Action<int> setMapData;
 
     private readonly NodeList nodeList;
-    private readonly MapdataJsonConverter mapdataJsonConverter = new();
+    private readonly MapdataJsonConverter mapdataJsonConverter;
     private readonly UIRoot uiRoot;
     private readonly InputManager inputManager;
     private readonly PathfinderComparePathfinding pathfinder;
+    private MapRuntimeContext mapRuntimeContext;
 
     private bool isEventBound;
 
-    public PathManagerBootStrapper(Node nodePrefab, NodeList nodeList, UIRoot uiRoot, InputManager inputManager, PathfinderComparePathfinding pathfinder, Action<MapData> setMapData)
+    public PathManagerBootStrapper(NodeList nodeList, UIRoot uiRoot, InputManager inputManager, PathfinderComparePathfinding pathfinder,
+        Action<int> setMapData, NodeData nodeData)
     {
         this.nodeList = nodeList;
         this.uiRoot = uiRoot;
         this.inputManager = inputManager;
         this.pathfinder = pathfinder;
         this.setMapData = setMapData;
+        
+        mapRuntimeContext = new MapRuntimeContext(null, nodeData);
+        mapdataJsonConverter = new(mapRuntimeContext.LoadedMapData);
     }
 
     public void BindEvents()

@@ -1,22 +1,29 @@
 using UnityEngine;
 using Assets.Scripts.CreateMap.UI;
+using Assets.Scripts.ControllUnit;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.CreateMap
 {
-    public class CreateMapManager : MonoBehaviour
+    // createMap 씬의 Manager
+    // 얘의 역할을 줄이자, 원래 manager역할은 mapManager를 사용하고 맵 저장 기능만 사용할 수 있게
+    public class CreateMapManager : MonoBehaviour 
     {
         [SerializeField] private Node nodePrefab;
         [SerializeField] private NodeData nodeData;
         [SerializeField] private CreateMapUIRoot uiRoot;
         [SerializeField] private InputManager inputManager;
+        [SerializeField] private AbstractSpawner unitSpawner;
 
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
+        private readonly LoadedMapData loadedMapData = new();
+        private readonly SpatialHash spatialHash;
+        private MapRuntimeContext mapRuntimeContext;
 
         [SerializeField] private int nodeSize;
         private int mapSize;
-        private int clusterSize;
 
         private void Start()
         {
@@ -24,9 +31,10 @@ namespace Assets.Scripts.CreateMap
 
             nodeList = new NodeList(nodeData);
             nodeList.OnSelected += nodeList.NodeTypeController.SetNodeType;
-
-            mapdataJsonConverter = new MapdataJsonConverter();
-            mapGenerator = new MapGenerator(nodePrefab, nodeList);
+            
+            mapRuntimeContext = new MapRuntimeContext(null, nodeData);
+            mapdataJsonConverter = new MapdataJsonConverter(mapRuntimeContext.LoadedMapData);
+            mapGenerator = new MapGenerator(nodePrefab, nodeList, unitSpawner);
 
             uiRoot.OnGenerateMapRequested += CreateEmptyMap;
             uiRoot.OnTileSelectorRequested += nodeList.NodeTypeController.SetCurrentSelected;
@@ -38,14 +46,13 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnLoadMapRequested += LoadSavedMap;
             uiRoot.Initialize();
-            
+
             inputManager.OnControllMenu += () => uiRoot.OnControllMenu?.Invoke();
         }
 
         private void CreateEmptyMap(int sizeOfMap, int sizeOfCluster)
         {
             const int defaultMapSize = 20;
-            const int maxClusterSize = 10;
 
             if (sizeOfMap == 0)
             {
@@ -56,41 +63,81 @@ namespace Assets.Scripts.CreateMap
                 mapSize = sizeOfMap;
             }
 
-            if (sizeOfCluster == 0)
-            {
-                clusterSize = mapSize / 4;
-                clusterSize = Mathf.Clamp(clusterSize, 0, maxClusterSize);
-            }
-            else
-            {
-                clusterSize = sizeOfCluster;
-            }
-
             mapGenerator.GenerateMap(mapSize);
         }
 
-        public void LoadSavedMap(MapData mapData)
+        public void LoadSavedMap(int mapCode)
         {
-            mapSize = mapData.MapSize;
-            clusterSize = mapData.ClusterSize;
+            if(!loadedMapData.TryGetMapData(mapCode, out MapData mapData))
+            {
+                return;
+            }
+            mapSize = mapData.InfoData.MapSize;
 
-            mapGenerator.GenerateMap(mapData);
+            mapGenerator.GenerateMap(mapSize, mapData.TerrainData);
         }
 
         public void ExportMap(string mapName)
         {
             Vector2Int[] obstacleIndexes = nodeList.NodeTypeController.NodeTypeDrawer.GetNodeInfo()[NodeType.obstacle].ToArray();
 
-            MapData mapData = new()
+            MapData.Info infoData = new()
             {
+                MapCode = mapdataJsonConverter.GetPersonalMapCode(),
                 MapName = mapName,
-                NodeSize = nodeSize,
+                MapSize = mapSize
+            };
+
+            MapData.Terrain terrainData = new()
+            {
                 MapSize = mapSize,
-                ClusterSize = clusterSize,
                 ObstacleIndexes = obstacleIndexes
             };
+            
+            MapData.Unit unitData;
+            if(spatialHash.TryGetAllUnits(out List<int> units, out List<Vector3> positions))
+            {
+                unitData = new()
+                {
+                    UnitCodes = units.ToArray(),
+                    Positions = positions.ToArray()
+                };
+            }
+            else
+            {
+                unitData = default;
+            }
+
+            var mapData = new MapData(infoData, terrainData, unitData);
 
             mapdataJsonConverter.SaveMapDataToJson(mapData);
         }
+
+        // public void ExportMapWithUnits(string mapName)
+        // {
+        //     Vector2Int[] obstacleIndexes = nodeList.NodeTypeController.NodeTypeDrawer.GetNodeInfo()[NodeType.obstacle].ToArray();
+
+        //     MapData.Info infoData = new()
+        //     {
+        //         MapName = mapName,
+        //         MapSize = mapSize,
+        //     };
+
+        //     MapData.Terrain terrainData = new()
+        //     {
+        //         MapSize = mapSize,
+        //         ObstacleIndexes = obstacleIndexes
+        //     };
+
+        //     MapData.Unit unitData = new()
+        //     {
+        //         UnitCodes = ,
+        //         Positions = ,
+        //     };
+
+        //     var mapData = new MapData(infoData, terrainData, unitData);
+
+        //     mapdataJsonConverter.SaveMapDataToJson(mapData);
+        // }
     }
 }

@@ -80,7 +80,7 @@ public class PathfinderComparePathfinding
 
     public void SetNodeAndCluster(in MapData mapData, Dictionary<UnitSize, float> unitRadiusList)
     {
-        clusterList.Initialize(aStarPathfinder, mapData.MapSize, mapData.ClusterSize, unitRadiusList);
+        clusterList.Initialize(aStarPathfinder, mapData.InfoData.MapSize, Assets.Scripts.ControllUnit.MapRuntimeContext.CLUSTER_SIZE, unitRadiusList);
 
         nodeList.SetNodeArea();
     }

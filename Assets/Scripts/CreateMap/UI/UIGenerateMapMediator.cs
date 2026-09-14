@@ -11,8 +11,7 @@ namespace Assets.Scripts.CreateMap.UI
         public event Action OnGenerateMapUI;
         public event Func<MapData[]> OnOfficialMapListRequested;
         public event Func<MapData[]> OnPersonalMapListRequested;
-
-        public event Action<MapData> OnLoadMapRequested;
+        public event Action<int> OnLoadMapRequested;
 
         [SerializeField] private UIGenerateMap uiGenerateMap;
         [SerializeField] private UIGenerateMapInput uiGenerateMapInput;
@@ -32,8 +31,8 @@ namespace Assets.Scripts.CreateMap.UI
             uiGenerateMap.OnGenerateMapUI += () => OnGenerateMapUI?.Invoke();
 
             uiGenerateMap.SetProviders(uiGenerateMapInput.GetMapSize, uiGenerateMapInput.GetClusterSize, uiLoadMapList.ShowMapList);
-            
-            if(!gameObject.activeSelf) SetActiveTrue();
+
+            if (!gameObject.activeSelf) SetActiveTrue();
         }
 
         public void SetActiveTrue()

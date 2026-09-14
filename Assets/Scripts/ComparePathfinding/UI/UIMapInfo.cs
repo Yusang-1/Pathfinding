@@ -8,7 +8,7 @@ public class UIMapInfo : MonoBehaviour
     [SerializeField] private Image image;
     [SerializeField] private TextMeshProUGUI mapName;
 
-    public void SetInfo(MapData mapData)
+    public void SetInfo(MapData.Info mapData)
     {
         mapName.text = mapData.MapName;
     }

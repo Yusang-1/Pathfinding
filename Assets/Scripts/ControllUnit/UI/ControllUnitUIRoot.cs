@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using Unity.Entities;
 using Assets.Scripts.CreateMap;
 using Assets.Scripts.CreateMap.UI;
-using Unity.Entities.UniversalDelegates;
 
 namespace Assets.Scripts.ControllUnit.UI
 {
     public class ControllUnitUIRoot : MonoBehaviour
     {
         // UILoadMapMediator event
-        public event Action<MapData> OnLoadMapRequested;
+        public event Action<int> OnLoadMapRequested;
         public event Func<MapData[]> OnGetOfficialMapListRequested;
         public event Func<MapData[]> OnGetPersonalMapListRequested;
 
@@ -117,9 +116,9 @@ namespace Assets.Scripts.ControllUnit.UI
             isBound = false;
         }
 
-        private void HandleOnLoadMap(MapData mapData)
+        private void HandleOnLoadMap(int mapCode)
         {
-            OnLoadMapRequested?.Invoke(mapData);
+            OnLoadMapRequested?.Invoke(mapCode);
         }
         private MapData[] HandleOnGetOfficialMapList()
         {

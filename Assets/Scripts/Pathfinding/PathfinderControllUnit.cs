@@ -14,14 +14,14 @@ namespace Assets.Scripts.Pathfinding
         private ClusterPathSmoother clusterPathSmoother;
         private readonly ClusterResultWrapper clusterResultWrapper = new();
 
-        public void SetNodeAndCluster(NodeList nodes, in MapData mapData, Dictionary<UnitSize, float> unitRadiusList)
+        public void SetNodeAndCluster(NodeList nodes, int mapSize, int clusterSize, Dictionary<UnitSize, float> unitRadiusList)
         {
             nodeList = nodes;
             clusterList = new HPAClusterList(nodeList);
 
             aStarPathfinder = new(nodeList);
 
-            clusterList.Initialize(aStarPathfinder, mapData.MapSize, mapData.ClusterSize, unitRadiusList);
+            clusterList.Initialize(aStarPathfinder, mapSize, clusterSize, unitRadiusList);
             nodeList.SetNodeArea();
             
             clusterPathSmoother = new ClusterPathSmoother(nodeList, clusterList);

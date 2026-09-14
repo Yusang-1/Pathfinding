@@ -7,7 +7,7 @@ namespace Assets.Scripts.CreateMap.UI
     {
         public event Action OnLoadMapFinished;
         public event Action OnLoadMapListClosed;
-        public event Action<MapData> OnLoadMapRequested;
+        public event Action<int> OnLoadMapRequested;
 
         [SerializeField] private Transform officialMapContainer;
         [SerializeField] private Transform personalMapContainer;
@@ -46,7 +46,7 @@ namespace Assets.Scripts.CreateMap.UI
 
             for (int i = 0; i < maps.Length; i++)
             {
-                pool[i].Initialize(maps[i], OnSelect);
+                pool[i].Initialize(maps[i].InfoData, OnSelect);
             }
         }
 
@@ -63,11 +63,11 @@ namespace Assets.Scripts.CreateMap.UI
             }
         }
 
-        private MapData currentSelected;
-        private void OnSelect(MapData mapData)
+        private int currentSelectedMapCode;
+        private void OnSelect(MapData.Info mapInfoData)
         {
-            currentSelected = mapData;
-            mapInfo.SetInfo(currentSelected);
+            currentSelectedMapCode = mapInfoData.MapCode;
+            mapInfo.SetInfo(mapInfoData);
         }
 
         /// <summary> button에 할당 </summary>
@@ -80,7 +80,7 @@ namespace Assets.Scripts.CreateMap.UI
         /// <summary> button에 할당 </summary>
         public void OnLoadSelectedMap()
         {
-            OnLoadMapRequested?.Invoke(currentSelected);
+            OnLoadMapRequested?.Invoke(currentSelectedMapCode);
             OnCloseLoadMapList();
             OnLoadMapFinished?.Invoke();
             gameObject.SetActive(false);

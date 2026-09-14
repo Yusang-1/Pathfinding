@@ -59,6 +59,11 @@ namespace Assets.Scripts.ControllUnit
         {
             unitFactory.SpawnUnit(unitCode, spawnPosition);
         }
+        
+        public override void SpawnUnit(int unitCode, Vector3 position)
+        {
+            unitFactory.SpawnUnit(unitCode, position);
+        }
 
         public override void SetSpawnArea(Vector3 position)
         {

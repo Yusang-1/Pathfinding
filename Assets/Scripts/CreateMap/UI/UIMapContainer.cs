@@ -6,18 +6,18 @@ namespace Assets.Scripts.CreateMap.UI
 {
     public class UIMapContainer : MonoBehaviour
     {
-        private Action<MapData> onSelectMap;
+        private Action<MapData.Info> onSelectMap;
 
         [SerializeField] private TextMeshProUGUI mapNameText;
 
-        private MapData mapData;
+        private MapData.Info mapInfoData;
 
-        public void Initialize(MapData data, Action<MapData> setUIInfo)
+        public void Initialize(MapData.Info mapInfoData, Action<MapData.Info> setUIInfo)
         {
             onSelectMap ??= setUIInfo;
 
-            mapData = data;
-            mapNameText.text = data.MapName;
+            this.mapInfoData = mapInfoData;
+            mapNameText.text = mapInfoData.MapName;
 
             gameObject.SetActive(true);
         }
@@ -25,7 +25,7 @@ namespace Assets.Scripts.CreateMap.UI
         /// <summary> button에 할당 </summary>        
         public void OnSelect()
         {
-            onSelectMap?.Invoke(mapData);
+            onSelectMap?.Invoke(mapInfoData);
         }
     }
 }

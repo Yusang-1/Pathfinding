@@ -6,7 +6,7 @@ namespace Assets.Scripts.ControllUnit
     public class SpatialHash
     {
         private readonly int cellSize = 2;
-        private readonly Dictionary<Vector2Int, List<Unit>> hashTable = new();        
+        private readonly Dictionary<Vector2Int, List<Unit>> hashTable = new();
 
         // 해시 키 생성
         private Vector2Int GetHashKey(Vector3 pos) => new((int)(pos.x / cellSize), (int)(pos.y / cellSize));
@@ -41,7 +41,7 @@ namespace Assets.Scripts.ControllUnit
                 AddUnit(unit);
             }
         }
-        
+
         private readonly List<Unit> unitsInRangeCircle = new();
         // 주변 해시 검색
         public List<Unit> GetUnitsInRange(Vector3 center, float radius)
@@ -63,7 +63,7 @@ namespace Assets.Scripts.ControllUnit
             }
             return unitsInRangeCircle;
         }
-        
+
         private readonly HashSet<ISelectableUnit> unitsInRangeSquare = new();
         public HashSet<ISelectableUnit> GetUnitsInRange(Vector3 standard, float width, float height)
         {
@@ -113,6 +113,23 @@ namespace Assets.Scripts.ControllUnit
             }
 
             return unitsInRangeSquare;
+        }
+
+        public bool TryGetAllUnits(out List<int> unitIndexes, out List<Vector3> positions)
+        {
+            unitIndexes = new();
+            positions = new();
+
+            foreach (var unitList in hashTable.Values)
+            {
+                foreach (var unit in unitList)
+                {
+                    unitIndexes.Add(unit.UnitData.UnitCode);
+                    positions.Add(unit.transform.position);
+                }
+            }
+
+            return unitIndexes.Count > 0;
         }
     }
 }

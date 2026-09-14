@@ -11,19 +11,19 @@ namespace Assets.Scripts.ECSControllUnit
 {
     public class ECSMapManagerBootStrapper
     {
-        private readonly Action<MapData> initializeMapRuntime;
+        private readonly Action<int> initializeMapRuntime;
 
         private readonly ControllUnitUIRoot uiRoot;
         private readonly ECSInputManager inputManager;
         private readonly ECSUnitSpawner unitSpawner;
         private readonly ECSSelectableController selectableController;
-        private readonly MapdataJsonConverter mapdataJsonConverter = new();
+        private readonly MapdataJsonConverter mapdataJsonConverter;
         private readonly MapRuntimeContext mapRuntimeContext;
         private readonly ECSPathfindingBridge pathfindingBridge;
 
         private bool isEventBound;
         public ECSMapManagerBootStrapper(ControllUnitUIRoot uiRoot, ECSInputManager inputManager, ECSUnitSpawner unitSpawner,
-            Action<MapData> initializeMapRuntime, MapRuntimeContext mapRuntimeContext, ECSPathfindingBridge pathfindingBridge, ECSSelectableController selectableController)
+            Action<int> initializeMapRuntime, MapRuntimeContext mapRuntimeContext, ECSPathfindingBridge pathfindingBridge, ECSSelectableController selectableController)
         {
             this.uiRoot = uiRoot;
             this.inputManager = inputManager;
@@ -32,6 +32,7 @@ namespace Assets.Scripts.ECSControllUnit
             this.mapRuntimeContext = mapRuntimeContext;
             this.pathfindingBridge = pathfindingBridge;
             this.selectableController = selectableController;
+            mapdataJsonConverter = new(mapRuntimeContext.LoadedMapData);
         }
 
         public void Initialize(NodeData nodeData, UnitsSO unitsSO, PathfinderControllUnit pathfinder)
@@ -70,7 +71,7 @@ namespace Assets.Scripts.ECSControllUnit
             isEventBound = false;
         }
 
-        private void AddUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
+        private void AddUIRootEvent(Action<int> SetMapData, MapRuntimeContext mapRuntimeContext)
         {
             uiRoot.OnLoadMapRequested += SetMapData;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
@@ -99,17 +100,17 @@ namespace Assets.Scripts.ECSControllUnit
         {
             mapRuntimeContext.NodeList.NodeTypeController.NodeTypeDrawer.OnPathfindAvailable += HandlePathfindAvailable;
         }
-        
+
         private void AddSelectableControllerEvent()
         {
             selectableController.OnMove += pathfindingBridge.Move;
             selectableController.OnMoveAdditive += pathfindingBridge.MoveAdditive;
-            
+
             selectableController.OnSelectedCallback += HandleUnitSelected;
             selectableController.OnDeselectedCallback += HandleUnitDeselected;
         }
 
-        private void RemoveUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
+        private void RemoveUIRootEvent(Action<int> SetMapData, MapRuntimeContext mapRuntimeContext)
         {
             uiRoot.OnLoadMapRequested -= SetMapData;
             uiRoot.OnGetOfficialMapListRequested -= mapdataJsonConverter.GetOfficialSavedMaps;
@@ -138,12 +139,12 @@ namespace Assets.Scripts.ECSControllUnit
         {
             mapRuntimeContext.NodeList.NodeTypeController.NodeTypeDrawer.OnPathfindAvailable -= HandlePathfindAvailable;
         }
-        
+
         private void RemoveSelectableControllerEvent()
         {
             selectableController.OnMove -= pathfindingBridge.Move;
             selectableController.OnMoveAdditive -= pathfindingBridge.MoveAdditive;
-            
+
             selectableController.OnSelectedCallback -= HandleUnitSelected;
             selectableController.OnDeselectedCallback -= HandleUnitDeselected;
         }

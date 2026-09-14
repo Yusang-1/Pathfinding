@@ -6,11 +6,13 @@ using Assets.Scripts.CreateMap;
 
 namespace Assets.Scripts.ControllUnit
 {
-    public class MapManager : MonoBehaviour
+    public class MapManager : MonoBehaviour // controllUnit 씬의 manager
     {
         private MapGenerator mapGenerator;
         private MapBootStrapper mapBootStrapper;
         private MapRuntimeContext mapRuntimeContext;
+        
+        private readonly LoadedMapData loadedMapData = new();
 
         [SerializeField] private PathfinderControllUnit pathfinder;
         [SerializeField] private Node nodePrefab;
@@ -23,7 +25,7 @@ namespace Assets.Scripts.ControllUnit
         private void Awake()
         {
             mapRuntimeContext = new MapRuntimeContext(pathfinder, nodeData);
-            mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList);
+            mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList, unitSpawner);
             mapBootStrapper = new MapBootStrapper(uiRoot, inputManager, unitSpawner, InitializeMapRuntime, mapRuntimeContext);
         }
 
@@ -42,13 +44,19 @@ namespace Assets.Scripts.ControllUnit
             mapBootStrapper.UnbindEvents();
         }
 
-        private void InitializeMapRuntime(MapData mapData)
+        private void InitializeMapRuntime(int mapCode)
         {
-            mapRuntimeContext.NodeList.Initialize(mapData.NodeSize, mapData.MapSize);
+            if (!loadedMapData.TryGetMapData(mapCode, out MapData mapData))
+            {
+                return;
+            }
 
-            mapGenerator.GenerateMap(mapData);
+            int mapSize = mapData.InfoData.MapSize;
+            mapRuntimeContext.NodeList.Initialize(MapRuntimeContext.NODE_SIZE, mapSize);
 
-            mapRuntimeContext.Pathfinder.SetNodeAndCluster(mapRuntimeContext.NodeList, mapData, unitsSO.UnitRadius);
+            mapGenerator.GenerateMap(mapSize, mapData.TerrainData);
+
+            mapRuntimeContext.Pathfinder.SetNodeAndCluster(mapRuntimeContext.NodeList, mapSize, MapRuntimeContext.CLUSTER_SIZE, unitsSO.UnitRadius);
         }
     }
 }

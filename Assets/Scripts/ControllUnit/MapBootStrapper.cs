@@ -9,10 +9,10 @@ namespace Assets.Scripts.ControllUnit
 {
     public class MapBootStrapper
     {
-        private readonly Action<MapData> initializeMapRuntime;
+        private readonly Action<int> initializeMapRuntime;
         
         private readonly SelectableController selectableController = new();
-        private readonly MapdataJsonConverter mapdataJsonConverter = new();
+        private readonly MapdataJsonConverter mapdataJsonConverter;
 
         private readonly ControllUnitUIRoot uiRoot;
         private readonly InputManager inputManager;
@@ -21,13 +21,14 @@ namespace Assets.Scripts.ControllUnit
 
         private bool isBound;
 
-        public MapBootStrapper(ControllUnitUIRoot uiRoot, InputManager inputManager, UnitSpawner unitSpawner, Action<MapData> initializeMapRuntime, MapRuntimeContext mapRuntimeContext)
+        public MapBootStrapper(ControllUnitUIRoot uiRoot, InputManager inputManager, UnitSpawner unitSpawner, Action<int> initializeMapRuntime, MapRuntimeContext mapRuntimeContext)
         {
             this.uiRoot = uiRoot;
             this.inputManager = inputManager;
             this.unitSpawner = unitSpawner;
             this.initializeMapRuntime= initializeMapRuntime;
             this.mapRuntimeContext = mapRuntimeContext;
+            mapdataJsonConverter = new(mapRuntimeContext.LoadedMapData);
         }
 
         public void Initialize(NodeData nodeData, UnitsSO unitsSO, PathfinderControllUnit pathfinder)
@@ -61,7 +62,7 @@ namespace Assets.Scripts.ControllUnit
             isBound = false;
         }
 
-        private void AddUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
+        private void AddUIRootEvent(Action<int> SetMapData, MapRuntimeContext mapRuntimeContext)
         {
             uiRoot.OnLoadMapRequested += SetMapData;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
@@ -88,7 +89,7 @@ namespace Assets.Scripts.ControllUnit
             inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnArea;
         }
 
-        private void RemoveUIRootEvent(Action<MapData> SetMapData, MapRuntimeContext mapRuntimeContext)
+        private void RemoveUIRootEvent(Action<int> SetMapData, MapRuntimeContext mapRuntimeContext)
         {
             uiRoot.OnLoadMapRequested -= SetMapData;
             uiRoot.OnGetOfficialMapListRequested -= mapdataJsonConverter.GetOfficialSavedMaps;

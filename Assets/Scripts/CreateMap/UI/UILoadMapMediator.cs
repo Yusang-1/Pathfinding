@@ -9,7 +9,7 @@ namespace Assets.Scripts.CreateMap.UI
         public event Func<MapData[]> OnPersonalMapListRequested;
         public event Action OnOpenMapListRequested;
 
-        public event Action<MapData> OnLoadMapRequested;
+        public event Action<int> OnLoadMapRequested;
         public event Action OnLoadMapFinished;
         public event Action OnLoadMapListClosedRequested;
 
@@ -57,9 +57,9 @@ namespace Assets.Scripts.CreateMap.UI
             uiLoadMap.OnOpenMapListRequested -= HandleOpenMapList;
         }
 
-        private void HandleLoadMap(MapData mapData)
+        private void HandleLoadMap(int mapCode)
         {
-            OnLoadMapRequested?.Invoke(mapData);
+            OnLoadMapRequested?.Invoke(mapCode);
         }
         private void HandleLoadMapFinished()
         {

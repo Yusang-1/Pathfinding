@@ -11,7 +11,7 @@ public class UIRoot : MonoBehaviour
     public event Func<Vector2Int, Vector2> OnGridToWorldRequested;
 
     // UILoadMapMediator event
-    public event Action<MapData> OnLoadMapRequested;
+    public event Action<int> OnLoadMapRequested;
     public event Func<MapData[]> OnGetOfficialMapListRequested;
     public event Func<MapData[]> OnGetPersonalMapListRequested;
 

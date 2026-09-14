@@ -6,6 +6,7 @@ using Unity.Transforms;
 using System.Collections.Generic;
 using Assets.Scripts.Pathfinding;
 using Assets.Scripts.CreateMap;
+using Assets.Scripts.ControllUnit;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -125,7 +126,7 @@ namespace Assets.Scripts.ECSControllUnit
             }
         }
 
-        public void SetNodeAndCluster(NodeList nodes, in MapData mapData, Dictionary<UnitSize, float> unitRadiusList)
+        public void SetNodeAndCluster(NodeList nodes, int mapSize, Dictionary<UnitSize, float> unitRadiusList)
         {
             nodeList = nodes;
             clusterList = new HPAClusterList(nodeList);
@@ -133,7 +134,7 @@ namespace Assets.Scripts.ECSControllUnit
             aStarPathfinder = new(nodeList);
             ThetaStar thetaStarPathfinder = new(nodeList);
 
-            clusterList.Initialize(aStarPathfinder, mapData.MapSize, mapData.ClusterSize, unitRadiusList);
+            clusterList.Initialize(aStarPathfinder, mapSize, MapRuntimeContext.CLUSTER_SIZE, unitRadiusList);
             nodeList.SetNodeArea();
 
             clusterPathSmoother = new ClusterPathSmoother(nodeList, clusterList);
