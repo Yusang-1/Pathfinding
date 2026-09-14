@@ -64,7 +64,8 @@ public class NodeTypeDrawer
             GoalNodeIndex = nodeIndex;
             isGoalSet = true;
         }
-        OnPathfindAvailable(isStartSet && isGoalSet && IsDuringNodeSetting);
+
+        OnPathfindAvailable?.Invoke(isStartSet && isGoalSet && IsDuringNodeSetting);
 
         node.SetType(type, data.GetSprite(type));
     }

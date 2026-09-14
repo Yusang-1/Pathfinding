@@ -7,7 +7,7 @@ namespace Assets.Scripts.CreateMap
 {
     // createMap 씬의 Manager
     // 얘의 역할을 줄이자, 원래 manager역할은 mapManager를 사용하고 맵 저장 기능만 사용할 수 있게
-    public class CreateMapManager : MonoBehaviour 
+    public class CreateMapManager : MonoBehaviour
     {
         [SerializeField] private Node nodePrefab;
         [SerializeField] private NodeData nodeData;
@@ -18,7 +18,6 @@ namespace Assets.Scripts.CreateMap
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
-        private readonly LoadedMapData loadedMapData = new();
         private readonly SpatialHash spatialHash;
         private MapRuntimeContext mapRuntimeContext;
 
@@ -31,7 +30,7 @@ namespace Assets.Scripts.CreateMap
 
             nodeList = new NodeList(nodeData);
             nodeList.OnSelected += nodeList.NodeTypeController.SetNodeType;
-            
+
             mapRuntimeContext = new MapRuntimeContext(null, nodeData);
             mapdataJsonConverter = new MapdataJsonConverter(mapRuntimeContext.LoadedMapData);
             mapGenerator = new MapGenerator(nodePrefab, nodeList, unitSpawner);
@@ -68,12 +67,13 @@ namespace Assets.Scripts.CreateMap
 
         public void LoadSavedMap(int mapCode)
         {
-            if(!loadedMapData.TryGetMapData(mapCode, out MapData mapData))
+            if (!mapRuntimeContext.LoadedMapData.TryGetMapData(mapCode, out MapData mapData))
             {
                 return;
             }
             mapSize = mapData.InfoData.MapSize;
-
+            
+            nodeList.Initialize(MapRuntimeContext.NODE_SIZE, mapSize);
             mapGenerator.GenerateMap(mapSize, mapData.TerrainData);
         }
 
@@ -93,9 +93,9 @@ namespace Assets.Scripts.CreateMap
                 MapSize = mapSize,
                 ObstacleIndexes = obstacleIndexes
             };
-            
+
             MapData.Unit unitData;
-            if(spatialHash.TryGetAllUnits(out List<int> units, out List<Vector3> positions))
+            if (spatialHash.TryGetAllUnits(out List<int> units, out List<Vector3> positions))
             {
                 unitData = new()
                 {

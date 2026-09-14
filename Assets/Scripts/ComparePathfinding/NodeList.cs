@@ -28,11 +28,6 @@ public class NodeList
         nodes = new Node[mapSize, mapSize];
     }
 
-    public void CreateNodeArray(int mapSize)
-    {
-        nodes = new Node[mapSize, mapSize];
-    }
-
     public void SetNode(int x, int y, Node node)
     {
         node.OnSelectedCallback += OnSelected;
