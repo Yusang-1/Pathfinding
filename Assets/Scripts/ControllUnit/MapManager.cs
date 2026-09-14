@@ -11,8 +11,7 @@ namespace Assets.Scripts.ControllUnit
         private MapGenerator mapGenerator;
         private MapBootStrapper mapBootStrapper;
         private MapRuntimeContext mapRuntimeContext;
-        
-        private readonly LoadedMapData loadedMapData = new();
+
 
         [SerializeField] private PathfinderControllUnit pathfinder;
         [SerializeField] private Node nodePrefab;
@@ -46,7 +45,7 @@ namespace Assets.Scripts.ControllUnit
 
         private void InitializeMapRuntime(int mapCode)
         {
-            if (!loadedMapData.TryGetMapData(mapCode, out MapData mapData))
+            if (!mapRuntimeContext.LoadedMapData.TryGetMapData(mapCode, out MapData mapData))
             {
                 return;
             }
