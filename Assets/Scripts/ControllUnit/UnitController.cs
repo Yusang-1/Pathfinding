@@ -36,10 +36,10 @@ namespace Assets.Scripts.ControllUnit
             
             if(unitRuntimeContext.Pathfinder != null)
             {
-                lazyRefine = unitRuntimeContext.Pathfinder.GetLazyRefine();                
+                lazyRefine = unitRuntimeContext.Pathfinder.GetLazyRefine();
             }
             
-            unitRuntimeContext.SpatialHash?.AddUnit(unit);
+            unitRuntimeContext.SpatialHash.AddUnit(unit);
         }
         
         public void MoveTo(Vector3 destination)

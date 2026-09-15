@@ -54,8 +54,9 @@ namespace Assets.Scripts.ControllUnit
             mapRuntimeContext.NodeList.Initialize(MapRuntimeContext.NODE_SIZE, mapSize);
 
             mapGenerator.GenerateMap(mapSize, mapData.TerrainData);
-
             mapRuntimeContext.Pathfinder.SetNodeAndCluster(mapRuntimeContext.NodeList, mapSize, MapRuntimeContext.CLUSTER_SIZE, unitsSO.UnitRadius);
+
+            mapGenerator.SetUnit(mapData.UnitData);
         }
     }
 }

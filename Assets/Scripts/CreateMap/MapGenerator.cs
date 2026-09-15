@@ -55,7 +55,8 @@ namespace Assets.Scripts.CreateMap
 
             for (int index = 0; index < mapDataUnitPosition.UnitCodes.Length; index++)
             {
-                unitSpawner.SpawnUnit(mapDataUnitPosition.UnitCodes[index], mapDataUnitPosition.Positions[index]);
+                Vector3 pos = new(mapDataUnitPosition.PosX[index], mapDataUnitPosition.PosY[index], mapDataUnitPosition.PosZ[index]);
+                unitSpawner.SpawnUnit(mapDataUnitPosition.UnitCodes[index], pos);
             }
         }
     }

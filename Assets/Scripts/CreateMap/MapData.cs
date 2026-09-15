@@ -63,7 +63,9 @@ namespace Assets.Scripts.CreateMap
         public struct Unit
         {
             public int[] UnitCodes;
-            public Vector3[] Positions;
+            public float[] PosX;
+            public float[] PosY;
+            public float[] PosZ;
 
             // MapData도 그렇고 배열을 사용하게 되는데 이럼 힙에 저장되지 않나 이거 물어봐야겠다
         }

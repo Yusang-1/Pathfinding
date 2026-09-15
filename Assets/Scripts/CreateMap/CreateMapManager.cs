@@ -20,7 +20,7 @@ namespace Assets.Scripts.CreateMap
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
-        private readonly SpatialHash spatialHash;
+        private readonly SpatialHash spatialHash = new();
         private MapRuntimeContext mapRuntimeContext;
         private UnitRuntimeContext unitRuntimeContext;
 
@@ -82,6 +82,7 @@ namespace Assets.Scripts.CreateMap
             
             nodeList.Initialize(MapRuntimeContext.NODE_SIZE, mapSize);
             mapGenerator.GenerateMap(mapSize, mapData.TerrainData);
+            mapGenerator.SetUnit(mapData.UnitData);
         }
 
         public void ExportMap(string mapName)
@@ -104,10 +105,23 @@ namespace Assets.Scripts.CreateMap
             MapData.Unit unitData;
             if (spatialHash.TryGetAllUnits(out List<int> units, out List<Vector3> positions))
             {
+                float[] x = new float[positions.Count];
+                float[] z = new float[positions.Count];
+                float[] y = new float[positions.Count];
+                
+                for(int index = 0; index < positions.Count; index++)
+                {
+                    x[index] = positions[index].x;
+                    y[index] = positions[index].y;
+                    z[index] = positions[index].z;
+                }
+                
                 unitData = new()
                 {
                     UnitCodes = units.ToArray(),
-                    Positions = positions.ToArray()
+                    PosX = x,
+                    PosY = y,
+                    PosZ = z
                 };
             }
             else
@@ -118,33 +132,6 @@ namespace Assets.Scripts.CreateMap
             var mapData = new MapData(infoData, terrainData, unitData);
 
             mapdataJsonConverter.SaveMapDataToJson(mapData);
-        }
-
-        // public void ExportMapWithUnits(string mapName)
-        // {
-        //     Vector2Int[] obstacleIndexes = nodeList.NodeTypeController.NodeTypeDrawer.GetNodeInfo()[NodeType.obstacle].ToArray();
-
-        //     MapData.Info infoData = new()
-        //     {
-        //         MapName = mapName,
-        //         MapSize = mapSize,
-        //     };
-
-        //     MapData.Terrain terrainData = new()
-        //     {
-        //         MapSize = mapSize,
-        //         ObstacleIndexes = obstacleIndexes
-        //     };
-
-        //     MapData.Unit unitData = new()
-        //     {
-        //         UnitCodes = ,
-        //         Positions = ,
-        //     };
-
-        //     var mapData = new MapData(infoData, terrainData, unitData);
-
-        //     mapdataJsonConverter.SaveMapDataToJson(mapData);
-        // }
+        }        
     }
 }
