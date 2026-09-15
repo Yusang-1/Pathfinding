@@ -53,6 +53,8 @@ namespace Assets.Scripts.CreateMap
         {
             if (unitSpawner == null) return;
 
+            if (mapDataUnitPosition.UnitCodes == null || mapDataUnitPosition.UnitCodes.Length < 0) return;
+
             for (int index = 0; index < mapDataUnitPosition.UnitCodes.Length; index++)
             {
                 Vector3 pos = new(mapDataUnitPosition.PosX[index], mapDataUnitPosition.PosY[index], mapDataUnitPosition.PosZ[index]);
