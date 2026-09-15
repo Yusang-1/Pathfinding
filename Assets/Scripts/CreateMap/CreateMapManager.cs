@@ -2,6 +2,7 @@ using UnityEngine;
 using Assets.Scripts.CreateMap.UI;
 using Assets.Scripts.ControllUnit;
 using System.Collections.Generic;
+using Assets.Scripts.ControllUnit.SO;
 
 namespace Assets.Scripts.CreateMap
 {
@@ -13,20 +14,26 @@ namespace Assets.Scripts.CreateMap
         [SerializeField] private NodeData nodeData;
         [SerializeField] private CreateMapUIRoot uiRoot;
         [SerializeField] private InputManager inputManager;
-        [SerializeField] private AbstractSpawner unitSpawner;
+        [SerializeField] private UnitSpawner unitSpawner;
+        [SerializeField] private UnitsSO unitsSO;
 
         private NodeList nodeList;
         private MapGenerator mapGenerator;
         private MapdataJsonConverter mapdataJsonConverter;
         private readonly SpatialHash spatialHash;
         private MapRuntimeContext mapRuntimeContext;
+        private UnitRuntimeContext unitRuntimeContext;
 
         [SerializeField] private int nodeSize;
         private int mapSize;
 
         private void Start()
         {
+            unitRuntimeContext = new(null, spatialHash);
+            
             nodeData.Initialize();
+            unitSpawner.Initialize(unitRuntimeContext);
+            unitsSO.Initialize();
 
             nodeList = new NodeList(nodeData);
             nodeList.OnSelected += nodeList.NodeTypeController.SetNodeType;
@@ -44,7 +51,7 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnLoadMapRequested += LoadSavedMap;
-            uiRoot.Initialize();
+            uiRoot.Initialize(unitSpawner);
 
             inputManager.OnControllMenu += () => uiRoot.OnControllMenu?.Invoke();
         }

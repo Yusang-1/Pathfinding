@@ -33,9 +33,13 @@ namespace Assets.Scripts.ControllUnit
             this.bottomChangerTransform = bottomChangerTransform;
             this.unitData = unitData;
             this.steeringConfig = steeringConfig;
-            lazyRefine = unitRuntimeContext.Pathfinder.GetLazyRefine();
-
-            unitRuntimeContext.SpatialHash.AddUnit(unit);
+            
+            if(unitRuntimeContext.Pathfinder != null)
+            {
+                lazyRefine = unitRuntimeContext.Pathfinder.GetLazyRefine();                
+            }
+            
+            unitRuntimeContext.SpatialHash?.AddUnit(unit);
         }
         
         public void MoveTo(Vector3 destination)

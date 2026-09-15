@@ -11,8 +11,6 @@ namespace Assets.Scripts.ControllUnit
         public event Action<ActionMaps> OnSpawnAreaSettingStarted;
 
         [SerializeField] private UnitContainerSO unitContainerSO;
-        [SerializeField] private Unit smallUnitPrefab;
-        [SerializeField] private Unit largeUnitPrefab;
         [SerializeField] private UnitBottomSelectChanger unitBottomPrefab;
         [SerializeField] private Vector3 spawnPosition;        
 

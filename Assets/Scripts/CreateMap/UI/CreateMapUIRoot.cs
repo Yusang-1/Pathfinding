@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using Assets.Scripts.ControllUnit.UI;
+using Assets.Scripts.ControllUnit;
 
 namespace Assets.Scripts.CreateMap.UI
 {
@@ -20,9 +22,14 @@ namespace Assets.Scripts.CreateMap.UI
         [SerializeField] private UIModifyMapMediator uiModifyMapMediator;
         [SerializeField] private UIContainerScenes uiContainerScenes;
         [SerializeField] private UIPopup uiPopup;
+        [SerializeField] private UISpawnUnit uiSpawnUnit;
 
-        public void Initialize()
+        private UnitSpawner unitSpawner;
+
+        public void Initialize(AbstractSpawner spawner)
         {
+            unitSpawner = spawner as UnitSpawner;
+
             uiPopup.Initialize();
             uiGenerateMapMediator.Initialize();
             uiModifyMapMediator.Initialize();
@@ -30,6 +37,7 @@ namespace Assets.Scripts.CreateMap.UI
             uiGenerateMapMediator.OnGenerateMapRequested += (mapSize, clusterSize) => OnGenerateMapRequested?.Invoke(mapSize, clusterSize);
 
             uiGenerateMapMediator.OnGenerateMapUI += uiModifyMapMediator.SetActiveTrue;
+            uiGenerateMapMediator.OnGenerateMapUI += uiSpawnUnit.SetActiveTrue;
             uiGenerateMapMediator.OnLoadMapRequested += (mapData) => OnLoadMapRequested?.Invoke(mapData);
 
             uiGenerateMapMediator.OnOfficialMapListRequested += () => OnGetOfficialMapListRequested?.Invoke();
@@ -40,8 +48,13 @@ namespace Assets.Scripts.CreateMap.UI
             uiModifyMapMediator.OnClearMapRequested += () => OnClearMapRequested?.Invoke();
             uiModifyMapMediator.OnRemoveMapRequested += () => OnRemoveMapRequested?.Invoke();
             uiModifyMapMediator.OnRemoveMapRequested += uiGenerateMapMediator.SetActiveTrue;
+            uiModifyMapMediator.OnRemoveMapRequested += uiSpawnUnit.SetActiveFalse;
             
             OnControllMenu += uiContainerScenes.OnControllMenu;
+
+            uiSpawnUnit.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
+            // uiSpawnUnit.OnGetSpawnAreaRequested += ;
+            // uiSpawnUnit.OnGetSpawnAreaFinished += ;
         }
     }
 }
