@@ -102,9 +102,9 @@ namespace Assets.Scripts.ControllUnit
 
         private void RemoveUnitSpawnerEvent()
         {
-            unitSpawner.OnUnitSelected += HandleUnitSelected;
-            unitSpawner.OnUnitDeselected += HandleUnitDeselected;
-            unitSpawner.OnSpawnAreaSettingStarted += inputManager.ChangeActionMapSelected;
+            unitSpawner.OnUnitSelected -= HandleUnitSelected;
+            unitSpawner.OnUnitDeselected -= HandleUnitDeselected;
+            unitSpawner.OnSpawnAreaSettingStarted -= inputManager.ChangeActionMapSelected;
         }
 
         private void RemoveInputManagerEvent()

@@ -6,23 +6,25 @@ using System.Collections.Generic;
 
 namespace Assets.Scripts.CreateMap
 {
-    public class PlayerControllInput : MonoBehaviour
+    public class PlayerControllInput : MonoBehaviour, IActionMapInputer
     {
         public event Action<Vector2> OnDirectionChanged;
         public event Action OnControllMenu;
 
         private Vector2 sumOfDirection;
         private readonly Dictionary<int, Vector2> directionDict = new();
-
+        
+        [SerializeField] private ActionMaps actionMap;
+        
         private Vector2 mousePosition;
         private bool isPointerOverGameObject;
         private SelectableController selectableController;
 
-        // private bool isInputActive;
+        private bool isInputActive;
 
         private void Update()
         {
-            // if (!isInputActive) return;
+            if (!isInputActive) return;
 
             if (EventSystem.current.IsPointerOverGameObject())
             {
@@ -134,5 +136,11 @@ namespace Assets.Scripts.CreateMap
                 OnControllMenu?.Invoke();                
             }
         }
+
+        public ActionMaps GetActionMap() => actionMap;
+
+        public void ActionMapActivated() => isInputActive = true;
+
+        public void ActionMapDeactivated() => isInputActive = false;
     }
 }

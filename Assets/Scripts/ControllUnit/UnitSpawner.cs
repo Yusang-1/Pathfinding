@@ -16,6 +16,7 @@ namespace Assets.Scripts.ControllUnit
 
         private UnitFactory unitFactory;
         private readonly SpawnAreaSetter spawnAreaSetter = new();
+        private readonly SpawnAreaSetter2 spawnAreaSetter2 = new();
         
         private bool isInitialized;
         
@@ -29,6 +30,8 @@ namespace Assets.Scripts.ControllUnit
             unitFactory.OnSelectedCallback += HandleUnitSelected;
             unitFactory.OnDeselectedCallback += HandleUnitDeselected;
             spawnAreaSetter.OnStartSetSpawnAreaRequested += HandleSpawnAreaSettingStarted;
+            
+            spawnAreaSetter2.OnStartSetSpawnAreaRequested += HandleSpawnAreaSettingStarted;
             
             isInitialized = true;
         }
@@ -51,6 +54,14 @@ namespace Assets.Scripts.ControllUnit
         public void StartSetSpawnArea(Action finishAction)
         {
             spawnAreaSetter.StartSetSpawnArea(finishAction);
+        }
+        public void StartSetSpawnArea2(Action finishAction)
+        {
+            spawnAreaSetter2.StartSetSpawnArea(finishAction);
+        }
+        public void FinishSetSpawnArea2()
+        {
+            spawnAreaSetter2.FinishSetSpawnArea();
         }
 
         public override void SpawnUnit(int unitCode)

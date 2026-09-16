@@ -16,7 +16,9 @@ namespace Assets.Scripts.CreateMap.UI
         public event Func<MapData[]> OnGetPersonalMapListRequested;
         public event Action<int> OnLoadMapRequested;
         public Action OnControllMenu;
-
+        
+        public event Action<Action> OnSpawnEvent;
+        public event Action<int> OnSpawnUnitCode;
 
         [SerializeField] private UIGenerateMapMediator uiGenerateMapMediator;
         [SerializeField] private UIModifyMapMediator uiModifyMapMediator;
@@ -53,8 +55,21 @@ namespace Assets.Scripts.CreateMap.UI
             OnControllMenu += uiContainerScenes.OnControllMenu;
 
             uiSpawnUnit.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
+            
+            uiSpawnUnit.OnSpawnEvent += HandlerSpawnEvent;
+            uiSpawnUnit.OnSpawnUnitCode += HandlerSpawnUnitCode;
             // uiSpawnUnit.OnGetSpawnAreaRequested += ;
             // uiSpawnUnit.OnGetSpawnAreaFinished += ;
+        }
+        
+        private void HandlerSpawnEvent(Action action)
+        {
+            OnSpawnEvent?.Invoke(action);
+        }
+        
+        private void HandlerSpawnUnitCode(int code)
+        {
+            OnSpawnUnitCode?.Invoke(code);
         }
     }
 }

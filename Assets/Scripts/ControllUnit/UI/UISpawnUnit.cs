@@ -9,7 +9,10 @@ namespace Assets.Scripts.ControllUnit.UI
         public event Action<Action> OnGetSpawnAreaRequested;
         public Action OnGetSpawnAreaFinished;
         
-        private int unitCode;
+        public event Action<Action> OnSpawnEvent;
+        public event Action<int> OnSpawnUnitCode;
+        
+        private int unitCode = 101;
         
         public void OnSpawnUnit()
         {
@@ -24,6 +27,15 @@ namespace Assets.Scripts.ControllUnit.UI
         public void OnSetSpawnTypeLarge()
         {
             unitCode = 102;
+        }
+        
+        public void OnSpawn()
+        {
+            SetActiveFalse();
+            OnGetSpawnAreaFinished += SetActiveTrue;
+            OnSpawnEvent?.Invoke(OnGetSpawnAreaFinished);
+            OnSpawnUnitCode?.Invoke(unitCode);
+            OnGetSpawnAreaFinished -= SetActiveTrue;
         }
 
         public void OnSetSpawnArea()

@@ -23,6 +23,7 @@ namespace Assets.Scripts.CreateMap
         private readonly SpatialHash spatialHash = new();
         private MapRuntimeContext mapRuntimeContext;
         private UnitRuntimeContext unitRuntimeContext;
+        private UnitSpawnHolder unitSpawnHolder;
 
         [SerializeField] private int nodeSize;
         private int mapSize;
@@ -41,6 +42,7 @@ namespace Assets.Scripts.CreateMap
             mapRuntimeContext = new MapRuntimeContext(null, nodeData);
             mapdataJsonConverter = new MapdataJsonConverter(mapRuntimeContext.LoadedMapData);
             mapGenerator = new MapGenerator(nodePrefab, nodeList, unitSpawner);
+            unitSpawnHolder = new UnitSpawnHolder(unitSpawner);
 
             uiRoot.OnGenerateMapRequested += CreateEmptyMap;
             uiRoot.OnTileSelectorRequested += nodeList.NodeTypeController.SetCurrentSelected;
@@ -52,8 +54,14 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnLoadMapRequested += LoadSavedMap;
             uiRoot.Initialize(unitSpawner);
-
+            
             inputManager.OnControllMenu += () => uiRoot.OnControllMenu?.Invoke();
+
+            uiRoot.OnSpawnEvent += unitSpawner.StartSetSpawnArea2;
+            uiRoot.OnSpawnUnitCode += unitSpawnHolder.ReserveSpawnUnitCode;
+            unitSpawner.OnSpawnAreaSettingStarted += inputManager.ChangeActionMapSelected;
+            inputManager.OnSpawnUnitRequested += unitSpawnHolder.Spawn;
+            inputManager.OnSetSpawnAreaFinished += unitSpawner.FinishSetSpawnArea2;
         }
 
         private void CreateEmptyMap(int sizeOfMap, int sizeOfCluster)
