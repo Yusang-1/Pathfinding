@@ -53,15 +53,15 @@ namespace Assets.Scripts.CreateMap
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnLoadMapRequested += LoadSavedMap;
-            uiRoot.Initialize(unitSpawner);
+            uiRoot.Initialize();
             
             inputManager.OnControllMenu += () => uiRoot.OnControllMenu?.Invoke();
 
-            uiRoot.OnSpawnEvent += unitSpawner.StartSetSpawnArea2;
+            uiRoot.OnSpawnEvent += unitSpawner.StartSetSpawnArea;
             uiRoot.OnSpawnUnitCode += unitSpawnHolder.ReserveSpawnUnitCode;
             unitSpawner.OnSpawnAreaSettingStarted += inputManager.ChangeActionMapSelected;
             inputManager.OnSpawnUnitRequested += unitSpawnHolder.Spawn;
-            inputManager.OnSetSpawnAreaFinished += unitSpawner.FinishSetSpawnArea2;
+            inputManager.OnSetSpawnAreaFinished += unitSpawner.FinishSetSpawnArea;
         }
 
         private void CreateEmptyMap(int sizeOfMap, int sizeOfCluster)

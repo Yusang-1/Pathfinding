@@ -77,7 +77,7 @@ namespace Assets.Scripts.ECSControllUnit
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
-            uiRoot.OnGetSpawnAreaRequested += unitSpawner.StartSetSpawnArea;
+            uiRoot.OnSpawnEvent += unitSpawner.StartSetSpawnArea;
             // uiRoot.OnFindSelectableUnitInDragUI += mapRuntimeContext.SpatialHash.GetUnitsInRange;
             // uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
         }
@@ -92,8 +92,7 @@ namespace Assets.Scripts.ECSControllUnit
             inputManager.OnHoldStarted += HandleHoldStart;
             inputManager.OnHoldPerformed += HandleHoldPerformed;
             inputManager.OnHoldCanceled += HandleHoldCanceled;
-            inputManager.OnControllMenu += HandleManageMenu;
-            inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnArea;
+            inputManager.OnControllMenu += HandleManageMenu;            
         }
 
         private void AddNodeListEvent()
@@ -116,7 +115,7 @@ namespace Assets.Scripts.ECSControllUnit
             uiRoot.OnGetOfficialMapListRequested -= mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnGetPersonalMapListRequested -= mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested -= unitSpawner.SpawnUnit;
-            uiRoot.OnGetSpawnAreaRequested -= unitSpawner.StartSetSpawnArea;
+            uiRoot.OnSpawnEvent -= unitSpawner.StartSetSpawnArea;
             // uiRoot.OnFindSelectableUnitInDragUI -= mapRuntimeContext.SpatialHash.GetUnitsInRange;
             // uiRoot.OnUnitFocused -= selectableController.UnitFocusedList;
         }
@@ -131,8 +130,7 @@ namespace Assets.Scripts.ECSControllUnit
             inputManager.OnHoldStarted -= HandleHoldStart;
             inputManager.OnHoldPerformed -= HandleHoldPerformed;
             inputManager.OnHoldCanceled -= HandleHoldCanceled;
-            inputManager.OnControllMenu -= HandleManageMenu;
-            inputManager.OnSetSpawnAreaRequested -= unitSpawner.SetSpawnArea;
+            inputManager.OnControllMenu -= HandleManageMenu;            
         }
 
         private void RemoveNodeListEvent()

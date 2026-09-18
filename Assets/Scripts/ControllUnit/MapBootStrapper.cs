@@ -10,7 +10,7 @@ namespace Assets.Scripts.ControllUnit
     public class MapBootStrapper
     {
         private readonly Action<int> initializeMapRuntime;
-        
+
         private readonly SelectableController selectableController = new();
         private readonly MapdataJsonConverter mapdataJsonConverter;
 
@@ -18,6 +18,7 @@ namespace Assets.Scripts.ControllUnit
         private readonly InputManager inputManager;
         private readonly UnitSpawner unitSpawner;
         private readonly MapRuntimeContext mapRuntimeContext;
+        private readonly UnitSpawnHolder unitSpawnHolder;
 
         private bool isBound;
 
@@ -26,9 +27,10 @@ namespace Assets.Scripts.ControllUnit
             this.uiRoot = uiRoot;
             this.inputManager = inputManager;
             this.unitSpawner = unitSpawner;
-            this.initializeMapRuntime= initializeMapRuntime;
+            this.initializeMapRuntime = initializeMapRuntime;
             this.mapRuntimeContext = mapRuntimeContext;
             mapdataJsonConverter = new(mapRuntimeContext.LoadedMapData);
+            unitSpawnHolder = new(unitSpawner);
         }
 
         public void Initialize(NodeData nodeData, UnitsSO unitsSO, PathfinderControllUnit pathfinder)
@@ -67,8 +69,10 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnLoadMapRequested += SetMapData;
             uiRoot.OnGetOfficialMapListRequested += mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnGetPersonalMapListRequested += mapdataJsonConverter.GetPersonalSavedMaps;
-            uiRoot.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
-            uiRoot.OnGetSpawnAreaRequested += unitSpawner.StartSetSpawnArea;
+
+            uiRoot.OnSpawnUnitRequested += unitSpawnHolder.ReserveSpawnUnitCode;
+
+            uiRoot.OnSpawnEvent += unitSpawner.StartSetSpawnArea;
             uiRoot.OnFindSelectableUnitInDragUI += mapRuntimeContext.SpatialHash.GetUnitsInRange;
             uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
         }
@@ -86,7 +90,8 @@ namespace Assets.Scripts.ControllUnit
             inputManager.OnHoldPerformed += HandleHoldPerformed;
             inputManager.OnHoldCanceled += HandleHoldCanceled;
             inputManager.OnControllMenu += HandleManageMenu;
-            inputManager.OnSetSpawnAreaRequested += unitSpawner.SetSpawnArea;
+            inputManager.OnSpawnUnitRequested += unitSpawnHolder.Spawn;
+            inputManager.OnSetSpawnAreaFinished += unitSpawner.FinishSetSpawnArea;
         }
 
         private void RemoveUIRootEvent(Action<int> SetMapData, MapRuntimeContext mapRuntimeContext)
@@ -94,8 +99,8 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnLoadMapRequested -= SetMapData;
             uiRoot.OnGetOfficialMapListRequested -= mapdataJsonConverter.GetOfficialSavedMaps;
             uiRoot.OnGetPersonalMapListRequested -= mapdataJsonConverter.GetPersonalSavedMaps;
-            uiRoot.OnSpawnUnitRequested -= unitSpawner.SpawnUnit;
-            uiRoot.OnGetSpawnAreaRequested -= unitSpawner.StartSetSpawnArea;
+            uiRoot.OnSpawnUnitRequested -= unitSpawnHolder.ReserveSpawnUnitCode;
+            uiRoot.OnSpawnEvent -= unitSpawner.StartSetSpawnArea;
             uiRoot.OnFindSelectableUnitInDragUI -= mapRuntimeContext.SpatialHash.GetUnitsInRange;
             uiRoot.OnUnitFocused -= selectableController.UnitFocusedList;
         }
@@ -113,7 +118,8 @@ namespace Assets.Scripts.ControllUnit
             inputManager.OnHoldPerformed -= HandleHoldPerformed;
             inputManager.OnHoldCanceled -= HandleHoldCanceled;
             inputManager.OnControllMenu -= HandleManageMenu;
-            inputManager.OnSetSpawnAreaRequested -= unitSpawner.SetSpawnArea;
+            inputManager.OnSpawnUnitRequested -= unitSpawnHolder.Spawn;
+            inputManager.OnSetSpawnAreaFinished -= unitSpawner.FinishSetSpawnArea;
         }
 
         private void HandleUnitSelected(ISelectableUnit selectable)

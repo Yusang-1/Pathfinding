@@ -11,7 +11,8 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
-        public event Action<Vector3> OnSetSpawnAreaRequested;
+        public event Action<Vector3> OnSpawnUnitRequested;
+        public event Action OnSetSpawnAreaFinished;
 
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
@@ -23,7 +24,7 @@ namespace Assets.Scripts.ControllUnit
         private IActionMapInputer currentInputer;
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ActionMaps, IActionMapInputer> inputerDict = new();
-        
+
         private bool isEventBound;
 
         private void Awake()
@@ -42,7 +43,7 @@ namespace Assets.Scripts.ControllUnit
             actionMapNameDict.Add(ActionMaps.Player, "Player");
             actionMapNameDict.Add(ActionMaps.Unit, "Unit");
             actionMapNameDict.Add(ActionMaps.SpawnAreaSetter, "SpawnAreaSetter");
-            
+
             inputerDict.Add((playerControllerInput as IActionMapInputer).GetActionMap(), playerControllerInput);
             inputerDict.Add((unitInput as IActionMapInputer).GetActionMap(), unitInput);
             inputerDict.Add((spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput);
@@ -66,7 +67,7 @@ namespace Assets.Scripts.ControllUnit
         public void ChangeActionMapSelected(ActionMaps actionMap)
         {
             string actionMapName = actionMapNameDict[actionMap];
-            
+
             playerInputComponent.SwitchCurrentActionMap(actionMapName);
 
             currentInputer?.ActionMapDeactivated();
@@ -84,8 +85,8 @@ namespace Assets.Scripts.ControllUnit
 
         private void BindEvents()
         {
-            if(isEventBound) return;
-            
+            if (isEventBound) return;
+
             playerControllerInput.OnHoldStarted += HandlerHoldStarted;
             playerControllerInput.OnHoldPerformed += HandlerHoldPerformed;
             playerControllerInput.OnHoldCanceled += HandlerHoldCanceled;
@@ -96,16 +97,17 @@ namespace Assets.Scripts.ControllUnit
             unitInput.OnHoldCanceled += HandlerHoldCanceled;
             unitInput.OnControllMenu += HandlerControllMenu;
 
-            spawnAreaSetterInput.OnSetSpawnAreaRequested += HandlerSetSpawnAreaRequested;
             spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
-            
+            spawnAreaSetterInput.OnSetSpawnAreaFinished += HandlerSetSpawnAreaFinished;
+            spawnAreaSetterInput.OnSpawnUnitRequested += HandlerSpawnUnit;
+
             isEventBound = true;
         }
 
         private void UnbindEvents()
         {
-            if(!isEventBound) return;
-            
+            if (!isEventBound) return;
+
             playerControllerInput.OnHoldStarted -= HandlerHoldStarted;
             playerControllerInput.OnHoldPerformed -= HandlerHoldPerformed;
             playerControllerInput.OnHoldCanceled -= HandlerHoldCanceled;
@@ -116,9 +118,10 @@ namespace Assets.Scripts.ControllUnit
             unitInput.OnHoldCanceled -= HandlerHoldCanceled;
             unitInput.OnControllMenu -= HandlerControllMenu;
 
-            spawnAreaSetterInput.OnSetSpawnAreaRequested -= HandlerSetSpawnAreaRequested;
             spawnAreaSetterInput.OnSetSpawnAreaFinished -= ChangeActionMapDefault;
-            
+            spawnAreaSetterInput.OnSetSpawnAreaFinished -= HandlerSetSpawnAreaFinished;
+            spawnAreaSetterInput.OnSpawnUnitRequested -= HandlerSpawnUnit;
+
             isEventBound = false;
         }
 
@@ -138,9 +141,13 @@ namespace Assets.Scripts.ControllUnit
         {
             OnControllMenu?.Invoke();
         }
-        private void HandlerSetSpawnAreaRequested(Vector3 vec)
+        private void HandlerSpawnUnit(Vector3 pos)
         {
-            OnSetSpawnAreaRequested?.Invoke(vec);
+            OnSpawnUnitRequested?.Invoke(pos);
+        }
+        private void HandlerSetSpawnAreaFinished()
+        {
+            OnSetSpawnAreaFinished?.Invoke();
         }
     }
 }

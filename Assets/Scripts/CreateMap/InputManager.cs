@@ -6,8 +6,7 @@ using UnityEngine.InputSystem;
 namespace Assets.Scripts.CreateMap
 {
     public class InputManager : MonoBehaviour
-    {
-        public event Action<Vector3> OnSetSpawnAreaRequested;
+    {        
         public event Action OnControllMenu;
         
         public event Action<Vector3> OnSpawnUnitRequested;
@@ -47,8 +46,7 @@ namespace Assets.Scripts.CreateMap
         }
 
         private void BindEvnets()
-        {
-            spawnAreaSetterInput.OnSetSpawnAreaRequested += HandlerSetSpawnAreaRequested;
+        {            
             spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
             
             spawnAreaSetterInput.OnSpawnUnitRequested += HandlerSpawnUnit;
@@ -72,11 +70,6 @@ namespace Assets.Scripts.CreateMap
         private void ChangeActionMapDefault()
         {
             ChangeActionMapSelected(DefaultActionMap);
-        }
-
-        private void HandlerSetSpawnAreaRequested(Vector3 vec)
-        {
-            OnSetSpawnAreaRequested?.Invoke(vec);
         }
         
         private void HandlerSpawnUnit(Vector3 pos)

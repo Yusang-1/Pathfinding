@@ -16,7 +16,6 @@ namespace Assets.Scripts.ControllUnit
 
         private UnitFactory unitFactory;
         private readonly SpawnAreaSetter spawnAreaSetter = new();
-        private readonly SpawnAreaSetter2 spawnAreaSetter2 = new();
         
         private bool isInitialized;
         
@@ -29,9 +28,8 @@ namespace Assets.Scripts.ControllUnit
 
             unitFactory.OnSelectedCallback += HandleUnitSelected;
             unitFactory.OnDeselectedCallback += HandleUnitDeselected;
-            spawnAreaSetter.OnStartSetSpawnAreaRequested += HandleSpawnAreaSettingStarted;
             
-            spawnAreaSetter2.OnStartSetSpawnAreaRequested += HandleSpawnAreaSettingStarted;
+            spawnAreaSetter.OnStartSetSpawnAreaRequested += HandleSpawnAreaSettingStarted;
             
             isInitialized = true;
         }
@@ -55,13 +53,10 @@ namespace Assets.Scripts.ControllUnit
         {
             spawnAreaSetter.StartSetSpawnArea(finishAction);
         }
-        public void StartSetSpawnArea2(Action finishAction)
+        
+        public void FinishSetSpawnArea()
         {
-            spawnAreaSetter2.StartSetSpawnArea(finishAction);
-        }
-        public void FinishSetSpawnArea2()
-        {
-            spawnAreaSetter2.FinishSetSpawnArea();
+            spawnAreaSetter.FinishSetSpawnArea();
         }
 
         public override void SpawnUnit(int unitCode)
@@ -72,12 +67,6 @@ namespace Assets.Scripts.ControllUnit
         public override void SpawnUnit(int unitCode, Vector3 position)
         {
             unitFactory.SpawnUnit(unitCode, position);
-        }
-
-        public override void SetSpawnArea(Vector3 position)
-        {
-            spawnPosition = position;
-            spawnAreaSetter.FinishSetSpawnArea();
         }
     }
 }

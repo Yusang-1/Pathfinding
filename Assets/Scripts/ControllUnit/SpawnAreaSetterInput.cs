@@ -4,10 +4,8 @@ using UnityEngine.InputSystem;
 using System;
 
 public class SpawnAreaSetterInput : MonoBehaviour, IActionMapInputer
-{
-    public event Action<Vector3> OnSetSpawnAreaRequested;
-    public event Action OnSetSpawnAreaFinished;
-    
+{    
+    public event Action OnSetSpawnAreaFinished;    
     public event Action<Vector3> OnSpawnUnitRequested;
 
     [SerializeField] private ActionMaps actionMap;
@@ -48,9 +46,7 @@ public class SpawnAreaSetterInput : MonoBehaviour, IActionMapInputer
 
         if (context.canceled)
         {
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-            OnSetSpawnAreaRequested?.Invoke(worldPos);
-            OnSetSpawnAreaFinished?.Invoke();
+            // spawn취소로 변경
         }
     }
 

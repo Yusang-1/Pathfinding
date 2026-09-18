@@ -12,8 +12,7 @@ namespace Assets.Scripts.ECSControllUnit
         public event Action<Vector3> OnHoldStarted;
         public event Func<Vector3,Vector3?> OnHoldPerformed;
         public event Action OnHoldCanceled;
-        public event Action OnControllMenu;
-        public event Action<Vector3> OnSetSpawnAreaRequested;
+        public event Action OnControllMenu;        
 
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
@@ -120,8 +119,7 @@ namespace Assets.Scripts.ECSControllUnit
             unitInput.OnHoldPerformed += HandlerHoldPerformed;
             unitInput.OnHoldCanceled += HandlerHoldCanceled;
             unitInput.OnControllMenu += HandlerControllMenu;
-
-            spawnAreaSetterInput.OnSetSpawnAreaRequested += HandlerSetSpawnAreaRequested;
+            
             spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
 
             isEventBound = true;
@@ -140,8 +138,7 @@ namespace Assets.Scripts.ECSControllUnit
             unitInput.OnHoldPerformed -= HandlerHoldPerformed;
             unitInput.OnHoldCanceled -= HandlerHoldCanceled;
             unitInput.OnControllMenu -= HandlerControllMenu;
-
-            spawnAreaSetterInput.OnSetSpawnAreaRequested -= HandlerSetSpawnAreaRequested;
+            
             spawnAreaSetterInput.OnSetSpawnAreaFinished -= ChangeActionMapDefault;
 
             isEventBound = false;
@@ -162,10 +159,6 @@ namespace Assets.Scripts.ECSControllUnit
         private void HandlerControllMenu()
         {
             OnControllMenu?.Invoke();
-        }
-        private void HandlerSetSpawnAreaRequested(Vector3 vec)
-        {
-            OnSetSpawnAreaRequested?.Invoke(vec);
         }
     }
 }

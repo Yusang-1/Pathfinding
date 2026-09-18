@@ -39,12 +39,6 @@ namespace Assets.Scripts.ECSControllUnit
             spawnAreaSetter.StartSetSpawnArea(finishAction);
         }
 
-        public override void SetSpawnArea(Vector3 position)
-        {
-            // spawnPosition = position;
-            // spawnAreaSetter.SetFinishAction?.Invoke();
-        }
-
         private void HandleSpawnAreaSettingStarted(ActionMaps actionMap)
         {
             OnSpawnAreaSettingStarted?.Invoke(actionMap);

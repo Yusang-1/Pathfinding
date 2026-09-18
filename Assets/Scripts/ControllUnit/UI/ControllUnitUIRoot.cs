@@ -16,7 +16,7 @@ namespace Assets.Scripts.ControllUnit.UI
 
         // UISpawnUnit event
         public event Action<int> OnSpawnUnitRequested;
-        public event Action<Action> OnGetSpawnAreaRequested;
+        public event Action<Action> OnSpawnEvent;
 
         // UIDragController event
         public Action<Vector3> OnHoldStarted;
@@ -64,8 +64,8 @@ namespace Assets.Scripts.ControllUnit.UI
             uiLoadMapMediator.OnLoadMapFinished += uiSpawnUnit.SetActiveTrue;
             uiLoadMapMediator.OnLoadMapFinished += uiUnitPanel.SetActiveTrue;
 
-            uiSpawnUnit.OnSpawnUnitRequested += HandleOnSpawnUnit;
-            uiSpawnUnit.OnGetSpawnAreaRequested += HandleOnGetSpawnArea;
+            uiSpawnUnit.OnSpawnUnitCode += HandleOnSpawnUnit;
+            uiSpawnUnit.OnSpawnEvent += HandleOnGetSpawnArea;
 
             OnHoldStarted += uiDragController.DragStarted;
             OnHoldPerformed += uiDragController.DragPerformed;
@@ -95,8 +95,8 @@ namespace Assets.Scripts.ControllUnit.UI
             uiLoadMapMediator.OnLoadMapFinished -= uiSpawnUnit.SetActiveTrue;
             uiLoadMapMediator.OnLoadMapFinished -= uiUnitPanel.SetActiveTrue;
 
-            uiSpawnUnit.OnSpawnUnitRequested -= HandleOnSpawnUnit;
-            uiSpawnUnit.OnGetSpawnAreaRequested -= HandleOnGetSpawnArea;
+            uiSpawnUnit.OnSpawnUnitCode -= HandleOnSpawnUnit;
+            uiSpawnUnit.OnSpawnEvent -= HandleOnGetSpawnArea;
 
             OnHoldStarted -= uiDragController.DragStarted;
             OnHoldPerformed -= uiDragController.DragPerformed;
@@ -134,7 +134,7 @@ namespace Assets.Scripts.ControllUnit.UI
         }
         private void HandleOnGetSpawnArea(Action action)
         {
-            OnGetSpawnAreaRequested?.Invoke(action);
+            OnSpawnEvent?.Invoke(action);
         }
         private HashSet<ISelectableUnit> HandleOnFindSelectableUnitInDragUI(Vector3 standard, float x, float y)
         {

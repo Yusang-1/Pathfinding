@@ -25,13 +25,9 @@ namespace Assets.Scripts.CreateMap.UI
         [SerializeField] private UIContainerScenes uiContainerScenes;
         [SerializeField] private UIPopup uiPopup;
         [SerializeField] private UISpawnUnit uiSpawnUnit;
-
-        private UnitSpawner unitSpawner;
-
-        public void Initialize(AbstractSpawner spawner)
+        
+        public void Initialize()
         {
-            unitSpawner = spawner as UnitSpawner;
-
             uiPopup.Initialize();
             uiGenerateMapMediator.Initialize();
             uiModifyMapMediator.Initialize();
@@ -54,8 +50,6 @@ namespace Assets.Scripts.CreateMap.UI
             
             OnControllMenu += uiContainerScenes.OnControllMenu;
 
-            uiSpawnUnit.OnSpawnUnitRequested += unitSpawner.SpawnUnit;
-            
             uiSpawnUnit.OnSpawnEvent += HandlerSpawnEvent;
             uiSpawnUnit.OnSpawnUnitCode += HandlerSpawnUnitCode;
             // uiSpawnUnit.OnGetSpawnAreaRequested += ;
