@@ -64,6 +64,7 @@ namespace Assets.Scripts.ECSControllUnit
             mapRuntimeContext.NodeList.Initialize(MapRuntimeContext.NODE_SIZE, mapSize);
 
             mapGenerator.GenerateMap(mapSize, mapData.TerrainData);
+            mapGenerator.SetUnit(mapData.UnitData);
 
             pathfindingBridge.SetNodeAndCluster(mapRuntimeContext.NodeList, mapSize, unitsSO.UnitRadius);
         }
