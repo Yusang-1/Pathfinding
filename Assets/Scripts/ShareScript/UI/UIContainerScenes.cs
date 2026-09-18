@@ -17,6 +17,10 @@ public class UIContainerScenes : MonoBehaviour
     {
         SceneChanger.ChangeScene("ControllUnit");
     }
+    public void OnLoadControllECSScene()
+    {
+        SceneChanger.ChangeScene("ECSControllUnit");
+    }
     /// <summary> button에 할당 </summary>
     public void OnLoadTitleScene()
     {
