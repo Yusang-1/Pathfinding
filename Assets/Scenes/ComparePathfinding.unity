@@ -202,8 +202,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2037350533}
-        m_TargetAssemblyTypeName: UILoadMapList, Assembly-CSharp
+      - m_Target: {fileID: 2037350536}
+        m_TargetAssemblyTypeName: Assets.Scripts.CreateMap.UI.UILoadMapList, Assembly-CSharp
         m_MethodName: OnLoadSelectedMap
         m_Mode: 1
         m_Arguments:
@@ -2728,6 +2728,7 @@ MonoBehaviour:
   lineDrawer: {fileID: 1336710742}
   unitsSO: {fileID: 11400000, guid: d7f8efabe6051f6458897dc7dfe85e54, type: 2}
   unit: {fileID: 1233999322}
+  unitSpawner: {fileID: 0}
 --- !u!4 &497125300
 Transform:
   m_ObjectHideFlags: 0
@@ -4952,8 +4953,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2037350533}
-        m_TargetAssemblyTypeName: UILoadMapList, Assembly-CSharp
+      - m_Target: {fileID: 2037350536}
+        m_TargetAssemblyTypeName: Assets.Scripts.CreateMap.UI.UILoadMapList, Assembly-CSharp
         m_MethodName: OnCloseLoadMapList
         m_Mode: 1
         m_Arguments:
@@ -10205,7 +10206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiLoadMap: {fileID: 1072190182}
-  uiLoadMapList: {fileID: 2037350533}
+  uiLoadMapList: {fileID: 2037350536}
 --- !u!1 &1688829646
 GameObject:
   m_ObjectHideFlags: 0
@@ -11197,6 +11198,18 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 97f855bd-4a1b-44fe-8c65-14480dc0be75
     m_ActionName: 'Unit/Menu[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 51d33e88-1196-42a9-99cd-b4a22671e4fb
+    m_ActionName: 'SpawnAreaSetter/LeftClick[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ef5f765d-2b4b-44d9-9acd-bcdc0ee08c15
+    m_ActionName: 'SpawnAreaSetter/RightClick[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 384fb65a-47e2-4c0f-a651-4425b14d0888
+    m_ActionName: 'SpawnAreaSetter/MousePosition[/Mouse/position]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -12816,7 +12829,7 @@ GameObject:
   - component: {fileID: 2037350532}
   - component: {fileID: 2037350535}
   - component: {fileID: 2037350534}
-  - component: {fileID: 2037350533}
+  - component: {fileID: 2037350536}
   m_Layer: 5
   m_Name: Container_LoadMapList
   m_TagString: Untagged
@@ -12845,22 +12858,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2037350533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2037350531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4214d7d6e7cea140ac363b60114b8a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  officialMapContainer: {fileID: 842114245}
-  personalMapContainer: {fileID: 2109772301}
-  mapContainer: {fileID: 8551645777524396895, guid: 2ae584df46d6f5a4287b6db4143bc173, type: 3}
-  mapInfo: {fileID: 1128325116}
 --- !u!114 &2037350534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12899,6 +12896,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2037350531}
   m_CullTransparentMesh: 1
+--- !u!114 &2037350536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037350531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 715036ff633d01643b023fbcca6dc87e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  officialMapContainer: {fileID: 1268256586}
+  personalMapContainer: {fileID: 943341048}
+  mapContainer: {fileID: 8551645777524396895, guid: 2ae584df46d6f5a4287b6db4143bc173, type: 3}
+  mapInfo: {fileID: 1128325116}
 --- !u!1 &2055973622
 GameObject:
   m_ObjectHideFlags: 0

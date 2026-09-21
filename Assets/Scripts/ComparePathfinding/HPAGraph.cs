@@ -6,7 +6,7 @@ public class HPAGraph
 {
     private readonly Dictionary<float, Dictionary<Vector2Int, GraphNode>> nodesByUnitRadius = new();
     private readonly Dictionary<float, Dictionary<Vector2Int, List<EntranceData>>> entrancesDataByDirectionByRadius = new();
-    private readonly Dictionary<(Vector2Int from, Vector2Int to), float> edgeCache = new();
+    private readonly Dictionary<(Vector2Int from, Vector2Int to, float radius), float> edgeCache = new();
 
     private class GraphNode
     {
@@ -102,7 +102,7 @@ public class HPAGraph
         var nodes = nodesByUnitRadius[unitRadius];
         if (!nodes.ContainsKey(from) || !nodes.ContainsKey(to)) return;
 
-        var key = (from, to);
+        var key = (from, to, unitRadius);
         if (!edgeCache.ContainsKey(key))
         {
             nodes[from].Neighbors.Add(to);

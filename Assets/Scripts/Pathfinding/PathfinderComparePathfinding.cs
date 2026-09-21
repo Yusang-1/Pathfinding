@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Assets.Scripts.Pathfinding;
 using Assets.Scripts.CreateMap;
+using Assets.Scripts.ControllUnit;
 
 public class PathfinderComparePathfinding
 {

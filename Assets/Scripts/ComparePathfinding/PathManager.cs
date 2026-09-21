@@ -1,5 +1,6 @@
 using UnityEngine;
 using Assets.Scripts.CreateMap;
+using Assets.Scripts.ControllUnit;
 
 public class PathManager : MonoBehaviour // comparePathfinding 씬의 manager
 {
@@ -7,7 +8,7 @@ public class PathManager : MonoBehaviour // comparePathfinding 씬의 manager
     private readonly PathfinderComparePathfinding pathfinder = new();
     private PathManagerBootStrapper pathManagerBootStrapper;
     private MapGenerator mapGenerator;
-    private LoadedMapData loadedMapData;
+    private MapRuntimeContext mapRuntimeContext;
 
     [SerializeField] private UIRoot uiRoot;
     [SerializeField] private InputManager inputManager;
@@ -25,7 +26,8 @@ public class PathManager : MonoBehaviour // comparePathfinding 씬의 manager
         pathfinder.Initialize(nodeList, clusterShower, lineDrawer, unit);
         unitsSO.Initialize();
         mapGenerator = new MapGenerator(nodePrefab, nodeList, unitSpawner);
-        pathManagerBootStrapper = new PathManagerBootStrapper(nodeList, uiRoot, inputManager, pathfinder, SetMapData, nodeData);
+        mapRuntimeContext = new MapRuntimeContext(null, nodeData);
+        pathManagerBootStrapper = new PathManagerBootStrapper(nodeList, uiRoot, inputManager, pathfinder, SetMapData, mapRuntimeContext);
     }
 
     private void OnEnable()
@@ -46,14 +48,14 @@ public class PathManager : MonoBehaviour // comparePathfinding 씬의 manager
 
     private void SetMapData(int mapCode)
     {
-        if(!loadedMapData.TryGetMapData(mapCode, out MapData mapData))
+        if(!mapRuntimeContext.LoadedMapData.TryGetMapData(mapCode, out MapData mapData))
         {
             return;
         }
         
-        int nodeSize = Assets.Scripts.ControllUnit.MapRuntimeContext.NODE_SIZE;
+        int nodeSize = MapRuntimeContext.NODE_SIZE;
         int mapSize = mapData.InfoData.MapSize;
-        int clusterSize = Assets.Scripts.ControllUnit.MapRuntimeContext.CLUSTER_SIZE;
+        int clusterSize = MapRuntimeContext.CLUSTER_SIZE;
 
         nodeList.Initialize(nodeSize, mapSize);
                 

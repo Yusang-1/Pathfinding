@@ -32,7 +32,7 @@ namespace Assets.Scripts.Pathfinding
             ThetaStar thetaStarPathfinder = new(nodeList);
             
             var searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
-            return new LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
+            return new LazyRefine(searchWithTheClusterResult);
         }
 
         public ClusterResultWrapper GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)

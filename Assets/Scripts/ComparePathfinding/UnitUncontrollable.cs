@@ -70,7 +70,7 @@ public class UnitUncontrollable : MonoBehaviour
         currentPath = resultWrapper.ClusterSmootherResult[pathNum];
         lazyGoal = new Vector3(currentPath.ExitNodeIndex.x, currentPath.ExitNodeIndex.y);
 
-        lazyRefine ??= new LazyRefine(clusterList, nodeList, searchWithTheClusterResult);
+        lazyRefine ??= new LazyRefine(searchWithTheClusterResult);
         lazyRefine.DoLazyRefinement(resultWrapper.ClusterSmootherResult[pathNum++], lineDrawer);
 
         if (lazyRefine.TryGetPathFromQueue(out Vector3 destination))

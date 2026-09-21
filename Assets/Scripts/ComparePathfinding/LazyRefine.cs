@@ -6,13 +6,9 @@ public class LazyRefine
 {
     private readonly Queue<Vector3> pathQueue = new();
 
-    private readonly HPAClusterList clusterList;
     private readonly SearchWithTheClusterResult searchWithTheClusterResult;
-    private readonly NodeList nodeList;
-    public LazyRefine(HPAClusterList clusterList, NodeList nodeList, SearchWithTheClusterResult searchWithTheClusterResult)
+    public LazyRefine(SearchWithTheClusterResult searchWithTheClusterResult)
     {
-        this.clusterList = clusterList;
-        this.nodeList = nodeList;
         this.searchWithTheClusterResult = searchWithTheClusterResult;
     }
 

@@ -14,20 +14,19 @@ public class PathManagerBootStrapper
     private readonly UIRoot uiRoot;
     private readonly InputManager inputManager;
     private readonly PathfinderComparePathfinding pathfinder;
-    private MapRuntimeContext mapRuntimeContext;
+    private readonly MapRuntimeContext mapRuntimeContext;
 
     private bool isEventBound;
 
     public PathManagerBootStrapper(NodeList nodeList, UIRoot uiRoot, InputManager inputManager, PathfinderComparePathfinding pathfinder,
-        Action<int> setMapData, NodeData nodeData)
+        Action<int> setMapData, MapRuntimeContext mapRuntimeContext)
     {
         this.nodeList = nodeList;
         this.uiRoot = uiRoot;
         this.inputManager = inputManager;
         this.pathfinder = pathfinder;
         this.setMapData = setMapData;
-        
-        mapRuntimeContext = new MapRuntimeContext(null, nodeData);
+        this.mapRuntimeContext = mapRuntimeContext;        
         mapdataJsonConverter = new(mapRuntimeContext.LoadedMapData);
     }
 

@@ -84,7 +84,7 @@ public class HPACluster
             foreach (var entrance in cachedEntrances)
             {
                 pathfinder.SetGetNeighborPolicy(new GetNeighborNodesInSameClusterProvider(nodeList, clusterList));
-                float distance = pathfinder.FindPathLength(entrance, newNode, 0);
+                float distance = pathfinder.FindPathLength(entrance, newNode, unitRadius);
                 if (distance > 0)
                 {
                     graph.AddBidirectionalEdge(entrance, newNode, distance, unitRadius);

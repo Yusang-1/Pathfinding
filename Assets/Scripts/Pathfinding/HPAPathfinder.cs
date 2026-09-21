@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Assets.Scripts.ControllUnit;
 
 namespace Assets.Scripts.Pathfinding
 {
@@ -14,10 +15,15 @@ namespace Assets.Scripts.Pathfinding
         private readonly HashSet<int> closedSet = new();
         private readonly Dictionary<int, AbstractNode> clusterDict = new();
 
+        private readonly float averageClusterCost;
+        private const float SUQARE_TWO = 1.414f;
+
         public HPAPathfinder(NodeList nodeList, HPAClusterList clusterList)
         {
             this.nodeList = nodeList;
             this.clusterList = clusterList;
+
+            averageClusterCost = (MapRuntimeContext.CLUSTER_SIZE + MapRuntimeContext.CLUSTER_SIZE * SUQARE_TWO) / 2;
         }
 
         /// <summary> high level cluster 경로를 반환 </summary>
@@ -60,6 +66,11 @@ namespace Assets.Scripts.Pathfinding
                 };
 
                 clusterResultWrapper.SetClusterResult(result);
+
+                // start cluster, goal cluster에 추가된 노드 제거
+                clusterList.GetCluster(startCluster).RemoveTempNodeInGraph();
+                clusterList.GetCluster(goalCluster).RemoveTempNodeInGraph();
+
                 return clusterResultWrapper;
             }
             else
@@ -88,7 +99,7 @@ namespace Assets.Scripts.Pathfinding
             closedSet.Clear();
             clusterDict.Clear();
 
-            List<Vector2Int> startEntrances = GetAllEntrances(startClusterIndex, unitRadius);
+            List<Vector2Int> startEntrances = GetAllEntrances(startClusterIndex, unitRadius).entrances;
             if (startEntrances == null || startEntrances.Count == 0) return null;
             Vector2IntListPool.ReleaseValue(startEntrances);
 
@@ -131,7 +142,7 @@ namespace Assets.Scripts.Pathfinding
 
                     float tentativeG = clusterDict[currentClusterHash].G + cost;
 
-                    if (!clusterDict.ContainsKey(neighborClusterHash) || tentativeG < neighborCluster.G)
+                    if (!clusterDict.ContainsKey(neighborClusterHash) || tentativeG < clusterDict[neighborClusterHash].G)
                     {
                         if (!clusterDict.ContainsKey(neighborClusterHash))
                         {
@@ -283,20 +294,26 @@ namespace Assets.Scripts.Pathfinding
             var cluster = clusterList.GetCluster(current.ClusterIndex);
 
             // Intra-cluster edges
-            List<Vector2Int> entranceList = GetAllEntrances(current.ClusterIndex, unitRadius);
-            foreach (var other in entranceList)
+            var entrances = GetAllEntrances(current.ClusterIndex, unitRadius);
+            for (int index = 0; index < entrances.entrances.Count; index++)
             {
-                if (other == current.EntranceNodeIndex) continue;
+                if (entrances.entrances[index] == current.EntranceNodeIndex) continue;
 
-                if (cluster.TryGetIntraEdgeCost(current.EntranceNodeIndex, other, out float intraCost, unitRadius))
+                if (cluster.TryGetIntraEdgeCost(current.EntranceNodeIndex, entrances.entrances[index], out float intraCost, unitRadius))
                 {
                     yield return (
-                        new AbstractNode { ClusterIndex = current.ClusterIndex, EntranceNodeIndex = other },
+                        new AbstractNode
+                        {
+                            ClusterIndex = current.ClusterIndex,
+                            EntranceNodeIndex = entrances.entrances[index],
+                            Direction = entrances.directions[index]
+                        },
                         intraCost
                     );
                 }
             }
-            Vector2IntListPool.ReleaseValue(entranceList);
+            Vector2IntListPool.ReleaseValue(entrances.entrances);
+            Vector2IntListPool.ReleaseValue(entrances.directions);
 
             // Inter-cluster edge
             List<Vector2Int> neighbors = clusterList.GetNeighborClusters(current.ClusterIndex);
@@ -313,10 +330,12 @@ namespace Assets.Scripts.Pathfinding
         }
 
         private readonly Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-        private List<Vector2Int> GetAllEntrances(Vector2Int Index, float unitRadius)
+        private (List<Vector2Int> entrances, List<Vector2Int> directions) GetAllEntrances(Vector2Int Index, float unitRadius)
         {
             List<Vector2Int> entrances = Vector2IntListPool.GetValue();
+            List<Vector2Int> nodeDirections = Vector2IntListPool.GetValue();
             entrances.Clear();
+            nodeDirections.Clear();
 
             foreach (Vector2Int dir in directions)
             {
@@ -325,10 +344,11 @@ namespace Assets.Scripts.Pathfinding
                     if (dirEntrance != null)
                     {
                         entrances.Add(dirEntrance);
+                        nodeDirections.Add(dir);
                     }
                 }
             }
-            return entrances;
+            return (entrances, nodeDirections);
         }
 
         private Vector2Int? GetEntranceBetweenClusters(Vector2Int from, Vector2Int to, Vector2Int currentEntrance, float unitRadius)
@@ -353,7 +373,7 @@ namespace Assets.Scripts.Pathfinding
             int dx = Mathf.Abs(to.x - from.x);
             int dy = Mathf.Abs(to.y - from.y);
 
-            return dx + dy;
+            return (dx + dy) * averageClusterCost;
         }
 
         private bool IsWalkable(Vector2Int nodeIndex) => nodeList.Nodes[nodeIndex.x, nodeIndex.y].IsWalkable;
@@ -363,6 +383,7 @@ namespace Assets.Scripts.Pathfinding
             public Vector2Int ClusterIndex;
             public int ParentClusterHash;
             public Vector2Int EntranceNodeIndex;
+            public Vector2Int Direction;
             public float G;
             public float H;
             public readonly float F => G + H;
@@ -370,13 +391,13 @@ namespace Assets.Scripts.Pathfinding
             public override readonly bool Equals(object obj)
             {
                 if (obj is not AbstractNode other) return false;
-                return ClusterIndex == other.ClusterIndex && EntranceNodeIndex == other.EntranceNodeIndex;
+                return ClusterIndex == other.ClusterIndex && EntranceNodeIndex == other.EntranceNodeIndex && Direction == other.Direction;
             }
 
             public override readonly int GetHashCode()
             {
-                return ClusterIndex.GetHashCode() ^ EntranceNodeIndex.GetHashCode();
+                return ClusterIndex.GetHashCode() ^ EntranceNodeIndex.GetHashCode() ^ Direction.GetHashCode();
             }
         }
-    }    
+    }
 }
