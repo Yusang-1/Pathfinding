@@ -146,15 +146,17 @@ namespace Assets.Scripts.ControllUnit
 
         private void ApplyFocusedChanges(List<ISelectableUnit> unfocused, List<ISelectableUnit> newlyFocused)
         {
-            if (unfocused != null || unfocused.Count > 0)
+            bool isNull = unfocused == null || unfocused.Count == 0;
+            if (!isNull)
             {
                 foreach (var unit in unfocused)
                 {
                     UnitUnfocused(unit);
                 }
             }
-
-            if (newlyFocused != null || newlyFocused.Count > 0)
+            
+            isNull = newlyFocused == null || newlyFocused.Count == 0;
+            if (!isNull)
             {
                 foreach (var unit in newlyFocused)
                 {
