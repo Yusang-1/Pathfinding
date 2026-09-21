@@ -4,13 +4,16 @@ using UnityEngine.InputSystem;
 using System;
 
 public class SpawnAreaSetterInput : MonoBehaviour, IActionMapInputer
-{    
-    public event Action OnSetSpawnAreaFinished;    
-    public event Action<Vector3> OnSpawnUnitRequested;
+{
+    public event Action OnSetSpawnAreaFinished;
+    public event Action OnSpawnUnitRequested;
+    public event Action<Vector3> OnTrackMouse;
+    public event Action OnCancelSpawnAreaSet;
+    public event Action<bool> OnPointerNotOverGameObject;
 
     [SerializeField] private ActionMaps actionMap;
 
-    private Vector2 mousePosition;
+    private Vector2 mouseWorldPosition;
     private bool isPointerOverGameObject;
     private bool isInputActive;
 
@@ -27,15 +30,14 @@ public class SpawnAreaSetterInput : MonoBehaviour, IActionMapInputer
             isPointerOverGameObject = false;
         }
     }
-    
+
     public void OnLeftClick(InputAction.CallbackContext context)
     {
         if (isPointerOverGameObject || !isInputActive) return;
 
         if (context.canceled)
         {
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-            OnSpawnUnitRequested?.Invoke(worldPos);
+            OnSpawnUnitRequested?.Invoke();
             OnSetSpawnAreaFinished?.Invoke();
         }
     }
@@ -46,7 +48,8 @@ public class SpawnAreaSetterInput : MonoBehaviour, IActionMapInputer
 
         if (context.canceled)
         {
-            // spawn취소로 변경
+            OnCancelSpawnAreaSet?.Invoke();
+            OnSetSpawnAreaFinished?.Invoke();
         }
     }
 
@@ -56,7 +59,12 @@ public class SpawnAreaSetterInput : MonoBehaviour, IActionMapInputer
 
         if (context.performed)
         {
-            mousePosition = context.ReadValue<Vector2>();
+            OnPointerNotOverGameObject?.Invoke(!isPointerOverGameObject);
+
+            Vector2 mousePosition = context.ReadValue<Vector2>();
+            mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
+
+            OnTrackMouse?.Invoke(mouseWorldPosition);
         }
     }
 

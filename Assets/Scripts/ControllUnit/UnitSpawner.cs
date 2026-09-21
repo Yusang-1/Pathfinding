@@ -68,5 +68,15 @@ namespace Assets.Scripts.ControllUnit
         {
             unitFactory.SpawnUnit(unitCode, position);
         }
+        
+        public Unit SpawnUnitPreview(int unitCode, Vector3 position)
+        {
+            return unitFactory.SpawnUnitPreview(unitCode, position);
+        }
+        
+        public void UnitPreviewToUnit(Unit unit)
+        {
+            unitFactory.UnitPreviewToUnit(unit);
+        }
     }
 }

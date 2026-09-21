@@ -22,16 +22,21 @@ namespace Assets.Scripts.ControllUnit
 
         public UnitSO UnitData => unitData;
         public UnitController Controller => controller;
-        
+
         public bool IsEventBound;
-        
+        private bool isSpawned;
+
         private void Update()
         {
+            if (!isSpawned) return;
+
             controller.ControllerUpdate();
         }
 
         private void LateUpdate()
         {
+            if (!isSpawned) return;
+
             controller.ControllerLateUpdate();
         }
 
@@ -43,6 +48,8 @@ namespace Assets.Scripts.ControllUnit
 
         public void UnitSpawned()
         {
+            isSpawned = true;
+
             bottomChanger.Initialize();
             gameObject.SetActive(true);
         }
@@ -50,10 +57,16 @@ namespace Assets.Scripts.ControllUnit
         public void UnitDespawned()
         {
             OnDespawnedCallback?.Invoke(this);
+
+            if (bottomChanger != null)
+            {
+                bottomChanger.Despawned();
+                ChangeBottomStatus(UnitBottomStatus.None);
+            }
+
             gameObject.SetActive(false);
-            bottomChanger.Despawned();
-            ChangeBottomStatus(UnitBottomStatus.None);
             OnPoolObjectUnused?.Invoke(this);
+            isSpawned = false;
         }
 
         public void Selected()
@@ -92,6 +105,46 @@ namespace Assets.Scripts.ControllUnit
 
         public ActionMaps GetActionMapName() => unitData.ActionMap;
     }
+
+    // public class UnitMaterialController
+    // {
+    //     private readonly Unit unit;
+        
+    //     private Renderer objectRenderer;
+    //     private readonly MaterialPropertyBlock propertyBlock;
+
+    //     private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+
+    //     public UnitMaterialController(Unit unit)
+    //     {
+    //         this.unit = unit;
+    //         propertyBlock = new MaterialPropertyBlock();
+    //     }
+        
+    //     private void SetTranslucent()
+    //     {
+    //         objectRenderer = unit.GetComponent<Renderer>();
+
+    //         objectRenderer.GetPropertyBlock(propertyBlock);
+
+    //         Color color = propertyBlock.GetColor(BaseColor);
+    //         color.a = Mathf.Clamp01(0.5f);
+
+    //         propertyBlock.SetColor(BaseColor, color);
+    //         objectRenderer.SetPropertyBlock(propertyBlock);
+    //     }
+
+    //     private void SetOpaque()
+    //     {
+    //         objectRenderer.GetPropertyBlock(propertyBlock);
+
+    //         Color color = propertyBlock.GetColor(BaseColor);
+    //         color.a = Mathf.Clamp01(1f);
+
+    //         propertyBlock.SetColor(BaseColor, color);
+    //         objectRenderer.SetPropertyBlock(propertyBlock);
+    //     }
+    // }
 }
 
 public interface IHaveOwnActionMap

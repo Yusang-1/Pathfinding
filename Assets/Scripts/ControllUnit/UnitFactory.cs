@@ -47,6 +47,25 @@ namespace Assets.Scripts.ControllUnit
             unit.Initialize(unitRuntimeContext, unitBottom);
             unit.UnitSpawned();
         }
+        
+        public Unit SpawnUnitPreview(int unitCode, Vector3 spawnPosition)
+        {
+            Unit unit = GetUnitInstance(unitCode);
+            unit.transform.position = spawnPosition;
+            
+            return unit;
+        }
+        
+        public void UnitPreviewToUnit(Unit unit)
+        {
+            BoundUnitEvent(unit);
+
+            var unitBottom = GetUnitBottomInstance();
+            unitBottom.transform.position = unit.transform.position;
+
+            unit.Initialize(unitRuntimeContext, unitBottom);
+            unit.UnitSpawned();
+        }
 
         private Unit GetUnitInstance(int unitCode)
         {

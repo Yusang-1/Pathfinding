@@ -11,8 +11,12 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
-        public event Action<Vector3> OnSpawnUnitRequested;
+        
+        public event Action OnSpawnUnitRequested;
         public event Action OnSetSpawnAreaFinished;
+        public event Action<Vector3> OnTrackMouse;
+        public event Action OnCancelSpawnAreaSet;
+        public event Action<bool> OnPointerNotOverGameObject;
 
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
@@ -100,6 +104,9 @@ namespace Assets.Scripts.ControllUnit
             spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
             spawnAreaSetterInput.OnSetSpawnAreaFinished += HandlerSetSpawnAreaFinished;
             spawnAreaSetterInput.OnSpawnUnitRequested += HandlerSpawnUnit;
+            spawnAreaSetterInput.OnTrackMouse += HandlerTrackMouse;
+            spawnAreaSetterInput.OnCancelSpawnAreaSet += HandlerCancelSpawnAreaSet;
+            spawnAreaSetterInput.OnPointerNotOverGameObject += HandlePointerNotOverGameObject;
 
             isEventBound = true;
         }
@@ -121,6 +128,9 @@ namespace Assets.Scripts.ControllUnit
             spawnAreaSetterInput.OnSetSpawnAreaFinished -= ChangeActionMapDefault;
             spawnAreaSetterInput.OnSetSpawnAreaFinished -= HandlerSetSpawnAreaFinished;
             spawnAreaSetterInput.OnSpawnUnitRequested -= HandlerSpawnUnit;
+            spawnAreaSetterInput.OnTrackMouse -= HandlerTrackMouse;
+            spawnAreaSetterInput.OnCancelSpawnAreaSet -= HandlerCancelSpawnAreaSet;
+            spawnAreaSetterInput.OnPointerNotOverGameObject -= HandlePointerNotOverGameObject;
 
             isEventBound = false;
         }
@@ -141,13 +151,25 @@ namespace Assets.Scripts.ControllUnit
         {
             OnControllMenu?.Invoke();
         }
-        private void HandlerSpawnUnit(Vector3 pos)
+        private void HandlerSpawnUnit()
         {
-            OnSpawnUnitRequested?.Invoke(pos);
+            OnSpawnUnitRequested?.Invoke();
         }
         private void HandlerSetSpawnAreaFinished()
         {
             OnSetSpawnAreaFinished?.Invoke();
+        }
+        private void HandlerTrackMouse(Vector3 pos)
+        {
+            OnTrackMouse?.Invoke(pos);
+        }
+        private void HandlerCancelSpawnAreaSet()
+        {
+            OnCancelSpawnAreaSet?.Invoke();
+        }
+        private void HandlePointerNotOverGameObject(bool value)
+        {
+            OnPointerNotOverGameObject?.Invoke(value);
         }
     }
 }

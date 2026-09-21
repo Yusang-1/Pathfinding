@@ -17,5 +17,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ControllUnit.unity
     guid: 46d6ce66a1ea59a4db012ed939c0ba95
+  - enabled: 1
+    path: Assets/Scenes/ECSControllUnit.unity
+    guid: 3d12d012f40b72b4e828eb2fae1fa9f6
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

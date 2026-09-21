@@ -2,26 +2,36 @@ using Assets.Scripts.ControllUnit;
 using UnityEngine;
 
 public class UnitSpawnHolder
-{
-    // CreateMap에서 유닛 소환하고 위치를 지정하는 동안 code를 저장해두고
-    // 위치 지정이 끝나면 spawn하는 기능
-
-    [SerializeField] private UnitSpawner unitSpawner;
-
-    private int currentReservedCode;
+{    
+    private readonly UnitPreviewShower previewShower;    
 
     public UnitSpawnHolder(UnitSpawner unitSpawner)
+    {        
+        previewShower = new UnitPreviewShower(unitSpawner);
+    }
+    
+    public void MovePreviewUnit(Vector3 position)
     {
-        this.unitSpawner = unitSpawner;
+        previewShower.MovePreviewUnit(position);
     }
 
     public void ReserveSpawnUnitCode(int code)
     {
-        currentReservedCode = code;
+        previewShower.ShowUnitPreview(code, Vector3.zero);
     }
 
-    public void Spawn(Vector3 position)
+    public void Spawn()
     {
-        unitSpawner.SpawnUnit(currentReservedCode, position);
+        previewShower.PreviewToUnit();
+    }
+    
+    public void CancelSpawn()
+    {
+        previewShower.CancelSpawn();
+    }
+    
+    public void HidePreviewUnit(bool value)
+    {
+        previewShower.HidePreviewUnit(value);
     }
 }

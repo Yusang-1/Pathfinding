@@ -62,6 +62,9 @@ namespace Assets.Scripts.CreateMap
             unitSpawner.OnSpawnAreaSettingStarted += inputManager.ChangeActionMapSelected;
             inputManager.OnSpawnUnitRequested += unitSpawnHolder.Spawn;
             inputManager.OnSetSpawnAreaFinished += unitSpawner.FinishSetSpawnArea;
+            inputManager.OnTrackMouse += unitSpawnHolder.MovePreviewUnit;
+            inputManager.OnCancelSpawnAreaSet += unitSpawnHolder.CancelSpawn;
+            inputManager.OnPointerNotOverGameObject += unitSpawnHolder.HidePreviewUnit;
         }
 
         private void CreateEmptyMap(int sizeOfMap, int sizeOfCluster)
