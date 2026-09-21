@@ -17,9 +17,9 @@ public class PriorityQueue<TElement, TPriority> where TPriority : struct, ICompa
     {
         heap = new (TElement, TPriority)[initialHeapSize];
     }
-    
+
     public void Clear()
-    {        
+    {
         indexMap.Clear();
         head = 0;
         tail = 0;
@@ -47,7 +47,8 @@ public class PriorityQueue<TElement, TPriority> where TPriority : struct, ICompa
     public TElement Dequeue()
     {
         TElement result = heap[head++].element;
-
+        if(result == null) return default;
+        
         indexMap.Remove(result);
 
         ShiftDown(head);

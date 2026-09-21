@@ -68,6 +68,8 @@ namespace Assets.Scripts.ControllUnit.UI
             }
             
             UISelectedUnit unitUI = UnusedUI.Dequeue();
+            if(unitUI == default) return;
+            
             unitUI.GetUnitInfo((unit as Unit).name);
             
             uiIndexDict.Add(unit, unitUI.Index);
