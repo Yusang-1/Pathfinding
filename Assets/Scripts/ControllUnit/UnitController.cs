@@ -33,15 +33,15 @@ namespace Assets.Scripts.ControllUnit
             this.bottomChangerTransform = bottomChangerTransform;
             this.unitData = unitData;
             this.steeringConfig = steeringConfig;
-            
-            if(unitRuntimeContext.Pathfinder != null)
+
+            if (unitRuntimeContext.Pathfinder != null)
             {
                 lazyRefine = unitRuntimeContext.Pathfinder.GetLazyRefine();
             }
-            
+
             unitRuntimeContext.SpatialHash.AddUnit(unit);
-        }                
-        
+        }
+
         public void MoveTo(Vector3 destination)
         {
             if (isMoving)
@@ -66,7 +66,7 @@ namespace Assets.Scripts.ControllUnit
         {
             bool haveToDoLazyRefine = false;
             if (currentPathIndex + 1 == abstractPath.Count) haveToDoLazyRefine = true;
-            
+
             var clusterResultWrapper = unitRuntimeContext.Pathfinder.GetAbstractPath(finalDestination, destination, unitData.Radius);
             var newAbstractPath = clusterResultWrapper.ClusterSmootherResult;
             if (abstractPath == null || abstractPath.Count == 0) return;
@@ -95,8 +95,11 @@ namespace Assets.Scripts.ControllUnit
             if (!isMoving) return;
 
             GetVelocity();
-            unit.transform.position += velocity;
-
+            
+            var position = unit.transform.position + velocity;
+            position.z = -unit.UnitData.Radius;
+            unit.transform.position = position;
+            
             unitRuntimeContext.SpatialHash.CheckUnitHash(unit);
 
             if (IsDistanceInCurrentDestination())

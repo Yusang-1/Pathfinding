@@ -4,9 +4,7 @@ namespace Assets.Scripts.ControllUnit
 {
     public class UnitMaterialController
     {
-        private readonly Unit unit;
-
-        private Renderer objectRenderer;
+        private readonly Renderer objectRenderer;
         private readonly MaterialPropertyBlock propertyBlock;
 
         private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
@@ -15,7 +13,6 @@ namespace Assets.Scripts.ControllUnit
 
         public UnitMaterialController(Unit unit)
         {
-            this.unit = unit;
             propertyBlock = new MaterialPropertyBlock();
             objectRenderer = unit.GetComponent<Renderer>();
         }

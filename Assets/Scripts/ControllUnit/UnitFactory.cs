@@ -37,6 +37,8 @@ namespace Assets.Scripts.ControllUnit
         public void SpawnUnit(int unitCode, Vector3 spawnPosition)
         {
             Unit unit = GetUnitInstance(unitCode);
+            
+            spawnPosition.z = -unit.UnitData.Radius;
             unit.transform.position = spawnPosition;
 
             BoundUnitEvent(unit);
@@ -51,6 +53,8 @@ namespace Assets.Scripts.ControllUnit
         public Unit SpawnUnitPreview(int unitCode, Vector3 spawnPosition)
         {
             Unit unit = GetUnitInstance(unitCode);
+            
+            spawnPosition.z = -unit.UnitData.Radius;
             unit.transform.position = spawnPosition;
             
             return unit;
