@@ -51,7 +51,7 @@ namespace Assets.Scripts.CreateMap
                 mapDatas[i] = ConvertJsonToMapData(File.ReadAllText(files[i]));
             }
 
-            loadedMapData.SetMapDatas(mapDatas);
+            loadedMapData.SetPersonalMapDatas(mapDatas);
 
             return mapDatas;
         }
@@ -66,7 +66,7 @@ namespace Assets.Scripts.CreateMap
                 results[i] = ConvertJsonToMapData(jsonFiles[i].text);
             }
 
-            loadedMapData.SetMapDatas(results);
+            loadedMapData.SetOfficialMapDatas(results);
 
             return results;
         }

@@ -7,15 +7,31 @@ namespace Assets.Scripts.CreateMap
     {
         private readonly Dictionary<int, MapData> mapDataDict = new();
 
-        public void SetMapDatas(MapData[] datas)
+        public void SetOfficialMapDatas(MapData[] datas)
         {
-            mapDataDict.Clear();
-
             for (int index = 0; index < datas.Length; index++)
             {
                 var info = datas[index].InfoData;
 
-                if (mapDataDict.ContainsKey(info.MapCode)) continue;
+                if (mapDataDict.ContainsKey(info.MapCode))
+                {
+                    mapDataDict.Remove(info.MapCode);
+                }
+
+                mapDataDict.Add(info.MapCode, datas[index]);
+            }
+        }
+
+        public void SetPersonalMapDatas(MapData[] datas)
+        {
+            for (int index = 0; index < datas.Length; index++)
+            {
+                var info = datas[index].InfoData;
+
+                if (mapDataDict.ContainsKey(info.MapCode))
+                {
+                    mapDataDict.Remove(info.MapCode);
+                }
 
                 mapDataDict.Add(info.MapCode, datas[index]);
             }
@@ -36,9 +52,9 @@ namespace Assets.Scripts.CreateMap
 
     public class MapData
     {
-        public Info InfoData {get; private set;}
-        public Terrain TerrainData {get; private set;}
-        public Unit UnitData {get; private set;}
+        public Info InfoData { get; private set; }
+        public Terrain TerrainData { get; private set; }
+        public Unit UnitData { get; private set; }
 
         public MapData(Info info, Terrain terrain, Unit unit)
         {
