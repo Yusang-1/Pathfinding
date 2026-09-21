@@ -15,24 +15,24 @@ public class UnitPreviewShower
     {
         if(currentPreviewUnit == null) return;
         
-        currentPreviewUnit.transform.position = position;
+        currentPreviewUnit.SimpleMove(position);
     }
     
     public void ShowUnitPreview(int unitCode, Vector3 position)
     {
         currentPreviewUnit = unitSpawner.SpawnUnitPreview(unitCode, position);
-        // SetTranslucent();
+        currentPreviewUnit.SetTranslucent();
     }        
     
     public void PreviewToUnit()
     {
         unitSpawner.UnitPreviewToUnit(currentPreviewUnit);
-        // SetOpaque();
+        currentPreviewUnit.SetOpaque();
     }
     
     public void CancelSpawn()
     {
-        // SetOpaque();
+        currentPreviewUnit.SetOpaque();
         currentPreviewUnit.UnitDespawned();
         currentPreviewUnit = null;
     }

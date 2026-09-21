@@ -16,6 +16,7 @@ namespace Assets.Scripts.ControllUnit
 
         private UnitController controller;
         private UnitBottomSelectChanger bottomChanger;
+        private UnitMaterialController materialController;
 
         private UnitBottomStatus bottomStatus;
         public Vector2Int CurrentKey;
@@ -25,6 +26,11 @@ namespace Assets.Scripts.ControllUnit
 
         public bool IsEventBound;
         private bool isSpawned;
+
+        private void Start()
+        {
+            materialController ??= new(this);
+        }
 
         private void Update()
         {
@@ -102,49 +108,27 @@ namespace Assets.Scripts.ControllUnit
             bottomStatus = status;
             bottomChanger.StatusChanged(bottomStatus);
         }
+        
+        public void SimpleMove(Vector3 destination)
+        {
+            destination.z = -unitData.Radius;
+            transform.position = destination;
+        }
+        
+        public void SetTranslucent()
+        {
+            materialController ??= new(this);
+            materialController.SetTranslucent();
+        }
+
+        public void SetOpaque()
+        {
+            materialController ??= new(this);
+            materialController.SetOpaque();
+        }
 
         public ActionMaps GetActionMapName() => unitData.ActionMap;
     }
-
-    // public class UnitMaterialController
-    // {
-    //     private readonly Unit unit;
-        
-    //     private Renderer objectRenderer;
-    //     private readonly MaterialPropertyBlock propertyBlock;
-
-    //     private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
-
-    //     public UnitMaterialController(Unit unit)
-    //     {
-    //         this.unit = unit;
-    //         propertyBlock = new MaterialPropertyBlock();
-    //     }
-        
-    //     private void SetTranslucent()
-    //     {
-    //         objectRenderer = unit.GetComponent<Renderer>();
-
-    //         objectRenderer.GetPropertyBlock(propertyBlock);
-
-    //         Color color = propertyBlock.GetColor(BaseColor);
-    //         color.a = Mathf.Clamp01(0.5f);
-
-    //         propertyBlock.SetColor(BaseColor, color);
-    //         objectRenderer.SetPropertyBlock(propertyBlock);
-    //     }
-
-    //     private void SetOpaque()
-    //     {
-    //         objectRenderer.GetPropertyBlock(propertyBlock);
-
-    //         Color color = propertyBlock.GetColor(BaseColor);
-    //         color.a = Mathf.Clamp01(1f);
-
-    //         propertyBlock.SetColor(BaseColor, color);
-    //         objectRenderer.SetPropertyBlock(propertyBlock);
-    //     }
-    // }
 }
 
 public interface IHaveOwnActionMap

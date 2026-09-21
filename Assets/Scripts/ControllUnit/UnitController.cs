@@ -40,7 +40,7 @@ namespace Assets.Scripts.ControllUnit
             }
             
             unitRuntimeContext.SpatialHash.AddUnit(unit);
-        }
+        }                
         
         public void MoveTo(Vector3 destination)
         {
