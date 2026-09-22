@@ -124,7 +124,9 @@ namespace Assets.Scripts.ControllUnit
 
         private bool IsDistanceInCurrentDestination()
         {
-            float sqrtM = Vector3.SqrMagnitude(unit.transform.position - shortDestination);
+            Vector3 comparePosition = unit.transform.position;
+            comparePosition.z = 0; // unit은 z축이 -반지름만큼의 값을 가지기 때문에 비교를 위해 사용
+            float sqrtM = Vector3.SqrMagnitude(comparePosition - shortDestination);
             if (sqrtM <= 0.5f)
             {
                 if (shortDestination == finalDestination) // 최종 도착
