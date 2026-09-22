@@ -45,8 +45,7 @@ namespace Assets.Scripts.Pathfinding
                 PathResultRecorder.ResetPathLength();
             }
             else
-            {
-                Debug.Log($"AStar찾지 못함 {startNode}, {goalNode} {unitRadius}");
+            {                
                 pathLength = 0;
             }
 
@@ -127,8 +126,7 @@ namespace Assets.Scripts.Pathfinding
                 Vector2IntListPool.ReleaseValue(neighborList);
             }
 
-            // 경로 찾지 못함
-            Debug.Log("AStar 경로를 찾지 못함");
+            // 경로 찾지 못함            
             return null;
         }
 

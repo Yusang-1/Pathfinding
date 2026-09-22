@@ -5,10 +5,9 @@ using Assets.Scripts.ControllUnit;
 namespace Assets.Scripts.Pathfinding
 {
     public class SteeringBehavior
-    {        
+    {
         public Vector3 GetSteering(Unit unit, List<Unit> nearby, float maxSpeed, Vector3 destination, SteeringConfig weighting)
         {
-            Debug.Log("steering");
             float distToGoal = Vector3.Distance(unit.transform.position, destination);
             float arrivalRadius = 0.5f;
 
@@ -33,7 +32,7 @@ namespace Assets.Scripts.Pathfinding
             alignmentVector *= weighting.AlignmentWeight;
 
             return seekVector + separationVector + cohesionVector + alignmentVector;
-        }        
+        }
 
         private Vector3 Seek(Vector3 position, Vector3 target, float maxSpeed, Vector3 velocity)
         {
