@@ -30,20 +30,21 @@ namespace Assets.Scripts.CreateMap
 
         private void Start()
         {
-            unitRuntimeContext = new(null, spatialHash);
-            
-            nodeData.Initialize();
-            unitSpawner.Initialize(unitRuntimeContext);
-            unitsSO.Initialize();
+            unitRuntimeContext = new(null, spatialHash);                        
 
-            nodeList = new NodeList(nodeData);
-            nodeList.OnSelected += nodeList.NodeTypeController.SetNodeType;
-
+            nodeList = new NodeList(nodeData);            
             mapRuntimeContext = new MapRuntimeContext(null, nodeData);
             mapdataJsonConverter = new MapdataJsonConverter(mapRuntimeContext.LoadedMapData);
             mapGenerator = new MapGenerator(nodePrefab, nodeList, unitSpawner);
             unitSpawnHolder = new UnitSpawnHolder(unitSpawner);
-
+            
+            nodeData.Initialize();
+            unitSpawner.Initialize(unitRuntimeContext);
+            unitsSO.Initialize();
+            inputManager.Initialize(nodeList);
+            
+            nodeList.OnSelected += nodeList.NodeTypeController.SetNodeType;
+            
             uiRoot.OnGenerateMapRequested += CreateEmptyMap;
             uiRoot.OnTileSelectorRequested += nodeList.NodeTypeController.SetCurrentSelected;
             uiRoot.OnExportMapRequested += ExportMap;

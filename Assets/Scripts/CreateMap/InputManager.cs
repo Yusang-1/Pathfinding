@@ -8,7 +8,6 @@ namespace Assets.Scripts.CreateMap
     public class InputManager : MonoBehaviour
     {
         public event Action OnControllMenu;
-
         public event Action OnSpawnUnitRequested;
         public event Action OnSetSpawnAreaFinished;
         public event Action<Vector3> OnTrackMouse;
@@ -41,12 +40,15 @@ namespace Assets.Scripts.CreateMap
             inputerDict.Add((spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput);
 
             ChangeActionMapDefault();
-
-            selectableController = new SelectableController();
-
-            playerControllerInput.Initialize(selectableController);
+                        
             playerControllerInput.OnControllMenu += () => OnControllMenu?.Invoke();
-        }        
+        }
+        
+        public void Initialize(NodeList nodeList)
+        {
+            selectableController = new SelectableController();
+            playerControllerInput.Initialize(selectableController, nodeList);
+        }
 
         private void BindEvnets()
         {
@@ -57,7 +59,7 @@ namespace Assets.Scripts.CreateMap
             spawnAreaSetterInput.OnTrackMouse += HandlerTrackMouse;
             spawnAreaSetterInput.OnCancelSpawnAreaSet += HandlerCancelSpawnAreaSet;
             spawnAreaSetterInput.OnPointerNotOverGameObject += HandlerPointerNotOverGameObject;
-        }        
+        }
 
         public void ChangeActionMapSelected(ActionMaps actionMap)
         {
