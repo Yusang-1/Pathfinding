@@ -9,7 +9,7 @@ namespace Assets.Scripts.ControllUnit
         private readonly Dictionary<Vector2Int, List<Unit>> hashTable = new();
 
         // 해시 키 생성
-        private Vector2Int GetHashKey(Vector3 pos) => new((int)(pos.x / cellSize), (int)(pos.y / cellSize));
+        public Vector2Int GetHashKey(Vector3 pos) => new((int)(pos.x / cellSize), (int)(pos.y / cellSize));
 
         // 객체 추가
         public void AddUnit(Unit unit)
@@ -130,6 +130,13 @@ namespace Assets.Scripts.ControllUnit
             }
 
             return unitIndexes.Count > 0;
+        }
+        
+        public List<Unit> GetUnitsInCell(Vector2Int hash)
+        {
+            if(!hashTable.ContainsKey(hash)) return null;
+            
+            return hashTable[hash];
         }
     }
 }

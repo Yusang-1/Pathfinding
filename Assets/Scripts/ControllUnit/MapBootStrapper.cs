@@ -19,6 +19,7 @@ namespace Assets.Scripts.ControllUnit
         private readonly UnitSpawner unitSpawner;
         private readonly MapRuntimeContext mapRuntimeContext;
         private readonly UnitSpawnHolder unitSpawnHolder;
+        private readonly UnitSelector unitSelector;
 
         private bool isBound;
 
@@ -31,13 +32,14 @@ namespace Assets.Scripts.ControllUnit
             this.mapRuntimeContext = mapRuntimeContext;
             mapdataJsonConverter = new(mapRuntimeContext.LoadedMapData);
             unitSpawnHolder = new(unitSpawner);
+            unitSelector = new(mapRuntimeContext.SpatialHash, selectableController);
         }
 
         public void Initialize(NodeData nodeData, UnitsSO unitsSO, PathfinderControllUnit pathfinder)
         {
             nodeData.Initialize();
             unitSpawner.Initialize(new UnitRuntimeContext(pathfinder, mapRuntimeContext.SpatialHash));
-            inputManager.Initialize(selectableController);
+            inputManager.Initialize(unitSelector);
 
             unitsSO.Initialize();
         }
@@ -73,8 +75,7 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnSpawnUnitRequested += unitSpawnHolder.ReserveSpawnUnitCode;
 
             uiRoot.OnSpawnEvent += unitSpawner.StartSetSpawnArea;
-            uiRoot.OnFindSelectableUnitInDragUI += mapRuntimeContext.SpatialHash.GetUnitsInRange;
-            uiRoot.OnUnitFocused += selectableController.UnitFocusedList;
+            uiRoot.OnFindUnitsInDragUI += unitSelector.CheckAreaFocused;
         }
 
         private void AddUnitSpawnerEvent()
@@ -104,8 +105,7 @@ namespace Assets.Scripts.ControllUnit
             uiRoot.OnGetPersonalMapListRequested -= mapdataJsonConverter.GetPersonalSavedMaps;
             uiRoot.OnSpawnUnitRequested -= unitSpawnHolder.ReserveSpawnUnitCode;
             uiRoot.OnSpawnEvent -= unitSpawner.StartSetSpawnArea;
-            uiRoot.OnFindSelectableUnitInDragUI -= mapRuntimeContext.SpatialHash.GetUnitsInRange;
-            uiRoot.OnUnitFocused -= selectableController.UnitFocusedList;
+            uiRoot.OnFindUnitsInDragUI -= unitSelector.CheckAreaFocused;
         }
 
         private void RemoveUnitSpawnerEvent()

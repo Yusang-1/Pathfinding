@@ -136,8 +136,6 @@ namespace Assets.Scripts.ControllUnit
 
         public void UnitFocusedList(HashSet<ISelectableUnit> selectables)
         {
-            if (selectables == null || selectables.Count == 0) return;
-
             var unfocusedUnits = FindUnfocusedUnits(alreadyFocusedHash, selectables);
             var newlyFocusedUnit = FindNewlyFocusedUnits(alreadyFocusedHash, selectables);
 

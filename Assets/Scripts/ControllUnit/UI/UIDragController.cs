@@ -1,17 +1,13 @@
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 
 namespace Assets.Scripts.ControllUnit.UI
 {
     public class UIDragController : MonoBehaviour
     {
-        public event Func<Vector3, float, float, HashSet<ISelectableUnit>> OnFindSelectableUnitInDragUI;
-        public event Action<HashSet<ISelectableUnit>> OnUnitFocused;
+        public event Action<Vector3, float, float> OnFindUnitsInDragUI;
 
         [SerializeField] private GameObject dragUI;
-
-        private HashSet<ISelectableUnit> focusedUnits;
 
         private RectTransform dragUIRect;
 
@@ -39,9 +35,8 @@ namespace Assets.Scripts.ControllUnit.UI
             compareSizeDelta = dragUISizeDelta;
 
             DrawDragUI(position);
-
-            focusedUnits = OnFindSelectableUnitInDragUI?.Invoke(standardPosition, compareSizeDelta.x, compareSizeDelta.y);
-            OnUnitFocused?.Invoke(focusedUnits);
+            
+            OnFindUnitsInDragUI?.Invoke(standardPosition, compareSizeDelta.x, compareSizeDelta.y);
         }
         public Vector3 ECSDragPerformed(Vector3 position)
         {

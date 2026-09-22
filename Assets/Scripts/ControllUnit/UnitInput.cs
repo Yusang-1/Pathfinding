@@ -15,7 +15,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
 
-        private SelectableController selectableController;
+        private UnitSelector unitSelector;
 
         private readonly Dictionary<int, Vector2> directionDict = new();
 
@@ -40,9 +40,9 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        public void Initialize(SelectableController selectableController)
+        public void Initialize(UnitSelector unitSelector)
         {
-            this.selectableController = selectableController;
+            this.unitSelector = unitSelector;
         }
 
         public void OnLeftClick(InputAction.CallbackContext context)
@@ -69,12 +69,12 @@ namespace Assets.Scripts.ControllUnit
                 else
                 {
                     if (isShiftPressed)
-                    {
-                        selectableController.ShiftSelected();
+                    {                        
+                        unitSelector.ShiftSelectedFocused();
                     }
                     else
                     {
-                        selectableController.Selected();
+                        unitSelector.SelectFocused();
                     }
                 }
             }
@@ -115,12 +115,12 @@ namespace Assets.Scripts.ControllUnit
             isDrag = false;
 
             if (isShiftPressed)
-            {
-                selectableController.ShiftSelectedList();
+            {                
+                unitSelector.ShiftSelectedFocusedList();
             }
             else
             {
-                selectableController.Selected();
+                unitSelector.SelectFocused();
             }
             OnHoldCanceled?.Invoke();
         }
@@ -137,11 +137,11 @@ namespace Assets.Scripts.ControllUnit
 
                 if (isShiftPressed)
                 {
-                    selectableController.ShiftRightClickMove(worldPos);
+                    unitSelector.ShiftRightClickMove(worldPos);
                 }
                 else
                 {
-                    selectableController.RightClickMove(worldPos);
+                    unitSelector.RightClickMove(worldPos);
                 }
             }
         }
@@ -156,23 +156,9 @@ namespace Assets.Scripts.ControllUnit
 
                 if (isDrag || isPointerOverGameObject) return;
 
-                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
-                Vector3 origin = Camera.main.transform.position;
-                Vector3 direction = -(worldPos - origin).normalized;
-
-                if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
-                {
-                    if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
-                    {
-                        selectableController.UnitFocusedPoint(selectable);
-                    }
-                    else
-                        selectableController.UnitFocusedPoint(null);
-                }
-                else
-                {
-                    selectableController.UnitFocusedPoint(null);
-                }
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
+                
+                unitSelector.CheckPointFocused(worldPos);
             }
         }
 

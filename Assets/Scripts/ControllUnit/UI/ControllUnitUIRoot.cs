@@ -23,8 +23,7 @@ namespace Assets.Scripts.ControllUnit.UI
         public Action<Vector3> OnHoldPerformed;
         public Action OnHoldCanceled;
         public Func<Vector3, Vector3> OnECSHoldPerformed;
-        public event Func<Vector3, float, float, HashSet<ISelectableUnit>> OnFindSelectableUnitInDragUI;
-        public event Action<HashSet<ISelectableUnit>> OnUnitFocused;
+        public event Action<Vector3, float, float> OnFindUnitsInDragUI;
 
         // UIContainerScenes event
         public Action OnManageMenu;
@@ -72,8 +71,7 @@ namespace Assets.Scripts.ControllUnit.UI
             OnHoldCanceled += uiDragController.DragCanceled;
             OnECSHoldPerformed += uiDragController.ECSDragPerformed;
 
-            uiDragController.OnFindSelectableUnitInDragUI += HandleOnFindSelectableUnitInDragUI;
-            uiDragController.OnUnitFocused += HandleOnUnitFocused;
+            uiDragController.OnFindUnitsInDragUI += HandleOnFindUnitsInDragUI;
 
             OnManageMenu += uiContainerScenes.OnControllMenu;
 
@@ -103,8 +101,7 @@ namespace Assets.Scripts.ControllUnit.UI
             OnHoldCanceled -= uiDragController.DragCanceled;
             OnECSHoldPerformed -= uiDragController.ECSDragPerformed;
 
-            uiDragController.OnFindSelectableUnitInDragUI -= HandleOnFindSelectableUnitInDragUI;
-            uiDragController.OnUnitFocused -= HandleOnUnitFocused;
+            uiDragController.OnFindUnitsInDragUI -= HandleOnFindUnitsInDragUI;
 
             OnManageMenu -= uiContainerScenes.OnControllMenu;
 
@@ -136,13 +133,9 @@ namespace Assets.Scripts.ControllUnit.UI
         {
             OnSpawnEvent?.Invoke(action);
         }
-        private HashSet<ISelectableUnit> HandleOnFindSelectableUnitInDragUI(Vector3 standard, float x, float y)
+        private void HandleOnFindUnitsInDragUI(Vector3 standard, float width, float height)
         {
-            return OnFindSelectableUnitInDragUI?.Invoke(standard, x, y);
-        }
-        private void HandleOnUnitFocused(HashSet<ISelectableUnit> units)
-        {
-            OnUnitFocused?.Invoke(units);
+            OnFindUnitsInDragUI?.Invoke(standard, width, height);
         }
     }
 }

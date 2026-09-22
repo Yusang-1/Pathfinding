@@ -15,13 +15,13 @@ namespace Assets.Scripts.ControllUnit
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
 
-        private SelectableController selectableController;
+        private UnitSelector unitSelector;
 
         private readonly Dictionary<int, Vector2> directionDict = new();
 
         [SerializeField] private ActionMaps actionMap;
         private Vector2 sumOfDirection;
-        private Vector2 mousePosition;
+        private Vector2 mousePosition;        
         private bool isPointerOverGameObject;
         private bool isInputActive;
 
@@ -39,9 +39,9 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        public void Initialize(SelectableController selectableController)
+        public void Initialize(UnitSelector unitSelector)
         {
-            this.selectableController = selectableController;
+            this.unitSelector = unitSelector;
         }
 
         public void OnLeftClick(InputAction.CallbackContext context)
@@ -66,8 +66,8 @@ namespace Assets.Scripts.ControllUnit
                     HoldCanceled();
                 }
                 else
-                {
-                    selectableController.Selected();
+                {                    
+                    unitSelector.SelectFocused();
                 }
             }
         }
@@ -105,7 +105,7 @@ namespace Assets.Scripts.ControllUnit
         private void HoldCanceled()
         {
             isDrag = false;
-            selectableController.Selected();
+            unitSelector.SelectFocused();
             OnHoldCanceled?.Invoke();
         }
 
@@ -119,23 +119,9 @@ namespace Assets.Scripts.ControllUnit
 
                 if (isDrag || isPointerOverGameObject) return;
 
-                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z));
-                Vector3 origin = Camera.main.transform.position;
-                Vector3 direction = -(worldPos - origin).normalized;
-
-                if (Physics.Raycast(origin, direction, out RaycastHit hit, Mathf.Infinity))
-                {
-                    if (hit.collider.TryGetComponent<ISelectableUnit>(out ISelectableUnit selectable))
-                    {
-                        selectableController.UnitFocusedPoint(selectable);
-                    }
-                    else
-                        selectableController.UnitFocusedPoint(null);
-                }
-                else
-                {
-                    selectableController.UnitFocusedPoint(null);
-                }
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
+                
+                unitSelector.CheckPointFocused(worldPos);
             }
         }
 

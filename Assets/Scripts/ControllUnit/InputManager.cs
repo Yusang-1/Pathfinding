@@ -60,12 +60,12 @@ namespace Assets.Scripts.ControllUnit
             UnbindEvents();
         }
 
-        public void Initialize(SelectableController selectableController)
+        public void Initialize(UnitSelector unitSelector)
         {
-            selectableController.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
+            unitSelector.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
 
-            playerControllerInput.Initialize(selectableController);
-            unitInput.Initialize(selectableController);
+            playerControllerInput.Initialize(unitSelector);
+            unitInput.Initialize(unitSelector);
         }
 
         public void ChangeActionMapSelected(ActionMaps actionMap)
