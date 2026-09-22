@@ -42,9 +42,11 @@ namespace Assets.Scripts.Pathfinding
             if (path != null)
             {
                 pathLength = PathResultRecorder.GetPathLength();
+                PathResultRecorder.ResetPathLength();
             }
             else
             {
+                Debug.Log($"AStar찾지 못함 {startNode}, {goalNode} {unitRadius}");
                 pathLength = 0;
             }
 
@@ -70,7 +72,7 @@ namespace Assets.Scripts.Pathfinding
                 return null;
             }
 
-            PathNode startNode = new PathNode
+            PathNode startNode = new()
             {
                 index = startIndex
             };
@@ -126,6 +128,7 @@ namespace Assets.Scripts.Pathfinding
             }
 
             // 경로 찾지 못함
+            Debug.Log("AStar 경로를 찾지 못함");
             return null;
         }
 
@@ -133,11 +136,8 @@ namespace Assets.Scripts.Pathfinding
         {
             int dx = Mathf.Abs(to.x - from.x);
             int dy = Mathf.Abs(to.y - from.y);
-
-            const float ORTHOGONAL_COST = 1f;
-            const float DIAGONAL_COST = 1.4142f;
-            // 대각선으로 이동 가능한 최대 거리 + 남은 수평/수직 거리        
-            return (Mathf.Min(dx, dy) * DIAGONAL_COST) + (Mathf.Abs(dx - dy) * ORTHOGONAL_COST);
+    
+            return dx + dy;
         }
 
         protected override List<Vector3> CaculateResult(Dictionary<Vector2Int, PathNode> nodes, Vector2Int current, Vector2Int start)

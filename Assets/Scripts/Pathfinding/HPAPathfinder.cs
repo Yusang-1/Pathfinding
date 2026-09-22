@@ -62,7 +62,7 @@ namespace Assets.Scripts.Pathfinding
                     Index = startCluster,
                     EnterDirection = Vector2Int.zero,
                     ExitDirection = Vector2Int.zero,
-                    EntranceExit = goalNode,
+                    EntranceExit = goalNode
                 };
 
                 clusterResultWrapper.SetClusterResult(result);

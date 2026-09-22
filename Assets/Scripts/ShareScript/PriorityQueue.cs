@@ -46,12 +46,19 @@ public class PriorityQueue<TElement, TPriority> where TPriority : struct, ICompa
 
     public TElement Dequeue()
     {
-        TElement result = heap[head++].element;
-        if(result == null) return default;
+        if (Count <= 0)
+        {
+            throw new InvalidOperationException("PriorityQueue is empty.");
+        }
         
+        TElement result = heap[head++].element;
         indexMap.Remove(result);
-
-        ShiftDown(head);
+        
+        if (head < tail)
+        {
+            ShiftDown(head);            
+        }
+        
         if (head > heap.Length / 2)
         {
             AdhereHeapToLeft();
@@ -150,25 +157,41 @@ public class PriorityQueue<TElement, TPriority> where TPriority : struct, ICompa
 
     private int ComparePriority(TPriority a, TPriority b) => Comparer<TPriority>.Default.Compare(a, b);
 
-    private void Swap(int a, int b) => (heap[b], heap[a]) = (heap[a], heap[b]);
+    private void Swap(int a, int b)
+    {
+        (heap[b], heap[a]) = (heap[a], heap[b]);
+
+        indexMap[heap[a].element] = a;
+        indexMap[heap[b].element] = b;
+    }
 
     private void AdhereHeapToLeft()
     {
         int count = 0;
         for (int i = head; i < tail; i++)
         {
-            heap[count++] = heap[i];
+            heap[count] = heap[i];
+            indexMap[heap[count].element] = count;
+            count++;
         }
-        tail -= head;
+        tail = count;
         head = 0;
     }
 
     private void EnlargeHeap()
     {
-        (TElement, TPriority)[] newHeap = new (TElement, TPriority)[heap.Length + initialHeapSize];
-        Array.Copy(heap, head, newHeap, 0, tail - head);
+        int activeCount = tail - head;
+
+        var newHeap = new (TElement, TPriority)[heap.Length + initialHeapSize];
+
+        for (int i = 0; i < activeCount; i++)
+        {
+            newHeap[i] = heap[head + i];
+            indexMap[newHeap[i].Item1] = i;
+        }
+
         heap = newHeap;
-        tail -= head;
         head = 0;
+        tail -= activeCount;
     }
 }

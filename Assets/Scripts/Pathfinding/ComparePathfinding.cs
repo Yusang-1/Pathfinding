@@ -57,9 +57,11 @@ namespace Assets.Scripts.Pathfinding
         private Dictionary<NodeType, List<Vector2Int>> FindAStarPath()
         {
             clusterList.SetAllCLusterActive(true);
+            aStarPathfinder.SetGetNeighborPolicy(new GetNeighborNodesProvider(nodeList, clusterList));
+            
             PathResultRecorder.ResetPathResult();
 
-            var path = aStarPathfinder.FindPath(from, to, 0);
+            var path = aStarPathfinder.FindPath(from, to, tempUnitRadius);
             Vector3ListPool.ReleaseValue(path);
 
             OnAFound?.Invoke(PathResultRecorder.GetPathResult());
