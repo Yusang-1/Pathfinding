@@ -10,7 +10,6 @@ namespace Assets.Scripts.ControllUnit.UI
         [SerializeField] private Canvas canvas;
         [SerializeField] private GameObject dragUI;
 
-        private RectTransform canvasRect;
         private RectTransform dragUIRect;
 
         private Vector3 standardPosition;
@@ -22,7 +21,6 @@ namespace Assets.Scripts.ControllUnit.UI
             canvas = canvas != null ? canvas : FindAnyObjectByType<Canvas>();
 
             dragUIRect = dragUI.GetComponent<RectTransform>();
-            canvasRect = canvas.GetComponent<RectTransform>();
         }
 
         public void DragStarted(Vector3 startPosition)
@@ -111,9 +109,11 @@ namespace Assets.Scripts.ControllUnit.UI
                 ? null
                 : canvas.worldCamera
             ;
+            
+            RectTransform parentRect = dragUIRect.parent as RectTransform;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvasRect,
+                parentRect,
                 screenPosition,
                 eventCamera,
                 out Vector2 localPosition
