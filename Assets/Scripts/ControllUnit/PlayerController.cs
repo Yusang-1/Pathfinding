@@ -1,11 +1,11 @@
 using UnityEngine;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class PlayerController : MonoBehaviour
     {
-        private PlayerControllInput playerControllInput;
-        private UnitInput unitInput;
+        private CameraControllInput cameraControllInput;
         
         [SerializeField] private float speed;
 
@@ -14,20 +14,17 @@ namespace Assets.Scripts.ControllUnit
 
         private void Awake()
         {
-            playerControllInput = FindAnyObjectByType<PlayerControllInput>();
-            unitInput = FindAnyObjectByType<UnitInput>();
+            cameraControllInput = FindAnyObjectByType<CameraControllInput>();
         }
         
         private void OnEnable()
         {
-            playerControllInput.OnDirectionChanged += GetDirection;
-            unitInput.OnDirectionChanged += GetDirection;
+            cameraControllInput.OnDirectionChanged += GetDirection;
         }
 
         private void OnDisable()
         {
-            playerControllInput.OnDirectionChanged -= GetDirection;
-            unitInput.OnDirectionChanged -= GetDirection;
+            cameraControllInput.OnDirectionChanged -= GetDirection;
         }
 
         private void Update()

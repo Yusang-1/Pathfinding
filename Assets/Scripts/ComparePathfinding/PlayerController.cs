@@ -1,8 +1,9 @@
+using Assets.Scripts.Controller;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private PlayerControllInput input;
+    [SerializeField] private CameraControllInput cameraControllInput;
     [SerializeField] private float speed;
 
     private Vector3 direction;
@@ -10,7 +11,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        input.OnDirectionChanged += GetDirection;
+        cameraControllInput.OnDirectionChanged += GetDirection;
     }
 
     private void Update()

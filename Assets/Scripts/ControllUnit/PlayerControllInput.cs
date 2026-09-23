@@ -3,24 +3,20 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Assets.Scripts.ControllUnit
 {
     public class PlayerControllInput : MonoBehaviour, IActionMapInputer
-    {
-        public event Action<Vector2> OnDirectionChanged;
+    {        
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
 
-        private UnitSelector unitSelector;
-
-        private readonly Dictionary<int, Vector2> directionDict = new();
+        private UnitSelector unitSelector;        
 
         [SerializeField] private ActionMaps actionMap;
-        private Vector2 sumOfDirection;
+        
         private Vector2 mousePosition;        
         private bool isPointerOverGameObject;
         private bool isInputActive;
@@ -123,51 +119,7 @@ namespace Assets.Scripts.ControllUnit
                 
                 unitSelector.CheckPointFocused(worldPos);
             }
-        }
-
-        public void OnMoveForward(InputAction.CallbackContext context)
-        {
-            HandleKeyInput('w', context);
-        }
-
-        public void OnMoveBackward(InputAction.CallbackContext context)
-        {
-            HandleKeyInput('s', context);
-        }
-
-        public void OnMoveLeft(InputAction.CallbackContext context)
-        {
-            HandleKeyInput('a', context);
-        }
-
-        public void OnMoveRight(InputAction.CallbackContext context)
-        {
-            HandleKeyInput('d', context);
-        }
-
-        private void HandleKeyInput(int index, InputAction.CallbackContext context)
-        {
-            if (!isInputActive) return;
-
-            if (context.started)
-            {
-                Vector2 value = context.ReadValue<Vector2>();
-                directionDict[index] = value;
-                SetDirection(value);
-            }
-
-            if (context.canceled)
-            {
-                Vector2 value = directionDict[index];
-                SetDirection(-value);
-            }
-        }
-
-        private void SetDirection(Vector2 dir)
-        {
-            sumOfDirection += dir;
-            OnDirectionChanged(sumOfDirection.normalized);
-        }
+        }        
 
         public void OnMenu(InputAction.CallbackContext context)
         {

@@ -1,10 +1,11 @@
 using UnityEngine;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.CreateMap
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private PlayerControllInput input;
+        [SerializeField] private CameraControllInput cameraControllInput;
         [SerializeField] private float speed;
 
         private Vector3 direction;
@@ -12,7 +13,7 @@ namespace Assets.Scripts.CreateMap
 
         private void Start()
         {
-            input.OnDirectionChanged += GetDirection;
+            cameraControllInput.OnDirectionChanged += GetDirection;
         }
 
         private void Update()

@@ -8,7 +8,6 @@ namespace Assets.Scripts.CreateMap
 {
     public class PlayerControllInput : MonoBehaviour, IActionMapInputer
     {
-        public event Action<Vector2> OnDirectionChanged;
         public event Action OnControllMenu;
 
         private NodeList nodeList;
@@ -16,9 +15,6 @@ namespace Assets.Scripts.CreateMap
 
         [SerializeField] private ActionMaps actionMap;
 
-        private readonly Dictionary<int, Vector2> directionDict = new();
-
-        private Vector2 sumOfDirection;
         private Vector2 mousePosition;
         private bool isPointerOverGameObject;
         private bool isInputActive;
@@ -69,49 +65,7 @@ namespace Assets.Scripts.CreateMap
             {
                 mousePosition = context.ReadValue<Vector2>();
             }
-        }
-
-        public void OnMoveForward(InputAction.CallbackContext context)
-        {
-            HandleKeyInput('w', context);
-        }
-
-        public void OnMoveBackward(InputAction.CallbackContext context)
-        {
-            HandleKeyInput('s', context);
-        }
-
-        public void OnMoveLeft(InputAction.CallbackContext context)
-        {
-            HandleKeyInput('a', context);
-        }
-
-        public void OnMoveRight(InputAction.CallbackContext context)
-        {
-            HandleKeyInput('d', context);
-        }
-
-        private void HandleKeyInput(int index, InputAction.CallbackContext context)
-        {
-            if (context.started)
-            {
-                Vector2 value = context.ReadValue<Vector2>();
-                directionDict[index] = value;
-                SetDirection(value);
-            }
-
-            if (context.canceled)
-            {
-                Vector2 value = directionDict[index];
-                SetDirection(-value);
-            }
-        }
-
-        private void SetDirection(Vector2 dir)
-        {
-            sumOfDirection += dir;
-            OnDirectionChanged(sumOfDirection.normalized);
-        }
+        }        
 
         public void OnMenu(InputAction.CallbackContext context)
         {

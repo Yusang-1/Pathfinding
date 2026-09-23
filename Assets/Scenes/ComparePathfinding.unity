@@ -1663,7 +1663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d93904c8a9a2f1c4a909564aff69cb3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  input: {fileID: 1837161507}
+  cameraControllInput: {fileID: 1837161508}
   speed: 10
 --- !u!1 &348762224
 GameObject:
@@ -11066,9 +11066,10 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1837161507}
-        m_TargetAssemblyTypeName: CameraControllerInput, Assembly-CSharp
-        m_MethodName: OnMoveRight
+      - m_Target: {fileID: 1837161508}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
+          Assembly-CSharp
+        m_MethodName: OnPressD
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11082,9 +11083,10 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveD[/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1837161507}
-        m_TargetAssemblyTypeName: CameraControllerInput, Assembly-CSharp
-        m_MethodName: OnMoveBackward
+      - m_Target: {fileID: 1837161508}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
+          Assembly-CSharp
+        m_MethodName: OnPressS
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11098,9 +11100,10 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveS[/Keyboard/s]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1837161507}
-        m_TargetAssemblyTypeName: CameraControllerInput, Assembly-CSharp
-        m_MethodName: OnMoveLeft
+      - m_Target: {fileID: 1837161508}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
+          Assembly-CSharp
+        m_MethodName: OnPressA
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11114,9 +11117,10 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveA[/Keyboard/a]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1837161507}
-        m_TargetAssemblyTypeName: CameraControllerInput, Assembly-CSharp
-        m_MethodName: OnMoveForward
+      - m_Target: {fileID: 1837161508}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
+          Assembly-CSharp
+        m_MethodName: OnPressW
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11131,7 +11135,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1837161508}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
           Assembly-CSharp
         m_MethodName: OnMouseScroll
         m_Mode: 0
@@ -11216,7 +11220,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1837161508}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
           Assembly-CSharp
         m_MethodName: OnTouch0Position
         m_Mode: 0
@@ -11233,7 +11237,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1837161508}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
           Assembly-CSharp
         m_MethodName: OnTouch1Position
         m_Mode: 0
@@ -11250,7 +11254,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1837161508}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
           Assembly-CSharp
         m_MethodName: OnTouch0Contact
         m_Mode: 0
@@ -11267,7 +11271,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1837161508}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
           Assembly-CSharp
         m_MethodName: OnTouch1Contact
         m_Mode: 0
@@ -11281,6 +11285,23 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: e8f362cb-77bd-469d-abb6-0fa26e7518c6
     m_ActionName: 'Player/Touch1Contact[/Device Simulator Touchscreen/touch1/press]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1837161508}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Delta
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: b0bd0e94-e8f1-4534-b859-4c1f849612af
+    m_ActionName: Player/Touch0Delta
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -11307,7 +11328,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1837161503}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf5ddd44252b53f4ea9ec1a695048059, type: 3}
+  m_Script: {fileID: 11500000, guid: a4f16a209ae95464eb3bff3fc5108e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 330585545}
@@ -11316,6 +11337,7 @@ MonoBehaviour:
   mouseScrollSensitivity: 1
   touchPinchSensitivity: 0.05
   smoothTime: 0.15
+  moveSpeed: 0.5
 --- !u!1 &1876376308
 GameObject:
   m_ObjectHideFlags: 0
