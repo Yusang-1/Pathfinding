@@ -3116,6 +3116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f7c418eca17d8d4ab9e46e64d4eac26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvas: {fileID: 2113284062}
   dragUI: {fileID: 1353690121}
 --- !u!1 &568447115
 GameObject:
@@ -9851,15 +9852,15 @@ Canvas:
   m_GameObject: {fileID: 2113284058}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 705920039}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
