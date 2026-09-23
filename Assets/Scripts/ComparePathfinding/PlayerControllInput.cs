@@ -52,20 +52,6 @@ public class PlayerControllInput : MonoBehaviour
             {
                 selectableController.Selected(null);
             }
-
-            // RaycastHit2D hit2D = Physics2D.Raycast(origin, Vector3.forward, Mathf.Infinity);
-            // if (hit2D)
-            // {
-            //     if (hit2D.collider.TryGetComponent<ISelectable>(out ISelectable selectable))
-            //     {
-            //         // node.Selected();
-            //         selectableController.Selected(selectable);
-            //     }
-            //     else
-            //         selectableController.Selected(null);
-            // }
-            // else
-            //     selectableController.Selected(null);
         }
     }
 
@@ -117,21 +103,6 @@ public class PlayerControllInput : MonoBehaviour
     {
         sumOfDirection += dir;
         OnDirectionChanged(sumOfDirection.normalized);
-    }
-
-    public void OnZoomCamera(InputAction.CallbackContext context)
-    {
-        float scrollY = context.ReadValue<float>();
-
-        if (context.started)
-        {
-            if (scrollY != 0)
-            {
-                Vector3 pos = Camera.main.transform.position;
-                pos.z += scrollY;
-                Camera.main.transform.position = pos;
-            }
-        }
     }
 
     public void OnMenu(InputAction.CallbackContext context)

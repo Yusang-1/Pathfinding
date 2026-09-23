@@ -7992,10 +7992,10 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveW[/Keyboard/w]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711643}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
+      - m_Target: {fileID: 1661711647}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
           Assembly-CSharp
-        m_MethodName: OnZoomCamera
+        m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8121,9 +8121,10 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveD[/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
-        m_MethodName: OnZoomCamera
+      - m_Target: {fileID: 1661711647}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.CameraZoomController,
+          Assembly-CSharp
+        m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8389,8 +8390,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 705920039}
-  minZoom: 2
-  maxZoom: 20
+  minZoom: 30
+  maxZoom: 80
+  mouseScrollSensitivity: 1
   touchPinchSensitivity: 0.05
   smoothTime: 0.15
 --- !u!1 &1696126797

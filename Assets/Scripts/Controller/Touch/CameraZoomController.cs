@@ -3,30 +3,40 @@ using UnityEngine.InputSystem;
 
 namespace Assets.Scripts.Controller.Touch
 {
-    public class TouchZoomController : MonoBehaviour
+    public class CameraZoomController : MonoBehaviour
     {
         [Header("Camera Settings")]
         [SerializeField] private Camera targetCamera;
         [SerializeField] private float minZoom = 2f;
         [SerializeField] private float maxZoom = 20f;
-        
+
         [Header("Sensitivity Settings")]
+        [SerializeField] private float mouseScrollSensitivity = 0.1f;
         [SerializeField] private float touchPinchSensitivity = 0.05f;
         [SerializeField] private float smoothTime = 0.15f;
 
         private float targetZoom;
         private float currentZoomVelocity;
+
+        private float mouseScrollValue;
         private Vector2 touch0Pos;
         private Vector2 touch1Pos;
         private bool touch0Active;
         private bool touch1Active;
+
         private float previousTouchDistance;
         private bool isTouchZooming = false;
 
         private void Update()
         {
+            HandleMouseScroll();
             HandleTouchPinch();
             ApplySmoothZoom();
+        }
+
+        public void OnMouseScroll(InputAction.CallbackContext context)
+        {
+            mouseScrollValue = context.ReadValue<float>();
         }
 
         public void OnTouch0Position(InputAction.CallbackContext context)
@@ -48,6 +58,19 @@ namespace Assets.Scripts.Controller.Touch
         public void OnTouch1Contact(InputAction.CallbackContext context)
         {
             touch1Active = context.ReadValueAsButton();
+        }
+
+        private void HandleMouseScroll()
+        {
+            if (mouseScrollValue != 0)
+            {
+                float zoomDelta = -mouseScrollValue * mouseScrollSensitivity;
+                targetZoom += zoomDelta;
+                targetZoom = Mathf.Clamp(targetZoom, minZoom, maxZoom);
+
+                // 이벤트 방식은 휠을 멈춰도 마지막 값이 변수에 남아있으므로 계산 후 0으로 리셋
+                mouseScrollValue = 0;
+            }
         }
 
         private void HandleTouchPinch()

@@ -169,23 +169,6 @@ namespace Assets.Scripts.ControllUnit
             OnDirectionChanged(sumOfDirection.normalized);
         }
 
-        public void OnZoomCamera(InputAction.CallbackContext context)
-        {
-            if (!isInputActive) return;
-
-            float scrollY = context.ReadValue<float>();
-
-            if (context.started)
-            {
-                if (scrollY != 0)
-                {
-                    Vector3 pos = Camera.main.transform.position;
-                    pos.z += scrollY;
-                    Camera.main.transform.position = pos;
-                }
-            }
-        }
-
         public void OnMenu(InputAction.CallbackContext context)
         {
             if (context.started)
