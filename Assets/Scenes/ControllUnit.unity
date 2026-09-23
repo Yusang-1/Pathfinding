@@ -7815,6 +7815,7 @@ GameObject:
   - component: {fileID: 1661711644}
   - component: {fileID: 1661711646}
   - component: {fileID: 1661711639}
+  - component: {fileID: 1661711647}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -8231,6 +8232,74 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 51d33e88-1196-42a9-99cd-b4a22671e4fb
     m_ActionName: 'SpawnAreaSetter/LeftClick[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711647}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Position
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: ea7dd655-6cde-4292-8f0d-15a61865c1ab
+    m_ActionName: 'Player/Touch0Position[/Device Simulator Touchscreen/touch0/position]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711647}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Position
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 41f038d6-a3d2-42ba-a5ef-798a6cddcc22
+    m_ActionName: 'Player/Touch1Position[/Device Simulator Touchscreen/touch1/position]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711647}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Contact
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 058eec2b-71e9-41ae-8c82-d2455125a87f
+    m_ActionName: 'Player/Touch0Contact[/Device Simulator Touchscreen/touch0/press]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711647}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.Touch.TouchZoomController,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Contact
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e8f362cb-77bd-469d-abb6-0fa26e7518c6
+    m_ActionName: 'Player/Touch1Contact[/Device Simulator Touchscreen/touch1/press]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
@@ -8307,6 +8376,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionMap: 2
+--- !u!114 &1661711647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661711638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf5ddd44252b53f4ea9ec1a695048059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetCamera: {fileID: 705920039}
+  minZoom: 2
+  maxZoom: 20
+  touchPinchSensitivity: 0.05
+  smoothTime: 0.15
 --- !u!1 &1696126797
 GameObject:
   m_ObjectHideFlags: 0
