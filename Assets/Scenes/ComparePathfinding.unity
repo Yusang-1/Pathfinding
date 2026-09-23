@@ -10951,6 +10951,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  playerControllInput: {fileID: 1837161507}
 --- !u!4 &1837161505
 Transform:
   m_ObjectHideFlags: 0

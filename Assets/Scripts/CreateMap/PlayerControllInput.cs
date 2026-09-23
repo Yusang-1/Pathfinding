@@ -13,11 +13,11 @@ namespace Assets.Scripts.CreateMap
 
         private NodeList nodeList;
         private SelectableController selectableController;
-        
+
         [SerializeField] private ActionMaps actionMap;
-        
-        private readonly Dictionary<int, Vector2> directionDict = new();        
-        
+
+        private readonly Dictionary<int, Vector2> directionDict = new();
+
         private Vector2 sumOfDirection;
         private Vector2 mousePosition;
         private bool isPointerOverGameObject;
@@ -42,7 +42,7 @@ namespace Assets.Scripts.CreateMap
             this.selectableController = selectableController;
             this.nodeList = nodeList;
         }
-                
+
         public void OnLeftClick(InputAction.CallbackContext context)
         {
             if (isPointerOverGameObject) return;
@@ -50,16 +50,16 @@ namespace Assets.Scripts.CreateMap
             if (context.canceled)
             {
                 Vector2 origin = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-                
+
                 var index = nodeList.GetNodeIndex(origin);
-                if(nodeList.TryGetNode(index, out Node node))
+                if (nodeList.TryGetNode(index, out Node node))
                 {
                     selectableController.Selected(node);
                 }
                 else
                 {
                     selectableController.Selected(null);
-                }                
+                }
             }
         }
 
@@ -127,12 +127,12 @@ namespace Assets.Scripts.CreateMap
                 }
             }
         }
-        
+
         public void OnMenu(InputAction.CallbackContext context)
         {
-            if(context.started)
+            if (context.started)
             {
-                OnControllMenu?.Invoke();                
+                OnControllMenu?.Invoke();
             }
         }
 

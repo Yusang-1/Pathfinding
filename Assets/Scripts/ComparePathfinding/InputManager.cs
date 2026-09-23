@@ -7,9 +7,9 @@ public class InputManager : MonoBehaviour
     public event Action OnControllMenu;
 
     [SerializeField] private InputActionAsset inputActions;
-    private PlayerControllInput playerControllInput;
+    [SerializeField] private PlayerControllInput playerControllInput;    
     private InputActionMap actionMap;
-    
+
     private bool isEventBound;
 
     private void Awake()
@@ -23,32 +23,31 @@ public class InputManager : MonoBehaviour
         BindEvents();
     }
 
-    private void Start()
-    {
-        playerControllInput ??= GetComponent<PlayerControllInput>();
-    }
-
     private void OnDisable()
     {
         UnbindEvents();
     }
 
+    public void Initialize(NodeList nodeList)
+    {
+        playerControllInput.Initialize(nodeList);
+    }
+
     private void BindEvents()
     {
-        if(isEventBound) return;
-        
-        playerControllInput ??= GetComponent<PlayerControllInput>();
+        if (isEventBound) return;
+
         playerControllInput.ControllMenu += HandlerControllMenu;
-        
+
         isEventBound = true;
     }
 
     private void UnbindEvents()
     {
-        if(!isEventBound) return;
-        
+        if (!isEventBound) return;
+
         playerControllInput.ControllMenu -= HandlerControllMenu;
-        
+
         isEventBound = false;
     }
 

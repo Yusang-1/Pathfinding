@@ -14,7 +14,6 @@ public class PathManagerBootStrapper
     private readonly UIRoot uiRoot;
     private readonly InputManager inputManager;
     private readonly PathfinderComparePathfinding pathfinder;
-    private readonly MapRuntimeContext mapRuntimeContext;
 
     private bool isEventBound;
 
@@ -26,8 +25,9 @@ public class PathManagerBootStrapper
         this.inputManager = inputManager;
         this.pathfinder = pathfinder;
         this.setMapData = setMapData;
-        this.mapRuntimeContext = mapRuntimeContext;        
         mapdataJsonConverter = new(mapRuntimeContext.LoadedMapData);
+        
+        inputManager.Initialize(nodeList);
     }
 
     public void BindEvents()
@@ -37,7 +37,7 @@ public class PathManagerBootStrapper
         selectedHandler = (node, value) => uiRoot.ActiveNodeTypeSelector(node, value);
         deselectedHandler = (node, value) => uiRoot.ActiveNodeTypeSelector(node, value);
         pathfindAvailableHandler = (value) => uiRoot.ActiveFindButton(value);
-        
+
         AddUIRootEvent();
         AddNodeListEvent();
         AddPathfinderEvent();
