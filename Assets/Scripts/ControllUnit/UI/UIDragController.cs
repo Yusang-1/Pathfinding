@@ -15,6 +15,7 @@ namespace Assets.Scripts.ControllUnit.UI
         private Vector3 standardPosition;
         private Vector3 canvasStandardPosition;
         private Vector3 compareSizeDelta;
+        private Vector2 dragUISizeDelta;
 
         private void Start()
         {
@@ -32,16 +33,18 @@ namespace Assets.Scripts.ControllUnit.UI
             
             dragUIRect.anchoredPosition = canvasStandardPosition;
         }
-
-        private Vector2 dragUISizeDelta;
+        
         public void DragPerformed(Vector3 position)
         {
             var canvasPosition = ScreenToCanvasPosition(position);
             
+            // canvas좌표 기준
             dragUISizeDelta = new Vector2(
                 canvasStandardPosition.x - canvasPosition.x,
                 canvasStandardPosition.y - canvasPosition.y
             );
+            
+            // screen좌표 기준
             compareSizeDelta = new Vector2(
                 standardPosition.x - position.x,
                 standardPosition.y - position.y
@@ -118,8 +121,6 @@ namespace Assets.Scripts.ControllUnit.UI
                 eventCamera,
                 out Vector2 localPosition
             );
-            
-            Debug.Log($"{Camera.main.ScreenToViewportPoint(screenPosition)}\n{localPosition}");
 
             return localPosition;
         }
