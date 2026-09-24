@@ -79,24 +79,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Touch0Position",
-                    "type": "Value",
-                    "id": "ea7dd655-6cde-4292-8f0d-15a61865c1ab",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Touch1Position",
-                    "type": "Value",
-                    "id": "41f038d6-a3d2-42ba-a5ef-798a6cddcc22",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Touch0Contact",
                     "type": "Button",
                     "id": "058eec2b-71e9-41ae-8c82-d2455125a87f",
@@ -104,6 +86,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Touch0Delta",
+                    "type": "Value",
+                    "id": "b0bd0e94-e8f1-4534-b859-4c1f849612af",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Touch0Position",
+                    "type": "Value",
+                    "id": "ea7dd655-6cde-4292-8f0d-15a61865c1ab",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Touch1Contact",
@@ -115,9 +115,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Touch0Delta",
+                    "name": "Touch1Position",
                     "type": "Value",
-                    "id": "b0bd0e94-e8f1-4534-b859-4c1f849612af",
+                    "id": "41f038d6-a3d2-42ba-a5ef-798a6cddcc22",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",

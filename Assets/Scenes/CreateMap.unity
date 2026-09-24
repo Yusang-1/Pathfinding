@@ -2491,8 +2491,9 @@ GameObject:
   - component: {fileID: 558100858}
   - component: {fileID: 558100856}
   - component: {fileID: 558100859}
-  - component: {fileID: 558100855}
+  - component: {fileID: 558100861}
   - component: {fileID: 558100860}
+  - component: {fileID: 558100855}
   m_Layer: 0
   m_Name: inputManager
   m_TagString: Untagged
@@ -2560,8 +2561,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressW
         m_Mode: 0
         m_Arguments:
@@ -2577,8 +2577,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressA
         m_Mode: 0
         m_Arguments:
@@ -2594,8 +2593,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressS
         m_Mode: 0
         m_Arguments:
@@ -2611,8 +2609,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressD
         m_Mode: 0
         m_Arguments:
@@ -2628,8 +2625,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
@@ -2788,9 +2784,8 @@ MonoBehaviour:
     m_ActionName: 'SpawnAreaSetter/LeftClick[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 558100861}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch0Position
         m_Mode: 0
         m_Arguments:
@@ -2805,9 +2800,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch0Position[/Device Simulator Touchscreen/touch0/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 558100861}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch1Position
         m_Mode: 0
         m_Arguments:
@@ -2822,9 +2816,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch1Position[/Device Simulator Touchscreen/touch1/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 558100861}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch0Contact
         m_Mode: 0
         m_Arguments:
@@ -2839,9 +2832,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch0Contact[/Device Simulator Touchscreen/touch0/press]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 558100861}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch1Contact
         m_Mode: 0
         m_Arguments:
@@ -2856,9 +2848,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch1Contact[/Device Simulator Touchscreen/touch1/press]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100860}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 558100861}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch0Delta
         m_Mode: 0
         m_Arguments:
@@ -2920,6 +2911,9 @@ MonoBehaviour:
   playerInputComponent: {fileID: 558100855}
   playerControllerInput: {fileID: 558100856}
   spawnAreaSetterInput: {fileID: 558100859}
+  touchInput: {fileID: 558100861}
+  keyboardMouseInput: {fileID: 558100860}
+  playerController: {fileID: 625768974}
 --- !u!114 &558100859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2942,16 +2936,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 558100854}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4f16a209ae95464eb3bff3fc5108e8c, type: 3}
+  m_Script: {fileID: 11500000, guid: a8176bc40eee55d408df39ea8bb045d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetCamera: {fileID: 625768971}
-  minZoom: 30
-  maxZoom: 80
-  mouseScrollSensitivity: 1
-  touchPinchSensitivity: 0.05
-  smoothTime: 0.15
-  moveSpeed: 0.5
+--- !u!114 &558100861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 558100854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7de17bb56093dc34fa0d54221ff24bd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &592134920
 GameObject:
   m_ObjectHideFlags: 0
@@ -3586,11 +3585,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 625768969}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92ec82013e9a9dd44a8f5a5ccbdc0480, type: 3}
+  m_Script: {fileID: 11500000, guid: d93904c8a9a2f1c4a909564aff69cb3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraControllInput: {fileID: 558100860}
-  speed: 2.8
+  minZoom: 30
+  maxZoom: 80
+  speed: 8
+  smoothTime: 0.15
 --- !u!1 &632393756
 GameObject:
   m_ObjectHideFlags: 0

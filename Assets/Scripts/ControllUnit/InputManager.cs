@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -11,7 +12,7 @@ namespace Assets.Scripts.ControllUnit
         public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
-        
+
         public event Action OnSpawnUnitRequested;
         public event Action OnSetSpawnAreaFinished;
         public event Action<Vector3> OnTrackMouse;
@@ -23,18 +24,47 @@ namespace Assets.Scripts.ControllUnit
         [SerializeField] private PlayerControllInput playerControllerInput;
         [SerializeField] private UnitInput unitInput;
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
+        [SerializeField] private TouchInput touchInput;
+        [SerializeField] private KeyboardMouseInput keyboardMouseInput;
+
+        [SerializeField] private PlayerController playerController;
 
         private InputActionMap actionMap;
         private IActionMapInputer currentInputer;
+        private KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator;
+        private TouchInputPlayerControllerMeditator touchInputMeditator;
+        
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ActionMaps, IActionMapInputer> inputerDict = new();
 
         private bool isEventBound;
+        private ControllScheme currentScheme;
+        private const string KEYBOARD_MOUSE = "Keyboard&Mouse";
+        private const string TOUCH = "Touch";
+        
+        private enum ControllScheme
+        {
+            KeyboardMouse,
+            Touch
+        }
 
         private void Awake()
         {
             actionMap = inputActions.actionMaps[0];
             actionMap.Enable();
+            
+            var current = playerInputComponent.currentControlScheme;
+            if(current == KEYBOARD_MOUSE)
+            {
+                currentScheme = ControllScheme.KeyboardMouse;
+            }
+            else if(current == TOUCH)
+            {
+                currentScheme = ControllScheme.Touch;
+            }
+
+            keyboardMouseInputMeditator = new KeyboardMouseInputPlayerControllerMeditator(keyboardMouseInput);
+            touchInputMeditator = new TouchInputPlayerControllerMeditator(touchInput);
         }
 
         private void OnEnable()
@@ -53,6 +83,14 @@ namespace Assets.Scripts.ControllUnit
             inputerDict.Add((spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput);
 
             ChangeActionMapDefault();
+        }
+
+        private void Update()
+        {
+            if(currentScheme == ControllScheme.Touch)
+            {
+                touchInputMeditator.Update();                
+            }
         }
 
         private void OnDisable()
@@ -108,6 +146,12 @@ namespace Assets.Scripts.ControllUnit
             spawnAreaSetterInput.OnCancelSpawnAreaSet += HandlerCancelSpawnAreaSet;
             spawnAreaSetterInput.OnPointerNotOverGameObject += HandlePointerNotOverGameObject;
 
+            keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
+            keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+
+            touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
+            touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+
             isEventBound = true;
         }
 
@@ -131,7 +175,13 @@ namespace Assets.Scripts.ControllUnit
             spawnAreaSetterInput.OnTrackMouse -= HandlerTrackMouse;
             spawnAreaSetterInput.OnCancelSpawnAreaSet -= HandlerCancelSpawnAreaSet;
             spawnAreaSetterInput.OnPointerNotOverGameObject -= HandlePointerNotOverGameObject;
+            
+            keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+            keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
 
+            touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+            touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
+            
             isEventBound = false;
         }
 

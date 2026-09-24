@@ -4251,10 +4251,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 705920037}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22c1ce0d5d96d4644a6c7b8ee7730b9b, type: 3}
+  m_Script: {fileID: 11500000, guid: d93904c8a9a2f1c4a909564aff69cb3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minZoom: 30
+  maxZoom: 80
   speed: 8
+  smoothTime: 0.15
 --- !u!1 &725911599
 GameObject:
   m_ObjectHideFlags: 0
@@ -7815,8 +7818,9 @@ GameObject:
   - component: {fileID: 1661711643}
   - component: {fileID: 1661711644}
   - component: {fileID: 1661711646}
-  - component: {fileID: 1661711639}
+  - component: {fileID: 1661711648}
   - component: {fileID: 1661711647}
+  - component: {fileID: 1661711639}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -7925,9 +7929,8 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressD
         m_Mode: 0
         m_Arguments:
@@ -7942,9 +7945,8 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveD[/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressS
         m_Mode: 0
         m_Arguments:
@@ -7959,9 +7961,8 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveS[/Keyboard/s]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressA
         m_Mode: 0
         m_Arguments:
@@ -7976,9 +7977,8 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveA[/Keyboard/a]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressW
         m_Mode: 0
         m_Arguments:
@@ -7993,9 +7993,8 @@ MonoBehaviour:
     m_ActionName: 'Player/MoveW[/Keyboard/w]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
@@ -8058,9 +8057,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MousePosition[/Mouse/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressW
         m_Mode: 0
         m_Arguments:
@@ -8075,9 +8073,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveW[/Keyboard/w]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressA
         m_Mode: 0
         m_Arguments:
@@ -8092,9 +8089,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveA[/Keyboard/a]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressS
         m_Mode: 0
         m_Arguments:
@@ -8109,9 +8105,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveS[/Keyboard/s]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnPressD
         m_Mode: 0
         m_Arguments:
@@ -8126,9 +8121,8 @@ MonoBehaviour:
     m_ActionName: 'Unit/MoveD[/Keyboard/d]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
@@ -8241,8 +8235,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch0Position
         m_Mode: 0
         m_Arguments:
@@ -8258,9 +8251,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
-        m_MethodName: OnTouch1Position
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+        m_MethodName: OnTouch0Position
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8275,8 +8267,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch0Contact
         m_Mode: 0
         m_Arguments:
@@ -8292,8 +8283,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch1Contact
         m_Mode: 0
         m_Arguments:
@@ -8309,8 +8299,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CameraControllInput,
-          Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
         m_MethodName: OnTouch0Delta
         m_Mode: 0
         m_Arguments:
@@ -8386,6 +8375,9 @@ MonoBehaviour:
   playerControllerInput: {fileID: 1661711643}
   unitInput: {fileID: 1661711644}
   spawnAreaSetterInput: {fileID: 1661711646}
+  touchInput: {fileID: 1661711647}
+  keyboardMouseInput: {fileID: 1661711648}
+  playerController: {fileID: 705920042}
 --- !u!114 &1661711646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8408,16 +8400,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1661711638}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4f16a209ae95464eb3bff3fc5108e8c, type: 3}
+  m_Script: {fileID: 11500000, guid: 7de17bb56093dc34fa0d54221ff24bd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetCamera: {fileID: 705920039}
-  minZoom: 30
-  maxZoom: 80
-  mouseScrollSensitivity: 1
-  touchPinchSensitivity: 0.05
-  smoothTime: 0.15
-  moveSpeed: 0.5
+--- !u!114 &1661711648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661711638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8176bc40eee55d408df39ea8bb045d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1696126797
 GameObject:
   m_ObjectHideFlags: 0

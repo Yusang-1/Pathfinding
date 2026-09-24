@@ -1,7 +1,8 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
+using System.Collections.Generic;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.CreateMap
 {
@@ -18,13 +19,45 @@ namespace Assets.Scripts.CreateMap
         [SerializeField] private PlayerInput playerInputComponent;
         [SerializeField] private PlayerControllInput playerControllerInput;
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
+        [SerializeField] private TouchInput touchInput;
+        [SerializeField] private KeyboardMouseInput keyboardMouseInput;
+
+        [SerializeField] private PlayerController playerController;
 
         private SelectableController selectableController;
-
         private IActionMapInputer currentInputer;
+        private KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator;
+        private TouchInputPlayerControllerMeditator touchInputMeditator;
 
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ActionMaps, IActionMapInputer> inputerDict = new();
+
+        private bool isEventBound;
+        private ControllScheme currentScheme;
+        private const string KEYBOARD_MOUSE = "Keyboard&Mouse";
+        private const string TOUCH = "Touch";
+
+        private enum ControllScheme
+        {
+            KeyboardMouse,
+            Touch
+        }
+
+        private void Awake()
+        {
+            var current = playerInputComponent.currentControlScheme;
+            if (current == KEYBOARD_MOUSE)
+            {
+                currentScheme = ControllScheme.KeyboardMouse;
+            }
+            else if (current == TOUCH)
+            {
+                currentScheme = ControllScheme.Touch;
+            }
+
+            keyboardMouseInputMeditator = new KeyboardMouseInputPlayerControllerMeditator(keyboardMouseInput);
+            touchInputMeditator = new TouchInputPlayerControllerMeditator(touchInput);
+        }
 
         private void OnEnable()
         {
@@ -40,25 +73,62 @@ namespace Assets.Scripts.CreateMap
             inputerDict.Add((spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput);
 
             ChangeActionMapDefault();
-                        
-            playerControllerInput.OnControllMenu += () => OnControllMenu?.Invoke();
         }
-        
+
+        private void Update()
+        {
+            if (currentScheme == ControllScheme.Touch)
+            {
+                touchInputMeditator.Update();
+            }
+        }
+
         public void Initialize(NodeList nodeList)
         {
             selectableController = new SelectableController();
             playerControllerInput.Initialize(selectableController, nodeList);
         }
 
+        private const ActionMaps DefaultActionMap = ActionMaps.Player;
+        private void ChangeActionMapDefault()
+        {
+            ChangeActionMapSelected(DefaultActionMap);
+        }
+
         private void BindEvnets()
         {
             spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
-
             spawnAreaSetterInput.OnSpawnUnitRequested += HandlerSpawnUnit;
             spawnAreaSetterInput.OnSetSpawnAreaFinished += HandlerSetSpawnAreaFinished;
             spawnAreaSetterInput.OnTrackMouse += HandlerTrackMouse;
             spawnAreaSetterInput.OnCancelSpawnAreaSet += HandlerCancelSpawnAreaSet;
             spawnAreaSetterInput.OnPointerNotOverGameObject += HandlerPointerNotOverGameObject;
+
+            playerControllerInput.OnControllMenu += () => OnControllMenu?.Invoke();
+
+            keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
+            keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+
+            touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
+            touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+        }
+
+        private void UnbindEvents()
+        {
+            spawnAreaSetterInput.OnSetSpawnAreaFinished -= ChangeActionMapDefault;
+            spawnAreaSetterInput.OnSpawnUnitRequested -= HandlerSpawnUnit;
+            spawnAreaSetterInput.OnSetSpawnAreaFinished -= HandlerSetSpawnAreaFinished;
+            spawnAreaSetterInput.OnTrackMouse -= HandlerTrackMouse;
+            spawnAreaSetterInput.OnCancelSpawnAreaSet -= HandlerCancelSpawnAreaSet;
+            spawnAreaSetterInput.OnPointerNotOverGameObject -= HandlerPointerNotOverGameObject;
+
+            playerControllerInput.OnControllMenu -= () => OnControllMenu?.Invoke();
+
+            keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+            keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
+
+            touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+            touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
         }
 
         public void ChangeActionMapSelected(ActionMaps actionMap)
@@ -72,12 +142,6 @@ namespace Assets.Scripts.CreateMap
             currentInputer = inputerDict[actionMap];
 
             currentInputer.ActionMapActivated();
-        }
-
-        private const ActionMaps DefaultActionMap = ActionMaps.Player;
-        private void ChangeActionMapDefault()
-        {
-            ChangeActionMapSelected(DefaultActionMap);
         }
 
         private void HandlerSpawnUnit()

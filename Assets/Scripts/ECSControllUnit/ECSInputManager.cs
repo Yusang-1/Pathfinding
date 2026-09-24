@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Collections;
+using Unity.Entities;
 using System;
 using System.Collections.Generic;
-using Unity.Entities;
-using Unity.Collections;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -19,20 +20,49 @@ namespace Assets.Scripts.ECSControllUnit
         [SerializeField] private ECSPlayerControllInput playerControllInput;
         [SerializeField] private ECSUnitInput unitInput;
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
+        [SerializeField] private TouchInput touchInput;
+        [SerializeField] private KeyboardMouseInput keyboardMouseInput;
+
+        [SerializeField] private PlayerController playerController;
 
         private InputActionMap actionMap;
         private IActionMapInputer currentInputer;
+        private KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator;
+        private TouchInputPlayerControllerMeditator touchInputMeditator;
+        
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ActionMaps, IActionMapInputer> inputerDict = new();
 
         private EntityQuery changeActionMapQuery;
 
         private bool isEventBound;
+        private ControllScheme currentScheme;
+        private const string KEYBOARD_MOUSE = "Keyboard&Mouse";
+        private const string TOUCH = "Touch";
+        
+        private enum ControllScheme
+        {
+            KeyboardMouse,
+            Touch
+        }
 
         private void Awake()
         {
             actionMap = inputActions.actionMaps[0];
             actionMap.Enable();
+            
+            var current = playerInputComponent.currentControlScheme;
+            if(current == KEYBOARD_MOUSE)
+            {
+                currentScheme = ControllScheme.KeyboardMouse;
+            }
+            else if(current == TOUCH)
+            {
+                currentScheme = ControllScheme.Touch;
+            }
+
+            keyboardMouseInputMeditator = new KeyboardMouseInputPlayerControllerMeditator(keyboardMouseInput);
+            touchInputMeditator = new TouchInputPlayerControllerMeditator(touchInput);
         }
 
         private void OnEnable()
@@ -57,6 +87,11 @@ namespace Assets.Scripts.ECSControllUnit
 
         private void Update()
         {
+            if(currentScheme == ControllScheme.Touch)
+            {
+                touchInputMeditator.Update();                
+            }
+            
             var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             using var requests = changeActionMapQuery.ToComponentDataArray<ChangeActionMapRequest>(Allocator.Temp);
@@ -121,6 +156,12 @@ namespace Assets.Scripts.ECSControllUnit
             unitInput.OnControllMenu += HandlerControllMenu;
             
             spawnAreaSetterInput.OnSetSpawnAreaFinished += ChangeActionMapDefault;
+            
+            keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
+            keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+
+            touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
+            touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
 
             isEventBound = true;
         }
@@ -140,6 +181,12 @@ namespace Assets.Scripts.ECSControllUnit
             unitInput.OnControllMenu -= HandlerControllMenu;
             
             spawnAreaSetterInput.OnSetSpawnAreaFinished -= ChangeActionMapDefault;
+            
+            keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+            keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
+
+            touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+            touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
 
             isEventBound = false;
         }

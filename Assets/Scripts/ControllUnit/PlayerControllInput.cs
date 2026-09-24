@@ -7,17 +7,17 @@ using System.Collections;
 namespace Assets.Scripts.ControllUnit
 {
     public class PlayerControllInput : MonoBehaviour, IActionMapInputer
-    {        
+    {
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
         public event Action OnControllMenu;
 
-        private UnitSelector unitSelector;        
+        private UnitSelector unitSelector;
 
         [SerializeField] private ActionMaps actionMap;
-        
-        private Vector2 mousePosition;        
+
+        private Vector2 mousePosition;
         private bool isPointerOverGameObject;
         private bool isInputActive;
 
@@ -62,9 +62,41 @@ namespace Assets.Scripts.ControllUnit
                     HoldCanceled();
                 }
                 else
-                {                    
+                {
                     unitSelector.SelectFocused();
                 }
+            }
+        }
+        
+        private Vector3 mouseWorldPosition;
+        public void OnLeftClickTouch(InputAction.CallbackContext context)
+        {
+            if (context.started)
+            {
+                WaitDragCoroutine = WaitDrag(mousePosition);
+                StartCoroutine(WaitDragCoroutine);
+            }
+            
+            if(context.performed)
+            {
+                mousePosition = context.ReadValue<Vector2>();
+
+                mouseWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
+            }
+
+            if (context.canceled)
+            {
+                StopCoroutine(WaitDragCoroutine);
+
+                if (isDrag)
+                {
+                    HoldCanceled();
+                }
+                else
+                {
+                    unitSelector.CheckPointFocused(mouseWorldPosition);
+                    unitSelector.SelectFocused();
+                }                
             }
         }
 
@@ -104,6 +136,31 @@ namespace Assets.Scripts.ControllUnit
             unitSelector.SelectFocused();
             OnHoldCanceled?.Invoke();
         }
+        
+        private IEnumerator WaitDragTouch(Vector2 startPosition)
+        {
+            while (true)
+            {
+                if (startPosition != mousePosition)
+                {
+                    HoldStarted();
+                    break;
+                }
+                yield return null;
+            }
+
+            while (isDrag)
+            {
+                HoldPerformedTouch();
+                yield return null;
+            }
+        }
+        
+        private void HoldPerformedTouch()
+        {
+            
+            OnHoldPerformed?.Invoke(mousePosition);
+        }
 
         public void OnTrackMousePosition(InputAction.CallbackContext context)
         {
@@ -116,10 +173,10 @@ namespace Assets.Scripts.ControllUnit
                 if (isDrag || isPointerOverGameObject) return;
 
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-                
+
                 unitSelector.CheckPointFocused(worldPos);
             }
-        }        
+        }
 
         public void OnMenu(InputAction.CallbackContext context)
         {

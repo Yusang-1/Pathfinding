@@ -1,45 +1,74 @@
-using Assets.Scripts.Controller;
 using UnityEngine;
 
+[RequireComponent(typeof(Camera))]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private CameraControllInput cameraControllInput;
-    [SerializeField] private float speed;
+    private Camera thisCamera;
 
-    private Vector3 direction;
+    [Header("Camera Settings")]
+    [SerializeField] private float minZoom = 30f;
+    [SerializeField] private float maxZoom = 80f;
+    [SerializeField] private float speed = 8f;
+
+    [Header("Sensitivity Settings")]
+    [SerializeField] private float smoothTime = 0.15f;
+
+    private Vector3 velocity;
     private bool isMoving;
+    private float currentZoomVelocity;
+    private float targetZoom;
 
-    private void Start()
+    private void Awake()
     {
-        cameraControllInput.OnDirectionChanged += GetDirection;
+        thisCamera = GetComponent<Camera>();
+        targetZoom = thisCamera.orthographic
+            ? thisCamera.orthographicSize
+            : thisCamera.fieldOfView;
     }
 
     private void Update()
     {
         Move();
+        UpdateZoom();
     }
 
-    public void GetDirection(Vector2 vec)
+    public void SetDirection(Vector2 dir)
     {
-        if (vec == Vector2.zero)
-        {
-            isMoving = false;
-            return;
-        }
+        velocity = speed * Time.deltaTime * dir;
 
-        isMoving = true;
-
-        vec = vec.normalized;
-        float value = speed * Time.deltaTime;
-        direction.x = vec.x * value;
-        direction.y = vec.y * value;
-        direction.z = 0;
+        isMoving = velocity != Vector3.zero;
     }
 
     private void Move()
     {
         if (!isMoving) return;
 
-        transform.position += direction;
+        transform.position += velocity;
+    }
+
+    public void SetTargetZoom(float zoom)
+    {
+        targetZoom += zoom;
+        targetZoom = Mathf.Clamp(targetZoom, minZoom, maxZoom);
+    }
+
+    private void UpdateZoom()
+    {
+        if (thisCamera.orthographic)
+        {
+            thisCamera.orthographicSize = Mathf.SmoothDamp(
+                thisCamera.orthographicSize,
+                targetZoom,
+                ref currentZoomVelocity,
+                smoothTime);
+        }
+        else
+        {
+            thisCamera.fieldOfView = Mathf.SmoothDamp(
+                thisCamera.fieldOfView,
+                targetZoom,
+                ref currentZoomVelocity,
+                smoothTime);
+        }
     }
 }
