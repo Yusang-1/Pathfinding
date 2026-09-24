@@ -37,7 +37,7 @@ namespace Assets.Scripts.Controller
         {
             // 두 손가락이 닿아있을 때는 '줌' 모드이므로, 
             // 한 손가락만 정확히 화면에 붙어있고 터치 0번이 활성화되어 있을 때만 '이동' 처리합니다.
-            if (touchInput.Touch0Active && !touchInput.Touch1Active)
+            if (touchInput.Touch0Active && !touchInput.Touch1Active && !touchInput.IsDrag)
             {
                 // touch0Delta 값이 존재할 때만 카메라 이동
                 if (touchInput.Touch0Delta.sqrMagnitude > 0.02f)

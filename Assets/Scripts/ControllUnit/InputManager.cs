@@ -33,7 +33,7 @@ namespace Assets.Scripts.ControllUnit
         private IActionMapInputer currentInputer;
         private KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator;
         private TouchInputPlayerControllerMeditator touchInputMeditator;
-        
+
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ActionMaps, IActionMapInputer> inputerDict = new();
 
@@ -41,7 +41,7 @@ namespace Assets.Scripts.ControllUnit
         private ControllScheme currentScheme;
         private const string KEYBOARD_MOUSE = "Keyboard&Mouse";
         private const string TOUCH = "Touch";
-        
+
         private enum ControllScheme
         {
             KeyboardMouse,
@@ -54,13 +54,17 @@ namespace Assets.Scripts.ControllUnit
             actionMap.Enable();
             
             var current = playerInputComponent.currentControlScheme;
-            if(current == KEYBOARD_MOUSE)
+            Debug.Log(current);
+
+            if (current == KEYBOARD_MOUSE)
             {
                 currentScheme = ControllScheme.KeyboardMouse;
+                keyboardMouseInput.ActionMapActivated();
             }
-            else if(current == TOUCH)
+            else if (current == TOUCH)
             {
                 currentScheme = ControllScheme.Touch;
+                touchInput.ActionMapActivated();
             }
 
             keyboardMouseInputMeditator = new KeyboardMouseInputPlayerControllerMeditator(keyboardMouseInput);
@@ -87,9 +91,9 @@ namespace Assets.Scripts.ControllUnit
 
         private void Update()
         {
-            if(currentScheme == ControllScheme.Touch)
+            if (currentScheme == ControllScheme.Touch)
             {
-                touchInputMeditator.Update();                
+                touchInputMeditator.Update();
             }
         }
 
@@ -102,8 +106,17 @@ namespace Assets.Scripts.ControllUnit
         {
             unitSelector.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
 
-            playerControllerInput.Initialize(unitSelector);
+            // playerControllerInput.Initialize(unitSelector);
             unitInput.Initialize(unitSelector);
+
+            if (currentScheme == ControllScheme.KeyboardMouse)
+            {
+                keyboardMouseInput.Initialize(unitSelector);                
+            }
+            else if (currentScheme == ControllScheme.Touch)
+            {
+                touchInput.Initialize(unitSelector);                
+            }
         }
 
         public void ChangeActionMapSelected(ActionMaps actionMap)
@@ -129,10 +142,10 @@ namespace Assets.Scripts.ControllUnit
         {
             if (isEventBound) return;
 
-            playerControllerInput.OnHoldStarted += HandlerHoldStarted;
-            playerControllerInput.OnHoldPerformed += HandlerHoldPerformed;
-            playerControllerInput.OnHoldCanceled += HandlerHoldCanceled;
-            playerControllerInput.OnControllMenu += HandlerControllMenu;
+            // playerControllerInput.OnHoldStarted += HandlerHoldStarted;
+            // playerControllerInput.OnHoldPerformed += HandlerHoldPerformed;
+            // playerControllerInput.OnHoldCanceled += HandlerHoldCanceled;
+            // playerControllerInput.OnControllMenu += HandlerControllMenu;
 
             unitInput.OnHoldStarted += HandlerHoldStarted;
             unitInput.OnHoldPerformed += HandlerHoldPerformed;
@@ -146,11 +159,26 @@ namespace Assets.Scripts.ControllUnit
             spawnAreaSetterInput.OnCancelSpawnAreaSet += HandlerCancelSpawnAreaSet;
             spawnAreaSetterInput.OnPointerNotOverGameObject += HandlePointerNotOverGameObject;
 
-            keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
-            keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+            if (keyboardMouseInput.IsActivated())
+            {
+                keyboardMouseInput.OnHoldStarted += HandlerHoldStarted;
+                keyboardMouseInput.OnHoldPerformed += HandlerHoldPerformed;
+                keyboardMouseInput.OnHoldCanceled += HandlerHoldCanceled;
+                keyboardMouseInput.OnControllMenu += HandlerControllMenu;
 
-            touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
-            touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+                keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
+                keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+            }
+
+            if (touchInput.IsActivated())
+            {
+                touchInput.OnHoldStarted += HandlerHoldStarted;
+                touchInput.OnHoldPerformed += HandlerHoldPerformed;
+                touchInput.OnHoldCanceled += HandlerHoldCanceled;                
+                
+                touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
+                touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+            }
 
             isEventBound = true;
         }
@@ -159,10 +187,10 @@ namespace Assets.Scripts.ControllUnit
         {
             if (!isEventBound) return;
 
-            playerControllerInput.OnHoldStarted -= HandlerHoldStarted;
-            playerControllerInput.OnHoldPerformed -= HandlerHoldPerformed;
-            playerControllerInput.OnHoldCanceled -= HandlerHoldCanceled;
-            playerControllerInput.OnControllMenu -= HandlerControllMenu;
+            // playerControllerInput.OnHoldStarted -= HandlerHoldStarted;
+            // playerControllerInput.OnHoldPerformed -= HandlerHoldPerformed;
+            // playerControllerInput.OnHoldCanceled -= HandlerHoldCanceled;
+            // playerControllerInput.OnControllMenu -= HandlerControllMenu;
 
             unitInput.OnHoldStarted -= HandlerHoldStarted;
             unitInput.OnHoldPerformed -= HandlerHoldPerformed;
@@ -175,13 +203,28 @@ namespace Assets.Scripts.ControllUnit
             spawnAreaSetterInput.OnTrackMouse -= HandlerTrackMouse;
             spawnAreaSetterInput.OnCancelSpawnAreaSet -= HandlerCancelSpawnAreaSet;
             spawnAreaSetterInput.OnPointerNotOverGameObject -= HandlePointerNotOverGameObject;
-            
-            keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
-            keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
 
-            touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
-            touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
-            
+            if (keyboardMouseInput.IsActivated())
+            {
+                keyboardMouseInput.OnHoldStarted -= HandlerHoldStarted;
+                keyboardMouseInput.OnHoldPerformed -= HandlerHoldPerformed;
+                keyboardMouseInput.OnHoldCanceled -= HandlerHoldCanceled;
+                keyboardMouseInput.OnControllMenu -= HandlerControllMenu;
+
+                keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+                keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
+            }
+
+            if (touchInput.IsActivated())
+            {
+                touchInput.OnHoldStarted -= HandlerHoldStarted;
+                touchInput.OnHoldPerformed -= HandlerHoldPerformed;
+                touchInput.OnHoldCanceled -= HandlerHoldCanceled;                
+                
+                touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+                touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
+            }
+
             isEventBound = false;
         }
 

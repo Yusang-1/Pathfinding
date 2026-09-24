@@ -7855,9 +7855,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711643}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnLeftClick
         m_Mode: 0
         m_Arguments:
@@ -7872,9 +7871,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Clock[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711643}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
-          Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
         m_Arguments:
@@ -8153,10 +8151,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/Shift[/Keyboard/leftShift]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711643}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.PlayerControllInput,
-          Assembly-CSharp
-        m_MethodName: OnMenu
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
+        m_MethodName: OnPressESC
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8312,8 +8309,56 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: b0bd0e94-e8f1-4534-b859-4c1f849612af
     m_ActionName: Player/Touch0Delta
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711644}
+        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+        m_MethodName: OnTouch0Contact
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 208dbcc9-a068-4381-9b38-44cce4692b97
+    m_ActionName: Unit/Touch0Contact
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711644}
+        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+        m_MethodName: OnTouch0Delta
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0fda6549-eec3-404f-bee5-0d64d3110109
+    m_ActionName: Unit/Touch0Delta
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711644}
+        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+        m_MethodName: OnTouch0Position
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 5887249f-06ba-433e-9edc-feacbf98b596
+    m_ActionName: Unit/Touch0Position
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+  m_DefaultControlScheme: Touch
   m_DefaultActionMap: 
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 705920039}
@@ -8344,7 +8389,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc7be07296277e4d8502c5aa247a2cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionMap: 0
 --- !u!114 &1661711644
 MonoBehaviour:
   m_ObjectHideFlags: 0

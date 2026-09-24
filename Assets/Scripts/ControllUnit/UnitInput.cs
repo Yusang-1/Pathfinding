@@ -65,7 +65,7 @@ namespace Assets.Scripts.ControllUnit
                 else
                 {
                     if (isShiftPressed)
-                    {                        
+                    {
                         unitSelector.ShiftSelectedFocused();
                     }
                     else
@@ -111,7 +111,7 @@ namespace Assets.Scripts.ControllUnit
             isDrag = false;
 
             if (isShiftPressed)
-            {                
+            {
                 unitSelector.ShiftSelectedFocusedList();
             }
             else
@@ -153,10 +153,10 @@ namespace Assets.Scripts.ControllUnit
                 if (isDrag || isPointerOverGameObject) return;
 
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
-                
+
                 unitSelector.CheckPointFocused(worldPos);
             }
-        }        
+        }
 
         public void OnPressShift(InputAction.CallbackContext context)
         {
@@ -181,6 +181,41 @@ namespace Assets.Scripts.ControllUnit
             {
                 OnControllMenu?.Invoke();
             }
+        }
+
+        public bool Touch0Active { get; private set; }
+        public Vector2 Touch0Delta { get; private set; }
+        public Vector2 Touch0Pos { get; private set; }
+        public void OnTouch0Contact(InputAction.CallbackContext context)
+        {
+            if (isPointerOverGameObject || !isInputActive) return;
+
+            if (context.canceled)
+            {
+                // Debug.Log("Right Click");
+                var worldPos = Camera.main.ScreenToWorldPoint(
+                    new Vector3(Touch0Pos.x, Touch0Pos.y, -Camera.main.transform.position.z)
+                );
+
+                if (isShiftPressed)
+                {
+                    unitSelector.ShiftRightClickMove(worldPos);
+                }
+                else
+                {
+                    unitSelector.RightClickMove(worldPos);
+                }
+            }
+        }
+
+        public void OnTouch0Delta(InputAction.CallbackContext context)
+        {
+            Touch0Delta = context.ReadValue<Vector2>();
+        }
+
+        public void OnTouch0Position(InputAction.CallbackContext context)
+        {
+            Touch0Pos = context.ReadValue<Vector2>();
         }
 
         public ActionMaps GetActionMap() => actionMap;
