@@ -89,6 +89,7 @@ namespace Assets.Scripts.Pathfinding
         public void Clear()
         {
             ClusterIndexes.Clear();
+            ClusterSmootherResultPool.ReleaseValue(this);
         }
 
         public override int GetHashCode()

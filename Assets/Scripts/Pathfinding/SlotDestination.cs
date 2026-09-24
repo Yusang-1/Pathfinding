@@ -26,7 +26,6 @@ namespace Assets.Scripts.Pathfinding
             float slotRadius = unit.UnitData.Radius * 2f + 0.3f;
             Vector3 offset = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * slotRadius;
 
-            Debug.Log($"{unit.GetInstanceID()} {slotIndex} {count} {center + offset}");
             return center + offset;
         }
         

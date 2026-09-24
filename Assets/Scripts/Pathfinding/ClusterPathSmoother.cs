@@ -31,7 +31,7 @@ namespace Assets.Scripts.Pathfinding
             else if (clusterPath.Count == 1)
             {
                 clusterIndexes.Add(clusterPath[0].Index);
-                var result = new ClusterSmootherResult();
+                ClusterSmootherResult result = ClusterSmootherResultPool.GetValue();
                 result.SetSmootherResult(clusterIndexes, nodeList.GetNodeIndex(to), nodeList.GetNodeIndex(from), Vector2Int.zero, false);
                 smootherClusterPath.Add(result);
 
@@ -197,7 +197,7 @@ namespace Assets.Scripts.Pathfinding
                 start = from;
             }
 
-            ClusterSmootherResult result = new();
+            ClusterSmootherResult result = ClusterSmootherResultPool.GetValue();
             result.SetSmootherResult(clusterIndexes, nodeIndex, start, notIncludeClusterIndex, useLastIncludeClusterIndex);
 
             smootherClusterPath.Add(result);

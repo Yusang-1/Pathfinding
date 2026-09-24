@@ -166,7 +166,7 @@ public class HPAGraph
     }
     public List<Vector2Int> GetNodesByDirectionOnce(Vector2Int direction, float unitRadius)
     {
-        List<Vector2Int> temp = new();
+        List<Vector2Int> temp = Vector2IntListPool.GetValue();
         foreach (var node in nodesByUnitRadius[unitRadius].Values)
         {
             for (int i = 0; i < node.Direction.Count; i++)

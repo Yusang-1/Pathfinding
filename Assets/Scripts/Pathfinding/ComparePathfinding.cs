@@ -15,11 +15,11 @@ namespace Assets.Scripts.Pathfinding
         private readonly NodeList nodeList;
         private readonly HPAClusterList clusterList;
         private readonly AStarPathfinder aStarPathfinder;
-
         private readonly ClusterResultWrapper clusterResultWrapper;
         private readonly PathfindingChain pathfindingChain;
-
         public ClusterResultWrapper CurrentAbstractResults { get; private set; }
+        
+        private readonly GetNeighborNodesProvider getNeighborNodesProvider;
 
         public Dictionary<NodeType, List<Vector2Int>> AStarResult { get; private set; } = new();
         public Dictionary<NodeType, List<Vector2Int>> HpaStarResult { get; private set; } = new();
@@ -35,6 +35,8 @@ namespace Assets.Scripts.Pathfinding
             this.aStarPathfinder = aStarPathfinder;
             this.clusterResultWrapper = clusterResultWrapper;
             this.pathfindingChain = pathfindingChain;
+            
+            getNeighborNodesProvider = new GetNeighborNodesProvider(nodeList, clusterList);
         }
 
         public void DoComparePathfinding(Vector3 from, Vector3 to)
@@ -53,11 +55,11 @@ namespace Assets.Scripts.Pathfinding
             nodeList.NodeTypeController.NodeTypeDrawer.IsDuringNodeSetting = false;
             OnPathFound?.Invoke(true);
         }
-
+                
         private Dictionary<NodeType, List<Vector2Int>> FindAStarPath()
         {
             clusterList.SetAllCLusterActive(true);
-            aStarPathfinder.SetGetNeighborPolicy(new GetNeighborNodesProvider(nodeList, clusterList));
+            aStarPathfinder.SetGetNeighborPolicy(getNeighborNodesProvider);
             
             PathResultRecorder.ResetPathResult();
 

@@ -364,6 +364,8 @@ namespace Assets.Scripts.Pathfinding
             {
                 return correspondingPos;
             }
+            
+            Vector2IntListPool.ReleaseValue(neighborEntrances);
 
             return null;
         }
