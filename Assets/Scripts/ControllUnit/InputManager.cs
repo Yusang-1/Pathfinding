@@ -204,7 +204,7 @@ namespace Assets.Scripts.ControllUnit
                 inGameUnitTouchInput.OnHoldPerformed += HandlerHoldPerformed;
                 inGameUnitTouchInput.OnHoldCanceled += HandlerHoldCanceled;
                 
-                touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
+                // touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
@@ -253,7 +253,7 @@ namespace Assets.Scripts.ControllUnit
                 inGameUnitTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
                 inGameUnitTouchInput.OnHoldCanceled -= HandlerHoldCanceled;
 
-                touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+                // touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 

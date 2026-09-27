@@ -196,7 +196,7 @@ namespace Assets.Scripts.ECSControllUnit
                 // touchInput.OnHoldPerformed += HandlerHoldPerformed;
                 touchInput.OnHoldCanceled += HandlerHoldCanceled;
 
-                touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
+                // touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
@@ -234,7 +234,7 @@ namespace Assets.Scripts.ECSControllUnit
                 // touchInput.OnHoldPerformed -= HandlerHoldPerformed;
                 touchInput.OnHoldCanceled -= HandlerHoldCanceled;
 
-                touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+                // touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 
