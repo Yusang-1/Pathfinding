@@ -34,7 +34,7 @@ namespace Assets.Scripts.ControllUnit
         private InputActionMap actionMap;
         private IActionMapInputer currentInputer;
         private readonly KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator = new();
-        private TouchInputPlayerControllerMeditator touchInputMeditator;
+        private readonly TouchInputPlayerControllerMeditator touchInputMeditator = new();
 
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ControllScheme, Dictionary<ActionMaps, IActionMapInputer>> inputerSchemeDict = new();

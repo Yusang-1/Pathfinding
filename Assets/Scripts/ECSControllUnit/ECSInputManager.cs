@@ -18,18 +18,19 @@ namespace Assets.Scripts.ECSControllUnit
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private PlayerInput playerInputComponent;
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
-        [SerializeField] private TouchInput touchInput;
 
         [SerializeField] private InGamePlayerKeyboardMouseInput inGamePlayerKeyboardMouseInput;
         [SerializeField] private InGameUnitKeyboardMouseInput inGameUnitKeyboardMouseInput;
+        [SerializeField] private InGamePlayerTouchInput inGamePlayerTouchInput;
+        [SerializeField] private InGameUnitTouchInput inGameUnitTouchInput;
 
         [SerializeField] private PlayerController playerController;
         [SerializeField] private MoveScreenJudger moveScreenJudger;
 
         private InputActionMap actionMap;
         private IActionMapInputer currentInputer;
-        private readonly KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator;
-        private TouchInputPlayerControllerMeditator touchInputMeditator;
+        private readonly KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator = new();
+        private readonly TouchInputPlayerControllerMeditator touchInputMeditator = new();
 
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ControllScheme, Dictionary<ActionMaps, IActionMapInputer>> inputerSchemeDict = new();
@@ -39,6 +40,7 @@ namespace Assets.Scripts.ECSControllUnit
 
         private bool isEventBound;
         private ControllScheme currentScheme;
+        private ActionMaps defaultActionMap;
         private const string KEYBOARD_MOUSE = "Keyboard&Mouse";
         private const string TOUCH = "Touch";
 
@@ -57,10 +59,14 @@ namespace Assets.Scripts.ECSControllUnit
             if (current == KEYBOARD_MOUSE)
             {
                 currentScheme = ControllScheme.KeyboardMouse;
+                inGamePlayerKeyboardMouseInput.ActionMapActivated();
+                defaultActionMap = ActionMaps.PlayerKeyboardMouse;
             }
             else if (current == TOUCH)
             {
                 currentScheme = ControllScheme.Touch;
+                inGamePlayerTouchInput.ActionMapActivated();
+                defaultActionMap = ActionMaps.PlayerTouch;
             }
         }
 
@@ -87,11 +93,13 @@ namespace Assets.Scripts.ECSControllUnit
             };
             inputerSchemeDict.Add(ControllScheme.KeyboardMouse, keyboardMouseInputerDict);
 
-            var touchInputerDict = new Dictionary<ActionMaps, IActionMapInputer>();
-            // 
-            inputerSchemeDict.Add(ControllScheme.Touch, touchInputerDict);
-
-            ChangeActionMapDefault();
+            var touchInputerDict = new Dictionary<ActionMaps, IActionMapInputer>
+            {
+                { (inGamePlayerTouchInput as IActionMapInputer).GetActionMap(), inGamePlayerTouchInput },
+                { (inGameUnitTouchInput as IActionMapInputer).GetActionMap(), inGameUnitTouchInput },
+                { (spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput }
+            };
+            inputerSchemeDict.Add(ControllScheme.Touch, touchInputerDict);            
         }
 
         private void Update()
@@ -127,9 +135,6 @@ namespace Assets.Scripts.ECSControllUnit
         {
             selectableController.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
 
-            // playerControllInput.Initialize(selectableController);
-            // unitInput.Initialize(selectableController);
-
             if (currentScheme == ControllScheme.KeyboardMouse)
             {
                 // inGamePlayerKeyboardMouseInput.Initialize(unitSelector, moveScreenJudger);
@@ -138,9 +143,12 @@ namespace Assets.Scripts.ECSControllUnit
             }
             else if (currentScheme == ControllScheme.Touch)
             {
-                // touchInput.Initialize(unitSelector);
+                // inGamePlayerTouchInput.Initialize(unitSelector, moveScreenJudger);
+                // inGameUnitTouchInput.Initialize(unitSelector, moveScreenJudger);
                 SetSchemeDict(currentScheme);
             }
+            
+            ChangeActionMapDefault();
         }
 
         private void SetSchemeDict(ControllScheme controllScheme)
@@ -161,10 +169,9 @@ namespace Assets.Scripts.ECSControllUnit
             currentInputer.ActionMapActivated();
         }
 
-        private const ActionMaps DefaultActionMap = ActionMaps.PlayerKeyboardMouse;
         private void ChangeActionMapDefault()
         {
-            ChangeActionMapSelected(DefaultActionMap);
+            ChangeActionMapSelected(defaultActionMap);
         }
 
         private void BindEvents()
@@ -190,12 +197,16 @@ namespace Assets.Scripts.ECSControllUnit
                 keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
-            if (touchInput.IsActivated())
+            if (inGamePlayerTouchInput.IsActivated)
             {
-                touchInput.OnHoldStarted += HandlerHoldStarted;
-                // touchInput.OnHoldPerformed += HandlerHoldPerformed;
-                touchInput.OnHoldCanceled += HandlerHoldCanceled;
+                inGamePlayerTouchInput.OnHoldStarted += HandlerHoldStarted;
+                // inGamePlayerTouchInput.OnHoldPerformed += HandlerHoldPerformed;
+                inGamePlayerTouchInput.OnHoldCanceled += HandlerHoldCanceled;
 
+                inGameUnitTouchInput.OnHoldStarted += HandlerHoldStarted;
+                // inGameUnitTouchInput.OnHoldPerformed += HandlerHoldPerformed;
+                inGameUnitTouchInput.OnHoldCanceled += HandlerHoldCanceled;
+                
                 // touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
@@ -228,11 +239,15 @@ namespace Assets.Scripts.ECSControllUnit
                 keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 
-            if (touchInput.IsActivated())
+            if (inGamePlayerTouchInput.IsActivated)
             {
-                touchInput.OnHoldStarted -= HandlerHoldStarted;
-                // touchInput.OnHoldPerformed -= HandlerHoldPerformed;
-                touchInput.OnHoldCanceled -= HandlerHoldCanceled;
+                inGamePlayerTouchInput.OnHoldStarted -= HandlerHoldStarted;
+                // inGamePlayerTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
+                inGamePlayerTouchInput.OnHoldCanceled -= HandlerHoldCanceled;
+
+                inGameUnitTouchInput.OnHoldStarted -= HandlerHoldStarted;
+                // inGameUnitTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
+                inGameUnitTouchInput.OnHoldCanceled -= HandlerHoldCanceled;
 
                 // touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;

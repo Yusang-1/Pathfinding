@@ -9,7 +9,6 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] private PlayerInput playerInputComponent;
-    [SerializeField] private TouchInput touchInput;
     [SerializeField] private PlayerControllInput playerControllInput;
 
     [SerializeField] private InGamePlayerKeyboardMouseInput inGamePlayerKeyboardMouseInput;
