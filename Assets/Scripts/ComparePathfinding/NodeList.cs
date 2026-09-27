@@ -53,12 +53,18 @@ public class NodeList
     public Node GetNode(Vector2Int index) => nodes[index.x, index.y];
     public bool TryGetNode(Vector2Int index, out Node node)
     {
-        if(index.x < nodes.GetLength(0) && index.y < nodes.GetLength(1))
+        if (nodes == null)
+        {
+            node = null;
+            return false;
+        }
+
+        if (index.x < nodes.GetLength(0) && index.y < nodes.GetLength(1))
         {
             node = GetNode(index);
             return true;
         }
-        
+
         node = null;
         return false;
     }

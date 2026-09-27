@@ -20,6 +20,7 @@ namespace Assets.Scripts.CreateMap
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
 
         [SerializeField] private CreateMapKeyboardMouseInput createMapKeyboardMouseInput;
+        [SerializeField] private CreateMapTouchInput createMapTouchInput;
 
         [SerializeField] private PlayerController playerController;
         [SerializeField] private MoveScreenJudger moveScreenJudger;
@@ -27,7 +28,7 @@ namespace Assets.Scripts.CreateMap
         private readonly SelectableController selectableController = new();
         private IActionMapInputer currentInputer;
         private readonly KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator = new();
-        private TouchInputPlayerControllerMeditator touchInputMeditator;
+        private readonly TouchInputPlayerControllerMeditator touchInputMeditator = new();
 
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ControllScheme, Dictionary<ActionMaps, IActionMapInputer>> inputerSchemeDict = new();
@@ -47,7 +48,9 @@ namespace Assets.Scripts.CreateMap
 
         private void Awake()
         {
+            // 현재 스키마 확인과 default로 사용할 actionMap지정
             var current = playerInputComponent.currentControlScheme;
+            Debug.Log(current);
             if (current == KEYBOARD_MOUSE)
             {
                 currentScheme = ControllScheme.KeyboardMouse;
@@ -62,7 +65,8 @@ namespace Assets.Scripts.CreateMap
             actionMapNameDict.Add(ActionMaps.DefaultKeyboardMouse, "Player");
             actionMapNameDict.Add(ActionMaps.DefaultTouch, "Player");
             actionMapNameDict.Add(ActionMaps.SpawnAreaSetter, "SpawnAreaSetter");
-
+            
+            // 스키마별 actionMap 딕셔너리 생성
             var keyboardMouseInputerDict = new Dictionary<ActionMaps, IActionMapInputer>
             {
                 { (createMapKeyboardMouseInput as IActionMapInputer).GetActionMap(), createMapKeyboardMouseInput },
@@ -70,12 +74,12 @@ namespace Assets.Scripts.CreateMap
             };
             inputerSchemeDict.Add(ControllScheme.KeyboardMouse, keyboardMouseInputerDict);
 
-            // var touchInputerDict = new Dictionary<ActionMaps, IActionMapInputer>
-            // {
-            //     { (createMapTouchInput as IActionMapInputer).GetActionMap(), createMapTouchInput },
-            //     { (spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput }
-            // };
-            // inputerSchemeDict.Add(ControllScheme.Touch, touchInputerDict);
+            var touchInputerDict = new Dictionary<ActionMaps, IActionMapInputer>
+            {
+                { (createMapTouchInput as IActionMapInputer).GetActionMap(), createMapTouchInput },
+                { (spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput }
+            };
+            inputerSchemeDict.Add(ControllScheme.Touch, touchInputerDict);
         }
 
         private void OnEnable()
@@ -157,12 +161,14 @@ namespace Assets.Scripts.CreateMap
                 keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
-            // if (current == TOUCH)
-            // {
-
-            //     touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
-            //     touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
-            // }
+            if (current == TOUCH)
+            {
+                // createMapTouchInput.OnControllMenu += HandlerControllMenu;
+                createMapTouchInput.OnMoveScreen += playerController.SetVelocity;
+                createMapTouchInput.OnActionMapInputerActivated += touchInputMeditator.SetTouchInput;
+                
+                touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
+            }
             
             isEventBound = true;
         }
@@ -189,12 +195,14 @@ namespace Assets.Scripts.CreateMap
                 keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 
-            // if (current == TOUCH)
-            // {
-
-            //     touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
-            //     touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
-            // }
+            if (current == TOUCH)
+            {
+                // createMapTouchInput.OnControllMenu -= HandlerControllMenu;
+                createMapTouchInput.OnMoveScreen -= playerController.SetVelocity;
+                createMapTouchInput.OnActionMapInputerActivated -= touchInputMeditator.SetTouchInput;
+                
+                touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
+            }
             
             isEventBound = false;
         }

@@ -2490,6 +2490,7 @@ GameObject:
   - component: {fileID: 558100857}
   - component: {fileID: 558100858}
   - component: {fileID: 558100862}
+  - component: {fileID: 558100863}
   - component: {fileID: 558100859}
   - component: {fileID: 558100855}
   m_Layer: 0
@@ -2706,9 +2707,10 @@ MonoBehaviour:
     m_ActionName: 'SpawnAreaSetter/LeftClick[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100854}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 558100863}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CreateMapTouchInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Position
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2722,10 +2724,11 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch0Position[/Device Simulator Touchscreen/touch0/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100854}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+      - m_Target: {fileID: 558100863}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CreateMapTouchInput,
+          Assembly-CSharp
         m_MethodName: 
-        m_Mode: 0
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2738,9 +2741,10 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch1Position[/Device Simulator Touchscreen/touch1/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100854}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 558100863}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CreateMapTouchInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Contact
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2770,9 +2774,10 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch1Contact[/Device Simulator Touchscreen/touch1/press]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 558100854}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 558100863}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CreateMapTouchInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Delta
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2832,6 +2837,7 @@ MonoBehaviour:
   playerInputComponent: {fileID: 558100855}
   spawnAreaSetterInput: {fileID: 558100859}
   createMapKeyboardMouseInput: {fileID: 558100862}
+  createMapTouchInput: {fileID: 558100863}
   playerController: {fileID: 625768974}
   moveScreenJudger: {fileID: 625768975}
 --- !u!114 &558100859
@@ -2860,6 +2866,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionMap: 5
+--- !u!114 &558100863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 558100854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b21ec0bc69d9c46925d641312567c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 6
 --- !u!1 &592134920
 GameObject:
   m_ObjectHideFlags: 0

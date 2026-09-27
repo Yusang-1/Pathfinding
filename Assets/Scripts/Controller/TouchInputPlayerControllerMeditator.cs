@@ -8,7 +8,7 @@ namespace Assets.Scripts.Controller
         public event Action<Vector2> OnDirectionChanged;
         public event Action<float> OnZoomRequest;
 
-        private readonly TouchInput touchInput;
+        private TouchInputBase touchInput;
 
         private Vector2 lastMoveDirection;
         private Vector2 totalDirection;
@@ -17,7 +17,7 @@ namespace Assets.Scripts.Controller
         private float targetZoom;
         private bool isTouchZooming = false;
 
-        public TouchInputPlayerControllerMeditator(TouchInput touchInput)
+        public void SetTouchInput(TouchInputBase touchInput)
         {
             this.touchInput = touchInput;
 
@@ -25,7 +25,7 @@ namespace Assets.Scripts.Controller
             targetZoom = targetCamera.orthographic
                 ? targetCamera.orthographicSize
                 : targetCamera.fieldOfView;
-        }             
+        }
 
         public void Update()
         {
