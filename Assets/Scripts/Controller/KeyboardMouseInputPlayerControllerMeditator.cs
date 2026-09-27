@@ -10,12 +10,12 @@ namespace Assets.Scripts.Controller
 
         private readonly float mouseScrollSensitivity = 1f;
 
-        public void AddBind(InGameKeyboardMouseInputBase keyboardMouseInputBase)
+        public void AddBind(KeyboardMouseInputBase keyboardMouseInputBase)
         {
             keyboardMouseInputBase.OnZoomRequest += HandleMouseScroll;
         }
         
-        public void RemoveBind(InGameKeyboardMouseInputBase keyboardMouseInputBase)
+        public void RemoveBind(KeyboardMouseInputBase keyboardMouseInputBase)
         {
             keyboardMouseInputBase.OnZoomRequest -= HandleMouseScroll;
         }

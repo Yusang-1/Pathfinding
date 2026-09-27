@@ -270,5 +270,8 @@ public enum ActionMaps
     PlayerTouch,
     UnitKeyboardMouse,
     UnitTouch,
-    SpawnAreaSetter
+    SpawnAreaSetter,
+    DefaultKeyboardMouse,
+    DefaultTouch,
+    None
 }

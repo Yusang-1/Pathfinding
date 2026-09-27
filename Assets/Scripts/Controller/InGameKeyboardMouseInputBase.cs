@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using System;
 using System.Collections;
@@ -7,40 +6,18 @@ using Assets.Scripts.ControllUnit;
 
 namespace Assets.Scripts.Controller
 {
-    public class InGameKeyboardMouseInputBase : MonoBehaviour
+    public class InGameKeyboardMouseInputBase : KeyboardMouseInputBase
     {
         public event Action<Vector3> OnHoldStarted;
         public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
-        public event Action<float> OnZoomRequest;
-        public event Action OnControllMenu;        
 
         protected UnitSelector unitSelector;
-        
-        protected Camera mainCamera;
+
         protected IEnumerator holdJudgementCoroutine;
 
-        protected Vector2 mousePosition;
-        protected bool isPointerOverGameObject;
         protected bool isDrag;
 
-        private void Start()
-        {
-            mainCamera = Camera.main;
-        }
-
-        protected virtual void Update()
-        {
-            if (EventSystem.current.IsPointerOverGameObject())
-            {
-                isPointerOverGameObject = true;
-            }
-            else
-            {
-                isPointerOverGameObject = false;
-            }
-        }
-        
         protected void Initialize(UnitSelector unitSelector)
         {
             this.unitSelector = unitSelector;
@@ -50,21 +27,13 @@ namespace Assets.Scripts.Controller
         {
             if (context.started)
             {
-                OnControllMenu?.Invoke();
+                InvokeOnControllMenu();
             }
-        }
-
-        public virtual void OnTrackMousePosition(InputAction.CallbackContext context)
-        {
-            if (context.performed)
-            {
-                mousePosition = context.ReadValue<Vector2>();
-            }
-        }
+        }        
 
         public virtual void OnLeftClick(InputAction.CallbackContext context)
         {
-            if (isPointerOverGameObject)  // || !isInputActive
+            if (isPointerOverGameObject)
             {
                 if (!(context.canceled && isDrag)) return;
             }
@@ -127,11 +96,6 @@ namespace Assets.Scripts.Controller
                 HoldPerformed();
                 yield return null;
             }
-        }
-
-        public void OnMouseScroll(InputAction.CallbackContext context)
-        {
-            OnZoomRequest?.Invoke(context.ReadValue<float>());
         }
     }
 }

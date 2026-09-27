@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using System;
-using System.Collections.Generic;
 
 namespace Assets.Scripts.CreateMap
 {
