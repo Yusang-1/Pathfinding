@@ -191,7 +191,6 @@ namespace Assets.Scripts.ControllUnit
                 inGameUnitKeyboardMouseInput.OnActionMapInputerActivated += keyboardMouseInputMeditator.AddBind;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerDeactivated += keyboardMouseInputMeditator.RemoveBind;
 
-                keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
                 keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
@@ -204,7 +203,7 @@ namespace Assets.Scripts.ControllUnit
                 inGameUnitTouchInput.OnHoldStarted += HandlerHoldStarted;
                 inGameUnitTouchInput.OnHoldPerformed += HandlerHoldPerformed;
                 inGameUnitTouchInput.OnHoldCanceled += HandlerHoldCanceled;
-
+                
                 touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
@@ -240,8 +239,7 @@ namespace Assets.Scripts.ControllUnit
                 inGameUnitKeyboardMouseInput.OnMoveScreen -= playerController.SetVelocity;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerActivated -= keyboardMouseInputMeditator.AddBind;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerDeactivated -= keyboardMouseInputMeditator.RemoveBind;
-
-                keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+                
                 keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 

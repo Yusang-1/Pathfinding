@@ -5,7 +5,6 @@ namespace Assets.Scripts.Controller
 {
     public class KeyboardMouseInputPlayerControllerMeditator
     {
-        public event Action<Vector2> OnDirectionChanged;
         public event Action<float> OnZoomRequest;
 
         private readonly float mouseScrollSensitivity = 1f;

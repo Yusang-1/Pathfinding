@@ -77,8 +77,7 @@ public class InputManager : MonoBehaviour
         if (isEventBound) return;
 
         playerControllInput.ControllMenu += HandlerControllMenu;
-
-        keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
+        
         keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
 
         touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
@@ -92,8 +91,7 @@ public class InputManager : MonoBehaviour
         if (!isEventBound) return;
 
         playerControllInput.ControllMenu -= HandlerControllMenu;
-
-        keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+        
         keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
 
         touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;

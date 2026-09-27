@@ -187,7 +187,6 @@ namespace Assets.Scripts.ECSControllUnit
                 inGameUnitKeyboardMouseInput.OnActionMapInputerActivated += keyboardMouseInputMeditator.AddBind;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerDeactivated += keyboardMouseInputMeditator.RemoveBind;
 
-                keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
                 keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
@@ -226,7 +225,6 @@ namespace Assets.Scripts.ECSControllUnit
                 inGameUnitKeyboardMouseInput.OnActionMapInputerActivated -= keyboardMouseInputMeditator.AddBind;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerDeactivated -= keyboardMouseInputMeditator.RemoveBind;
 
-                keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
                 keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 
