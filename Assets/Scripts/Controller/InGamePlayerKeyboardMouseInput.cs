@@ -12,7 +12,7 @@ namespace Assets.Scripts.Controller
         public event Action<InGameKeyboardMouseInputBase> OnActionMapInputerDeactivated;
 
         private MoveScreenJudger moveScreenJudger;
-        
+
         [SerializeField] private ActionMaps actionMap;
 
         private bool isInputActive;
@@ -38,13 +38,17 @@ namespace Assets.Scripts.Controller
 
             base.OnTrackMousePosition(context);
 
-            if (isDrag || isPointerOverGameObject) return;
-
             Vector3 viewportPos = mainCamera.ScreenToViewportPoint(mousePosition);
             if (moveScreenJudger.TryGetScreenMoveVelocity(viewportPos, out Vector2 velocity))
             {
                 OnMoveScreen?.Invoke(velocity);
             }
+            else
+            {
+                OnMoveScreen?.Invoke(Vector2.zero);
+            }
+
+            if (isDrag || isPointerOverGameObject) return;
 
             Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -mainCamera.transform.position.z));
             unitSelector.CheckPointFocused(worldPos);
