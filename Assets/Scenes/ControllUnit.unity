@@ -4117,6 +4117,7 @@ GameObject:
   - component: {fileID: 705920038}
   - component: {fileID: 705920041}
   - component: {fileID: 705920042}
+  - component: {fileID: 705920043}
   m_Layer: 0
   m_Name: Main Camera_Player
   m_TagString: MainCamera
@@ -4258,6 +4259,19 @@ MonoBehaviour:
   maxZoom: 80
   speed: 8
   smoothTime: 0.15
+--- !u!114 &705920043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705920037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e863d8c254a994e43ac70d8ad8a9c968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: 36ff8a4f4567cf742bf69f1cdfd27b79, type: 2}
 --- !u!1 &725911599
 GameObject:
   m_ObjectHideFlags: 0
@@ -7815,11 +7829,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1661711642}
   - component: {fileID: 1661711645}
-  - component: {fileID: 1661711643}
-  - component: {fileID: 1661711644}
   - component: {fileID: 1661711646}
+  - component: {fileID: 1661711649}
   - component: {fileID: 1661711648}
   - component: {fileID: 1661711647}
+  - component: {fileID: 1661711650}
   - component: {fileID: 1661711639}
   m_Layer: 0
   m_Name: InputManager
@@ -7855,8 +7869,9 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711649}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnLeftClick
         m_Mode: 0
         m_Arguments:
@@ -7871,8 +7886,9 @@ MonoBehaviour:
     m_ActionName: 'Player/Clock[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711649}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
         m_Arguments:
@@ -7927,72 +7943,9 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
-        m_MethodName: OnPressD
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 1f77a3bf-67d2-47e5-a34e-8be9aac801b5
-    m_ActionName: 'Player/MoveD[/Keyboard/d]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
-        m_MethodName: OnPressS
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 9c4fc43c-f3a6-4253-9e90-6e7f61d95984
-    m_ActionName: 'Player/MoveS[/Keyboard/s]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
-        m_MethodName: OnPressA
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: e3520702-1708-4ef9-8df9-7a83c9ac0cb1
-    m_ActionName: 'Player/MoveA[/Keyboard/a]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
-        m_MethodName: OnPressW
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 2978b493-53be-451c-a9d7-7f9e9f1ceccb
-    m_ActionName: 'Player/MoveW[/Keyboard/w]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711649}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
@@ -8007,8 +7960,9 @@ MonoBehaviour:
     m_ActionName: 'Player/ZoomCamera[/Mouse/scroll/y]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnLeftClick
         m_Mode: 0
         m_Arguments:
@@ -8023,8 +7977,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/ClickLeft[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnRightClick
         m_Mode: 0
         m_Arguments:
@@ -8039,8 +7994,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/ClickRight[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
         m_Arguments:
@@ -8056,71 +8012,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
-        m_MethodName: OnPressW
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 2d727749-2d82-4bf1-a1b0-55ccdf678961
-    m_ActionName: 'Unit/MoveW[/Keyboard/w]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
-        m_MethodName: OnPressA
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: bb065763-c445-4407-9e8e-029b7514e6d0
-    m_ActionName: 'Unit/MoveA[/Keyboard/a]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
-        m_MethodName: OnPressS
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 58cc85c3-aabe-46ba-a719-07eba9e39c61
-    m_ActionName: 'Unit/MoveS[/Keyboard/s]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
-        m_MethodName: OnPressD
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 14e214be-2d4a-4e42-9801-08ae447120d2
-    m_ActionName: 'Unit/MoveD[/Keyboard/d]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
@@ -8135,8 +8028,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/ZoomCamera[/Mouse/scroll/y]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnPressShift
         m_Mode: 0
         m_Arguments:
@@ -8151,8 +8045,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/Shift[/Keyboard/leftShift]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711648}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711649}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerKeyboardMouseInput,
+          Assembly-CSharp
         m_MethodName: OnPressESC
         m_Mode: 0
         m_Arguments:
@@ -8167,9 +8062,10 @@ MonoBehaviour:
     m_ActionName: 'Player/Menu[/Keyboard/escape]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
-        m_MethodName: OnMenu
+      - m_Target: {fileID: 1661711648}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInput,
+          Assembly-CSharp
+        m_MethodName: OnPressESC
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8232,7 +8128,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInput,
+          Assembly-CSharp
         m_MethodName: OnTouch0Position
         m_Mode: 0
         m_Arguments:
@@ -8248,8 +8145,9 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
-        m_MethodName: OnTouch0Position
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Position
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8264,7 +8162,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInput,
+          Assembly-CSharp
         m_MethodName: OnTouch0Contact
         m_Mode: 0
         m_Arguments:
@@ -8280,7 +8179,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInput,
+          Assembly-CSharp
         m_MethodName: OnTouch1Contact
         m_Mode: 0
         m_Arguments:
@@ -8296,7 +8196,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1661711647}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInput,
+          Assembly-CSharp
         m_MethodName: OnTouch0Delta
         m_Mode: 0
         m_Arguments:
@@ -8311,8 +8212,9 @@ MonoBehaviour:
     m_ActionName: Player/Touch0Delta
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711650}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInput,
+          Assembly-CSharp
         m_MethodName: OnTouch0Contact
         m_Mode: 0
         m_Arguments:
@@ -8327,8 +8229,9 @@ MonoBehaviour:
     m_ActionName: Unit/Touch0Contact
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711650}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInput,
+          Assembly-CSharp
         m_MethodName: OnTouch0Delta
         m_Mode: 0
         m_Arguments:
@@ -8343,8 +8246,9 @@ MonoBehaviour:
     m_ActionName: Unit/Touch0Delta
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1661711644}
-        m_TargetAssemblyTypeName: Assets.Scripts.ControllUnit.UnitInput, Assembly-CSharp
+      - m_Target: {fileID: 1661711650}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInput,
+          Assembly-CSharp
         m_MethodName: OnTouch0Position
         m_Mode: 0
         m_Arguments:
@@ -8377,31 +8281,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1661711643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1661711638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2bc7be07296277e4d8502c5aa247a2cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1661711644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1661711638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9ca8cd523579d343a25f08a5e0c3fa4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionMap: 1
 --- !u!114 &1661711645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8416,12 +8295,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   playerInputComponent: {fileID: 1661711639}
-  playerControllerInput: {fileID: 1661711643}
-  unitInput: {fileID: 1661711644}
   spawnAreaSetterInput: {fileID: 1661711646}
-  touchInput: {fileID: 1661711647}
-  keyboardMouseInput: {fileID: 1661711648}
+  inGamePlayerKeyboardMouseInput: {fileID: 1661711649}
+  inGameUnitKeyboardMouseInput: {fileID: 1661711648}
+  inGamePlayerTouchInput: {fileID: 1661711647}
+  inGameUnitTouchInput: {fileID: 1661711650}
   playerController: {fileID: 705920042}
+  moveScreenJudger: {fileID: 705920043}
 --- !u!114 &1661711646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8434,7 +8314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32bb5b660e67b1458fdd69fff2a45b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionMap: 2
+  actionMap: 4
 --- !u!114 &1661711647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8444,9 +8324,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1661711638}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7de17bb56093dc34fa0d54221ff24bd0, type: 3}
+  m_Script: {fileID: 11500000, guid: c8424e5ff1f301b419f53e97e7751ced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionMap: 1
 --- !u!114 &1661711648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8456,9 +8337,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 1661711638}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8176bc40eee55d408df39ea8bb045d5, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e44a15793fe83e469a45029156421e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionMap: 2
+--- !u!114 &1661711649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661711638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc48ea44545a4bf488bba1e9442ab7b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 0
+--- !u!114 &1661711650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661711638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5029740aa91a7a14291e8eb5ef56b14d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 3
 --- !u!1 &1696126797
 GameObject:
   m_ObjectHideFlags: 0

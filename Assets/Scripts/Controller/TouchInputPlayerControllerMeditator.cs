@@ -25,7 +25,7 @@ namespace Assets.Scripts.Controller
             targetZoom = targetCamera.orthographic
                 ? targetCamera.orthographicSize
                 : targetCamera.fieldOfView;
-        }
+        }             
 
         public void Update()
         {

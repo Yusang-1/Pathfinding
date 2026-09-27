@@ -19,9 +19,10 @@ namespace Assets.Scripts.CreateMap
         [SerializeField] private PlayerInput playerInputComponent;
         [SerializeField] private PlayerControllInput playerControllerInput;
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
-        [SerializeField] private TouchInput touchInput;
-        [SerializeField] private KeyboardMouseInput keyboardMouseInput;
-
+        
+        [SerializeField] private InGamePlayerKeyboardMouseInput inGamePlayerKeyboardMouseInput;
+        [SerializeField] private InGameUnitKeyboardMouseInput inGameUnitKeyboardMouseInput;
+        
         [SerializeField] private PlayerController playerController;
         [SerializeField] private MoveScreenJudger moveScreenJudger;
 
@@ -33,8 +34,9 @@ namespace Assets.Scripts.CreateMap
         private readonly Dictionary<ActionMaps, string> actionMapNameDict = new();
         private readonly Dictionary<ActionMaps, IActionMapInputer> inputerDict = new();
 
-        private bool isEventBound;
         private ControllScheme currentScheme;
+        private ActionMaps defaultActionMap;
+        private bool isEventBound;
         private const string KEYBOARD_MOUSE = "Keyboard&Mouse";
         private const string TOUCH = "Touch";
 
@@ -50,14 +52,13 @@ namespace Assets.Scripts.CreateMap
             if (current == KEYBOARD_MOUSE)
             {
                 currentScheme = ControllScheme.KeyboardMouse;
+                defaultActionMap = ActionMaps.PlayerKeyboardMouse;
             }
             else if (current == TOUCH)
             {
                 currentScheme = ControllScheme.Touch;
+                defaultActionMap = ActionMaps.PlayerTouch;
             }
-
-            keyboardMouseInputMeditator = new KeyboardMouseInputPlayerControllerMeditator(keyboardMouseInput);
-            touchInputMeditator = new TouchInputPlayerControllerMeditator(touchInput);
         }
 
         private void OnEnable()
@@ -67,7 +68,8 @@ namespace Assets.Scripts.CreateMap
 
         private void Start()
         {
-            actionMapNameDict.Add(ActionMaps.Player, "Player");
+            actionMapNameDict.Add(ActionMaps.PlayerKeyboardMouse, "Player");
+            actionMapNameDict.Add(ActionMaps.PlayerTouch, "Player");
             actionMapNameDict.Add(ActionMaps.SpawnAreaSetter, "SpawnAreaSetter");
 
             inputerDict.Add((playerControllerInput as IActionMapInputer).GetActionMap(), playerControllerInput);
@@ -89,11 +91,10 @@ namespace Assets.Scripts.CreateMap
             selectableController = new SelectableController();
             playerControllerInput.Initialize(selectableController, nodeList, moveScreenJudger);
         }
-
-        private const ActionMaps DefaultActionMap = ActionMaps.Player;
+        
         private void ChangeActionMapDefault()
         {
-            ChangeActionMapSelected(DefaultActionMap);
+            ChangeActionMapSelected(defaultActionMap);
         }
 
         private void BindEvnets()

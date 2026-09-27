@@ -128,7 +128,6 @@ namespace Assets.Scripts.ControllUnit
 
             if (context.canceled)
             {
-                Debug.Log("Right Click");
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
 
                 if (isShiftPressed)

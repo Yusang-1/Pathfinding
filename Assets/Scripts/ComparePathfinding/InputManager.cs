@@ -9,12 +9,15 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] private PlayerInput playerInputComponent;
-    [SerializeField] private PlayerControllInput playerControllInput;
     [SerializeField] private TouchInput touchInput;
-    [SerializeField] private KeyboardMouseInput keyboardMouseInput;
+    [SerializeField] private PlayerControllInput playerControllInput;
+
+    [SerializeField] private InGamePlayerKeyboardMouseInput inGamePlayerKeyboardMouseInput;
 
     [SerializeField] private PlayerController playerController;
-    private KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator;
+    [SerializeField] private MoveScreenJudger moveScreenJudger;
+
+    private readonly KeyboardMouseInputPlayerControllerMeditator keyboardMouseInputMeditator;
     private TouchInputPlayerControllerMeditator touchInputMeditator;
 
     private InputActionMap actionMap;
@@ -44,9 +47,6 @@ public class InputManager : MonoBehaviour
         {
             currentScheme = ControllScheme.Touch;
         }
-
-        keyboardMouseInputMeditator = new KeyboardMouseInputPlayerControllerMeditator(keyboardMouseInput);
-        touchInputMeditator = new TouchInputPlayerControllerMeditator(touchInput);
     }
 
     private void OnEnable()

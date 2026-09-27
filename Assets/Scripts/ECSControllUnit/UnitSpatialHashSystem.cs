@@ -413,7 +413,7 @@ namespace Assets.Scripts.ECSControllUnit
             ecb.AddComponent(entity, typeof(SelectedUnitTag));
 
             // select후 actionMap 변경
-            CreateActionMapRequest(ecb, ActionMaps.Unit);
+            CreateActionMapRequest(ecb, ActionMaps.UnitKeyboardMouse);
 
             // select후 ui 처리
             var select = ecb.CreateEntity();
@@ -441,7 +441,7 @@ namespace Assets.Scripts.ECSControllUnit
             }
             if (!hasOtherSelectedEntity)
             {
-                CreateActionMapRequest(ecb, ActionMaps.Player);
+                CreateActionMapRequest(ecb, ActionMaps.PlayerKeyboardMouse);
             }
 
             // unselect후 ui 처리

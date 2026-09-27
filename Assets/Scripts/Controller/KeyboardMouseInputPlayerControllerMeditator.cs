@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 
 namespace Assets.Scripts.Controller
 {
@@ -9,46 +8,16 @@ namespace Assets.Scripts.Controller
         public event Action<Vector2> OnDirectionChanged;
         public event Action<float> OnZoomRequest;
 
-        private readonly Dictionary<int, Vector2> moveKeyVectorDict = new();
-
         private readonly float mouseScrollSensitivity = 1f;
 
-        private Vector2 totalDirection;
-
-        public KeyboardMouseInputPlayerControllerMeditator(KeyboardMouseInput keyboardMouseInput)
+        public void AddBind(InGameKeyboardMouseInputBase keyboardMouseInputBase)
         {
-            keyboardMouseInput.OnAddDirection += AddDirection;
-            keyboardMouseInput.OnRemoveDirection += RemoveDirection;
-            keyboardMouseInput.OnZoomRequest += HandleMouseScroll;
+            keyboardMouseInputBase.OnZoomRequest += HandleMouseScroll;
         }
-
-        private void AddDirection(int key, Vector2 direction)
+        
+        public void RemoveBind(InGameKeyboardMouseInputBase keyboardMouseInputBase)
         {
-            if (direction == Vector2.zero)
-            {
-                return;
-            }
-
-            if (!moveKeyVectorDict.ContainsKey(key))
-            {
-                moveKeyVectorDict.Add(key, direction);
-            }
-
-            totalDirection += direction;
-
-            OnDirectionChanged?.Invoke(totalDirection.normalized);
-        }
-
-        private void RemoveDirection(int key)
-        {
-            if (!moveKeyVectorDict.ContainsKey(key))
-            {
-                return;
-            }
-
-            totalDirection -= moveKeyVectorDict[key];
-
-            OnDirectionChanged?.Invoke(totalDirection.normalized);
+            keyboardMouseInputBase.OnZoomRequest -= HandleMouseScroll;
         }
 
         private void HandleMouseScroll(float scrollValue)
@@ -60,7 +29,7 @@ namespace Assets.Scripts.Controller
 
             float zoomDelta = -Mathf.Sign(scrollValue) * mouseScrollSensitivity;
 
-            OnZoomRequest?.Invoke(zoomDelta);                        
+            OnZoomRequest?.Invoke(zoomDelta);
         }
     }
 }
