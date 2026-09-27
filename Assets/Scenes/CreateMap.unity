@@ -2862,6 +2862,18 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: b0bd0e94-e8f1-4534-b859-4c1f849612af
     m_ActionName: Player/Touch0Delta
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 208dbcc9-a068-4381-9b38-44cce4692b97
+    m_ActionName: Unit/Touch0Contact
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0fda6549-eec3-404f-bee5-0d64d3110109
+    m_ActionName: Unit/Touch0Delta
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5887249f-06ba-433e-9edc-feacbf98b596
+    m_ActionName: Unit/Touch0Position
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -2914,6 +2926,7 @@ MonoBehaviour:
   touchInput: {fileID: 558100861}
   keyboardMouseInput: {fileID: 558100860}
   playerController: {fileID: 625768974}
+  moveScreenJudger: {fileID: 625768975}
 --- !u!114 &558100859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3451,6 +3464,7 @@ GameObject:
   - component: {fileID: 625768970}
   - component: {fileID: 625768973}
   - component: {fileID: 625768974}
+  - component: {fileID: 625768975}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3592,6 +3606,19 @@ MonoBehaviour:
   maxZoom: 80
   speed: 8
   smoothTime: 0.15
+--- !u!114 &625768975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625768969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e863d8c254a994e43ac70d8ad8a9c968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: 36ff8a4f4567cf742bf69f1cdfd27b79, type: 2}
 --- !u!1 &632393756
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,6 +23,7 @@ namespace Assets.Scripts.CreateMap
         [SerializeField] private KeyboardMouseInput keyboardMouseInput;
 
         [SerializeField] private PlayerController playerController;
+        [SerializeField] private MoveScreenJudger moveScreenJudger;
 
         private SelectableController selectableController;
         private IActionMapInputer currentInputer;
@@ -86,7 +87,7 @@ namespace Assets.Scripts.CreateMap
         public void Initialize(NodeList nodeList)
         {
             selectableController = new SelectableController();
-            playerControllerInput.Initialize(selectableController, nodeList);
+            playerControllerInput.Initialize(selectableController, nodeList, moveScreenJudger);
         }
 
         private const ActionMaps DefaultActionMap = ActionMaps.Player;
@@ -105,6 +106,7 @@ namespace Assets.Scripts.CreateMap
             spawnAreaSetterInput.OnPointerNotOverGameObject += HandlerPointerNotOverGameObject;
 
             playerControllerInput.OnControllMenu += () => OnControllMenu?.Invoke();
+            playerControllerInput.OnMoveScreen += playerController.SetVelocity;
 
             keyboardMouseInputMeditator.OnDirectionChanged += playerController.SetDirection;
             keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
@@ -123,6 +125,7 @@ namespace Assets.Scripts.CreateMap
             spawnAreaSetterInput.OnPointerNotOverGameObject -= HandlerPointerNotOverGameObject;
 
             playerControllerInput.OnControllMenu -= () => OnControllMenu?.Invoke();
+            playerControllerInput.OnMoveScreen -= playerController.SetVelocity;
 
             keyboardMouseInputMeditator.OnDirectionChanged -= playerController.SetDirection;
             keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;

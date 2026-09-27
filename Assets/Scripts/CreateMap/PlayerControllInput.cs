@@ -9,9 +9,11 @@ namespace Assets.Scripts.CreateMap
     public class PlayerControllInput : MonoBehaviour, IActionMapInputer
     {
         public event Action OnControllMenu;
+        public event Action<Vector2> OnMoveScreen;
 
         private NodeList nodeList;
         private SelectableController selectableController;
+        private MoveScreenJudger moveScreenJudger;
 
         [SerializeField] private ActionMaps actionMap;
 
@@ -33,10 +35,11 @@ namespace Assets.Scripts.CreateMap
             }
         }
 
-        public void Initialize(SelectableController selectableController, NodeList nodeList)
+        public void Initialize(SelectableController selectableController, NodeList nodeList, MoveScreenJudger moveScreenJudger)
         {
             this.selectableController = selectableController;
             this.nodeList = nodeList;
+            this.moveScreenJudger = moveScreenJudger;
         }
 
         public void OnLeftClick(InputAction.CallbackContext context)
@@ -58,12 +61,18 @@ namespace Assets.Scripts.CreateMap
                 }
             }
         }
-
+                
         public void OnTrackMousePosition(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
                 mousePosition = context.ReadValue<Vector2>();
+                
+                var viewPortPosition = Camera.main.ScreenToViewportPoint(mousePosition);
+                if(moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+                {
+                    OnMoveScreen?.Invoke(velocity);
+                }
             }
         }        
 

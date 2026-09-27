@@ -45,6 +45,15 @@ public class PlayerController : MonoBehaviour
 
         transform.position += velocity;
     }
+    
+    public void SetVelocity(Vector2 vel)
+    {
+        if(velocity == (Vector3)vel) return;
+        
+        velocity = (Vector3)vel;
+        
+        isMoving = velocity != Vector3.zero;
+    }
 
     public void SetTargetZoom(float zoom)
     {
