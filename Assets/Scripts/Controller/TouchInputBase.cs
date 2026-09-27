@@ -90,7 +90,7 @@ public class TouchInputBase : MonoBehaviour
         Touch0Delta = context.ReadValue<Vector2>();
     }
 
-    public void OnTouch0Position(InputAction.CallbackContext context)
+    public virtual void OnTouch0Position(InputAction.CallbackContext context)
     {
         Touch0Pos = context.ReadValue<Vector2>();
     }

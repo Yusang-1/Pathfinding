@@ -35,7 +35,7 @@ namespace Assets.Scripts.Controller
                 if (!(context.canceled && IsDrag)) return;
             }
 
-            base.OnTouch0Contact(context);
+            Touch0Active = context.ReadValueAsButton();
 
             if (context.canceled)
             {
@@ -53,13 +53,18 @@ namespace Assets.Scripts.Controller
                 {
                     selectableController.Selected(null);
                 }
-                
-                // screen이동 판정
-                var viewPortPosition = Camera.main.ScreenToViewportPoint(Touch0Pos);
-                if(moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
-                {
-                    OnMoveScreen?.Invoke(velocity);
-                }
+            }
+        }
+
+        public override void OnTouch0Position(InputAction.CallbackContext context)
+        {
+            base.OnTouch0Position(context);
+
+            // screen이동 판정
+            var viewPortPosition = Camera.main.ScreenToViewportPoint(Touch0Pos);
+            if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+            {
+                OnMoveScreen?.Invoke(velocity);
             }
         }
 

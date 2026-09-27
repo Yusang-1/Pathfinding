@@ -12,11 +12,11 @@ namespace Assets.Scripts.Controller
         public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
 
-        private UnitSelector unitSelector;
+        protected UnitSelector unitSelector;
 
-        private IEnumerator WaitDragCoroutine;        
+        protected IEnumerator WaitDragCoroutine;
 
-        public void Initialize(UnitSelector unitSelector)
+        protected void Initialize(UnitSelector unitSelector)
         {
             this.unitSelector = unitSelector;
         }
@@ -71,14 +71,14 @@ namespace Assets.Scripts.Controller
             Touch1Active = context.ReadValueAsButton();
         }
 
-        public void OnTouch1Position(InputAction.CallbackContext context)
+        public virtual void OnTouch1Position(InputAction.CallbackContext context)
         {
             Touch1Pos = context.ReadValue<Vector2>();
         }
 
         private readonly float dragGoalTime = 0.5f;
         private float dragTime = 0;
-        private IEnumerator WaitDrag(Vector2 startPosition)
+        protected IEnumerator WaitDrag(Vector2 startPosition)
         {
             while (true)
             {
@@ -111,7 +111,7 @@ namespace Assets.Scripts.Controller
         {
             OnHoldPerformed?.Invoke(Touch0Pos);
         }
-        private void HoldCanceled()
+        protected void HoldCanceled()
         {
             IsDrag = false;
             unitSelector.SelectFocused();

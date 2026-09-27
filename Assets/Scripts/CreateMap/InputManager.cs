@@ -109,7 +109,7 @@ namespace Assets.Scripts.CreateMap
             }
             else if (currentScheme == ControllScheme.Touch)
             {
-
+                createMapTouchInput.Initialize(selectableController, moveScreenJudger, nodeList);
                 SetSchemeDict(currentScheme);
             }
 

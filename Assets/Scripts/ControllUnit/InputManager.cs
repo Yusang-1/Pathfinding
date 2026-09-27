@@ -131,8 +131,8 @@ namespace Assets.Scripts.ControllUnit
             }
             else if (currentScheme == ControllScheme.Touch)
             {
-                inGamePlayerTouchInput.Initialize(unitSelector);
-                inGameUnitTouchInput.Initialize(unitSelector);
+                inGamePlayerTouchInput.Initialize(unitSelector, moveScreenJudger);
+                inGameUnitTouchInput.Initialize(unitSelector, moveScreenJudger);
                 SetSchemeDict(currentScheme);
             }
 
