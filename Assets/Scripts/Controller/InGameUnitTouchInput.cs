@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using Assets.Scripts.ControllUnit;
+using System.Collections;
 
 namespace Assets.Scripts.Controller
 {
@@ -51,8 +52,11 @@ namespace Assets.Scripts.Controller
                     isScreenMoving = false;
                 }
 
-                WaitDragCoroutine = WaitDrag(Touch0Pos);
-                StartCoroutine(WaitDragCoroutine);
+                if (!isScreenMoving)
+                {
+                    WaitDragCoroutine = WaitDrag(Touch0Pos);
+                    StartCoroutine(WaitDragCoroutine);
+                }
             }
 
             if (context.performed)

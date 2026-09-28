@@ -50,8 +50,11 @@ namespace Assets.Scripts.Controller
                     isScreenMoving = false;
                 }
 
-                WaitDragCoroutine = WaitDrag(Touch0Pos);
-                StartCoroutine(WaitDragCoroutine);
+                if (!isScreenMoving)
+                {
+                    WaitDragCoroutine = WaitDrag(Touch0Pos);
+                    StartCoroutine(WaitDragCoroutine);
+                }
             }
 
             if (context.performed)

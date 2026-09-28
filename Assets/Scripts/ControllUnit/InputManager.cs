@@ -165,6 +165,7 @@ namespace Assets.Scripts.ControllUnit
         private void ChangeActionMapWithRole(ActionMapRole role)
         {
             var actionMap = ResolveActionMap(role);
+            Debug.Log(actionMap.ToString());
             ChangeActionMapSelected(actionMap);
         }
 

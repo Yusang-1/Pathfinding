@@ -100,7 +100,7 @@ namespace Assets.Scripts.Controller
             }
         }
 
-        private void HoldStarted()
+        protected void HoldStarted()
         {
             OnHoldStarted?.Invoke(Touch0Pos);
             IsDrag = true;
