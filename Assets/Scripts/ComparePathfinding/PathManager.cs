@@ -39,6 +39,7 @@ public class PathManager : MonoBehaviour // comparePathfinding 씬의 manager
     {
         nodeData.Initialize();
         uiRoot.Initialize();
+        pathManagerBootStrapper.Initialize();
     }
 
     private void OnDisable()
@@ -48,17 +49,17 @@ public class PathManager : MonoBehaviour // comparePathfinding 씬의 manager
 
     private void SetMapData(int mapCode)
     {
-        if(!mapRuntimeContext.LoadedMapData.TryGetMapData(mapCode, out MapData mapData))
+        if (!mapRuntimeContext.LoadedMapData.TryGetMapData(mapCode, out MapData mapData))
         {
             return;
         }
-        
+
         int nodeSize = MapRuntimeContext.NODE_SIZE;
         int mapSize = mapData.InfoData.MapSize;
         int clusterSize = MapRuntimeContext.CLUSTER_SIZE;
 
         nodeList.Initialize(nodeSize, mapSize);
-                
+
         mapGenerator.GenerateMap(mapSize, mapData.TerrainData);
         clusterShower.Initialize(mapSize / clusterSize, clusterSize, nodeSize);
 

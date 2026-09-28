@@ -31,7 +31,7 @@ namespace Assets.Scripts.Controller
         public override void OnTrackMousePosition(InputAction.CallbackContext context)
         {
             if (!isInputActive) return;
-            
+
             base.OnTrackMousePosition(context);
 
             Vector3 viewportPos = mainCamera.ScreenToViewportPoint(mousePosition);

@@ -5,7 +5,6 @@ public class Node : MonoBehaviour, ISelectable, IPoolObject<Node>
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
     public event Action<ISelectable, bool> OnSelectedCallback;
-    public event Action<ISelectable, bool> OnDeselectedCallback;
     public virtual event Action<Node> OnPoolObjectUnused;
     public virtual event Action<Node> OnPoolObjectFirstCreated;
 
@@ -39,7 +38,7 @@ public class Node : MonoBehaviour, ISelectable, IPoolObject<Node>
     }
     public void Deselected()
     {
-        OnDeselectedCallback?.Invoke(this, true);
+        OnSelectedCallback?.Invoke(this, false);
     }
 
     public void SetType(NodeType type, Sprite sprite)

@@ -2802,7 +2802,7 @@ MonoBehaviour:
     m_ActionId: 5887249f-06ba-433e-9edc-feacbf98b596
     m_ActionName: Unit/Touch0Position
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+  m_DefaultControlScheme: Touch
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

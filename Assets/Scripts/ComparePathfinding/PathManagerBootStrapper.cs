@@ -6,7 +6,6 @@ public class PathManagerBootStrapper
 {
     private Action<bool> pathfindAvailableHandler;
     private Action<ISelectable, bool> selectedHandler;
-    private Action<ISelectable, bool> deselectedHandler;
     private readonly Action<int> setMapData;
 
     private readonly NodeList nodeList;
@@ -26,7 +25,10 @@ public class PathManagerBootStrapper
         this.pathfinder = pathfinder;
         this.setMapData = setMapData;
         mapdataJsonConverter = new(mapRuntimeContext.LoadedMapData);
-        
+    }
+    
+    public void Initialize()
+    {
         inputManager.Initialize(nodeList);
     }
 
@@ -35,7 +37,6 @@ public class PathManagerBootStrapper
         if (isEventBound) return;
 
         selectedHandler = (node, value) => uiRoot.ActiveNodeTypeSelector(node, value);
-        deselectedHandler = (node, value) => uiRoot.ActiveNodeTypeSelector(node, value);
         pathfindAvailableHandler = (value) => uiRoot.ActiveFindButton(value);
 
         AddUIRootEvent();
@@ -79,7 +80,6 @@ public class PathManagerBootStrapper
     {
         nodeList.NodeTypeController.NodeTypeDrawer.OnPathfindAvailable += pathfindAvailableHandler;
         nodeList.OnSelected += selectedHandler;
-        nodeList.OnDeselected += deselectedHandler;
     }
 
     private void AddPathfinderEvent()
@@ -117,7 +117,6 @@ public class PathManagerBootStrapper
     {
         nodeList.NodeTypeController.NodeTypeDrawer.OnPathfindAvailable -= pathfindAvailableHandler;
         nodeList.OnSelected -= selectedHandler;
-        nodeList.OnDeselected -= deselectedHandler;
     }
 
     private void RemovePathfinderEvent()

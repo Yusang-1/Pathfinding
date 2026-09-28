@@ -22,7 +22,6 @@ public class SelectableController
 public interface ISelectable
 {
     public event Action<ISelectable, bool> OnSelectedCallback;
-    public event Action<ISelectable, bool> OnDeselectedCallback;
     
     public void Selected();
     public void Deselected();

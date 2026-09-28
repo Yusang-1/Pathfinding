@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public class NodeList
 {
     public event Action<ISelectable, bool> OnSelected;
-    public event Action<ISelectable, bool> OnDeselected;
 
     private readonly NodeData nodeData;
     private readonly NodeTypeController nodeTypeController = new();
@@ -31,7 +30,6 @@ public class NodeList
     public void SetNode(int x, int y, Node node)
     {
         node.OnSelectedCallback += OnSelected;
-        node.OnDeselectedCallback += OnDeselected;
         node.Initialize(new Vector2Int(x, y));
         nodes[x, y] = node;
     }
@@ -59,7 +57,8 @@ public class NodeList
             return false;
         }
 
-        if (index.x < nodes.GetLength(0) && index.y < nodes.GetLength(1))
+        if (index.x >= 0 && index.x < nodes.GetLength(0)
+            && index.y >= 0 && index.y < nodes.GetLength(1))
         {
             node = GetNode(index);
             return true;
@@ -232,7 +231,6 @@ public class NodeList
             {
                 nodes[i, j].ResetNode();
                 nodes[i, j].OnSelectedCallback -= OnSelected;
-                nodes[i, j].OnDeselectedCallback -= OnDeselected;
             }
         }
     }
