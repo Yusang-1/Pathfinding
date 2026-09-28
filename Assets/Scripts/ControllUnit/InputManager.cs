@@ -56,7 +56,7 @@ namespace Assets.Scripts.ControllUnit
         {
             actionMap = inputActions.actionMaps[0];
             actionMap.Enable();
-            
+
             // 현재 스키마 확인과 default로 사용할 actionMap지정
             var current = playerInputComponent.currentControlScheme;
             Debug.Log(current);
@@ -87,7 +87,7 @@ namespace Assets.Scripts.ControllUnit
             actionMapNameDict.Add(ActionMaps.UnitKeyboardMouse, "Unit");
             actionMapNameDict.Add(ActionMaps.UnitTouch, "Unit");
             actionMapNameDict.Add(ActionMaps.SpawnAreaSetter, "SpawnAreaSetter");
-            
+
             // 스키마별 actionMap 딕셔너리 생성
             var keyboardMouseInputerDict = new Dictionary<ActionMaps, IActionMapInputer>
             {
@@ -199,12 +199,15 @@ namespace Assets.Scripts.ControllUnit
                 inGamePlayerTouchInput.OnHoldStarted += HandlerHoldStarted;
                 inGamePlayerTouchInput.OnHoldPerformed += HandlerHoldPerformed;
                 inGamePlayerTouchInput.OnHoldCanceled += HandlerHoldCanceled;
+                inGamePlayerTouchInput.OnMoveScreen += playerController.SetVelocity;
+                inGamePlayerTouchInput.OnActionMapInputerActivated += touchInputMeditator.SetTouchInput;
 
                 inGameUnitTouchInput.OnHoldStarted += HandlerHoldStarted;
                 inGameUnitTouchInput.OnHoldPerformed += HandlerHoldPerformed;
                 inGameUnitTouchInput.OnHoldCanceled += HandlerHoldCanceled;
+                inGameUnitTouchInput.OnMoveScreen += playerController.SetVelocity;
+                inGameUnitTouchInput.OnActionMapInputerActivated += touchInputMeditator.SetTouchInput;
                 
-                // touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
@@ -239,7 +242,7 @@ namespace Assets.Scripts.ControllUnit
                 inGameUnitKeyboardMouseInput.OnMoveScreen -= playerController.SetVelocity;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerActivated -= keyboardMouseInputMeditator.AddBind;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerDeactivated -= keyboardMouseInputMeditator.RemoveBind;
-                
+
                 keyboardMouseInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 
@@ -248,12 +251,15 @@ namespace Assets.Scripts.ControllUnit
                 inGamePlayerTouchInput.OnHoldStarted -= HandlerHoldStarted;
                 inGamePlayerTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
                 inGamePlayerTouchInput.OnHoldCanceled -= HandlerHoldCanceled;
+                inGamePlayerTouchInput.OnMoveScreen -= playerController.SetVelocity;
+                inGamePlayerTouchInput.OnActionMapInputerActivated -= touchInputMeditator.SetTouchInput;
 
                 inGameUnitTouchInput.OnHoldStarted -= HandlerHoldStarted;
                 inGameUnitTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
                 inGameUnitTouchInput.OnHoldCanceled -= HandlerHoldCanceled;
-
-                // touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+                inGameUnitTouchInput.OnMoveScreen -= playerController.SetVelocity;
+                inGameUnitTouchInput.OnActionMapInputerActivated -= touchInputMeditator.SetTouchInput;
+                
                 touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 

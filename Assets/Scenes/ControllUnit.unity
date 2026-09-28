@@ -8261,6 +8261,40 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 5887249f-06ba-433e-9edc-feacbf98b596
     m_ActionName: Unit/Touch0Position
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711650}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Contact
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 37b506f2-2aa9-43f7-987d-7ce0611a47c0
+    m_ActionName: Unit/Touch1Contact
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1661711650}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Position
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0c2dd865-84f0-4736-b175-7926fc2ae0f4
+    m_ActionName: Unit/Touch1Position
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Touch
   m_DefaultActionMap: 

@@ -1,6 +1,5 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -67,7 +66,7 @@ namespace Assets.Scripts.ControllUnit
         }
 
         public void CheckAreaFocused(Vector3 standardPosition, float width, float height)
-        {                        
+        {
             var units = spatialHash.GetUnitsInRange(standardPosition, width, height);
             selectableController.UnitFocusedList(units);
         }
