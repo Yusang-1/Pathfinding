@@ -72,17 +72,9 @@ namespace Assets.Scripts.Controller
                 isScreenMoving = false;
                 OnMoveScreen?.Invoke(Vector2.zero);
 
-                try
+                if (WaitDragCoroutine != null)
                 {
-
-                    if (WaitDragCoroutine != null)
-                    {
-                        StopCoroutine(WaitDragCoroutine);
-                    }
-                }
-                catch
-                {
-                    Debug.Log(1111111111);
+                    StopCoroutine(WaitDragCoroutine);
                 }
 
                 if (IsDrag)
@@ -94,22 +86,8 @@ namespace Assets.Scripts.Controller
                     var worldPos = mainCamera.ScreenToWorldPoint(
                         new Vector3(Touch0Pos.x, Touch0Pos.y, -mainCamera.transform.position.z)
                     );
-                    try
-                    {
-                        unitSelector.CheckPointFocused(worldPos);
-                    }
-                    catch
-                    {
-                        Debug.Log(222222222);
-                    }
-                    try
-                    {
-                        unitSelector.SelectFocused();                        
-                    }
-                    catch
-                    {
-                        Debug.Log(333333333);
-                    }
+                    unitSelector.CheckPointFocused(worldPos);
+                    unitSelector.SelectFocused();
                 }
             }
         }

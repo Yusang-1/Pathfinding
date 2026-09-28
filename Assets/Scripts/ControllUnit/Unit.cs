@@ -127,11 +127,11 @@ namespace Assets.Scripts.ControllUnit
             materialController.SetOpaque();
         }
 
-        public ActionMaps GetActionMapName() => unitData.ActionMap;
+        public ActionMapRole GetActionMapRole() => unitData.ActionMapRole;
     }
 }
 
 public interface IHaveOwnActionMap
 {
-    public ActionMaps GetActionMapName();
+    public ActionMapRole GetActionMapRole();
 }

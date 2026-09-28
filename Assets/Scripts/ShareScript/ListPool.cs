@@ -76,7 +76,7 @@ public class Pool<T> where T : class, IPoolObject, new()
             return;
         }
 
-        (value as IPoolObject).Clear();
+        // (value as IPoolObject).Clear();
 
         if (unusedPool.Count < MaxPoolSize)
         {

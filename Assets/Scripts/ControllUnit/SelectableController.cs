@@ -8,7 +8,7 @@ namespace Assets.Scripts.ControllUnit
 {
     public class SelectableController
     {
-        private Action<ActionMaps> OnchangeActionMapSelected;
+        private Action<ActionMapRole> OngetActionMapRole;
         private Action OnchangeActionMapDefault;
         
         private readonly SlotDestination slotDestination = new();
@@ -17,9 +17,9 @@ namespace Assets.Scripts.ControllUnit
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
         private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();        
 
-        public void GetActions(Action<ActionMaps> changeActionMapSelected, Action changeActionMapDefault)
+        public void GetActions(Action<ActionMapRole> getActionMapRole, Action changeActionMapDefault)
         {
-            OnchangeActionMapSelected = changeActionMapSelected;
+            OngetActionMapRole = getActionMapRole;
             OnchangeActionMapDefault = changeActionMapDefault;
         }
 
@@ -98,7 +98,7 @@ namespace Assets.Scripts.ControllUnit
             if (selectable is IHaveOwnActionMap)
             {
                 var actionMapOwner = selectable as IHaveOwnActionMap;
-                OnchangeActionMapSelected?.Invoke(actionMapOwner.GetActionMapName());
+                OngetActionMapRole?.Invoke(actionMapOwner.GetActionMapRole());
             }
         }
         private void AddSelected(ISelectableUnit selectable)

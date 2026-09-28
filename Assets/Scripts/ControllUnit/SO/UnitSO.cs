@@ -7,7 +7,7 @@ namespace Assets.Scripts.ControllUnit.SO
     {
         [SerializeField] private int unitCode;
         [SerializeField] private string unitName;
-        [SerializeField] private ActionMaps actionMap;
+        [SerializeField] private ActionMapRole actionMapRole;
         [SerializeField] private SelectableType selectableType;
         [SerializeField] private float moveSpeed;
         [SerializeField] private float refineLength = 2.2f;
@@ -17,11 +17,16 @@ namespace Assets.Scripts.ControllUnit.SO
         
         public int UnitCode => unitCode;
         public string UnitName => unitName;
-        public ActionMaps ActionMap => actionMap;
+        public ActionMapRole ActionMapRole => actionMapRole;
         public SelectableType SelectableType => selectableType;
         public float MoveSpeed => moveSpeed;
         public float RefineLength => refineLength;
         public float Radius => unitsData.UnitRadius[unitSize];
         public Sprite UnitIcon => unitIcon;
     }
+}
+
+public enum ActionMapRole
+{
+    Unit
 }

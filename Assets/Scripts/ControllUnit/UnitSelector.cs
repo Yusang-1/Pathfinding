@@ -14,9 +14,9 @@ namespace Assets.Scripts.ControllUnit
             this.selectableController = selectableController;
         }
 
-        public void GetActions(Action<ActionMaps> changeActionMapSelected, Action changeActionMapDefault)
+        public void GetActions(Action<ActionMapRole> getActionMapRole, Action changeActionMapDefault)
         {
-            selectableController.GetActions(changeActionMapSelected, changeActionMapDefault);
+            selectableController.GetActions(getActionMapRole, changeActionMapDefault);
         }
 
         public void SelectFocused()

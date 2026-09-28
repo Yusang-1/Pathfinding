@@ -121,7 +121,7 @@ namespace Assets.Scripts.ControllUnit
 
         public void Initialize(UnitSelector unitSelector)
         {
-            unitSelector.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
+            unitSelector.GetActions(ChangeActionMapWithRole, ChangeActionMapDefault);
 
             if (currentScheme == ControllScheme.KeyboardMouse)
             {
@@ -160,6 +160,22 @@ namespace Assets.Scripts.ControllUnit
         private void ChangeActionMapDefault()
         {
             ChangeActionMapSelected(defaultActionMap);
+        }
+        
+        private void ChangeActionMapWithRole(ActionMapRole role)
+        {
+            var actionMap = ResolveActionMap(role);
+            ChangeActionMapSelected(actionMap);
+        }
+
+        private ActionMaps ResolveActionMap(ActionMapRole role)
+        {
+            return (role, currentScheme) switch
+            {
+                (ActionMapRole.Unit, ControllScheme.KeyboardMouse) => ActionMaps.UnitKeyboardMouse,
+                (ActionMapRole.Unit, ControllScheme.Touch) => ActionMaps.UnitTouch,
+                _ => defaultActionMap
+            };
         }
 
         private void BindEvents()
@@ -207,7 +223,7 @@ namespace Assets.Scripts.ControllUnit
                 inGameUnitTouchInput.OnHoldCanceled += HandlerHoldCanceled;
                 inGameUnitTouchInput.OnMoveScreen += playerController.SetVelocity;
                 inGameUnitTouchInput.OnActionMapInputerActivated += touchInputMeditator.SetTouchInput;
-                
+
                 touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
@@ -259,7 +275,7 @@ namespace Assets.Scripts.ControllUnit
                 inGameUnitTouchInput.OnHoldCanceled -= HandlerHoldCanceled;
                 inGameUnitTouchInput.OnMoveScreen -= playerController.SetVelocity;
                 inGameUnitTouchInput.OnActionMapInputerActivated -= touchInputMeditator.SetTouchInput;
-                
+
                 touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 
