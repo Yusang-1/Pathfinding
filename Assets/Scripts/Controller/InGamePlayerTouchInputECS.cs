@@ -1,7 +1,7 @@
-using System;
-using Assets.Scripts.ECSControllUnit;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
+using Assets.Scripts.ECSControllUnit;
 
 namespace Assets.Scripts.Controller
 {
@@ -16,9 +16,11 @@ namespace Assets.Scripts.Controller
         private ECSSelectableController selectableController;
 
         [SerializeField] private ActionMaps actionMap;
+        private Camera mainCamera;
 
         private Vector3 touch0WorldPos;
         private bool isInputActive;
+        private bool isScreenMoving;
 
         public bool IsActivated => isInputActive;
 
@@ -26,6 +28,8 @@ namespace Assets.Scripts.Controller
         {
             this.selectableController = selectableController;
             this.moveScreenJudger = moveScreenJudger;
+
+            mainCamera = Camera.main;
         }
 
         public override void OnTouch0Contact(InputAction.CallbackContext context)
@@ -39,12 +43,27 @@ namespace Assets.Scripts.Controller
 
             if (context.started)
             {
-                WaitDragCoroutine = WaitDrag(Touch0Pos);
-                StartCoroutine(WaitDragCoroutine);
+                var viewPortPosition = mainCamera.ScreenToViewportPoint(Touch0Pos);
+                if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+                {
+                    isScreenMoving = true;
+                }
+                else
+                {
+                    isScreenMoving = false;
+                }
+
+                if (!isScreenMoving)
+                {
+                    WaitDragCoroutine = WaitDrag(Touch0Pos);
+                    StartCoroutine(WaitDragCoroutine);
+                }
             }
 
             if (context.performed)
             {
+                if (isScreenMoving) return;
+
                 if (Touch0Delta.sqrMagnitude > 0.02f)
                 {
                     StopCoroutine(WaitDragCoroutine);
@@ -53,6 +72,9 @@ namespace Assets.Scripts.Controller
 
             if (context.canceled)
             {
+                isScreenMoving = false;
+                OnMoveScreen?.Invoke(Vector2.zero);
+
                 if (WaitDragCoroutine != null)
                 {
                     StopCoroutine(WaitDragCoroutine);
@@ -64,8 +86,8 @@ namespace Assets.Scripts.Controller
                 }
                 else
                 {
-                    touch0WorldPos = Camera.main.ScreenToWorldPoint(
-                        new Vector3(Touch0Pos.x, Touch0Pos.y, -Camera.main.transform.position.z)
+                    touch0WorldPos = mainCamera.ScreenToWorldPoint(
+                        new Vector3(Touch0Pos.x, Touch0Pos.y, -mainCamera.transform.position.z)
                     );
                     selectableController.MakeSelectionRequest(touch0WorldPos, false);
                 }
@@ -81,7 +103,7 @@ namespace Assets.Scripts.Controller
             Vector3 position = (Vector3)holdPerformedWorldPosition;
             selectableController.CheckUnitsInArea(touch0WorldPos, position);
         }
-        
+
         protected override void HoldCanceled()
         {
             IsDrag = false;
@@ -95,11 +117,21 @@ namespace Assets.Scripts.Controller
         {
             base.OnTouch0Position(context);
 
-            // screen이동 판정
-            var viewPortPosition = Camera.main.ScreenToViewportPoint(Touch0Pos);
-            if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+            if (context.performed)
             {
-                OnMoveScreen?.Invoke(velocity);
+                // screen이동 판정
+                if (isScreenMoving)
+                {
+                    var viewPortPosition = mainCamera.ScreenToViewportPoint(Touch0Pos);
+                    if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+                    {
+                        OnMoveScreen?.Invoke(velocity);
+                    }
+                    else
+                    {
+                        OnMoveScreen?.Invoke(Vector2.zero);
+                    }
+                }
             }
         }
 

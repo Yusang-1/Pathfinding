@@ -14,11 +14,13 @@ namespace Assets.Scripts.Controller
 
         private MoveScreenJudger moveScreenJudger;
         private ECSSelectableController selectableController;
+        private Camera mainCamera;
 
         [SerializeField] private ActionMaps actionMap;
 
         private Vector3 touch0WorldPos;
-        private bool isInputActive;
+        private bool isInputActive;        
+        private bool isScreenMoving;
 
         public bool IsActivated => isInputActive;
 
@@ -26,6 +28,8 @@ namespace Assets.Scripts.Controller
         {
             this.selectableController = selectableController;
             this.moveScreenJudger = moveScreenJudger;
+            
+            mainCamera = Camera.main;
         }
 
         public override void OnTouch0Contact(InputAction.CallbackContext context)
@@ -39,12 +43,27 @@ namespace Assets.Scripts.Controller
 
             if (context.started)
             {
-                WaitDragCoroutine = WaitDrag(Touch0Pos);
-                StartCoroutine(WaitDragCoroutine);
+                var viewPortPosition = mainCamera.ScreenToViewportPoint(Touch0Pos);
+                if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+                {
+                    isScreenMoving = true;
+                }
+                else
+                {
+                    isScreenMoving = false;
+                }
+
+                if (!isScreenMoving)
+                {
+                    WaitDragCoroutine = WaitDrag(Touch0Pos);
+                    StartCoroutine(WaitDragCoroutine);
+                }
             }
 
             if (context.performed)
             {
+                if (isScreenMoving) return;
+                
                 if (Touch0Delta.sqrMagnitude > 0.02f)
                 {
                     StopCoroutine(WaitDragCoroutine);
@@ -64,8 +83,8 @@ namespace Assets.Scripts.Controller
                 }
                 else
                 {
-                    touch0WorldPos = Camera.main.ScreenToWorldPoint(
-                        new Vector3(Touch0Pos.x, Touch0Pos.y, -Camera.main.transform.position.z)
+                    touch0WorldPos = mainCamera.ScreenToWorldPoint(
+                        new Vector3(Touch0Pos.x, Touch0Pos.y, -mainCamera.transform.position.z)
                     );
                     selectableController.MakeSelectionRequest(touch0WorldPos, false);
                 }
@@ -96,10 +115,17 @@ namespace Assets.Scripts.Controller
             base.OnTouch0Position(context);
 
             // screen이동 판정
-            var viewPortPosition = Camera.main.ScreenToViewportPoint(Touch0Pos);
-            if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+            if (isScreenMoving)
             {
-                OnMoveScreen?.Invoke(velocity);
+                var viewPortPosition = mainCamera.ScreenToViewportPoint(Touch0Pos);
+                if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+                {
+                    OnMoveScreen?.Invoke(velocity);
+                }
+                else
+                {
+                    OnMoveScreen?.Invoke(Vector2.zero);
+                }
             }
         }
 
