@@ -37,10 +37,8 @@ namespace Assets.Scripts.ECSControllUnit
 
         public void MakeSelectionRequest(Vector3 position, bool isAdditive)
         {
-            NativeArray<Entity> requests = new NativeArray<Entity>();
-            
-            bool hasRequests = TryGetRequestQuery(unitSelectionRequestQuery, out requests);
-            if(hasRequests)
+            bool hasRequests = TryGetRequestQuery(unitSelectionRequestQuery, out NativeArray<Entity> requests);
+            if (hasRequests)
             {
                 foreach(var request in requests)
                 {
@@ -63,10 +61,8 @@ namespace Assets.Scripts.ECSControllUnit
 
         public void CheckUnitIsBelowMouse(Vector3 position)
         {
-            NativeArray<Entity> requests = new NativeArray<Entity>();
-            
-            bool hasRequests = TryGetRequestQuery(focusedRequestQuery, out requests);
-            if(hasRequests)
+            bool hasRequests = TryGetRequestQuery(focusedRequestQuery, out NativeArray<Entity> requests);
+            if (hasRequests)
             {
                 foreach(var request in requests)
                 {

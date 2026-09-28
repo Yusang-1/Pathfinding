@@ -1825,10 +1825,11 @@ GameObject:
   m_Component:
   - component: {fileID: 481101079}
   - component: {fileID: 481101082}
-  - component: {fileID: 481101081}
-  - component: {fileID: 481101080}
   - component: {fileID: 481101075}
   - component: {fileID: 481101084}
+  - component: {fileID: 481101083}
+  - component: {fileID: 481101086}
+  - component: {fileID: 481101085}
   - component: {fileID: 481101074}
   m_Layer: 0
   m_Name: InputManager
@@ -1864,8 +1865,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101081}
-        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
+      - m_Target: {fileID: 481101084}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerKeyboardMouseInputECS,
           Assembly-CSharp
         m_MethodName: OnLeftClick
         m_Mode: 0
@@ -1881,8 +1882,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Clock[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101081}
-        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
+      - m_Target: {fileID: 481101084}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerKeyboardMouseInputECS,
           Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
@@ -1939,7 +1940,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 481101084}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerKeyboardMouseInputECS,
+          Assembly-CSharp
         m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
@@ -1954,8 +1956,9 @@ MonoBehaviour:
     m_ActionName: 'Player/ZoomCamera[/Mouse/scroll/y]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101080}
-        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101083}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInputECS,
+          Assembly-CSharp
         m_MethodName: OnLeftClick
         m_Mode: 0
         m_Arguments:
@@ -1970,8 +1973,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/ClickLeft[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101080}
-        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101083}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInputECS,
+          Assembly-CSharp
         m_MethodName: OnRightClick
         m_Mode: 0
         m_Arguments:
@@ -1986,8 +1990,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/ClickRight[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101080}
-        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101083}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInputECS,
+          Assembly-CSharp
         m_MethodName: OnTrackMousePosition
         m_Mode: 0
         m_Arguments:
@@ -2002,8 +2007,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/MousePosition[/Mouse/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101084}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.KeyboardMouseInput, Assembly-CSharp
+      - m_Target: {fileID: 481101083}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInputECS,
+          Assembly-CSharp
         m_MethodName: OnMouseScroll
         m_Mode: 0
         m_Arguments:
@@ -2018,8 +2024,9 @@ MonoBehaviour:
     m_ActionName: 'Unit/ZoomCamera[/Mouse/scroll/y]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101080}
-        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
+      - m_Target: {fileID: 481101083}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInputECS,
+          Assembly-CSharp
         m_MethodName: OnPressShift
         m_Mode: 0
         m_Arguments:
@@ -2034,10 +2041,10 @@ MonoBehaviour:
     m_ActionName: 'Unit/Shift[/Keyboard/leftShift]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101081}
-        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSPlayerControllInput,
+      - m_Target: {fileID: 481101084}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerKeyboardMouseInputECS,
           Assembly-CSharp
-        m_MethodName: OnMenu
+        m_MethodName: OnPressESC
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2051,9 +2058,10 @@ MonoBehaviour:
     m_ActionName: 'Player/Menu[/Keyboard/escape]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 481101080}
-        m_TargetAssemblyTypeName: Assets.Scripts.ECSControllUnit.ECSUnitInput, Assembly-CSharp
-        m_MethodName: OnMenu
+      - m_Target: {fileID: 481101083}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitKeyboardMouseInputECS,
+          Assembly-CSharp
+        m_MethodName: OnPressESC
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2099,8 +2107,9 @@ MonoBehaviour:
     m_ActionName: 'SpawnAreaSetter/MousePosition[/Mouse/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+      - m_Target: {fileID: 481101086}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInputECS,
+          Assembly-CSharp
         m_MethodName: OnTouch0Position
         m_Mode: 0
         m_Arguments:
@@ -2115,8 +2124,9 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch0Position[/Device Simulator Touchscreen/touch0/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+      - m_Target: {fileID: 481101086}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInputECS,
+          Assembly-CSharp
         m_MethodName: OnTouch1Position
         m_Mode: 0
         m_Arguments:
@@ -2131,8 +2141,9 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch1Position[/Device Simulator Touchscreen/touch1/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+      - m_Target: {fileID: 481101086}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInputECS,
+          Assembly-CSharp
         m_MethodName: OnTouch0Contact
         m_Mode: 0
         m_Arguments:
@@ -2147,8 +2158,9 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch0Contact[/Device Simulator Touchscreen/touch0/press]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+      - m_Target: {fileID: 481101086}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInputECS,
+          Assembly-CSharp
         m_MethodName: OnTouch1Contact
         m_Mode: 0
         m_Arguments:
@@ -2167,8 +2179,9 @@ MonoBehaviour:
     m_ActionName: 'SpawnAreaSetter/LeftClick[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
+      - m_Target: {fileID: 481101086}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGamePlayerTouchInputECS,
+          Assembly-CSharp
         m_MethodName: OnTouch0Delta
         m_Mode: 0
         m_Arguments:
@@ -2182,17 +2195,90 @@ MonoBehaviour:
     m_ActionId: b0bd0e94-e8f1-4534-b859-4c1f849612af
     m_ActionName: Player/Touch0Delta
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 481101085}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInputECS,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Contact
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 208dbcc9-a068-4381-9b38-44cce4692b97
     m_ActionName: Unit/Touch0Contact
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 481101085}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInputECS,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Delta
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 0fda6549-eec3-404f-bee5-0d64d3110109
     m_ActionName: Unit/Touch0Delta
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 481101085}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInputECS,
+          Assembly-CSharp
+        m_MethodName: OnTouch0Position
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 5887249f-06ba-433e-9edc-feacbf98b596
     m_ActionName: Unit/Touch0Position
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 481101085}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInputECS,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Contact
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 37b506f2-2aa9-43f7-987d-7ce0611a47c0
+    m_ActionName: Unit/Touch1Contact
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 481101085}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.InGameUnitTouchInputECS,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Position
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0c2dd865-84f0-4736-b175-7926fc2ae0f4
+    m_ActionName: Unit/Touch1Position
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
@@ -2226,32 +2312,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &481101080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 481101073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12213895fcb117d42b77cfaee37ee6cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionMap: 1
---- !u!114 &481101081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 481101073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9b8610afc694634a8e25832e55cef80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionMap: 0
 --- !u!114 &481101082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2267,12 +2327,25 @@ MonoBehaviour:
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   playerInputComponent: {fileID: 481101074}
   spawnAreaSetterInput: {fileID: 481101075}
-  inGamePlayerKeyboardMouseInput: {fileID: 0}
-  inGameUnitKeyboardMouseInput: {fileID: 0}
-  inGamePlayerTouchInput: {fileID: 0}
-  inGameUnitTouchInput: {fileID: 0}
+  inGamePlayerKeyboardMouseInput: {fileID: 481101084}
+  inGameUnitKeyboardMouseInput: {fileID: 481101083}
+  inGamePlayerTouchInput: {fileID: 481101086}
+  inGameUnitTouchInput: {fileID: 481101085}
   playerController: {fileID: 1787571098}
-  moveScreenJudger: {fileID: 0}
+  moveScreenJudger: {fileID: 1787571099}
+--- !u!114 &481101083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481101073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c9b00a1c1fff447931df36e9ef5989, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 2
 --- !u!114 &481101084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2282,9 +2355,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 481101073}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8176bc40eee55d408df39ea8bb045d5, type: 3}
+  m_Script: {fileID: 11500000, guid: 4528c0c46b10fda4b90746310f6e670b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionMap: 0
+--- !u!114 &481101085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481101073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc93b33f07bd75843bb703664e4aac0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 0
+--- !u!114 &481101086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481101073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bef6682182280146b9300043155e601, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMap: 0
 --- !u!1 &487304336
 GameObject:
   m_ObjectHideFlags: 0
@@ -9142,6 +9242,7 @@ GameObject:
   - component: {fileID: 1787571095}
   - component: {fileID: 1787571094}
   - component: {fileID: 1787571098}
+  - component: {fileID: 1787571099}
   m_Layer: 0
   m_Name: Main Camera_Player
   m_TagString: MainCamera
@@ -9283,6 +9384,19 @@ MonoBehaviour:
   maxZoom: 80
   speed: 8
   smoothTime: 0.15
+--- !u!114 &1787571099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1787571092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e863d8c254a994e43ac70d8ad8a9c968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 0}
 --- !u!1 &1812042570
 GameObject:
   m_ObjectHideFlags: 0

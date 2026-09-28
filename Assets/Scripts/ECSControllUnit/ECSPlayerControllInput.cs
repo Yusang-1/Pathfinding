@@ -108,8 +108,6 @@ namespace Assets.Scripts.ECSControllUnit
             isDrag = false;
             if (holdPerformedWorldPosition == null) return;
 
-            Vector3 position = (Vector3)holdPerformedWorldPosition;
-
             selectableController.MakeSelectionRequest(mouseWorldPosition, false);
             OnHoldCanceled?.Invoke();
         }

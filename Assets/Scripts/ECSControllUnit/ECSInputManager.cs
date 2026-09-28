@@ -19,10 +19,10 @@ namespace Assets.Scripts.ECSControllUnit
         [SerializeField] private PlayerInput playerInputComponent;
         [SerializeField] private SpawnAreaSetterInput spawnAreaSetterInput;
 
-        [SerializeField] private InGamePlayerKeyboardMouseInput inGamePlayerKeyboardMouseInput;
-        [SerializeField] private InGameUnitKeyboardMouseInput inGameUnitKeyboardMouseInput;
-        [SerializeField] private InGamePlayerTouchInput inGamePlayerTouchInput;
-        [SerializeField] private InGameUnitTouchInput inGameUnitTouchInput;
+        [SerializeField] private InGamePlayerKeyboardMouseInputECS inGamePlayerKeyboardMouseInput;
+        [SerializeField] private InGameUnitKeyboardMouseInputECS inGameUnitKeyboardMouseInput;
+        [SerializeField] private InGamePlayerTouchInputECS inGamePlayerTouchInput;
+        [SerializeField] private InGameUnitTouchInputECS inGameUnitTouchInput;
 
         [SerializeField] private PlayerController playerController;
         [SerializeField] private MoveScreenJudger moveScreenJudger;
@@ -68,15 +68,7 @@ namespace Assets.Scripts.ECSControllUnit
                 inGamePlayerTouchInput.ActionMapActivated();
                 defaultActionMap = ActionMaps.PlayerTouch;
             }
-        }
-
-        private void OnEnable()
-        {
-            BindEvents();
-        }
-
-        private void Start()
-        {
+            
             changeActionMapQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(ChangeActionMapRequest));
 
             actionMapNameDict.Add(ActionMaps.PlayerKeyboardMouse, "Player");
@@ -99,7 +91,12 @@ namespace Assets.Scripts.ECSControllUnit
                 { (inGameUnitTouchInput as IActionMapInputer).GetActionMap(), inGameUnitTouchInput },
                 { (spawnAreaSetterInput as IActionMapInputer).GetActionMap(), spawnAreaSetterInput }
             };
-            inputerSchemeDict.Add(ControllScheme.Touch, touchInputerDict);            
+            inputerSchemeDict.Add(ControllScheme.Touch, touchInputerDict);
+        }
+
+        private void OnEnable()
+        {
+            BindEvents();
         }
 
         private void Update()
@@ -137,14 +134,14 @@ namespace Assets.Scripts.ECSControllUnit
 
             if (currentScheme == ControllScheme.KeyboardMouse)
             {
-                // inGamePlayerKeyboardMouseInput.Initialize(unitSelector, moveScreenJudger);
-                // inGameUnitKeyboardMouseInput.Initialize(unitSelector, moveScreenJudger);
+                inGamePlayerKeyboardMouseInput.Initialize(selectableController, moveScreenJudger);
+                inGameUnitKeyboardMouseInput.Initialize(selectableController, moveScreenJudger);
                 SetSchemeDict(currentScheme);
             }
             else if (currentScheme == ControllScheme.Touch)
             {
-                // inGamePlayerTouchInput.Initialize(unitSelector, moveScreenJudger);
-                // inGameUnitTouchInput.Initialize(unitSelector, moveScreenJudger);
+                inGamePlayerTouchInput.Initialize(selectableController, moveScreenJudger);
+                inGameUnitTouchInput.Initialize(selectableController, moveScreenJudger);
                 SetSchemeDict(currentScheme);
             }
             
@@ -181,16 +178,18 @@ namespace Assets.Scripts.ECSControllUnit
             if (inGamePlayerKeyboardMouseInput.IsActivated)
             {
                 inGamePlayerKeyboardMouseInput.OnHoldStarted += HandlerHoldStarted;
-                // inGamePlayerKeyboardMouseInput.OnHoldPerformed += HandlerHoldPerformed;
+                inGamePlayerKeyboardMouseInput.OnHoldPerformed += HandlerHoldPerformed;
                 inGamePlayerKeyboardMouseInput.OnHoldCanceled += HandlerHoldCanceled;
                 inGamePlayerKeyboardMouseInput.OnControllMenu += HandlerControllMenu;
+                inGamePlayerKeyboardMouseInput.OnMoveScreen += playerController.SetVelocity;
                 inGamePlayerKeyboardMouseInput.OnActionMapInputerActivated += keyboardMouseInputMeditator.AddBind;
                 inGamePlayerKeyboardMouseInput.OnActionMapInputerDeactivated += keyboardMouseInputMeditator.RemoveBind;
 
                 inGameUnitKeyboardMouseInput.OnHoldStarted += HandlerHoldStarted;
-                // inGameUnitKeyboardMouseInput.OnHoldPerformed += HandlerHoldPerformed;
+                inGameUnitKeyboardMouseInput.OnHoldPerformed += HandlerHoldPerformed;
                 inGameUnitKeyboardMouseInput.OnHoldCanceled += HandlerHoldCanceled;
                 inGameUnitKeyboardMouseInput.OnControllMenu += HandlerControllMenu;
+                inGameUnitKeyboardMouseInput.OnMoveScreen += playerController.SetVelocity;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerActivated += keyboardMouseInputMeditator.AddBind;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerDeactivated += keyboardMouseInputMeditator.RemoveBind;
 
@@ -200,14 +199,15 @@ namespace Assets.Scripts.ECSControllUnit
             if (inGamePlayerTouchInput.IsActivated)
             {
                 inGamePlayerTouchInput.OnHoldStarted += HandlerHoldStarted;
-                // inGamePlayerTouchInput.OnHoldPerformed += HandlerHoldPerformed;
+                inGamePlayerTouchInput.OnHoldPerformed += HandlerHoldPerformed;
                 inGamePlayerTouchInput.OnHoldCanceled += HandlerHoldCanceled;
+                inGamePlayerTouchInput.OnMoveScreen += playerController.SetVelocity;
 
                 inGameUnitTouchInput.OnHoldStarted += HandlerHoldStarted;
-                // inGameUnitTouchInput.OnHoldPerformed += HandlerHoldPerformed;
+                inGameUnitTouchInput.OnHoldPerformed += HandlerHoldPerformed;
                 inGameUnitTouchInput.OnHoldCanceled += HandlerHoldCanceled;
-                
-                // touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
+                inGameUnitTouchInput.OnMoveScreen += playerController.SetVelocity;
+                                
                 touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
@@ -223,16 +223,18 @@ namespace Assets.Scripts.ECSControllUnit
             if (inGamePlayerKeyboardMouseInput.IsActivated)
             {
                 inGamePlayerKeyboardMouseInput.OnHoldStarted -= HandlerHoldStarted;
-                // inGamePlayerKeyboardMouseInput.OnHoldPerformed -= HandlerHoldPerformed;
+                inGamePlayerKeyboardMouseInput.OnHoldPerformed -= HandlerHoldPerformed;
                 inGamePlayerKeyboardMouseInput.OnHoldCanceled -= HandlerHoldCanceled;
                 inGamePlayerKeyboardMouseInput.OnControllMenu -= HandlerControllMenu;
+                inGamePlayerKeyboardMouseInput.OnMoveScreen -= playerController.SetVelocity;
                 inGamePlayerKeyboardMouseInput.OnActionMapInputerActivated -= keyboardMouseInputMeditator.AddBind;
                 inGamePlayerKeyboardMouseInput.OnActionMapInputerDeactivated -= keyboardMouseInputMeditator.RemoveBind;
 
                 inGameUnitKeyboardMouseInput.OnHoldStarted -= HandlerHoldStarted;
-                // inGameUnitKeyboardMouseInput.OnHoldPerformed -= HandlerHoldPerformed;
+                inGameUnitKeyboardMouseInput.OnHoldPerformed -= HandlerHoldPerformed;
                 inGameUnitKeyboardMouseInput.OnHoldCanceled -= HandlerHoldCanceled;
                 inGameUnitKeyboardMouseInput.OnControllMenu -= HandlerControllMenu;
+                inGameUnitKeyboardMouseInput.OnMoveScreen -= playerController.SetVelocity;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerActivated -= keyboardMouseInputMeditator.AddBind;
                 inGameUnitKeyboardMouseInput.OnActionMapInputerDeactivated -= keyboardMouseInputMeditator.RemoveBind;
 
@@ -242,14 +244,15 @@ namespace Assets.Scripts.ECSControllUnit
             if (inGamePlayerTouchInput.IsActivated)
             {
                 inGamePlayerTouchInput.OnHoldStarted -= HandlerHoldStarted;
-                // inGamePlayerTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
+                inGamePlayerTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
                 inGamePlayerTouchInput.OnHoldCanceled -= HandlerHoldCanceled;
+                inGamePlayerTouchInput.OnMoveScreen -= playerController.SetVelocity;
 
                 inGameUnitTouchInput.OnHoldStarted -= HandlerHoldStarted;
-                // inGameUnitTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
+                inGameUnitTouchInput.OnHoldPerformed -= HandlerHoldPerformed;
                 inGameUnitTouchInput.OnHoldCanceled -= HandlerHoldCanceled;
-
-                // touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
+                inGameUnitTouchInput.OnMoveScreen -= playerController.SetVelocity;
+                
                 touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
 

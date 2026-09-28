@@ -60,9 +60,9 @@ public class TouchInputBase : MonoBehaviour
         }
     }
 
-    private readonly float dragGoalTime = 0.5f;
-    private float dragTime = 0;
-    private IEnumerator WaitDrag(Vector2 startPosition)
+    protected readonly float dragGoalTime = 0.5f;
+    protected float dragTime = 0;
+    protected virtual IEnumerator WaitDrag(Vector2 startPosition)
     {
         while (true)
         {

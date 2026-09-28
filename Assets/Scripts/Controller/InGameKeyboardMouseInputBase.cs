@@ -64,7 +64,7 @@ namespace Assets.Scripts.Controller
             OnHoldStarted?.Invoke(mousePosition);
             isDrag = true;
         }
-        private void HoldPerformed()
+        protected virtual void HoldPerformed()
         {
             OnHoldPerformed?.Invoke(mousePosition);
         }

@@ -76,9 +76,7 @@ namespace Assets.Scripts.Controller
             Touch1Pos = context.ReadValue<Vector2>();
         }
 
-        private readonly float dragGoalTime = 0.5f;
-        private float dragTime = 0;
-        protected IEnumerator WaitDrag(Vector2 startPosition)
+        protected override IEnumerator WaitDrag(Vector2 startPosition)
         {
             while (true)
             {
@@ -107,14 +105,19 @@ namespace Assets.Scripts.Controller
             OnHoldStarted?.Invoke(Touch0Pos);
             IsDrag = true;
         }
-        private void HoldPerformed()
+        protected virtual void HoldPerformed()
         {
             OnHoldPerformed?.Invoke(Touch0Pos);
         }
-        protected void HoldCanceled()
+        protected virtual void HoldCanceled()
         {
             IsDrag = false;
             unitSelector.SelectFocused();
+            OnHoldCanceled?.Invoke();
+        }
+        
+        public void InvokeOnHoldCanceled()
+        {
             OnHoldCanceled?.Invoke();
         }
     }
