@@ -26,6 +26,8 @@ namespace Assets.Scripts.ControllUnit
             mapRuntimeContext = new MapRuntimeContext(pathfinder, nodeData);
             mapGenerator = new MapGenerator(nodePrefab, mapRuntimeContext.NodeList, unitSpawner);
             mapBootStrapper = new MapBootStrapper(uiRoot, inputManager, unitSpawner, InitializeMapRuntime, mapRuntimeContext);
+
+            mapBootStrapper.AwakeInitialize();
         }
 
         private void OnEnable()

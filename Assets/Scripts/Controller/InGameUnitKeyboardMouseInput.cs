@@ -11,12 +11,12 @@ namespace Assets.Scripts.Controller
         public event Action<InGameKeyboardMouseInputBase> OnActionMapInputerActivated;
         public event Action<InGameKeyboardMouseInputBase> OnActionMapInputerDeactivated;
 
+        private InputStatus inputStatus;
         private MoveScreenJudger moveScreenJudger;
 
         [SerializeField] private ActionMaps actionMap;
 
         private bool isInputActive;
-        private bool isShiftPressed;
 
         public bool IsActivated => isInputActive;
 
@@ -27,10 +27,12 @@ namespace Assets.Scripts.Controller
             base.Update();
         }
 
-        public void Initialize(UnitSelector unitSelector, MoveScreenJudger moveScreenJudger)
+        public void Initialize(UnitSelector unitSelector, MoveScreenJudger moveScreenJudger,
+            InputStatus inputStatus)
         {
             base.Initialize(unitSelector);
             this.moveScreenJudger = moveScreenJudger;
+            this.inputStatus = inputStatus;
         }
 
         public override void OnLeftClick(InputAction.CallbackContext context)
@@ -56,7 +58,7 @@ namespace Assets.Scripts.Controller
                 }
                 else
                 {
-                    if (isShiftPressed)
+                    if (inputStatus.IsShiftPressed)
                     {
                         unitSelector.ShiftSelectedFocused();
                     }
@@ -76,7 +78,7 @@ namespace Assets.Scripts.Controller
             {
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, -Camera.main.transform.position.z));
 
-                if (isShiftPressed)
+                if (inputStatus.IsShiftPressed)
                 {
                     unitSelector.ShiftRightClickMove(worldPos);
                 }
@@ -113,7 +115,7 @@ namespace Assets.Scripts.Controller
         {
             isDrag = false;
 
-            if (isShiftPressed)
+            if (inputStatus.IsShiftPressed)
             {
                 unitSelector.ShiftSelectedFocusedList();
             }
@@ -130,14 +132,12 @@ namespace Assets.Scripts.Controller
 
             if (context.started)
             {
-                isShiftPressed = true;
-
+                inputStatus.SetShift(true);
             }
 
             if (context.canceled)
             {
-                isShiftPressed = false;
-
+                inputStatus.SetShift(false);
             }
         }
 

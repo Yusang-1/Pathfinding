@@ -4,6 +4,7 @@ using Assets.Scripts.ControllUnit.UI;
 using Assets.Scripts.ControllUnit.SO;
 using Assets.Scripts.Pathfinding;
 using Assets.Scripts.CreateMap;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -13,13 +14,14 @@ namespace Assets.Scripts.ControllUnit
 
         private readonly SelectableController selectableController = new();
         private readonly MapdataJsonConverter mapdataJsonConverter;
+        private readonly InputStatus inputStatus = new();
 
         private readonly ControllUnitUIRoot uiRoot;
         private readonly InputManager inputManager;
         private readonly UnitSpawner unitSpawner;
         private readonly MapRuntimeContext mapRuntimeContext;
         private readonly UnitSpawnHolder unitSpawnHolder;
-        private readonly UnitSelector unitSelector;
+        private readonly UnitSelector unitSelector;        
 
         private bool isBound;
 
@@ -34,12 +36,19 @@ namespace Assets.Scripts.ControllUnit
             unitSpawnHolder = new(unitSpawner);
             unitSelector = new(mapRuntimeContext.SpatialHash, selectableController);
         }
+        
+        public void AwakeInitialize()
+        {
+            ControllScheme currentScheme = CheckControllScheme();
+            
+            uiRoot.AwakeInitialize(inputStatus, currentScheme);
+        }
 
         public void Initialize(NodeData nodeData, UnitsSO unitsSO, PathfinderControllUnit pathfinder)
         {
             nodeData.Initialize();
             unitSpawner.Initialize(new UnitRuntimeContext(pathfinder, mapRuntimeContext.SpatialHash));
-            inputManager.Initialize(unitSelector);
+            inputManager.Initialize(unitSelector, inputStatus);            
 
             unitsSO.Initialize();
         }
@@ -51,6 +60,8 @@ namespace Assets.Scripts.ControllUnit
             AddUIRootEvent(initializeMapRuntime, mapRuntimeContext);
             AddUnitSpawnerEvent();
             AddInputManagerEvent();
+            
+            inputManager.BindEvents();
 
             isBound = true;
         }
@@ -62,6 +73,8 @@ namespace Assets.Scripts.ControllUnit
             RemoveUIRootEvent(initializeMapRuntime, mapRuntimeContext);
             RemoveUnitSpawnerEvent();
             RemoveInputManagerEvent();
+            
+            inputManager.UnbindEvents();
 
             isBound = false;
         }
@@ -126,6 +139,11 @@ namespace Assets.Scripts.ControllUnit
             inputManager.OnTrackMouse -= unitSpawnHolder.MovePreviewUnit;
             inputManager.OnCancelSpawnAreaSet -= unitSpawnHolder.CancelSpawn;
             inputManager.OnPointerNotOverGameObject -= unitSpawnHolder.HidePreviewUnit;
+        }
+        
+        private ControllScheme CheckControllScheme()
+        {
+            return inputManager.CheckControllScheme();
         }
 
         private void HandleUnitSelected(ISelectableUnit selectable)

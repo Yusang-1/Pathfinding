@@ -10,12 +10,12 @@ namespace Assets.Scripts.ControllUnit
     {
         private Action<ActionMapRole> OngetActionMapRole;
         private Action OnchangeActionMapDefault;
-        
+
         private readonly SlotDestination slotDestination = new();
 
         private SelectableType currentSelectedType;
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
-        private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();        
+        private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();
 
         public void GetActions(Action<ActionMapRole> getActionMapRole, Action changeActionMapDefault)
         {
@@ -57,6 +57,18 @@ namespace Assets.Scripts.ControllUnit
                 {
                     AddSelected(selectable);
                 }
+
+                // 마지막인 경우
+                if (count == selectableList.Count - 1)
+                {
+                    if (selectable is IHaveOwnActionMap)
+                    {
+                        var actionMapOwner = selectable as IHaveOwnActionMap;
+                        OngetActionMapRole?.Invoke(actionMapOwner.GetActionMapRole());
+                    }
+                    break;
+                }
+
                 count++;
             }
         }
@@ -94,13 +106,8 @@ namespace Assets.Scripts.ControllUnit
             DeselectedAll();
             AddSelected(selectable);
             currentSelectedType = selectable.GetSelectableType();
-
-            if (selectable is IHaveOwnActionMap)
-            {
-                var actionMapOwner = selectable as IHaveOwnActionMap;
-                OngetActionMapRole?.Invoke(actionMapOwner.GetActionMapRole());
-            }
         }
+
         private void AddSelected(ISelectableUnit selectable)
         {
             if (currentSelectedHash.Contains(selectable)) return;
@@ -152,7 +159,7 @@ namespace Assets.Scripts.ControllUnit
                     UnitUnfocused(unit);
                 }
             }
-            
+
             isNull = newlyFocused == null || newlyFocused.Count == 0;
             if (!isNull)
             {

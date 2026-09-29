@@ -46,38 +46,10 @@ namespace Assets.Scripts.ControllUnit
         private const string KEYBOARD_MOUSE = "Keyboard&Mouse";
         private const string TOUCH = "Touch";
 
-        private enum ControllScheme
-        {
-            KeyboardMouse,
-            Touch
-        }
-
         private void Awake()
         {
             actionMap = inputActions.actionMaps[0];
             actionMap.Enable();
-
-            // 현재 스키마 확인과 default로 사용할 actionMap지정
-            var current = playerInputComponent.currentControlScheme;
-            Debug.Log(current);
-
-            if (current == KEYBOARD_MOUSE)
-            {
-                currentScheme = ControllScheme.KeyboardMouse;
-                inGamePlayerKeyboardMouseInput.ActionMapActivated();
-                defaultActionMap = ActionMaps.PlayerKeyboardMouse;
-            }
-            else if (current == TOUCH)
-            {
-                currentScheme = ControllScheme.Touch;
-                inGamePlayerTouchInput.ActionMapActivated();
-                defaultActionMap = ActionMaps.PlayerTouch;
-            }
-        }
-
-        private void OnEnable()
-        {
-            BindEvents();
         }
 
         private void Start()
@@ -114,29 +86,45 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        private void OnDisable()
-        {
-            UnbindEvents();
-        }
-
-        public void Initialize(UnitSelector unitSelector)
+        public void Initialize(UnitSelector unitSelector, InputStatus inputStatus)
         {
             unitSelector.GetActions(ChangeActionMapWithRole, ChangeActionMapDefault);
 
             if (currentScheme == ControllScheme.KeyboardMouse)
             {
                 inGamePlayerKeyboardMouseInput.Initialize(unitSelector, moveScreenJudger);
-                inGameUnitKeyboardMouseInput.Initialize(unitSelector, moveScreenJudger);
+                inGameUnitKeyboardMouseInput.Initialize(unitSelector, moveScreenJudger, inputStatus);
                 SetSchemeDict(currentScheme);
             }
             else if (currentScheme == ControllScheme.Touch)
             {
                 inGamePlayerTouchInput.Initialize(unitSelector, moveScreenJudger);
-                inGameUnitTouchInput.Initialize(unitSelector, moveScreenJudger);
+                inGameUnitTouchInput.Initialize(unitSelector, moveScreenJudger, inputStatus);
                 SetSchemeDict(currentScheme);
             }
 
             ChangeActionMapDefault();
+        }
+
+        public ControllScheme CheckControllScheme()
+        {
+            // 현재 스키마 확인과 default로 사용할 actionMap지정
+            string current = playerInputComponent.currentControlScheme;
+
+            if (current == KEYBOARD_MOUSE)
+            {
+                currentScheme = ControllScheme.KeyboardMouse;
+                inGamePlayerKeyboardMouseInput.ActionMapActivated();
+                defaultActionMap = ActionMaps.PlayerKeyboardMouse;
+            }
+            else if (current == TOUCH)
+            {
+                currentScheme = ControllScheme.Touch;
+                inGamePlayerTouchInput.ActionMapActivated();
+                defaultActionMap = ActionMaps.PlayerTouch;
+            }
+
+            return currentScheme;
         }
 
         private void SetSchemeDict(ControllScheme controllScheme)
@@ -161,11 +149,11 @@ namespace Assets.Scripts.ControllUnit
         {
             ChangeActionMapSelected(defaultActionMap);
         }
-        
+
         private void ChangeActionMapWithRole(ActionMapRole role)
         {
             var actionMap = ResolveActionMap(role);
-            Debug.Log(actionMap.ToString());
+
             ChangeActionMapSelected(actionMap);
         }
 
@@ -179,7 +167,7 @@ namespace Assets.Scripts.ControllUnit
             };
         }
 
-        private void BindEvents()
+        public void BindEvents()
         {
             if (isEventBound) return;
 
@@ -190,7 +178,7 @@ namespace Assets.Scripts.ControllUnit
             spawnAreaSetterInput.OnCancelSpawnAreaSet += HandlerCancelSpawnAreaSet;
             spawnAreaSetterInput.OnPointerNotOverGameObject += HandlePointerNotOverGameObject;
 
-            if (inGamePlayerKeyboardMouseInput.IsActivated)
+            if (currentScheme == ControllScheme.KeyboardMouse)
             {
                 inGamePlayerKeyboardMouseInput.OnHoldStarted += HandlerHoldStarted;
                 inGamePlayerKeyboardMouseInput.OnHoldPerformed += HandlerHoldPerformed;
@@ -211,7 +199,7 @@ namespace Assets.Scripts.ControllUnit
                 keyboardMouseInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
 
-            if (inGamePlayerTouchInput.IsActivated)
+            if (currentScheme == ControllScheme.Touch)
             {
                 inGamePlayerTouchInput.OnHoldStarted += HandlerHoldStarted;
                 inGamePlayerTouchInput.OnHoldPerformed += HandlerHoldPerformed;
@@ -231,7 +219,7 @@ namespace Assets.Scripts.ControllUnit
             isEventBound = true;
         }
 
-        private void UnbindEvents()
+        public void UnbindEvents()
         {
             if (!isEventBound) return;
 
@@ -319,6 +307,12 @@ namespace Assets.Scripts.ControllUnit
         {
             OnPointerNotOverGameObject?.Invoke(value);
         }
+    }
+
+    public enum ControllScheme
+    {
+        KeyboardMouse,
+        Touch
     }
 }
 

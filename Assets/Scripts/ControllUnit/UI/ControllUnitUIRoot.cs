@@ -1,9 +1,10 @@
 using UnityEngine;
-using System;
-using System.Collections.Generic;
 using Unity.Entities;
+using System;
 using Assets.Scripts.CreateMap;
 using Assets.Scripts.CreateMap.UI;
+using Assets.Scripts.Controller;
+using Assets.Scripts.Controller.UI;
 
 namespace Assets.Scripts.ControllUnit.UI
 {
@@ -35,11 +36,12 @@ namespace Assets.Scripts.ControllUnit.UI
         public Action<Entity> OnECSUnitDeselected;
 
         [SerializeField] private UILoadMapMediator uiLoadMapMediator;
-        [SerializeField] private UIResultController uiResultController;
         [SerializeField] private UISpawnUnit uiSpawnUnit;
         [SerializeField] private UIUnitpanel uiUnitPanel;
         [SerializeField] private UIDragController uiDragController;
         [SerializeField] private UIContainerScenes uiContainerScenes;
+
+        private InputStatus inputStatus;
 
         private bool isBound;
 
@@ -51,6 +53,13 @@ namespace Assets.Scripts.ControllUnit.UI
         private void OnDisable()
         {
             UnbindEvents();
+        }
+
+        public void AwakeInitialize(InputStatus inputStatus, ControllScheme controllScheme)
+        {
+            this.inputStatus = inputStatus;
+
+            uiUnitPanel.AwkaeInitialize(inputStatus, controllScheme);
         }
 
         private void BindEvents()

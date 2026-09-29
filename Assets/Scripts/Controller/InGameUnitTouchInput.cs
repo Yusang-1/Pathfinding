@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using Assets.Scripts.ControllUnit;
-using System.Collections;
 
 namespace Assets.Scripts.Controller
 {
@@ -12,21 +11,23 @@ namespace Assets.Scripts.Controller
         public event Action<InGameTouchInputBase> OnActionMapInputerActivated;
         public event Action<InGameTouchInputBase> OnActionMapInputerDeactivated;
 
+        private InputStatus inputStatus;
         private MoveScreenJudger moveScreenJudger;
         private Camera mainCamera;
 
         [SerializeField] private ActionMaps actionMap;
 
         private bool isInputActive;
-        private bool isShiftPressed;
         private bool isScreenMoving;
 
         public bool IsActivated => isInputActive;
 
-        public void Initialize(UnitSelector unitSelector, MoveScreenJudger moveScreenJudger)
+        public void Initialize(UnitSelector unitSelector, MoveScreenJudger moveScreenJudger,
+            InputStatus inputStatus)
         {
             base.Initialize(unitSelector);
             this.moveScreenJudger = moveScreenJudger;
+            this.inputStatus = inputStatus;
 
             mainCamera = Camera.main;
         }
@@ -94,7 +95,7 @@ namespace Assets.Scripts.Controller
                     // unitSelector.CheckPointFocused(worldPos);
                     // unitSelector.SelectFocused();
 
-                    if (isShiftPressed)
+                    if (inputStatus.IsShiftPressed)
                     {
                         unitSelector.ShiftRightClickMove(worldPos);
                     }
