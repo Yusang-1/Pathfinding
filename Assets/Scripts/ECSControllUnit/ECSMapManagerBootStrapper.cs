@@ -6,6 +6,7 @@ using Assets.Scripts.ControllUnit.UI;
 using Assets.Scripts.ControllUnit.SO;
 using Assets.Scripts.Pathfinding;
 using Assets.Scripts.CreateMap;
+using Assets.Scripts.Controller;
 
 namespace Assets.Scripts.ECSControllUnit
 {
@@ -20,6 +21,7 @@ namespace Assets.Scripts.ECSControllUnit
         private readonly MapdataJsonConverter mapdataJsonConverter;
         private readonly MapRuntimeContext mapRuntimeContext;
         private readonly ECSPathfindingBridge pathfindingBridge;
+        private readonly InputStatus inputStatus = new();
 
         private bool isEventBound;
         public ECSMapManagerBootStrapper(ControllUnitUIRoot uiRoot, ECSInputManager inputManager, ECSUnitSpawner unitSpawner,
@@ -40,7 +42,7 @@ namespace Assets.Scripts.ECSControllUnit
             selectableController.Initialize();
             nodeData.Initialize();
             unitSpawner.Initialize();
-            inputManager.Initialize(selectableController);
+            inputManager.Initialize(selectableController, inputStatus);
 
             unitsSO.Initialize();
         }

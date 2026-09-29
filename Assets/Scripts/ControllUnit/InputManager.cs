@@ -135,14 +135,18 @@ namespace Assets.Scripts.ControllUnit
         public void ChangeActionMapSelected(ActionMaps actionMap)
         {
             string actionMapName = actionMapNameDict[actionMap];
+            var prev = currentInputer != null ? currentInputer.GetActionMap().ToString() : "null";
 
             playerInputComponent.SwitchCurrentActionMap(actionMapName);
 
             currentInputer?.ActionMapDeactivated();
 
             currentInputer = currentInputerDict[actionMap];
+            var next = currentInputer.GetActionMap();
 
             currentInputer.ActionMapActivated();
+            
+            Debug.Log($"Change ActionMap {prev} > {next}");
         }
 
         private void ChangeActionMapDefault()

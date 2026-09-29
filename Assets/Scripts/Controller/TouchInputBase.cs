@@ -5,6 +5,8 @@ using System.Collections;
 
 public class TouchInputBase : MonoBehaviour
 {
+    private EventSystem eventSystem;
+    private Touchscreen touchscreen;
     private IEnumerator WaitDragCoroutine;
 
     public bool Touch0Active { get; protected set; }
@@ -16,16 +18,16 @@ public class TouchInputBase : MonoBehaviour
     protected bool isPointerOverGameObject;
     public bool IsDrag { get; protected set; }
 
+    private void Start()
+    {
+        eventSystem = EventSystem.current;
+        touchscreen = Touchscreen.current;
+    }
+
     private void Update()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
-        {
-            isPointerOverGameObject = true;
-        }
-        else
-        {
-            isPointerOverGameObject = false;
-        }
+        int touchId = touchscreen.touches[0].touchId.ReadValue();
+        isPointerOverGameObject = eventSystem.IsPointerOverGameObject(touchId);
     }
 
     public virtual void OnTouch0Contact(InputAction.CallbackContext context)
@@ -56,7 +58,7 @@ public class TouchInputBase : MonoBehaviour
             if (WaitDragCoroutine != null)
             {
                 StopCoroutine(WaitDragCoroutine);
-            }            
+            }
         }
     }
 
@@ -84,7 +86,7 @@ public class TouchInputBase : MonoBehaviour
     {
         IsDrag = true;
     }
-    
+
     public void OnTouch0Delta(InputAction.CallbackContext context)
     {
         Touch0Delta = context.ReadValue<Vector2>();

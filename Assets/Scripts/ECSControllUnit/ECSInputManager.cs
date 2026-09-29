@@ -128,20 +128,20 @@ namespace Assets.Scripts.ECSControllUnit
             UnbindEvents();
         }
 
-        public void Initialize(ECSSelectableController selectableController)
+        public void Initialize(ECSSelectableController selectableController, InputStatus inputStatus)
         {
             selectableController.GetActions(ChangeActionMapSelected, ChangeActionMapDefault);
 
             if (currentScheme == ControllScheme.KeyboardMouse)
             {
                 inGamePlayerKeyboardMouseInput.Initialize(selectableController, moveScreenJudger);
-                inGameUnitKeyboardMouseInput.Initialize(selectableController, moveScreenJudger);
+                inGameUnitKeyboardMouseInput.Initialize(selectableController, moveScreenJudger, inputStatus);
                 SetSchemeDict(currentScheme);
             }
             else if (currentScheme == ControllScheme.Touch)
             {
                 inGamePlayerTouchInput.Initialize(selectableController, moveScreenJudger);
-                inGameUnitTouchInput.Initialize(selectableController, moveScreenJudger);
+                inGameUnitTouchInput.Initialize(selectableController, moveScreenJudger, inputStatus);
                 SetSchemeDict(currentScheme);
             }
             

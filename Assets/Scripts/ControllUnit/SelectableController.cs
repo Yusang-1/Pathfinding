@@ -32,6 +32,7 @@ namespace Assets.Scripts.ControllUnit
             }
 
             SelectedList(alreadyFocusedHash);
+            UnfocuseAll();
         }
         private void SelectedList(ICollection<ISelectableUnit> selectableList)
         {
@@ -87,6 +88,8 @@ namespace Assets.Scripts.ControllUnit
                     AddSelected(selectable);
                 }
             }
+            
+            UnfocuseAll();
         }
         public void ShiftSelectedList()
         {
@@ -99,6 +102,8 @@ namespace Assets.Scripts.ControllUnit
                     AddSelected(selectable);
                 }
             }
+            
+            UnfocuseAll();
         }
 
         private void NewSelected(ISelectableUnit selectable)
@@ -174,7 +179,7 @@ namespace Assets.Scripts.ControllUnit
         {
             if (selectable == null)
             {
-                UnfocusedAll();
+                UnfocuseAll();
                 return;
             }
             if (alreadyFocusedHash.Contains(selectable)) return;
@@ -188,7 +193,7 @@ namespace Assets.Scripts.ControllUnit
             selectable.Focused();
             alreadyFocusedHash.Add(selectable);
         }
-        private void UnfocusedAll()
+        private void UnfocuseAll()
         {
             if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
 

@@ -37,7 +37,7 @@ namespace Assets.Scripts.Controller
             if (isPointerOverGameObject)
             {
                 if (!(context.canceled && IsDrag)) return;
-            }
+            }            
 
             Touch0Active = context.ReadValueAsButton();
 
@@ -92,16 +92,30 @@ namespace Assets.Scripts.Controller
                     var worldPos = mainCamera.ScreenToWorldPoint(
                         new Vector3(Touch0Pos.x, Touch0Pos.y, -mainCamera.transform.position.z)
                     );
-                    // unitSelector.CheckPointFocused(worldPos);
-                    // unitSelector.SelectFocused();
 
-                    if (inputStatus.IsShiftPressed)
+                    // 선택한 곳이 유닛이면 선택, 땅이면 이동 
+                    bool isSelect = unitSelector.TryCheckPointFocused(worldPos);
+                    if (isSelect)
                     {
-                        unitSelector.ShiftRightClickMove(worldPos);
+                        if (inputStatus.IsShiftPressed)
+                        {
+                            unitSelector.ShiftSelectedFocused();
+                        }
+                        else
+                        {
+                            unitSelector.SelectFocused();
+                        }
                     }
                     else
                     {
-                        unitSelector.RightClickMove(worldPos);
+                        if (inputStatus.IsShiftPressed)
+                        {
+                            unitSelector.ShiftRightClickMove(worldPos);
+                        }
+                        else
+                        {
+                            unitSelector.RightClickMove(worldPos);
+                        }
                     }
                 }
             }
@@ -124,6 +138,20 @@ namespace Assets.Scripts.Controller
                     OnMoveScreen?.Invoke(Vector2.zero);
                 }
             }
+        }
+        
+        protected override void HoldCanceled()
+        {
+            IsDrag = false;
+            if(inputStatus.IsShiftPressed)
+            {
+                unitSelector.ShiftSelectedFocusedList();
+            }
+            else
+            {
+                unitSelector.SelectFocused();
+            }            
+            InvokeOnHoldCanceled();
         }
 
         public void ActionMapActivated()

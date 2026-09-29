@@ -64,6 +64,40 @@ namespace Assets.Scripts.ControllUnit
 
             selectableController.UnitFocusedPoint(focusedUnit);
         }
+        
+        public bool TryCheckPointFocused(Vector3 checkPosition)
+        {
+            Vector2Int hash = spatialHash.GetHashKey(checkPosition);
+            var unitsInCell = spatialHash.GetUnitsInCell(hash);
+
+            if (unitsInCell == null || unitsInCell.Count == 0)
+            {
+                selectableController.UnitFocusedPoint(null);
+                return false;
+            }
+
+            Unit focusedUnit = null;
+            float closestDistanceSq = float.MaxValue;
+
+            foreach (Unit unit in unitsInCell)
+            {
+                var unitPosition = unit.transform.position;
+                unitPosition.z = 0;
+
+                float distanceSq = Vector3.SqrMagnitude(checkPosition - unitPosition);
+
+                if (distanceSq <= closestDistanceSq && distanceSq <= unit.UnitData.Radius)
+                {
+                    closestDistanceSq = distanceSq;
+                    focusedUnit = unit;
+                }
+            }                        
+
+            selectableController.UnitFocusedPoint(focusedUnit);
+            Debug.Log($"TryCheckPointFocused : {focusedUnit != null}");
+            
+            return focusedUnit != null;
+        }
 
         public void CheckAreaFocused(Vector3 standardPosition, float width, float height)
         {

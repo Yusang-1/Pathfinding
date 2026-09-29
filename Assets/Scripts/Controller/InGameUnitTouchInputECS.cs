@@ -12,6 +12,7 @@ namespace Assets.Scripts.Controller
         public event Action<InGameTouchInputBase> OnActionMapInputerDeactivated;
         public new event Func<Vector3, Vector3?> OnHoldPerformed;
 
+private InputStatus inputStatus;
         private MoveScreenJudger moveScreenJudger;
         private ECSSelectableController selectableController;
         private Camera mainCamera;
@@ -24,10 +25,12 @@ namespace Assets.Scripts.Controller
 
         public bool IsActivated => isInputActive;
 
-        public void Initialize(ECSSelectableController selectableController, MoveScreenJudger moveScreenJudger)
+        public void Initialize(ECSSelectableController selectableController, MoveScreenJudger moveScreenJudger,
+            InputStatus inputStatus)
         {
             this.selectableController = selectableController;
             this.moveScreenJudger = moveScreenJudger;
+            this.inputStatus = inputStatus;
             
             mainCamera = Camera.main;
         }
@@ -66,12 +69,18 @@ namespace Assets.Scripts.Controller
                 
                 if (Touch0Delta.sqrMagnitude > 0.02f)
                 {
-                    StopCoroutine(WaitDragCoroutine);
+                    if (WaitDragCoroutine != null)
+                    {
+                        StopCoroutine(WaitDragCoroutine);
+                    }
                 }
             }
 
             if (context.canceled)
             {
+                isScreenMoving = false;
+                OnMoveScreen?.Invoke(Vector2.zero);
+                
                 if (WaitDragCoroutine != null)
                 {
                     StopCoroutine(WaitDragCoroutine);
@@ -86,7 +95,9 @@ namespace Assets.Scripts.Controller
                     touch0WorldPos = mainCamera.ScreenToWorldPoint(
                         new Vector3(Touch0Pos.x, Touch0Pos.y, -mainCamera.transform.position.z)
                     );
-                    selectableController.MakeSelectionRequest(touch0WorldPos, false);
+                    
+                    
+                    selectableController.MakeSelectionRequest(touch0WorldPos, inputStatus.IsShiftPressed);
                 }
             }
         }
@@ -106,7 +117,7 @@ namespace Assets.Scripts.Controller
             IsDrag = false;
             if (holdPerformedWorldPosition == null) return;
 
-            selectableController.MakeSelectionRequest(touch0WorldPos, false);
+            selectableController.MakeSelectionRequest(touch0WorldPos, inputStatus.IsShiftPressed);
             InvokeOnHoldCanceled();
         }
 

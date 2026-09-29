@@ -12,6 +12,7 @@ namespace Assets.Scripts.Controller
         public event Action<InGameKeyboardMouseInputBase> OnActionMapInputerDeactivated;
         public new event Func<Vector3, Vector3?> OnHoldPerformed;
 
+        private InputStatus inputStatus;
         private MoveScreenJudger moveScreenJudger;
         private ECSSelectableController selectableController;
 
@@ -19,7 +20,6 @@ namespace Assets.Scripts.Controller
 
         private Vector3 mouseWorldPosition;
         private bool isInputActive;
-        private bool isShiftPressed;
 
         public bool IsInputActive => isInputActive;
 
@@ -30,10 +30,12 @@ namespace Assets.Scripts.Controller
             base.Update();
         }
 
-        public void Initialize(ECSSelectableController selectableController, MoveScreenJudger moveScreenJudger)
+        public void Initialize(ECSSelectableController selectableController, MoveScreenJudger moveScreenJudger,
+            InputStatus inputStatus)
         {
             this.selectableController = selectableController;
             this.moveScreenJudger = moveScreenJudger;
+            this.inputStatus = inputStatus;
         }
 
         public override void OnLeftClick(InputAction.CallbackContext context)
@@ -59,7 +61,7 @@ namespace Assets.Scripts.Controller
                 }
                 else
                 {
-                    selectableController.MakeSelectionRequest(mouseWorldPosition, isShiftPressed);
+                    selectableController.MakeSelectionRequest(mouseWorldPosition, inputStatus.IsShiftPressed);
                 }
             }
         }
@@ -89,7 +91,7 @@ namespace Assets.Scripts.Controller
 
             if (context.canceled)
             {
-                selectableController.MakeMoveCommand(mouseWorldPosition, isShiftPressed);
+                selectableController.MakeMoveCommand(mouseWorldPosition, inputStatus.IsShiftPressed);
             }
         }
 
@@ -128,12 +130,12 @@ namespace Assets.Scripts.Controller
 
             if (context.started)
             {
-                isShiftPressed = true;
+                inputStatus.SetShift(true);
             }
 
             if (context.canceled)
             {
-                isShiftPressed = false;
+                inputStatus.SetShift(false);
             }
         }
 
