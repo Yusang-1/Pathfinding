@@ -5,10 +5,12 @@ using Assets.Scripts.Pathfinding;
 public class HPACluster
 {
     private HPAGraph graph;
-    private readonly Vector2Int clusterIndex;
+    private GetNeighborNodesInSameClusterProvider getNeighborNodesInSameClusterProvider;
     private readonly AStarPathfinder pathfinder;
 
     private readonly HashSet<Vector2Int> cachedEntrances = new();
+    private readonly Vector2Int[] directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+    private readonly Vector2Int clusterIndex;
 
     public HPAGraph Graph => graph;
     public bool IsActive { get; private set; }
@@ -27,12 +29,12 @@ public class HPACluster
         {
             InitializeGraph(clusterList, nodeList, radius);
         }
+        
+        getNeighborNodesInSameClusterProvider = new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
     }
 
     private void InitializeGraph(HPAClusterList clusterList, NodeList nodeList, float unitRadius)
-    {
-        var directions = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-
+    {        
         // graph에 entrance node 추가
         for (int i = 0; i < directions.Length; i++)
         {
@@ -56,7 +58,9 @@ public class HPACluster
         }
 
         // intra-cluster 간선 계산
-        var entranceList = new List<Vector2Int>(cachedEntrances);
+        var entranceList = Vector2IntListPool.GetValue();
+        entranceList.AddRange(cachedEntrances);
+        
         for (int i = 0; i < entranceList.Count; i++)
         {
             for (int j = i + 1; j < entranceList.Count; j++)
@@ -64,7 +68,7 @@ public class HPACluster
                 var entrance1 = entranceList[i];
                 var entrance2 = entranceList[j];                
                 
-                pathfinder.SetGetNeighborPolicy(new GetNeighborNodesInSameClusterProvider(nodeList, clusterList));
+                pathfinder.SetGetNeighborPolicy(getNeighborNodesInSameClusterProvider);
                 float distance = pathfinder.FindPathLength(entrance1, entrance2, unitRadius);
                 if (distance > 0)
                 {
@@ -72,7 +76,8 @@ public class HPACluster
                 }
             }
         }
-    }
+        Vector2IntListPool.ReleaseValue(entranceList);
+    }        
 
     private readonly List<Vector2Int> tempNodes = new();
     public void AddNodeToGraph(Vector2Int newNode, NodeList nodeList, HPAClusterList clusterList, float unitRadius)
@@ -83,7 +88,7 @@ public class HPACluster
             tempNodes.Add(newNode);
             foreach (var entrance in cachedEntrances)
             {
-                pathfinder.SetGetNeighborPolicy(new GetNeighborNodesInSameClusterProvider(nodeList, clusterList));
+                pathfinder.SetGetNeighborPolicy(getNeighborNodesInSameClusterProvider);
                 float distance = pathfinder.FindPathLength(entrance, newNode, unitRadius);
                 if (distance > 0)
                 {

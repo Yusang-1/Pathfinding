@@ -110,4 +110,24 @@ public class ClusterSmootherResultPool : Pool<ClusterSmootherResult>
     }
 }
 
+public class GraphNodePool : Pool<HPAGraph.GraphNode>
+{
+    public static HPAGraph.GraphNode GetValue(Vector2Int position, Vector2Int direction)
+    {
+        HPAGraph.GraphNode value;
+        if (unusedPool.Count > 0)
+        {
+            value = unusedPool.Pop();
+            value.SetData(position, direction);
+        }
+        else
+        {
+            value = new HPAGraph.GraphNode();
+            value.SetData(position, direction);
+        }
+
+        return value;
+    }
+}
+
 // public class ClusterResultPool : Pool<ClusterResult> { }

@@ -55,8 +55,7 @@ namespace Assets.Scripts.Pathfinding
             List<ClusterResult> clusterPath;
             // from과 to가 같은 클러스터에 존재하고 startNode에서 goalNode로 이동 가능한 경우 resultNode하나 리턴
             if (startCluster == goalCluster && clusterList.GetCluster(startCluster).IsNodeConnected(startNode, goalNode, unitRadius))
-            {
-                // var result = ClusterResultPool.GetValue();
+            {                
                 var result = new ClusterResult()
                 {
                     Index = startCluster,

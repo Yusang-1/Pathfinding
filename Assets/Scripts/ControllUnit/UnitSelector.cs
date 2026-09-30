@@ -94,7 +94,6 @@ namespace Assets.Scripts.ControllUnit
             }                        
 
             selectableController.UnitFocusedPoint(focusedUnit);
-            Debug.Log($"TryCheckPointFocused : {focusedUnit != null}");
             
             return focusedUnit != null;
         }

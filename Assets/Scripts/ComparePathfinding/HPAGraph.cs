@@ -8,19 +8,26 @@ public class HPAGraph
     private readonly Dictionary<float, Dictionary<Vector2Int, List<EntranceData>>> entrancesDataByDirectionByRadius = new();
     private readonly Dictionary<(Vector2Int from, Vector2Int to, float radius), float> edgeCache = new();
 
-    private class GraphNode
+    public class GraphNode : IPoolObject
     {
-        public Vector2Int Position { get; }
-        public List<Vector2Int> Direction { get; } // 인접 클러스터로의 방향
+        public Vector2Int Position { get; private set; }
+        public List<Vector2Int> Direction { get; private set; } // 인접 클러스터로의 방향
         public HashSet<Vector2Int> Neighbors { get; } = new(); // 인접 리스트
         public Dictionary<Vector2Int, float> EdgeWeights { get; } = new(); // 간선 가중치
 
-        public GraphNode(Vector2Int position, Vector2Int direction)
+        public void SetData(Vector2Int position, Vector2Int direction)
         {
             Position = position;
 
-            Direction ??= new List<Vector2Int>(3);
+            Direction ??= Vector2IntListPool.GetValue();
             Direction.Add(direction);
+        }
+
+        public void Clear()
+        {
+            Neighbors.Clear();
+            EdgeWeights.Clear();
+            Vector2IntListPool.ReleaseValue(Direction);
         }
     }
 
@@ -38,7 +45,7 @@ public class HPAGraph
         var nodes = nodesByUnitRadius[unitRadius];
         if (!nodes.ContainsKey(entrance))
         {
-            nodes[entrance] = new GraphNode(entrance, direction);
+            nodes[entrance] = GraphNodePool.GetValue(entrance, direction);            
             nodeList.NodeTypeController.SetNodeTypeInPathFinding(entrance, NodeType.entrance);
             return true;
         }
@@ -124,7 +131,8 @@ public class HPAGraph
             nodes.Remove(tempNode);
         }
 
-        var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode).ToList();
+        // var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode).ToList();
+        var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode);
 
         foreach (var key in keysToRemove)
         {
@@ -338,15 +346,4 @@ public class HPAGraph
             return false;
         }
     }
-
-    // public struct EntranceData
-    // {
-    //     public Vector2Int LeftEntrance;
-    //     public Vector2Int RightEntrance;
-
-    //     public readonly bool HasEntrance(Vector2Int entrance)
-    //     {
-    //         return LeftEntrance == entrance || RightEntrance == entrance;
-    //     }
-    // }
 }

@@ -149,8 +149,6 @@ namespace Assets.Scripts.Controller
         {
             int touchId = bufferedCommand.TouchId;
             isPointerOverGameObject = eventSystem.IsPointerOverGameObject(touchId);
-            
-            Debug.Log($"qwer : {isPointerOverGameObject}");
         }
 
         public void SelectOrMove(BufferedCommand<IHaveUnitTouchBuffer.CommandType> bufferedCommand)

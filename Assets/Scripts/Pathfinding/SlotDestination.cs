@@ -8,7 +8,7 @@ namespace Assets.Scripts.Pathfinding
 {
     public class SlotDestination
     {
-        private readonly Dictionary<int, int> slotIndexByUnit = new();
+        private readonly Dictionary<int, int> slotIndexByUnit = new(10);
         
         public Vector3 GetSlotDestination(Unit unit, Vector3 center, int totalUnitCount)
         {

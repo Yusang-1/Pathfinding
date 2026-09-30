@@ -19,7 +19,11 @@ namespace Assets.Scripts.Pathfinding
 
         public ClusterResultWrapper SmoothClusterPath(ClusterResultWrapper clusterResultWrapper)
         {
-            clusterIndexes.Clear();
+            clusterIndexes.Clear();            
+            foreach(var result in smootherClusterPath)
+            {
+                ClusterSmootherResultPool.ReleaseValue(result);
+            }
             smootherClusterPath.Clear();
 
             List<ClusterResult> clusterPath = clusterResultWrapper.ClusterResults;
