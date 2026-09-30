@@ -14,6 +14,7 @@ namespace Assets.Scripts.ControllUnit
         private readonly UnitMoveManager unitMoveManager = new();
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
         private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();
+        private readonly HashSet<ISelectableUnit> focusCopy = new();
 
 
         public void GetActions(Action<ActionMapRole> getActionMapRole, Action changeActionMapDefault)
@@ -29,8 +30,11 @@ namespace Assets.Scripts.ControllUnit
                 DeselectedAll();
                 return;
             }
-
-            SelectedList(alreadyFocusedHash);
+            
+            focusCopy.Clear();
+            focusCopy.UnionWith(alreadyFocusedHash);
+            
+            SelectedList(focusCopy);
             UnfocuseAll();
         }
         private void SelectedList(ICollection<ISelectableUnit> selectableList)
@@ -75,8 +79,11 @@ namespace Assets.Scripts.ControllUnit
         public void ShiftSelected()
         {
             if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
+            
+            focusCopy.Clear();
+            focusCopy.UnionWith(alreadyFocusedHash);
 
-            foreach (var selectable in alreadyFocusedHash)
+            foreach (var selectable in focusCopy)
             {
                 if (currentSelectedHash.Contains(selectable)) // 이미 선택중이면
                 {
@@ -93,8 +100,11 @@ namespace Assets.Scripts.ControllUnit
         public void ShiftSelectedList()
         {
             if (alreadyFocusedHash == null || alreadyFocusedHash.Count == 0) return;
+            
+            focusCopy.Clear();
+            focusCopy.UnionWith(alreadyFocusedHash);
 
-            foreach (var selectable in alreadyFocusedHash)
+            foreach (var selectable in focusCopy)
             {
                 if (currentSelectedType == selectable.GetSelectableType()) // 현재 타입과 같으면
                 {
