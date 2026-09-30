@@ -45,7 +45,7 @@ public class HPAGraph
         var nodes = nodesByUnitRadius[unitRadius];
         if (!nodes.ContainsKey(entrance))
         {
-            nodes[entrance] = GraphNodePool.GetValue(entrance, direction);            
+            nodes[entrance] = GraphNodePool.GetValue(entrance, direction);
             nodeList.NodeTypeController.SetNodeTypeInPathFinding(entrance, NodeType.entrance);
             return true;
         }
@@ -104,6 +104,12 @@ public class HPAGraph
         else return false;
     }
 
+    public void AddBidirectionalEdge(Vector2Int entrance1, Vector2Int entrance2, float weight, float unitRadius)
+    {
+        AddEdge(entrance1, entrance2, weight, unitRadius);
+        AddEdge(entrance2, entrance1, weight, unitRadius);
+    }
+
     private void AddEdge(Vector2Int from, Vector2Int to, float weight, float unitRadius)
     {
         var nodes = nodesByUnitRadius[unitRadius];
@@ -118,29 +124,39 @@ public class HPAGraph
         }
     }
 
-    public void AddBidirectionalEdge(Vector2Int entrance1, Vector2Int entrance2, float weight, float unitRadius)
-    {
-        AddEdge(entrance1, entrance2, weight, unitRadius);
-        AddEdge(entrance2, entrance1, weight, unitRadius);
-    }
-
     public void RemoveTempNode(Vector2Int tempNode)
     {
         foreach (var nodes in nodesByUnitRadius.Values)
         {
+            if(!nodes.ContainsKey(tempNode)) continue;
+            
+            GraphNodePool.ReleaseValue(nodes[tempNode]);
             nodes.Remove(tempNode);
         }
 
-        // var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode).ToList();
-        var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode);
+        List<Vector2Int> fromKeysToRemoveList = Vector2IntListPool.GetValue();
+        List<Vector2Int> toKeysToRemoveList = Vector2IntListPool.GetValue();
+        List<float> radiusKeysToRemoveList = FloatListPool.GetValue();
 
-        foreach (var key in keysToRemove)
+        var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode);
+        foreach (var (from, to, radius) in keysToRemove)
         {
-            if (key.from == tempNode || key.to == tempNode)
+            fromKeysToRemoveList.Add(from);
+            toKeysToRemoveList.Add(to);
+            radiusKeysToRemoveList.Add(radius);
+        }
+
+        for (int index = 0; index < fromKeysToRemoveList.Count; index++)
+        {
+            if (fromKeysToRemoveList[index] == tempNode || toKeysToRemoveList[index] == tempNode)
             {
-                edgeCache.Remove(key);
+                edgeCache.Remove((fromKeysToRemoveList[index], toKeysToRemoveList[index], radiusKeysToRemoveList[index]));
             }
         }
+
+        Vector2IntListPool.ReleaseValue(fromKeysToRemoveList);
+        Vector2IntListPool.ReleaseValue(toKeysToRemoveList);
+        FloatListPool.ReleaseValue(radiusKeysToRemoveList);
     }
 
     /// <summary> 노드의 모든 이웃 노드 반환 </summary>
@@ -175,6 +191,7 @@ public class HPAGraph
     public List<Vector2Int> GetNodesByDirectionOnce(Vector2Int direction, float unitRadius)
     {
         List<Vector2Int> temp = Vector2IntListPool.GetValue();
+
         foreach (var node in nodesByUnitRadius[unitRadius].Values)
         {
             for (int i = 0; i < node.Direction.Count; i++)
@@ -185,6 +202,7 @@ public class HPAGraph
                 }
             }
         }
+
         return temp;
     }
 

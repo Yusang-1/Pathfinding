@@ -30,7 +30,7 @@ public class HPACluster
             InitializeGraph(clusterList, nodeList, radius);
         }
         
-        getNeighborNodesInSameClusterProvider = new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
+        getNeighborNodesInSameClusterProvider ??= new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
     }
 
     private void InitializeGraph(HPAClusterList clusterList, NodeList nodeList, float unitRadius)
@@ -68,6 +68,7 @@ public class HPACluster
                 var entrance1 = entranceList[i];
                 var entrance2 = entranceList[j];                
                 
+                getNeighborNodesInSameClusterProvider ??= new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
                 pathfinder.SetGetNeighborPolicy(getNeighborNodesInSameClusterProvider);
                 float distance = pathfinder.FindPathLength(entrance1, entrance2, unitRadius);
                 if (distance > 0)
@@ -88,6 +89,7 @@ public class HPACluster
             tempNodes.Add(newNode);
             foreach (var entrance in cachedEntrances)
             {
+                getNeighborNodesInSameClusterProvider ??= new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
                 pathfinder.SetGetNeighborPolicy(getNeighborNodesInSameClusterProvider);
                 float distance = pathfinder.FindPathLength(entrance, newNode, unitRadius);
                 if (distance > 0)

@@ -48,6 +48,8 @@ public class Vector2IntListPool : ListPool<List<Vector2Int>, Vector2Int> { }
 
 public class Vector3ListPool : ListPool<List<Vector3>, Vector3> { }
 
+public class FloatListPool : ListPool<List<float>, float> { }
+
 public class Pool<T> where T : class, IPoolObject, new()
 {
     protected static readonly Stack<T> unusedPool = new();

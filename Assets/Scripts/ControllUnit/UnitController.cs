@@ -14,7 +14,6 @@ namespace Assets.Scripts.ControllUnit
         private readonly UnitRuntimeContext unitRuntimeContext;
         private SteeringConfig steeringConfig;
 
-
         private List<ClusterSmootherResult> abstractPath;
         private int currentPathIndex;
         private bool isMoving;
