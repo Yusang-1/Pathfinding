@@ -7,11 +7,10 @@ namespace Assets.Scripts.Pathfinding
     {
         private NodeList nodeList;
         private HPAClusterList clusterList;
-        
+
         private AStarPathfinder aStarPathfinder;
         private HPAPathfinder highLevelPathfinder;
         private ClusterPathSmoother clusterPathSmoother;
-        private readonly ClusterResultWrapper clusterResultWrapper = new();
 
         public void SetNodeAndCluster(NodeList nodes, int mapSize, int clusterSize, Dictionary<UnitSize, float> unitRadiusList)
         {
@@ -22,7 +21,7 @@ namespace Assets.Scripts.Pathfinding
 
             clusterList.Initialize(aStarPathfinder, mapSize, clusterSize, unitRadiusList);
             nodeList.SetNodeArea();
-            
+
             clusterPathSmoother = new ClusterPathSmoother(nodeList, clusterList);
             highLevelPathfinder = new HPAPathfinder(nodeList, clusterList);
         }
@@ -30,19 +29,27 @@ namespace Assets.Scripts.Pathfinding
         public LazyRefine GetLazyRefine()
         {
             ThetaStar thetaStarPathfinder = new(nodeList);
-            
+
             var searchWithTheClusterResult = new SearchWithTheClusterResult(aStarPathfinder, thetaStarPathfinder, clusterList, nodeList);
             return new LazyRefine(searchWithTheClusterResult);
         }
 
-        public ClusterResultWrapper GetAbstractPath(Vector3 from, Vector3 to, float unitRadius)
+        public ClusterResultWrapper GetAbstractPath(Vector3 from, Vector3 to, float unitRadius, ClusterResultWrapper clusterResultWrapper)
         {
-            clusterResultWrapper.ResetClusterResult();
             clusterResultWrapper.SetStart(from, to, unitRadius);
 
-            var clusterPath = highLevelPathfinder.FindClusterPath(clusterResultWrapper);
-            var smootherClusterPath = clusterPathSmoother.SmoothClusterPath(clusterPath);
-            return smootherClusterPath;
+            clusterResultWrapper = highLevelPathfinder.FindClusterPath(clusterResultWrapper);
+
+            if (clusterResultWrapper == null ||
+                clusterResultWrapper.ClusterResults == null ||
+                clusterResultWrapper.ClusterResults.Count == 0)
+            {
+                return clusterResultWrapper;
+            }
+
+            clusterResultWrapper = clusterPathSmoother.SmoothClusterPath(clusterResultWrapper);
+
+            return clusterResultWrapper;
         }
     }
 }

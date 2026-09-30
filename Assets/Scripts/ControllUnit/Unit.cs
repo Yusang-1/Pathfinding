@@ -56,6 +56,7 @@ namespace Assets.Scripts.ControllUnit
         {
             isSpawned = true;
 
+            controller.OnSpawned();
             bottomChanger.Initialize();
             gameObject.SetActive(true);
         }
@@ -63,6 +64,7 @@ namespace Assets.Scripts.ControllUnit
         public void UnitDespawned()
         {
             OnDespawnedCallback?.Invoke(this);
+            controller.OnDespawned();
 
             if (bottomChanger != null)
             {

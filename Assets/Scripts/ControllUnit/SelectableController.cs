@@ -2,7 +2,6 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Pathfinding;
 
 namespace Assets.Scripts.ControllUnit
 {
@@ -11,11 +10,11 @@ namespace Assets.Scripts.ControllUnit
         private Action<ActionMapRole> OngetActionMapRole;
         private Action OnchangeActionMapDefault;
 
-        private readonly SlotDestination slotDestination = new();
-
         private SelectableType currentSelectedType;
+        private readonly UnitMoveManager unitMoveManager = new();
         private readonly HashSet<ISelectableUnit> currentSelectedHash = new();
         private readonly HashSet<ISelectableUnit> alreadyFocusedHash = new();
+
 
         public void GetActions(Action<ActionMapRole> getActionMapRole, Action changeActionMapDefault)
         {
@@ -88,7 +87,7 @@ namespace Assets.Scripts.ControllUnit
                     AddSelected(selectable);
                 }
             }
-            
+
             UnfocuseAll();
         }
         public void ShiftSelectedList()
@@ -102,7 +101,7 @@ namespace Assets.Scripts.ControllUnit
                     AddSelected(selectable);
                 }
             }
-            
+
             UnfocuseAll();
         }
 
@@ -268,19 +267,12 @@ namespace Assets.Scripts.ControllUnit
 
         public void RightClickMove(Vector3 destination)
         {
-            foreach (var unit in currentSelectedHash)
-            {
-                Vector3 newDestination = slotDestination.GetSlotDestination(unit as Unit, destination, currentSelectedHash.Count);
-                (unit as Unit).Controller.MoveTo(newDestination);
-            }
+            unitMoveManager.RightClickMove(destination, currentSelectedHash);
         }
+
         public void ShiftRightClickMove(Vector3 destination)
         {
-            foreach (var unit in currentSelectedHash)
-            {
-                Vector3 newDestination = slotDestination.GetSlotDestination(unit as Unit, destination, currentSelectedHash.Count);
-                (unit as Unit).Controller.MoveToReservation(newDestination);
-            }
+            unitMoveManager.ShiftRightClickMove(destination, currentSelectedHash);
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Pathfinding
 {
-    public class ClusterResultWrapper
+    public class ClusterResultWrapper : IPoolObject
     {
         public Vector3 From { get; private set; }
         public Vector3 To { get; private set; }
@@ -28,12 +28,16 @@ namespace Assets.Scripts.Pathfinding
         }
 
         public void ResetClusterResult()
-        {
+        {            
             ClusterResults.Clear();
         }
 
         public void ResetSmootherClusterResult()
         {
+            foreach(var result in ClusterSmootherResult)
+            {
+                result.Clear();
+            }
             ClusterSmootherResult.Clear();
         }
 
@@ -53,6 +57,11 @@ namespace Assets.Scripts.Pathfinding
         public void SetClusterSmootherResult(ClusterSmootherResult smootherResult)
         {
             ClusterSmootherResult.Add(smootherResult);
+        }
+
+        public void Clear()
+        {
+            ResetAll();
         }
     }
 

@@ -9,7 +9,6 @@ namespace Assets.Scripts.Pathfinding
         private readonly HPAClusterList clusterList;
 
         private readonly List<Vector2Int> clusterIndexes = new();
-        private readonly List<ClusterSmootherResult> smootherClusterPath = new();
 
         public ClusterPathSmoother(NodeList nodeList, HPAClusterList clusterList)
         {
@@ -17,39 +16,37 @@ namespace Assets.Scripts.Pathfinding
             this.clusterList = clusterList;
         }
 
-        public ClusterResultWrapper SmoothClusterPath(ClusterResultWrapper clusterResultWrapper)
+        public ClusterResultWrapper SmoothClusterPath(ClusterResultWrapper wrapper)
         {
-            clusterIndexes.Clear();            
-            foreach(var result in smootherClusterPath)
-            {
-                ClusterSmootherResultPool.ReleaseValue(result);
-            }
-            smootherClusterPath.Clear();
+            clusterIndexes.Clear();
 
-            List<ClusterResult> clusterPath = clusterResultWrapper.ClusterResults;
-            Vector3 from = clusterResultWrapper.From;
-            Vector3 to = clusterResultWrapper.To;
-            float unitRadius = clusterResultWrapper.UnitRadius;
+            List<ClusterResult> clusterPath = wrapper.ClusterResults;
+            Vector3 from = wrapper.From;
+            Vector3 to = wrapper.To;
+            float unitRadius = wrapper.UnitRadius;
 
             if (clusterPath == null || clusterPath.Count < 1) return null;
             else if (clusterPath.Count == 1)
             {
                 clusterIndexes.Add(clusterPath[0].Index);
-                ClusterSmootherResult result = ClusterSmootherResultPool.GetValue();
-                result.SetSmootherResult(clusterIndexes, nodeList.GetNodeIndex(to), nodeList.GetNodeIndex(from), Vector2Int.zero, false);
-                smootherClusterPath.Add(result);
-
-                clusterResultWrapper.SetClusterSmootherResult(smootherClusterPath);
-                return clusterResultWrapper;
+                var smootherResult = ClusterSmootherResultPool.GetValue();
+                smootherResult.SetSmootherResult(clusterIndexes, nodeList.GetNodeIndex(to), nodeList.GetNodeIndex(from), Vector2Int.zero, false);
+                                
+                wrapper.SetClusterSmootherResult(smootherResult);
+                                
+                return wrapper;
             }
 
             int leftSetIndex = 0, rightSetIndex = 0;
-
             Vector2Int startPoint = nodeList.GetNodeIndex(from);
+            // 유닛 이동이 완료되면 ClusterResultWrapper에서 Release
+            List<ClusterSmootherResult> smootherList = ClusterSmootherResultListPool.GetValue();
 
             for (int index = 0; index < clusterPath.Count - 1;)
             {
-                Loop(clusterList, nodeList, clusterPath, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex, out Vector3 outPoint, out int outIndex, index, true, unitRadius);
+                Loop(clusterList, nodeList, clusterPath, smootherList,
+                    from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex,
+                    out Vector3 outPoint, out int outIndex, index, true, unitRadius);
                 from = outPoint;
                 index = outIndex + 1;
                 leftSetIndex = 0;
@@ -59,11 +56,11 @@ namespace Assets.Scripts.Pathfinding
                 {
                     if (clusterIndexes.Contains(clusterPath[index].Index))
                     {
-                        SetResult(nodeList.GetNodeIndex(from), startPoint, Vector2Int.zero, false);
+                        SetResult(nodeList.GetNodeIndex(from), startPoint, Vector2Int.zero, false, smootherList);
                     }
                     else
                     {
-                        SetResult(nodeList.GetNodeIndex(from), startPoint, clusterPath[index].Index, true);
+                        SetResult(nodeList.GetNodeIndex(from), startPoint, clusterPath[index].Index, true, smootherList);
                     }
                     clusterIndexes.Clear();
                 }
@@ -71,17 +68,17 @@ namespace Assets.Scripts.Pathfinding
                 {
                     // 마지막 노드 세팅
                     clusterIndexes.Add(clusterPath[^1].Index);
-                    SetResult(nodeList.GetNodeIndex(to), startPoint, Vector2Int.zero, false);
+                    SetResult(nodeList.GetNodeIndex(to), startPoint, Vector2Int.zero, false, smootherList);
                 }
             }
 
             PathResultRecorder.AddMemoryUsed(clusterIndexes.Count);
 
-            clusterResultWrapper.SetClusterSmootherResult(smootherClusterPath);
-            return clusterResultWrapper;
+            wrapper.SetClusterSmootherResult(smootherList);
+            return wrapper;
         }
 
-        private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath,
+        private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath, List<ClusterSmootherResult> smootherList,
             Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex,
             out Vector3 outPoint, out int outIndex, int index, bool isStart, float unitRadius)
         {
@@ -89,11 +86,7 @@ namespace Assets.Scripts.Pathfinding
             outIndex = index;
             PathResultRecorder.AddSearchedCount();
 
-            if (index == 0)
-            {
-                smootherClusterPath.Clear();
-            }
-            else if (index >= clusterPath.Count - 1)
+            if (index >= clusterPath.Count - 1)
             {
                 return;
             }
@@ -107,13 +100,20 @@ namespace Assets.Scripts.Pathfinding
                 {
                     Debug.Log(path);
                 }
-                clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);
+
+                clusterList.GetCluster(path.Index).Graph
+                    .GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);
+
                 currentLeft = left;
                 leftSetIndex = index;
                 currentRight = right;
                 rightSetIndex = index;
                 clusterIndexes.Add(path.Index);
-                Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false, unitRadius);
+
+                Loop(clusterList, nodeList, clusterPath, smootherList,
+                    point, currentLeft, leftSetIndex, currentRight, rightSetIndex,
+                    out outPoint, out outIndex, index + 1, false, unitRadius);
+
                 return;
             }
 
@@ -135,7 +135,8 @@ namespace Assets.Scripts.Pathfinding
             {
                 Debug.Log(path);
             }
-            clusterList.GetCluster(path.Index).Graph.GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int newLeft, out Vector2Int newRight, unitRadius);
+            clusterList.GetCluster(path.Index).Graph.
+                GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int newLeft, out Vector2Int newRight, unitRadius);
 
             // 왼쪽 endPoint 계산
             Vector3 newLeftString = (Vector3)nodeList.GridToWorld(newLeft) - point;
@@ -182,19 +183,22 @@ namespace Assets.Scripts.Pathfinding
 
             clusterIndexes.Add(path.Index);
 
-            Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex, out outPoint, out outIndex, index + 1, false, unitRadius);
+            Loop(clusterList, nodeList, clusterPath, smootherList,
+                point, currentLeft, leftSetIndex, currentRight, rightSetIndex,
+                out outPoint, out outIndex, index + 1, false, unitRadius);
         }
 
-        private void SetResult(Vector2Int nodeIndex, Vector2Int from, Vector2Int notIncludeClusterIndex, bool useLastIncludeClusterIndex)
+        private void SetResult(Vector2Int nodeIndex, Vector2Int from, Vector2Int notIncludeClusterIndex, bool useLastIncludeClusterIndex,
+            List<ClusterSmootherResult> smootherList)
         {
             Vector2Int start;
 
             if (clusterIndexes.Count == 0) return;
 
-            if (smootherClusterPath.Count > 0)
+            if (smootherList.Count > 0)
             {
-                Vector2Int dir = clusterIndexes[0] - smootherClusterPath[^1].ClusterIndexes[^1];
-                start = smootherClusterPath[^1].ExitNodeIndex + dir;
+                Vector2Int dir = clusterIndexes[0] - smootherList[^1].ClusterIndexes[^1];
+                start = smootherList[^1].ExitNodeIndex + dir;
             }
             else
             {
@@ -204,7 +208,7 @@ namespace Assets.Scripts.Pathfinding
             ClusterSmootherResult result = ClusterSmootherResultPool.GetValue();
             result.SetSmootherResult(clusterIndexes, nodeIndex, start, notIncludeClusterIndex, useLastIncludeClusterIndex);
 
-            smootherClusterPath.Add(result);
+            smootherList.Add(result);
         }
     }
 }

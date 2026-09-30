@@ -13,8 +13,9 @@ namespace Assets.Scripts.ControllUnit
         private readonly Transform bottomChangerTransform;
         private readonly UnitRuntimeContext unitRuntimeContext;
         private SteeringConfig steeringConfig;
+        private ClusterResultWrapper clusterResultWrapper;
 
-        private List<ClusterSmootherResult> abstractPath;
+        private readonly List<ClusterSmootherResult> abstractPath = new();
         private int currentPathIndex;
         private bool isMoving;
         private Vector3 startPosition;
@@ -41,6 +42,26 @@ namespace Assets.Scripts.ControllUnit
             unitRuntimeContext.SpatialHash.AddUnit(unit);
         }
 
+        public void OnSpawned()
+        {
+            clusterResultWrapper = ClusterResultWrapperPool.GetValue();
+            foreach (var path in abstractPath)
+            {
+                ClusterSmootherResultPool.ReleaseValue(path);
+            }
+            abstractPath.Clear();
+        }
+
+        public void OnDespawned()
+        {
+            ClusterResultWrapperPool.ClearReleaseValue(clusterResultWrapper);
+        }
+
+        public void ControllerUpdate()
+        {
+            Move();
+        }
+
         public void MoveTo(Vector3 destination)
         {
             if (isMoving)
@@ -48,12 +69,26 @@ namespace Assets.Scripts.ControllUnit
                 lazyRefine.ResetLazyRefine();
             }
 
+            clusterResultWrapper.ResetAll();
+            foreach (var path in abstractPath)
+            {
+                ClusterSmootherResultPool.ReleaseValue(path);
+            }
+            abstractPath.Clear();
+
             startPosition = unit.transform.position;
             finalDestination = destination;
             currentPathIndex = 0;
-            var clusterResultWrapper = unitRuntimeContext.Pathfinder.GetAbstractPath(unit.transform.position, destination, unitData.Radius);
-            abstractPath = clusterResultWrapper.ClusterSmootherResult;
-            if (abstractPath == null || abstractPath.Count == 0) return;
+            clusterResultWrapper = unitRuntimeContext.Pathfinder.GetAbstractPath(unit.transform.position, destination, unitData.Radius, clusterResultWrapper);
+
+            if (clusterResultWrapper.ClusterSmootherResult == null ||
+                clusterResultWrapper.ClusterSmootherResult.Count == 0)
+            {
+                StopMoving();
+                return;
+            }
+
+            DeepCopyClusterSmootherResult();
 
             SearchLowLevelPath(abstractPath[currentPathIndex], abstractPath.Count == 1, true);
             TryGetShortDestination(out shortDestination); // 출발지(현재 위치) 빼내기
@@ -66,12 +101,26 @@ namespace Assets.Scripts.ControllUnit
             bool haveToDoLazyRefine = false;
             if (currentPathIndex + 1 == abstractPath.Count) haveToDoLazyRefine = true;
 
-            var clusterResultWrapper = unitRuntimeContext.Pathfinder.GetAbstractPath(finalDestination, destination, unitData.Radius);
-            var newAbstractPath = clusterResultWrapper.ClusterSmootherResult;
-            if (abstractPath == null || abstractPath.Count == 0) return;
+            clusterResultWrapper.ResetAll();
+
+            clusterResultWrapper = unitRuntimeContext.Pathfinder.GetAbstractPath(finalDestination, destination, unitData.Radius, clusterResultWrapper);
+
+            if (clusterResultWrapper.ClusterSmootherResult == null ||
+                clusterResultWrapper.ClusterSmootherResult.Count == 0)
+            {
+                StopMoving();
+                return;
+            }
+
+            DeepCopyClusterSmootherResult();
+
+            if (abstractPath == null || abstractPath.Count == 0)
+            {
+                StopMoving();
+                return;
+            }
 
             startPosition = finalDestination;
-            abstractPath.AddRange(newAbstractPath);
             finalDestination = destination;
             if (haveToDoLazyRefine)
             {
@@ -79,14 +128,20 @@ namespace Assets.Scripts.ControllUnit
             }
         }
 
-        public void ControllerUpdate()
-        {
-            Move();
-        }
-
         public void ControllerLateUpdate()
         {
             bottomChangerTransform.position = unit.transform.position;
+        }
+
+        private void DeepCopyClusterSmootherResult()
+        {
+            foreach (var result in clusterResultWrapper.ClusterSmootherResult)
+            {
+                // ClusterSmootherResult 깊은 복사
+                var newResult = ClusterSmootherResultPool.GetValue(result.ClusterIndexes, result.ExitNodeIndex, result.EnterNodeIndex);
+
+                abstractPath.Add(newResult);
+            }
         }
 
         private void Move()
@@ -94,11 +149,11 @@ namespace Assets.Scripts.ControllUnit
             if (!isMoving) return;
 
             GetVelocity();
-            
+
             var position = unit.transform.position + velocity;
             position.z = -unit.UnitData.Radius;
             unit.transform.position = position;
-            
+
             unitRuntimeContext.SpatialHash.CheckUnitHash(unit);
 
             if (IsDistanceInCurrentDestination())
@@ -130,14 +185,8 @@ namespace Assets.Scripts.ControllUnit
             {
                 if (shortDestination == finalDestination) // 최종 도착
                 {
-                    velocity = Vector3.zero;
-                    isMoving = false;
-                    
-                    for(int i = 0; i < abstractPath.Count; i++)
-                    {
-                        abstractPath[i].Clear();
-                    }
-                    
+                    StopMoving();
+
                     return false;
                 }
 
@@ -145,6 +194,20 @@ namespace Assets.Scripts.ControllUnit
                 return true;
             }
             else return false;
+        }
+
+        private void StopMoving()
+        {
+            velocity = Vector3.zero;
+            isMoving = false;
+
+            for (int i = 0; i < abstractPath.Count; i++)
+            {
+                abstractPath[i].Clear();
+            }
+            abstractPath.Clear();
+
+            lazyRefine.ResetLazyRefine();
         }
 
         private bool TryGetShortDestination(out Vector3 path)

@@ -7,6 +7,8 @@ public class LazyRefine
     private readonly Queue<Vector3> pathQueue = new();
 
     private readonly SearchWithTheClusterResult searchWithTheClusterResult;
+    private readonly PathCacheContainer pathCacheContainer = new();
+    
     public LazyRefine(SearchWithTheClusterResult searchWithTheClusterResult)
     {
         this.searchWithTheClusterResult = searchWithTheClusterResult;
@@ -45,7 +47,12 @@ public class LazyRefine
     /// <summary> 하나의 cluster ResultNode의 경로를 PathQueue에 담는다. </summary>
     public void DoLazyRefinement(ClusterSmootherResult result, bool isEnd, Vector3 finalDestination, bool isFirst, Vector3 startPosition, float unitRadius)
     {
-        List<Vector3> resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(result, unitRadius);
+        if(!pathCacheContainer.TryGetCachedPath(result, out List<Vector3> resultPath))
+        {
+            resultPath = searchWithTheClusterResult.FindPathThetaWithClusterList(result, unitRadius);
+            pathCacheContainer.SetCachedPath(result, resultPath);
+        }
+        
         if (resultPath == null) return;
 
         if (isFirst)
