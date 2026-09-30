@@ -39,8 +39,8 @@ namespace Assets.Scripts.Pathfinding
 
             int leftSetIndex = 0, rightSetIndex = 0;
             Vector2Int startPoint = nodeList.GetNodeIndex(from);
-            // 유닛 이동이 완료되면 ClusterResultWrapper에서 Release
-            List<ClusterSmootherResult> smootherList = ClusterSmootherResultListPool.GetValue();
+
+            List<ClusterSmootherResult> smootherList = wrapper.ClusterSmootherResult;
 
             for (int index = 0; index < clusterPath.Count - 1;)
             {

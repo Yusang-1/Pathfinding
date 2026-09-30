@@ -13,6 +13,7 @@ namespace Assets.Scripts.Pathfinding
         private readonly Dictionary<Vector2Int, PathNode> nodeDict = new();
 
         public IGetNeighborNodesActionProvider GetNeighborNodesActionProvider { get; private set; }
+        private Func<Vector2Int, float, List<Vector2Int>> getNeighborNodesAction;
 
         public AStarPathfinder(NodeList nodeList)
         {
@@ -24,19 +25,19 @@ namespace Assets.Scripts.Pathfinding
             Vector2Int startIndex = nodeList.GetNodeIndex(start);
             Vector2Int goalIndex = nodeList.GetNodeIndex(destination);
 
-            List<Vector3> path = SearchAStar(startIndex, goalIndex, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
+            List<Vector3> path = SearchAStar(startIndex, goalIndex, unitRadius, getNeighborNodesAction);
             return path;
         }
 
         public List<Vector3> FindPath(Vector2Int startNode, Vector2Int goalNode, float unitRadius)
         {
-            List<Vector3> path = SearchAStar(startNode, goalNode, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
+            List<Vector3> path = SearchAStar(startNode, goalNode, unitRadius, getNeighborNodesAction);
             return path;
         }
 
         public float FindPathLength(Vector2Int startNode, Vector2Int goalNode, float unitRadius)
         {
-            List<Vector3> path = SearchAStar(startNode, goalNode, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
+            List<Vector3> path = SearchAStar(startNode, goalNode, unitRadius, getNeighborNodesAction);
 
             float pathLength;
             if (path != null)
@@ -45,7 +46,7 @@ namespace Assets.Scripts.Pathfinding
                 PathResultRecorder.ResetPathLength();
             }
             else
-            {                
+            {
                 pathLength = 0;
             }
 
@@ -56,7 +57,11 @@ namespace Assets.Scripts.Pathfinding
 
         public void SetGetNeighborPolicy(IGetNeighborNodesActionProvider policyProvider)
         {
+            if (ReferenceEquals(GetNeighborNodesActionProvider, policyProvider))
+                return;
+
             GetNeighborNodesActionProvider = policyProvider;
+            getNeighborNodesAction = GetNeighborNodesActionProvider.GetNeighborNodes;
         }
 
         private List<Vector3> SearchAStar(Vector2Int startIndex, Vector2Int goalIndex, float unitRadius, Func<Vector2Int, float, List<Vector2Int>> getNeighborNodesAction)
@@ -134,7 +139,7 @@ namespace Assets.Scripts.Pathfinding
         {
             int dx = Mathf.Abs(to.x - from.x);
             int dy = Mathf.Abs(to.y - from.y);
-    
+
             return dx + dy;
         }
 

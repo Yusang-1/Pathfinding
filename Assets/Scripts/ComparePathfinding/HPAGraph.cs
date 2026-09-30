@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 public class HPAGraph
 {
@@ -13,7 +12,7 @@ public class HPAGraph
         public Vector2Int Position { get; private set; }
         public List<Vector2Int> Direction { get; private set; } // 인접 클러스터로의 방향
         public HashSet<Vector2Int> Neighbors { get; } = new(); // 인접 리스트
-        public Dictionary<Vector2Int, float> EdgeWeights { get; } = new(); // 간선 가중치
+        public Dictionary<Vector2Int, float> EdgeWeights { get; } = new(10); // 간선 가중치
 
         public void SetData(Vector2Int position, Vector2Int direction)
         {
@@ -112,7 +111,7 @@ public class HPAGraph
 
     private void AddEdge(Vector2Int from, Vector2Int to, float weight, float unitRadius)
     {
-        var nodes = nodesByUnitRadius[unitRadius];
+        Dictionary<Vector2Int, GraphNode> nodes = nodesByUnitRadius[unitRadius];
         if (!nodes.ContainsKey(from) || !nodes.ContainsKey(to)) return;
 
         var key = (from, to, unitRadius);
@@ -128,8 +127,8 @@ public class HPAGraph
     {
         foreach (var nodes in nodesByUnitRadius.Values)
         {
-            if(!nodes.ContainsKey(tempNode)) continue;
-            
+            if (!nodes.ContainsKey(tempNode)) continue;
+
             GraphNodePool.ReleaseValue(nodes[tempNode]);
             nodes.Remove(tempNode);
         }
@@ -138,12 +137,14 @@ public class HPAGraph
         List<Vector2Int> toKeysToRemoveList = Vector2IntListPool.GetValue();
         List<float> radiusKeysToRemoveList = FloatListPool.GetValue();
 
-        var keysToRemove = edgeCache.Keys.Where(k => k.from == tempNode || k.to == tempNode);
-        foreach (var (from, to, radius) in keysToRemove)
+        foreach (var (from, to, radius) in edgeCache.Keys)
         {
-            fromKeysToRemoveList.Add(from);
-            toKeysToRemoveList.Add(to);
-            radiusKeysToRemoveList.Add(radius);
+            if (from == tempNode || to == tempNode)
+            {
+                fromKeysToRemoveList.Add(from);
+                toKeysToRemoveList.Add(to);
+                radiusKeysToRemoveList.Add(radius);
+            }
         }
 
         for (int index = 0; index < fromKeysToRemoveList.Count; index++)
@@ -177,8 +178,10 @@ public class HPAGraph
     /// <summary> 해당 방향의 모든 노드 반환 </summary>
     public IEnumerable<Vector2Int> GetNodesByDirection(Vector2Int direction, float unitRadius)
     {
-        foreach (var node in nodesByUnitRadius[unitRadius].Values)
+        var nodes = nodesByUnitRadius[unitRadius];
+        foreach (var pair in nodes)
         {
+            var node = pair.Value;
             for (int i = 0; i < node.Direction.Count; i++)
             {
                 if (node.Direction[i] == direction)

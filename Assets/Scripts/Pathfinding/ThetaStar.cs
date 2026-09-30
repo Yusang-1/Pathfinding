@@ -14,6 +14,7 @@ namespace Assets.Scripts.Pathfinding
         private readonly Dictionary<Vector2Int, PathNode> nodeDict = new();
 
         public IGetNeighborNodesActionProvider GetNeighborNodesActionProvider { get; private set; }
+        private Func<Vector2Int, float, List<Vector2Int>> getNeighborNodeFunc;
 
         public ThetaStar(NodeList nodeList)
         {
@@ -23,21 +24,21 @@ namespace Assets.Scripts.Pathfinding
         public override List<Vector3> FindPath(Vector3 from, Vector3 to, float unitRadius)
         {
             nodeList.NodeTypeController.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(from), NodeType.trace);
-            var result = SearchThetaStar(from, to, unitRadius, GetNeighborNodesActionProvider.GetNeighborNodes);
+            var result = SearchThetaStar(from, to, unitRadius, getNeighborNodeFunc);
             nodeList.NodeTypeController.SetNodeTypeInPathFinding(nodeList.GetNodeIndex(to), NodeType.trace);
 
             return result;
         }
 
-        // public List<Vector3> FindPathInClusterList(Vector3 from, Vector3 to, List<Vector2Int> clusters)
-        // {
-        //     neighborFindingClusters = clusters;
-        //     return SearchThetaStar(from, to, GetNeighborNodesActionProvider.GetNeighborNodes);
-        // }
-
         public void SetGetNeighborPolicy(IGetNeighborNodesActionProvider policyProvider)
         {
+            if (ReferenceEquals(GetNeighborNodesActionProvider, policyProvider))
+            {
+                return;
+            }
+
             GetNeighborNodesActionProvider = policyProvider;
+            getNeighborNodeFunc = GetNeighborNodesActionProvider.GetNeighborNodes;
         }
 
         private List<Vector3> SearchThetaStar(Vector3 from, Vector3 to, float unitRadius, Func<Vector2Int, float, List<Vector2Int>> getNeighborNodeFunc)

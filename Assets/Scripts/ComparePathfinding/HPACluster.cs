@@ -29,12 +29,12 @@ public class HPACluster
         {
             InitializeGraph(clusterList, nodeList, radius);
         }
-        
+
         getNeighborNodesInSameClusterProvider ??= new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
     }
 
     private void InitializeGraph(HPAClusterList clusterList, NodeList nodeList, float unitRadius)
-    {        
+    {
         // graph에 entrance node 추가
         for (int i = 0; i < directions.Length; i++)
         {
@@ -60,16 +60,17 @@ public class HPACluster
         // intra-cluster 간선 계산
         var entranceList = Vector2IntListPool.GetValue();
         entranceList.AddRange(cachedEntrances);
+
+        getNeighborNodesInSameClusterProvider ??= new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
+        pathfinder.SetGetNeighborPolicy(getNeighborNodesInSameClusterProvider);
         
         for (int i = 0; i < entranceList.Count; i++)
         {
             for (int j = i + 1; j < entranceList.Count; j++)
             {
                 var entrance1 = entranceList[i];
-                var entrance2 = entranceList[j];                
-                
-                getNeighborNodesInSameClusterProvider ??= new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
-                pathfinder.SetGetNeighborPolicy(getNeighborNodesInSameClusterProvider);
+                var entrance2 = entranceList[j];
+
                 float distance = pathfinder.FindPathLength(entrance1, entrance2, unitRadius);
                 if (distance > 0)
                 {
@@ -78,7 +79,7 @@ public class HPACluster
             }
         }
         Vector2IntListPool.ReleaseValue(entranceList);
-    }        
+    }
 
     private readonly List<Vector2Int> tempNodes = new();
     public void AddNodeToGraph(Vector2Int newNode, NodeList nodeList, HPAClusterList clusterList, float unitRadius)
@@ -87,10 +88,11 @@ public class HPACluster
         if (value)
         {
             tempNodes.Add(newNode);
+            getNeighborNodesInSameClusterProvider ??= new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
+            pathfinder.SetGetNeighborPolicy(getNeighborNodesInSameClusterProvider);
+
             foreach (var entrance in cachedEntrances)
             {
-                getNeighborNodesInSameClusterProvider ??= new GetNeighborNodesInSameClusterProvider(nodeList, clusterList);
-                pathfinder.SetGetNeighborPolicy(getNeighborNodesInSameClusterProvider);
                 float distance = pathfinder.FindPathLength(entrance, newNode, unitRadius);
                 if (distance > 0)
                 {

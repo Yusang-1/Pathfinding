@@ -49,5 +49,3 @@ public class Vector2IntListPool : ListPool<List<Vector2Int>, Vector2Int> { }
 public class Vector3ListPool : ListPool<List<Vector3>, Vector3> { }
 
 public class FloatListPool : ListPool<List<float>, float> { }
-
-public class ClusterSmootherResultListPool : ListPool<List<ClusterSmootherResult>, ClusterSmootherResult> { }
