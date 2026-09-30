@@ -32,7 +32,7 @@ namespace Assets.Scripts.Controller
         {
             if (isPointerOverGameObject)
             {
-                if (!(context.canceled && IsDrag)) return;
+                if (!(context.canceled && IsHold)) return;
             }
 
             Touch0Active = context.ReadValueAsButton();

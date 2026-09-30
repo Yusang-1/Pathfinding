@@ -36,7 +36,7 @@ namespace Assets.Scripts.Controller
         {
             if (isPointerOverGameObject)
             {
-                if (!(context.canceled && IsDrag)) return;
+                if (!(context.canceled && IsHold)) return;
             }
 
             Touch0Active = context.ReadValueAsButton();
@@ -55,8 +55,8 @@ namespace Assets.Scripts.Controller
 
                 if (!isScreenMoving)
                 {
-                    WaitDragCoroutine = WaitDrag(Touch0Pos);
-                    StartCoroutine(WaitDragCoroutine);
+                    JudgeHoldCoroutine = WaitDrag(Touch0Pos);
+                    StartCoroutine(JudgeHoldCoroutine);
                 }
             }
 
@@ -66,7 +66,7 @@ namespace Assets.Scripts.Controller
 
                 if (Touch0Delta.sqrMagnitude > 0.02f)
                 {
-                    StopCoroutine(WaitDragCoroutine);
+                    StopCoroutine(JudgeHoldCoroutine);
                 }
             }
 
@@ -75,12 +75,12 @@ namespace Assets.Scripts.Controller
                 isScreenMoving = false;
                 OnMoveScreen?.Invoke(Vector2.zero);
 
-                if (WaitDragCoroutine != null)
+                if (JudgeHoldCoroutine != null)
                 {
-                    StopCoroutine(WaitDragCoroutine);
+                    StopCoroutine(JudgeHoldCoroutine);
                 }
 
-                if (IsDrag)
+                if (IsHold)
                 {
                     HoldCanceled();
                 }
@@ -106,7 +106,7 @@ namespace Assets.Scripts.Controller
 
         protected override void HoldCanceled()
         {
-            IsDrag = false;
+            IsHold = false;
             if (holdPerformedWorldPosition == null) return;
 
             selectableController.MakeSelectionRequest(touch0WorldPos, false);

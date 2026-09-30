@@ -12,9 +12,7 @@ namespace Assets.Scripts.Controller
         public event Action<Vector3> OnHoldPerformed;
         public event Action OnHoldCanceled;
 
-        protected UnitSelector unitSelector;
-
-        protected IEnumerator WaitDragCoroutine;
+        protected UnitSelector unitSelector;                   
 
         protected void Initialize(UnitSelector unitSelector)
         {
@@ -25,33 +23,33 @@ namespace Assets.Scripts.Controller
         {
             if (isPointerOverGameObject)
             {
-                if (!(context.canceled && IsDrag)) return;
+                if (!(context.canceled && IsHold)) return;
             }
 
             Touch0Active = context.ReadValueAsButton();
 
             if (context.started)
             {
-                WaitDragCoroutine = WaitDrag(Touch0Pos);
-                StartCoroutine(WaitDragCoroutine);
+                JudgeHoldCoroutine = WaitDrag(Touch0Pos);
+                StartCoroutine(JudgeHoldCoroutine);
             }
 
             if (context.performed)
             {
                 if (Touch0Delta.sqrMagnitude > 0.02f)
                 {
-                    StopCoroutine(WaitDragCoroutine);
+                    StopCoroutine(JudgeHoldCoroutine);
                 }
             }
 
             if (context.canceled)
             {
-                if (WaitDragCoroutine != null)
+                if (JudgeHoldCoroutine != null)
                 {
-                    StopCoroutine(WaitDragCoroutine);
+                    StopCoroutine(JudgeHoldCoroutine);
                 }
 
-                if (IsDrag)
+                if (IsHold)
                 {
                     HoldCanceled();
                 }
@@ -80,12 +78,14 @@ namespace Assets.Scripts.Controller
         {
             while (true)
             {
+                isJudgingHold = true;
                 if (startPosition != Touch0Pos)
                 {
                     dragTime += Time.deltaTime;
 
                     if (dragTime >= dragGoalTime)
                     {
+                        isJudgingHold = false;
                         HoldStarted();
                         break;
                     }
@@ -93,7 +93,7 @@ namespace Assets.Scripts.Controller
                 yield return null;
             }
 
-            while (IsDrag)
+            while (IsHold)
             {
                 HoldPerformed();
                 yield return null;
@@ -103,7 +103,7 @@ namespace Assets.Scripts.Controller
         protected void HoldStarted()
         {
             OnHoldStarted?.Invoke(Touch0Pos);
-            IsDrag = true;
+            IsHold = true;
         }
         protected virtual void HoldPerformed()
         {
@@ -111,7 +111,7 @@ namespace Assets.Scripts.Controller
         }
         protected virtual void HoldCanceled()
         {
-            IsDrag = false;
+            IsHold = false;
             unitSelector.SelectFocused();
             OnHoldCanceled?.Invoke();
         }

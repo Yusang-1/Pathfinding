@@ -5,9 +5,9 @@ using System.Collections;
 
 public class TouchInputBase : MonoBehaviour
 {
-    private EventSystem eventSystem;
-    private Touchscreen touchscreen;
-    private IEnumerator WaitDragCoroutine;
+    protected EventSystem eventSystem;
+    protected Touchscreen touchscreen;
+    protected IEnumerator JudgeHoldCoroutine;
 
     public bool Touch0Active { get; protected set; }
     public Vector2 Touch0Delta { get; protected set; }
@@ -16,7 +16,8 @@ public class TouchInputBase : MonoBehaviour
     public Vector2 Touch1Pos { get; protected set; }
 
     protected bool isPointerOverGameObject;
-    public bool IsDrag { get; protected set; }
+    protected bool isJudgingHold;
+    public bool IsHold { get; protected set; }
 
     private void Start()
     {
@@ -26,6 +27,14 @@ public class TouchInputBase : MonoBehaviour
 
     private void Update()
     {
+        if (Touch0Active)
+        {
+            CheckTouch0IsOverGameObject();
+        }
+    }
+
+    protected void CheckTouch0IsOverGameObject()
+    {
         int touchId = touchscreen.touches[0].touchId.ReadValue();
         isPointerOverGameObject = eventSystem.IsPointerOverGameObject(touchId);
     }
@@ -34,30 +43,30 @@ public class TouchInputBase : MonoBehaviour
     {
         if (isPointerOverGameObject)
         {
-            if (!(context.canceled && IsDrag)) return;
+            if (!(context.canceled && IsHold)) return;
         }
 
         Touch0Active = context.ReadValueAsButton();
 
         if (context.started)
-        {
-            WaitDragCoroutine = WaitDrag(Touch0Pos);
-            StartCoroutine(WaitDragCoroutine);
+        {                        
+            JudgeHoldCoroutine = WaitDrag(Touch0Pos);
+            StartCoroutine(JudgeHoldCoroutine);
         }
 
         if (context.performed)
         {
             if (Touch0Delta.sqrMagnitude > 0.02f)
             {
-                StopCoroutine(WaitDragCoroutine);
+                StopCoroutine(JudgeHoldCoroutine);
             }
         }
 
         if (context.canceled)
         {
-            if (WaitDragCoroutine != null)
+            if (JudgeHoldCoroutine != null)
             {
-                StopCoroutine(WaitDragCoroutine);
+                StopCoroutine(JudgeHoldCoroutine);
             }
         }
     }
@@ -66,6 +75,7 @@ public class TouchInputBase : MonoBehaviour
     protected float dragTime = 0;
     protected virtual IEnumerator WaitDrag(Vector2 startPosition)
     {
+        isJudgingHold = true;
         while (true)
         {
             if (startPosition != Touch0Pos)
@@ -74,6 +84,7 @@ public class TouchInputBase : MonoBehaviour
 
                 if (dragTime >= dragGoalTime)
                 {
+                    isJudgingHold = false;
                     HoldStarted();
                     break;
                 }
@@ -84,7 +95,7 @@ public class TouchInputBase : MonoBehaviour
 
     private void HoldStarted()
     {
-        IsDrag = true;
+        IsHold = true;
     }
 
     public void OnTouch0Delta(InputAction.CallbackContext context)

@@ -2,10 +2,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using Assets.Scripts.ControllUnit;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.Controller
 {
-    public class InGamePlayerTouchInput : InGameTouchInputBase, IActionMapInputer
+    public class InGamePlayerTouchInput : InGameTouchInputBase, IActionMapInputer, IHavePlayerTouchBuffer
     {
         public event Action<Vector2> OnMoveScreen;
         public event Action<InGameTouchInputBase> OnActionMapInputerActivated;
@@ -13,61 +14,64 @@ namespace Assets.Scripts.Controller
 
         private MoveScreenJudger moveScreenJudger;
 
-        [SerializeField] private ActionMaps actionMap;
         private Camera mainCamera;
+        private readonly InputOnUIJudgeBuffer<IHavePlayerTouchBuffer.CommandType> inputOnUIJudgeBuffer = new();
+
+        [SerializeField] private ActionMaps actionMap;
+
+        private readonly Dictionary<IHavePlayerTouchBuffer.CommandType,
+            Action<BufferedCommand<IHavePlayerTouchBuffer.CommandType>>> commandActionDict = new();
 
         private bool isInputActive;
         private bool isScreenMoving;
 
         public bool IsActivated => isInputActive;
 
+        private void LateUpdate()
+        {
+            inputOnUIJudgeBuffer.LateUpdate();
+        }
+        
         public void Initialize(UnitSelector unitSelector, MoveScreenJudger moveScreenJudger)
         {
             base.Initialize(unitSelector);
             this.moveScreenJudger = moveScreenJudger;
 
             mainCamera = Camera.main;
+
+            InitializeCommandTypeActionDict();
+        }
+
+        public void InitializeCommandTypeActionDict()
+        {
+            commandActionDict.Add(IHavePlayerTouchBuffer.CommandType.CheckTouch0UI,
+                CheckTouch0IsOverGameObject);
+            commandActionDict.Add(IHavePlayerTouchBuffer.CommandType.JudgeScreenMoveOrDrag,
+                JudgeScreenMoveOrDrag);
+            commandActionDict.Add(IHavePlayerTouchBuffer.CommandType.Select,
+                SelectUnit);
         }
 
         public override void OnTouch0Contact(InputAction.CallbackContext context)
         {
-            if (isPointerOverGameObject)
-            {
-                if (!(context.canceled && IsDrag)) return;
-            }
-
             Touch0Active = context.ReadValueAsButton();
 
             if (context.started)
             {
-                var viewPortPosition = mainCamera.ScreenToViewportPoint(Touch0Pos);
-                if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
-                {
-                    isScreenMoving = true;
-                }
-                else
-                {
-                    isScreenMoving = false;
-                }
+                // IsPointerOverGameObject를 buffer에 담아 LateUpdate에 실행
+                var command = new BufferedCommand<IHavePlayerTouchBuffer.CommandType>
+                (
+                    this, IHavePlayerTouchBuffer.CommandType.CheckTouch0UI,
+                    touchscreen.touches[0].touchId.ReadValue(), Touch0Pos, false
+                );
+                inputOnUIJudgeBuffer.Enqueue(command);
 
-                if (!isScreenMoving)
-                {
-                    WaitDragCoroutine = WaitDrag(Touch0Pos);
-                    StartCoroutine(WaitDragCoroutine);
-                }
-            }
-
-            if (context.performed)
-            {
-                if (isScreenMoving) return;
-
-                if (Touch0Delta.sqrMagnitude > 0.02f)
-                {
-                    if (WaitDragCoroutine != null)
-                    {
-                        StopCoroutine(WaitDragCoroutine);
-                    }
-                }
+                command = new BufferedCommand<IHavePlayerTouchBuffer.CommandType>
+                (
+                    this, IHavePlayerTouchBuffer.CommandType.JudgeScreenMoveOrDrag,
+                    0, Touch0Pos, false
+                );
+                inputOnUIJudgeBuffer.Enqueue(command);
             }
 
             if (context.canceled)
@@ -75,26 +79,27 @@ namespace Assets.Scripts.Controller
                 isScreenMoving = false;
                 OnMoveScreen?.Invoke(Vector2.zero);
 
-                if (WaitDragCoroutine != null)
+                if (JudgeHoldCoroutine != null)
                 {
-                    StopCoroutine(WaitDragCoroutine);
+                    StopCoroutine(JudgeHoldCoroutine);
                 }
 
-                if (IsDrag)
+                if (IsHold)
                 {
                     HoldCanceled();
                 }
                 else
                 {
-                    var worldPos = mainCamera.ScreenToWorldPoint(
-                        new Vector3(Touch0Pos.x, Touch0Pos.y, -mainCamera.transform.position.z)
+                    var command = new BufferedCommand<IHavePlayerTouchBuffer.CommandType>
+                    (
+                        this, IHavePlayerTouchBuffer.CommandType.Select,
+                        0, Touch0Pos, false
                     );
-                    unitSelector.CheckPointFocused(worldPos);
-                    unitSelector.SelectFocused();
+                    inputOnUIJudgeBuffer.Enqueue(command);
                 }
             }
         }
-
+        
         public override void OnTouch0Position(InputAction.CallbackContext context)
         {
             base.OnTouch0Position(context);
@@ -116,6 +121,54 @@ namespace Assets.Scripts.Controller
                 }
             }
         }
+
+        public void ExecuteBufferedCommand(BufferedCommand<IHavePlayerTouchBuffer.CommandType> bufferedCommand)
+        {
+            commandActionDict[bufferedCommand.Type].Invoke(bufferedCommand);
+        }
+
+        public void CheckTouch0IsOverGameObject(BufferedCommand<IHavePlayerTouchBuffer.CommandType> bufferedCommand)
+        {
+            int touchId = bufferedCommand.TouchId;
+            isPointerOverGameObject = eventSystem.IsPointerOverGameObject(touchId);
+        }
+
+        public void JudgeScreenMoveOrDrag(BufferedCommand<IHavePlayerTouchBuffer.CommandType> bufferedCommand)
+        {
+            if (!Touch0Active) return;
+            if (isPointerOverGameObject) return;
+
+            Vector3 position = bufferedCommand.Position;
+
+            var viewPortPosition = mainCamera.ScreenToViewportPoint(position);
+            if (moveScreenJudger.TryGetScreenMoveVelocity(viewPortPosition, out Vector2 velocity))
+            {
+                isScreenMoving = true;
+            }
+            else
+            {
+                isScreenMoving = false;
+            }
+
+            if (!isScreenMoving)
+            {
+                JudgeHoldCoroutine = WaitDrag(position);
+                StartCoroutine(JudgeHoldCoroutine);
+            }
+        }
+
+        public void SelectUnit(BufferedCommand<IHavePlayerTouchBuffer.CommandType> bufferedCommand)
+        {
+            if (isPointerOverGameObject) return;
+            
+            var position = bufferedCommand.Position;
+
+            var worldPos = mainCamera.ScreenToWorldPoint(
+                new Vector3(position.x, position.y, -mainCamera.transform.position.z)
+            );
+            unitSelector.CheckPointFocused(worldPos);
+            unitSelector.SelectFocused();
+        }        
 
         public void ActionMapActivated()
         {

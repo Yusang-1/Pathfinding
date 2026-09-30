@@ -12,7 +12,7 @@ namespace Assets.Scripts.Controller
         public event Action<InGameTouchInputBase> OnActionMapInputerDeactivated;
         public new event Func<Vector3, Vector3?> OnHoldPerformed;
 
-private InputStatus inputStatus;
+        private InputStatus inputStatus;
         private MoveScreenJudger moveScreenJudger;
         private ECSSelectableController selectableController;
         private Camera mainCamera;
@@ -20,7 +20,7 @@ private InputStatus inputStatus;
         [SerializeField] private ActionMaps actionMap;
 
         private Vector3 touch0WorldPos;
-        private bool isInputActive;        
+        private bool isInputActive;
         private bool isScreenMoving;
 
         public bool IsActivated => isInputActive;
@@ -31,7 +31,7 @@ private InputStatus inputStatus;
             this.selectableController = selectableController;
             this.moveScreenJudger = moveScreenJudger;
             this.inputStatus = inputStatus;
-            
+
             mainCamera = Camera.main;
         }
 
@@ -39,7 +39,7 @@ private InputStatus inputStatus;
         {
             if (isPointerOverGameObject)
             {
-                if (!(context.canceled && IsDrag)) return;
+                if (!(context.canceled && IsHold)) return;
             }
 
             Touch0Active = context.ReadValueAsButton();
@@ -58,20 +58,20 @@ private InputStatus inputStatus;
 
                 if (!isScreenMoving)
                 {
-                    WaitDragCoroutine = WaitDrag(Touch0Pos);
-                    StartCoroutine(WaitDragCoroutine);
+                    JudgeHoldCoroutine = WaitDrag(Touch0Pos);
+                    StartCoroutine(JudgeHoldCoroutine);
                 }
             }
 
             if (context.performed)
             {
                 if (isScreenMoving) return;
-                
+
                 if (Touch0Delta.sqrMagnitude > 0.02f)
                 {
-                    if (WaitDragCoroutine != null)
+                    if (JudgeHoldCoroutine != null)
                     {
-                        StopCoroutine(WaitDragCoroutine);
+                        StopCoroutine(JudgeHoldCoroutine);
                     }
                 }
             }
@@ -80,13 +80,13 @@ private InputStatus inputStatus;
             {
                 isScreenMoving = false;
                 OnMoveScreen?.Invoke(Vector2.zero);
-                
-                if (WaitDragCoroutine != null)
+
+                if (JudgeHoldCoroutine != null)
                 {
-                    StopCoroutine(WaitDragCoroutine);
+                    StopCoroutine(JudgeHoldCoroutine);
                 }
 
-                if (IsDrag)
+                if (IsHold)
                 {
                     HoldCanceled();
                 }
@@ -95,8 +95,7 @@ private InputStatus inputStatus;
                     touch0WorldPos = mainCamera.ScreenToWorldPoint(
                         new Vector3(Touch0Pos.x, Touch0Pos.y, -mainCamera.transform.position.z)
                     );
-                    
-                    
+
                     selectableController.MakeSelectionRequest(touch0WorldPos, inputStatus.IsShiftPressed);
                 }
             }
@@ -114,7 +113,7 @@ private InputStatus inputStatus;
 
         protected override void HoldCanceled()
         {
-            IsDrag = false;
+            IsHold = false;
             if (holdPerformedWorldPosition == null) return;
 
             selectableController.MakeSelectionRequest(touch0WorldPos, inputStatus.IsShiftPressed);
