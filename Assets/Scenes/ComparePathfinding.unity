@@ -1631,7 +1631,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 1
+  m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -2812,7 +2812,7 @@ MonoBehaviour:
   m_MoveAction: {fileID: 947460647}
   m_SubmitAction: {fileID: 747955919}
   m_CancelAction: {fileID: 288937688}
-  m_LeftClickAction: {fileID: -3568964046249784951, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_MiddleClickAction: {fileID: 40273288}
   m_RightClickAction: {fileID: 1115345018}
   m_ScrollWheelAction: {fileID: 1414347667}
@@ -6392,7 +6392,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -11262,7 +11262,7 @@ MonoBehaviour:
     m_ActionName: Unit/Touch1Position
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Touch
-  m_DefaultActionMap: Player
+  m_DefaultActionMap: 
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 330585545}
 --- !u!114 &1837161507
