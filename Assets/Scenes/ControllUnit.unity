@@ -2039,7 +2039,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minZoom: 30
-  maxZoom: 80
+  maxZoom: 90
   speed: 8
   smoothTime: 0.15
 --- !u!114 &705920043

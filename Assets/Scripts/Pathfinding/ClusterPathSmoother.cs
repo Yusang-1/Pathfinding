@@ -44,8 +44,7 @@ namespace Assets.Scripts.Pathfinding
 
             for (int index = 0; index < clusterPath.Count - 1;)
             {
-                Loop(clusterList, nodeList, clusterPath, smootherList,
-                    from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex,
+                Loop(clusterList, nodeList, clusterPath, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex,
                     out Vector3 outPoint, out int outIndex, index, true, unitRadius);
                 from = outPoint;
                 index = outIndex + 1;
@@ -74,11 +73,10 @@ namespace Assets.Scripts.Pathfinding
 
             PathResultRecorder.AddMemoryUsed(clusterIndexes.Count);
 
-            wrapper.SetClusterSmootherResult(smootherList);
             return wrapper;
         }
 
-        private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath, List<ClusterSmootherResult> smootherList,
+        private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath,
             Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex,
             out Vector3 outPoint, out int outIndex, int index, bool isStart, float unitRadius)
         {
@@ -110,7 +108,7 @@ namespace Assets.Scripts.Pathfinding
                 rightSetIndex = index;
                 clusterIndexes.Add(path.Index);
 
-                Loop(clusterList, nodeList, clusterPath, smootherList,
+                Loop(clusterList, nodeList, clusterPath,
                     point, currentLeft, leftSetIndex, currentRight, rightSetIndex,
                     out outPoint, out outIndex, index + 1, false, unitRadius);
 
@@ -177,14 +175,14 @@ namespace Assets.Scripts.Pathfinding
                 // left 선을 지나가면 point 갱신, 리턴
                 outPoint = point + currentLeftString;
                 outIndex = leftSetIndex;
+                clusterIndexes.Add(path.Index);
                 return;
             }
             // 각도가 더 커지는 방향이면 아무것도 하지 않음
 
             clusterIndexes.Add(path.Index);
 
-            Loop(clusterList, nodeList, clusterPath, smootherList,
-                point, currentLeft, leftSetIndex, currentRight, rightSetIndex,
+            Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex,
                 out outPoint, out outIndex, index + 1, false, unitRadius);
         }
 

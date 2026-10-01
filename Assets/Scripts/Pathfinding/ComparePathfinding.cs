@@ -83,7 +83,8 @@ namespace Assets.Scripts.Pathfinding
             clusterResultWrapper.SetStart(from, to, tempUnitRadius);
 
             CurrentAbstractResults = pathfindingChain.ClusterPath_StringPulling?.Invoke(clusterResultWrapper);
-
+            
+            clusterResultWrapper.ResetAll();
             pathfindingChain.HPAStar_StringPulling?.Invoke(clusterResultWrapper);
 
             OnHPASmoothAStarFound?.Invoke(PathResultRecorder.GetPathResult());
