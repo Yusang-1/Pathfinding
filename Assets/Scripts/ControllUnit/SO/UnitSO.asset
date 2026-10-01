@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitCode: 101
   unitName: Marin
-  actionMap: 3
+  actionMapRole: 0
   selectableType: 1
   moveSpeed: 3.1
   refineLength: 2.2
   unitSize: 0
   unitsData: {fileID: 11400000, guid: d7f8efabe6051f6458897dc7dfe85e54, type: 2}
   unitIcon: {fileID: 0}
+  transparent: {fileID: 2100000, guid: 50d047efb39edbd44af311bd9b7a269c, type: 2}
+  opaque: {fileID: 2100000, guid: ab7920f0ad0fec748835aaed242895fd, type: 2}

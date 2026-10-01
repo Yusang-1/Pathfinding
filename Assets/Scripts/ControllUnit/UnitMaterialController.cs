@@ -6,6 +6,9 @@ namespace Assets.Scripts.ControllUnit
     {
         private readonly Renderer objectRenderer;
         private readonly MaterialPropertyBlock propertyBlock;
+        
+        private readonly Material transparent;
+        private readonly Material opaque;
 
         private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         private const float TRNASPARENT_VALUE = 0.5f;
@@ -15,28 +18,19 @@ namespace Assets.Scripts.ControllUnit
         {
             propertyBlock = new MaterialPropertyBlock();
             objectRenderer = unit.GetComponent<Renderer>();
+            
+            transparent = unit.UnitData.Transparent;
+            opaque = unit.UnitData.Opaque;
         }
 
         public void SetTranslucent()
         {
-            objectRenderer.GetPropertyBlock(propertyBlock);
-
-            Color color = objectRenderer.sharedMaterial.GetColor(BaseColor);
-            color.a = Mathf.Clamp01(TRNASPARENT_VALUE);
-
-            propertyBlock.SetColor(BaseColor, color);
-            objectRenderer.SetPropertyBlock(propertyBlock);
+            objectRenderer.sharedMaterial = transparent;
         }
 
         public void SetOpaque()
         {
-            objectRenderer.GetPropertyBlock(propertyBlock);
-
-            Color color = objectRenderer.sharedMaterial.GetColor(BaseColor);
-            color.a = Mathf.Clamp01(OPAQUE_VALUE);
-
-            propertyBlock.SetColor(BaseColor, color);
-            objectRenderer.SetPropertyBlock(propertyBlock);
+            objectRenderer.sharedMaterial = opaque;
         }
     }
 }

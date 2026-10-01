@@ -14,7 +14,9 @@ namespace Assets.Scripts.ControllUnit.SO
         [SerializeField] private UnitSize unitSize;
         [SerializeField] private UnitsSO unitsData;
         [SerializeField] private Sprite unitIcon;
-        
+        [SerializeField] private Material transparent;
+        [SerializeField] private Material opaque;
+
         public int UnitCode => unitCode;
         public string UnitName => unitName;
         public ActionMapRole ActionMapRole => actionMapRole;
@@ -23,6 +25,8 @@ namespace Assets.Scripts.ControllUnit.SO
         public float RefineLength => refineLength;
         public float Radius => unitsData.UnitRadius[unitSize];
         public Sprite UnitIcon => unitIcon;
+        public Material Transparent => transparent;
+        public Material Opaque => opaque;
     }
 }
 
