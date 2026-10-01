@@ -11,6 +11,10 @@
 - 메모리 사용량 : pathfinding 중 사용한 collection들의 크기의 합
 
 ### 시연 방법
+#### 씬 구성
+- Pathfinding : pathfinding 방식에 따른 경로와 성능을 비교합니다.
+- ContorllUnit : pathfinding에 따라 움직이는 유닛을 컨트롤 합니다.
+
 #### 조작법
 키보드 마우스
 - 화면 이동 : 마우스를 화면 외각에 위치하면 화면이 이동합니다.
