@@ -154,6 +154,7 @@ namespace Assets.Scripts.Controller
         public void SelectOrMove(BufferedCommand<IHaveUnitTouchBuffer.CommandType> bufferedCommand)
         {
             if (isPointerOverGameObject) return;
+            if (isScreenMoving) return;
 
             Vector3 position = bufferedCommand.Position;
             bool isShiftPressed = bufferedCommand.ShiftPressed;
@@ -190,7 +191,7 @@ namespace Assets.Scripts.Controller
 
         public void JudgeScreenMoveOrDrag(BufferedCommand<IHaveUnitTouchBuffer.CommandType> bufferedCommand)
         {
-            if (!Touch0Active) return;
+            if (!Touch0Active || Touch1Active) return;
             if (isPointerOverGameObject) return;
 
             Vector3 position = bufferedCommand.Position;

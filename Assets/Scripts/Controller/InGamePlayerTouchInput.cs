@@ -135,7 +135,7 @@ namespace Assets.Scripts.Controller
 
         public void JudgeScreenMoveOrDrag(BufferedCommand<IHavePlayerTouchBuffer.CommandType> bufferedCommand)
         {
-            if (!Touch0Active) return;
+            if (!Touch0Active || Touch1Active) return;
             if (isPointerOverGameObject) return;
 
             Vector3 position = bufferedCommand.Position;
