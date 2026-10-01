@@ -67,6 +67,16 @@ namespace Assets.Scripts.Controller
                 OnMoveScreen?.Invoke(velocity);
             }
         }
+        
+        public void OnTouch1Contact(InputAction.CallbackContext context)
+        {
+            Touch1Active = context.ReadValueAsButton();
+        }
+
+        public virtual void OnTouch1Position(InputAction.CallbackContext context)
+        {
+            Touch1Pos = context.ReadValue<Vector2>();
+        }
 
         public void ActionMapActivated()
         {

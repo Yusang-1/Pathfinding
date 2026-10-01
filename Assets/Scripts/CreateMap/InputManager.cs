@@ -167,7 +167,6 @@ namespace Assets.Scripts.CreateMap
                 createMapTouchInput.OnMoveScreen += playerController.SetVelocity;
                 createMapTouchInput.OnActionMapInputerActivated += touchInputMeditator.SetTouchInput;
                 
-                // touchInputMeditator.OnDirectionChanged += playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest += playerController.SetTargetZoom;
             }
             
@@ -202,7 +201,6 @@ namespace Assets.Scripts.CreateMap
                 createMapTouchInput.OnMoveScreen -= playerController.SetVelocity;
                 createMapTouchInput.OnActionMapInputerActivated -= touchInputMeditator.SetTouchInput;
                 
-                // touchInputMeditator.OnDirectionChanged -= playerController.SetDirection;
                 touchInputMeditator.OnZoomRequest -= playerController.SetTargetZoom;
             }
             

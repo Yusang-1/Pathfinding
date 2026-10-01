@@ -1664,8 +1664,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d93904c8a9a2f1c4a909564aff69cb3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minZoom: 30
-  maxZoom: 80
+  minZoom: 60
+  maxZoom: 120
   speed: 10
   smoothTime: 0.15
 --- !u!114 &330585549
@@ -10966,7 +10966,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7a86c2ed5035114db1baa12da7a878c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   playerInputComponent: {fileID: 1837161506}
   createMapKeyboardMouseInput: {fileID: 1837161508}
   createMapTouchInput: {fileID: 1837161507}
@@ -11175,9 +11174,10 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch0Position[/Device Simulator Touchscreen/touch0/position]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1837161503}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 1837161507}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CreateMapTouchInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Position
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11208,9 +11208,10 @@ MonoBehaviour:
     m_ActionName: 'Player/Touch0Contact[/Device Simulator Touchscreen/touch0/press]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1837161503}
-        m_TargetAssemblyTypeName: Assets.Scripts.Controller.TouchInput, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 1837161507}
+        m_TargetAssemblyTypeName: Assets.Scripts.Controller.CreateMapTouchInput,
+          Assembly-CSharp
+        m_MethodName: OnTouch1Contact
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11251,6 +11252,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 5887249f-06ba-433e-9edc-feacbf98b596
     m_ActionName: Unit/Touch0Position
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 37b506f2-2aa9-43f7-987d-7ce0611a47c0
+    m_ActionName: Unit/Touch1Contact
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0c2dd865-84f0-4736-b175-7926fc2ae0f4
+    m_ActionName: Unit/Touch1Position
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Touch
   m_DefaultActionMap: Player
@@ -12413,7 +12422,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 23
+  m_fontSize: 22.7
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12484,7 +12493,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1968222007
 RectTransform:
   m_ObjectHideFlags: 0
