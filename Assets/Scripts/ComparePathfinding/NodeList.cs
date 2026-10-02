@@ -37,8 +37,8 @@ public class NodeList
     /// <summary> 실제 position을 받아 Node Index를 반환   </summary>
     public Vector2Int GetNodeIndex(Vector2 position)
     {
-        int x = (int)(position.x / nodeSize);
-        int y = (int)(position.y / nodeSize);
+        int x = (int)((position.x + (float)nodeSize / 2) / nodeSize);
+        int y = (int)((position.y + (float)nodeSize / 2) / nodeSize);
         return new Vector2Int(x, y);
     }
 
