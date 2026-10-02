@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class UIResultController : MonoBehaviour
 {
+    [SerializeField] private GameObject resultsContainer;
     [SerializeField] private UIResultShower aStarResultShower;
     [SerializeField] private UIResultShower hPASmoothAStarResultShower;
     [SerializeField] private UIResultShower hPAThetaResultShower;
@@ -9,12 +10,29 @@ public class UIResultController : MonoBehaviour
     
     public void ShowResult()
     {
-        bool value = aStarResultShower.gameObject.activeSelf;
+        bool value = resultsContainer.activeSelf;
         
-        aStarResultShower.gameObject.SetActive(!value);
-        hPASmoothAStarResultShower.gameObject.SetActive(!value);
-        hPAThetaResultShower.gameObject.SetActive(!value);
-        hPASmoothThetaResultShower.gameObject.SetActive(!value);
+        resultsContainer.SetActive(!value);
+        
+        if(value)
+        {
+            if(!aStarResultShower.gameObject.activeSelf)
+            {
+                aStarResultShower.gameObject.SetActive(true);
+            }
+            if(!hPASmoothAStarResultShower.gameObject.activeSelf)
+            {
+                hPASmoothAStarResultShower.gameObject.SetActive(true);
+            }
+            if(!hPAThetaResultShower.gameObject.activeSelf)
+            {
+                hPAThetaResultShower.gameObject.SetActive(true);
+            }
+            if(!hPASmoothThetaResultShower.gameObject.activeSelf)
+            {
+                hPASmoothThetaResultShower.gameObject.SetActive(true);
+            }
+        }
     }
     
     public void SetAResult(PathResultRecorder.PathResult result)
