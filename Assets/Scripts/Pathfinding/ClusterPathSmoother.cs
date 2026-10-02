@@ -45,7 +45,7 @@ namespace Assets.Scripts.Pathfinding
             for (int index = 0; index < clusterPath.Count - 1;)
             {
                 Loop(clusterList, nodeList, clusterPath, from, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex,
-                    out Vector3 outPoint, out int outIndex, index, true, unitRadius);
+                    out Vector3 outPoint, out int outIndex, index, unitRadius, true);
                 from = outPoint;
                 index = outIndex + 1;
                 leftSetIndex = 0;
@@ -78,7 +78,7 @@ namespace Assets.Scripts.Pathfinding
 
         private void Loop(HPAClusterList clusterList, NodeList nodeList, List<ClusterResult> clusterPath,
             Vector3 point, Vector2Int currentLeft, int leftSetIndex, Vector2Int currentRight, int rightSetIndex,
-            out Vector3 outPoint, out int outIndex, int index, bool isStart, float unitRadius)
+            out Vector3 outPoint, out int outIndex, int index, float unitRadius, bool isStart = false)
         {
             outPoint = point;
             outIndex = index;
@@ -91,21 +91,21 @@ namespace Assets.Scripts.Pathfinding
 
             var path = clusterPath[index];
 
-            // loop의 첫 시작인 경우 left, right설정 후 다음 loop로
-            if (isStart)
+            if (index == 0 && clusterList.IsNodeInEntrance(path.Index, path.EntranceExit, path.ExitDirection, unitRadius))
             {
-                clusterList.GetCluster(path.Index).Graph
-                    .GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);
-
                 // 현재 path의 EntranceExit이 cluster의 entrance영역 위에 있다면 이 path는 포함시키고 바로 다음 loop로 넘어감
-                if (clusterList.IsNodeInEntrance(path.Index, path.EntranceExit, path.ExitDirection, unitRadius))
-                {
-                    clusterIndexes.Add(path.Index);
+                clusterIndexes.Add(path.Index);
 
-                    Loop(clusterList, nodeList, clusterPath, point, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex,
-                    out outPoint, out outIndex, index + 1, true, unitRadius);
-                    return;
-                }
+                Loop(clusterList, nodeList, clusterPath, 
+                    point, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex,
+                    out outPoint, out outIndex, index + 1, unitRadius, true);
+                return;
+            }            
+            else if (isStart)
+            {
+                // loop의 첫 시작인 경우 left, right설정 후 다음 loop로
+                clusterList.GetCluster(path.Index).Graph
+                    .GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);                
 
                 currentLeft = left;
                 leftSetIndex = index;
@@ -115,7 +115,7 @@ namespace Assets.Scripts.Pathfinding
 
                 Loop(clusterList, nodeList, clusterPath,
                     point, currentLeft, leftSetIndex, currentRight, rightSetIndex,
-                    out outPoint, out outIndex, index + 1, false, unitRadius);
+                    out outPoint, out outIndex, index + 1, unitRadius);
 
                 return;
             }
@@ -204,7 +204,7 @@ namespace Assets.Scripts.Pathfinding
             clusterIndexes.Add(path.Index);
 
             Loop(clusterList, nodeList, clusterPath, point, currentLeft, leftSetIndex, currentRight, rightSetIndex,
-                out outPoint, out outIndex, index + 1, false, unitRadius);
+                out outPoint, out outIndex, index + 1, unitRadius);
         }
 
         private void SetResult(Vector2Int nodeIndex, Vector2Int from, Vector2Int notIncludeClusterIndex, bool useLastIncludeClusterIndex,
