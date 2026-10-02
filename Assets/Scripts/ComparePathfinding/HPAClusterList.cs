@@ -79,7 +79,7 @@ public class HPAClusterList
     {
         if (cluster.x + direction.x < 0 || cluster.x + direction.x >= clusterCount
             || cluster.y + direction.y < 0 || cluster.y + direction.y >= clusterCount)
-        return null;
+            return null;
 
         cachedEdgeIndexes.Clear();
         tempEdgeIndexes.Clear();
@@ -100,7 +100,7 @@ public class HPAClusterList
                 }
                 else // 막힌 edge발견시 tempEdgeIndexes에 있던 entrance들의 수를 파악해 선별된 entrance를 cachedEdgeIndexes에 담는다
                 {
-                    GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, out isSuccess);
+                    GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, direction, out isSuccess);
 
                     if (!isSuccess)
                     {
@@ -128,7 +128,7 @@ public class HPAClusterList
                 }
                 else
                 {
-                    GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, out isSuccess);
+                    GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, direction, out isSuccess);
 
                     if (!isSuccess)
                     {
@@ -145,23 +145,35 @@ public class HPAClusterList
         // entrance가 중간에 가로막히지 않았을 경우
         if (tempEdgeIndexes.Count > 0)
         {
-            GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, out isSuccess);
+            GetCachedIndexes(tempEdgeIndexes, cachedEdgeIndexes, direction, out isSuccess);
             if (!isSuccess) return null;
         }
 
         return cachedEdgeIndexes;
     }
-    
+
     /// <summary> entrance의 시작점과 끝점을 cachedEdges에 담음 </summary>
-    private void GetCachedIndexes(List<Vector2Int> tempEdges, List<HPAGraph.EntranceData> cachedEdges, out bool isSuccess)
+    private void GetCachedIndexes(List<Vector2Int> tempEdges, List<HPAGraph.EntranceData> cachedEdges, Vector2Int direction, out bool isSuccess)
     {
         if (tempEdges.Count > 0)
         {
+            Vector2Int left, right;
+            if (direction == Vector2Int.up || direction == Vector2Int.left)
+            {
+                left = tempEdges[0];
+                right = tempEdges[^1];
+            }
+            else
+            {
+                left = tempEdges[^1];
+                right = tempEdges[0];
+            }
+
             HPAGraph.EntranceData entranceData = new()
             {
-                LeftEntrance = tempEdges[0],
-                RightEntrance = tempEdges[^1]
-            };            
+                LeftEntrance = left,
+                RightEntrance = right
+            };
             cachedEdges.Add(entranceData);
 
             isSuccess = true;
@@ -179,12 +191,12 @@ public class HPAClusterList
     }
 
     private Vector2Int GetLeftDownNodeIndexOfCluster(Vector2Int clusterIndex) => clusterIndex * clusterSize;
-    
+
     /// <summary> cluster index를 받아 cluster 반환 </summary>
     public HPACluster GetCluster(Vector2Int index) => clusterList[index.x, index.y];
-    
+
     public Vector2Int GetClusterIndex(int x, int y) => new(x / clusterSize, y / clusterSize);
-    
+
     /// <summary> node index를 받아 cluster index 반환 </summary>
     public Vector2Int GetClusterIndex(Vector2Int index) => new(index.x / clusterSize, index.y / clusterSize);
 
@@ -206,6 +218,14 @@ public class HPAClusterList
     {
         if (GetClusterIndex(node1) == GetClusterIndex(node2)) return true;
         else return false;
+    }
+
+    public bool IsNodeInEntrance(Vector2Int clusterIndex, Vector2Int nodeIndex, Vector2Int direction, float radius)
+    {
+        if (!IsNodeInCluster(clusterIndex, nodeIndex)) return false;
+
+        var cluster = GetCluster(clusterIndex);
+        return cluster.Graph.IsNodeInEntrance(nodeIndex, direction, radius);
     }
 
     public void ResetClusterList()

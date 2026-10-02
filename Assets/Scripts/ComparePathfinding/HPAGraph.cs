@@ -310,6 +310,19 @@ public class HPAGraph
         }
     }
 
+    public bool IsNodeInEntrance(Vector2Int nodeIndex, Vector2Int direction, float radius)
+    {
+        List<EntranceData> entranceDatas = entrancesDataByDirectionByRadius[radius][direction];
+        foreach (var entranceData in entranceDatas)
+        {
+            if (entranceData.HasEntrance(nodeIndex))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public struct EntranceData
     {
         public Vector2Int LeftEntrance;

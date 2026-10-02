@@ -130,13 +130,13 @@ namespace Assets.Scripts.Pathfinding
                 {
                     PathResultRecorder.AddMemoryUsed(openSet.Capacity + clusterDict.Count + closedSet.Count);
 
-                    var results = ReconstructAbstractPath(clusterDict, currentClusterHash, startHash, startNode, goalNode);
+                    var results = ReconstructAbstractPath(clusterDict, currentClusterHash, startHash, startNode, goalNode, unitRadius);
                     return results;
                 }
 
                 if (closedSet.Contains(currentClusterHash)) continue;
                 closedSet.Add(currentClusterHash);
-                
+
                 GetAbstractNeighbors(clusterDict[currentClusterHash], unitRadius);
                 foreach (var (neighborCluster, cost) in abstractNeighborsList)
                 {
@@ -169,7 +169,8 @@ namespace Assets.Scripts.Pathfinding
             return null; // 경로 없음
         }
 
-        private List<ClusterResult> ReconstructAbstractPath(Dictionary<int, AbstractNode> clusterDict, int current, int start, Vector2Int startNode, Vector2Int goalNode)
+        private List<ClusterResult> ReconstructAbstractPath(Dictionary<int, AbstractNode> clusterDict, int current, int start,
+            Vector2Int startNode, Vector2Int goalNode, float unitRadius)
         {
             newResults.Clear();
             ClusterResult result;
@@ -199,7 +200,6 @@ namespace Assets.Scripts.Pathfinding
                 ExitDirection = Vector2Int.zero,
                 EntranceExit = goalNode
             };
-            // EntranceEnter = goalNodeEnter        
             newResults.Add(result);
 
             Vector2Int startClusterIndex = childCluster.ClusterIndex;
@@ -280,6 +280,11 @@ namespace Assets.Scripts.Pathfinding
                 }
             }
 
+            if (clusterList.IsNodeInEntrance(startClusterIndex, startNode, startClusterExitDirection, unitRadius))
+            {
+                startEntranceExit = startNode;
+            }
+
             // 출발지 노드 세팅
             result = new ClusterResult()
             {
@@ -299,7 +304,7 @@ namespace Assets.Scripts.Pathfinding
         private void GetAbstractNeighbors(AbstractNode current, float unitRadius)
         {
             abstractNeighborsList.Clear();
-            
+
             var cluster = clusterList.GetCluster(current.ClusterIndex);
 
             // Intra-cluster edges
@@ -336,7 +341,7 @@ namespace Assets.Scripts.Pathfinding
                     new AbstractNode { ClusterIndex = neighborCluster, EntranceNodeIndex = (Vector2Int)neighborEntrance },
                     current.ClusterIndex.GetNeighborMoveCost(neighborCluster) // 경계 통과 비용
                 );
-                
+
                 abstractNeighborsList.Add(aa);
             }
         }

@@ -97,6 +97,16 @@ namespace Assets.Scripts.Pathfinding
                 clusterList.GetCluster(path.Index).Graph
                     .GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);
 
+                // 현재 path의 EntranceExit이 cluster의 entrance영역 위에 있다면 이 path는 포함시키고 바로 다음 loop로 넘어감
+                if (clusterList.IsNodeInEntrance(path.Index, path.EntranceExit, path.ExitDirection, unitRadius))
+                {
+                    clusterIndexes.Add(path.Index);
+
+                    Loop(clusterList, nodeList, clusterPath, point, Vector2Int.zero, leftSetIndex, Vector2Int.zero, rightSetIndex,
+                    out outPoint, out outIndex, index + 1, true, unitRadius);
+                    return;
+                }
+
                 currentLeft = left;
                 leftSetIndex = index;
                 currentRight = right;
@@ -146,17 +156,17 @@ namespace Assets.Scripts.Pathfinding
                 // right 선을 지나가면 point 갱신, 리턴
                 outPoint = point + currentRightString;
                 outIndex = rightSetIndex;
-                
+
                 // outPoint가 path.Index인 cluster에 있다면
                 if (clusterList.IsNodeInCluster(path.Index, nodeList.GetNodeIndex(outPoint)))
-                {                    
+                {
                     clusterIndexes.Add(path.Index);
                 }
                 else // 없다면 outIndex--, clusterIndexes에 넣지 않기
                 {
                     outIndex--;
                 }
-                
+
                 return;
             }
             // 각도가 더 커지는 방향이면 아무것도 하지 않음
@@ -177,16 +187,16 @@ namespace Assets.Scripts.Pathfinding
                 // left 선을 지나가면 point 갱신, 리턴
                 outPoint = point + currentLeftString;
                 outIndex = leftSetIndex;
-                
+
                 if (clusterList.IsNodeInCluster(path.Index, nodeList.GetNodeIndex(outPoint)))
-                {                    
+                {
                     clusterIndexes.Add(path.Index);
                 }
                 else
                 {
                     outIndex--;
                 }
-                
+
                 return;
             }
             // 각도가 더 커지는 방향이면 아무것도 하지 않음
