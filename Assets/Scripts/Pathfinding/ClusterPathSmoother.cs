@@ -31,9 +31,9 @@ namespace Assets.Scripts.Pathfinding
                 clusterIndexes.Add(clusterPath[0].Index);
                 var smootherResult = ClusterSmootherResultPool.GetValue();
                 smootherResult.SetSmootherResult(clusterIndexes, nodeList.GetNodeIndex(to), nodeList.GetNodeIndex(from), Vector2Int.zero, false);
-                                
+
                 wrapper.SetClusterSmootherResult(smootherResult);
-                                
+
                 return wrapper;
             }
 
@@ -94,11 +94,6 @@ namespace Assets.Scripts.Pathfinding
             // loop의 첫 시작인 경우 left, right설정 후 다음 loop로
             if (isStart)
             {
-                if (path.ExitDirection == Vector2Int.zero)
-                {
-                    Debug.Log(path);
-                }
-
                 clusterList.GetCluster(path.Index).Graph
                     .GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int left, out Vector2Int right, unitRadius);
 
@@ -129,10 +124,6 @@ namespace Assets.Scripts.Pathfinding
                 return;
             }
 
-            if (path.ExitDirection == Vector2Int.zero)
-            {
-                Debug.Log(path);
-            }
             clusterList.GetCluster(path.Index).Graph.
                 GetUsedEntrance(path.ExitDirection, path.EntranceExit, out Vector2Int newLeft, out Vector2Int newRight, unitRadius);
 
@@ -155,6 +146,17 @@ namespace Assets.Scripts.Pathfinding
                 // right 선을 지나가면 point 갱신, 리턴
                 outPoint = point + currentRightString;
                 outIndex = rightSetIndex;
+                
+                // outPoint가 path.Index인 cluster에 있다면
+                if (clusterList.IsNodeInCluster(path.Index, nodeList.GetNodeIndex(outPoint)))
+                {                    
+                    clusterIndexes.Add(path.Index);
+                }
+                else // 없다면 outIndex--, clusterIndexes에 넣지 않기
+                {
+                    outIndex--;
+                }
+                
                 return;
             }
             // 각도가 더 커지는 방향이면 아무것도 하지 않음
@@ -175,7 +177,16 @@ namespace Assets.Scripts.Pathfinding
                 // left 선을 지나가면 point 갱신, 리턴
                 outPoint = point + currentLeftString;
                 outIndex = leftSetIndex;
-                clusterIndexes.Add(path.Index);
+                
+                if (clusterList.IsNodeInCluster(path.Index, nodeList.GetNodeIndex(outPoint)))
+                {                    
+                    clusterIndexes.Add(path.Index);
+                }
+                else
+                {
+                    outIndex--;
+                }
+                
                 return;
             }
             // 각도가 더 커지는 방향이면 아무것도 하지 않음
